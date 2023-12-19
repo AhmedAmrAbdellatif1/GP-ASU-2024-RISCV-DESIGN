@@ -1,21 +1,21 @@
-module riscv_extend (inst, immsrc, ext_imm);
+module riscv_extend (i_riscv_extend_inst, i_riscv_extend_immsrc, o_riscv_extend_simm);
 
   typedef enum {i_imm, u_imm, j_imm, s_imm, b_imm} imm_type;
 
-  input   logic   [31:7]  inst;
-  output  logic   [63:0]  ext_imm;
-  input imm_type  immsrc;
+  input   logic   [31:7]  i_riscv_extend_inst;
+  output  logic   [63:0]  o_riscv_extend_simm;
+  input imm_type  i_riscv_extend_immsrc;
   
 
 
   always_comb begin
-    case(immsrc)
-      i_imm: ext_imm = { {53{inst[31]}}, inst[30:20] };
-      u_imm: ext_imm = { {33{inst[31]}}, inst[30:12], {12{1'b0}} };
-      j_imm: ext_imm = { {44{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0 };
-      s_imm: ext_imm = { {53{inst[31]}}, inst[30:25], inst[11:7] };
-      b_imm: ext_imm = { {52{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0 };
-      default: ext_imm = 'bx;
+    case(i_riscv_extend_immsrc)
+      i_imm: o_riscv_extend_simm = { {53{i_riscv_extend_inst[31]}}, i_riscv_extend_inst[30:20] };
+      u_imm: o_riscv_extend_simm = { {33{i_riscv_extend_inst[31]}}, i_riscv_extend_inst[30:12], {12{1'b0}} };
+      j_imm: o_riscv_extend_simm = { {44{i_riscv_extend_inst[31]}}, i_riscv_extend_inst[19:12], i_riscv_extend_inst[20], i_riscv_extend_inst[30:21], 1'b0 };
+      s_imm: o_riscv_extend_simm = { {53{i_riscv_extend_inst[31]}}, i_riscv_extend_inst[30:25], i_riscv_extend_inst[11:7] };
+      b_imm: o_riscv_extend_simm = { {52{i_riscv_extend_inst[31]}}, i_riscv_extend_inst[7], i_riscv_extend_inst[30:25], i_riscv_extend_inst[11:8], 1'b0 };
+      default: o_riscv_extend_simm = 'bx;
     endcase
   end
 
