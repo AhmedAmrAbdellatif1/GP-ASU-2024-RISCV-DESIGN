@@ -1,1 +1,2 @@
-
+//salam allikom 
+//bgrab bas
