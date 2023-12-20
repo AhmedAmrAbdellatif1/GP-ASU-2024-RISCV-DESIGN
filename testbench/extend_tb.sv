@@ -1,6 +1,6 @@
 /**********************************************************/
 /* Module Name: riscv_extend                              */
-/* Last Modified Date:                                    */
+/* Last Modified Date: 12/21/2023                         */
 /* By: Ahmed Amr Abdellatif                               */
 /**********************************************************/
 `timescale 1ns/1ns
@@ -14,14 +14,6 @@ module riscv_extend_tb();
   parameter SIMM_WIDTH  = 64;
   parameter CTRL_WIDTH  = 3;
   parameter TEST_CASES  = 5;
-
-/*********************** Enumerate ************************/
-  typedef enum logic [2:0] {i_imm = 3'b000,
-                            u_imm = 3'b001,
-                            j_imm = 3'b010,
-                            s_imm = 3'b011,
-                            b_imm = 3'b100} imm_type;
-  
 
 /************** Internal Signals Declaration **************/
   logic [CTRL_WIDTH-1:0]  immsrc;
