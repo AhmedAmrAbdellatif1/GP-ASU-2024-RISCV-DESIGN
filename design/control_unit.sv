@@ -1,7 +1,7 @@
 module riscv_cu (
   input  logic [6:0]  i_riscv_cu_opcode, //7-bit input opcode[6:0]
-  input  logic [2:0]  i_riscv_cu_func_3, //3-bit input func_3[]  
-  input  logic        i_riscv_cu_func_7_3,//1-bit input func_7[30]
+  input  logic [2:0]  i_riscv_cu_funct3, //3-bit input func_3[14:12]  
+  input  logic        i_riscv_cu_funct7_5,//1-bit input func_7[30]
   output logic        o_riscv_cu_jump, 
   output logic        o_riscv_cu_regw,
   output logic        o_riscv_cu_asel,
@@ -19,9 +19,9 @@ always_comb
   begin:ctrl_sig_proc
     case(i_riscv_cu_opcode)
         7'b0110011:begin
-                     case(i_riscv_cu_func_3) 
+                     case(i_riscv_cu_funct3) 
                        3'b000:begin
-                                if(!i_riscv_cu_func_7_3)
+                                if(!i_riscv_cu_funct7_5)
                                   begin //add instruction signals
                                     o_riscv_cu_jump      = 1'b0;
                                     o_riscv_cu_regw      = 1'b1;
@@ -103,7 +103,7 @@ always_comb
                                 o_riscv_cu_aluctrl   = 5'b00101;
                               end
                        3'b101:begin
-                                if(!i_riscv_cu_func_7_3)
+                                if(!i_riscv_cu_funct7_5)
                                   begin //srl instruction signals
                                     o_riscv_cu_jump      = 1'b0;
                                     o_riscv_cu_regw      = 1'b1;
@@ -161,9 +161,9 @@ always_comb
                      endcase            
                    end      
         7'b0111011:begin
-                     case(i_riscv_cu_func_3) 
+                     case(i_riscv_cu_funct3) 
                        3'b000:begin
-                                if(!i_riscv_cu_func_7_3)
+                                if(!i_riscv_cu_funct7_5)
                                   begin //addw instruction signals
                                     o_riscv_cu_jump      = 1'b0;
                                     o_riscv_cu_regw      = 1'b1;
@@ -206,7 +206,7 @@ always_comb
                                 o_riscv_cu_aluctrl   = 5'b10010;
                               end                                     
                        3'b101:begin
-                                if(!i_riscv_cu_func_7_3)
+                                if(!i_riscv_cu_funct7_5)
                                   begin //srlw instruction signals
                                     o_riscv_cu_jump      = 1'b0;
                                     o_riscv_cu_regw      = 1'b1;
@@ -251,7 +251,7 @@ always_comb
                      endcase
                    end        
         7'b0010011:begin
-                     case(i_riscv_cu_func_3) 
+                     case(i_riscv_cu_funct3) 
                        3'b000:begin// addi instruction signals
                                o_riscv_cu_jump      = 1'b0;
                                o_riscv_cu_regw      = 1'b1;
@@ -318,7 +318,7 @@ always_comb
                                 o_riscv_cu_aluctrl   = 5'b00101;
                               end
                        3'b101:begin
-                                if(!i_riscv_cu_func_7_3)
+                                if(!i_riscv_cu_funct7_5)
                                   begin //srli instruction signals
                                     o_riscv_cu_jump      = 1'b0;
                                     o_riscv_cu_regw      = 1'b1;
@@ -376,7 +376,7 @@ always_comb
                      endcase            
                    end                            
         7'b0011011:begin
-                     case(i_riscv_cu_func_3) 
+                     case(i_riscv_cu_funct3) 
                        3'b000:begin //addiw instruction signals
                                 o_riscv_cu_jump      = 1'b0;
                                 o_riscv_cu_regw      = 1'b1;
@@ -404,7 +404,7 @@ always_comb
                                 o_riscv_cu_aluctrl   = 5'b10010;
                               end                                     
                        3'b101:begin
-                                if(!i_riscv_cu_func_7_3)
+                                if(!i_riscv_cu_funct7_5)
                                   begin //srliw instruction signals
                                     o_riscv_cu_jump      = 1'b0;
                                     o_riscv_cu_regw      = 1'b1;
@@ -457,7 +457,7 @@ always_comb
                      o_riscv_cu_storesrc  = 2'b00;
                      o_riscv_cu_resultsrc = 2'b10;
                      o_riscv_cu_bcond     = 4'b0000;
-                     o_riscv_cu_memext    = i_riscv_cu_func_3;
+                     o_riscv_cu_memext    = i_riscv_cu_funct3;
                      o_riscv_cu_immsrc    = 3'b000;
                      o_riscv_cu_aluctrl   = 5'b00000;
                    end 
@@ -521,7 +521,7 @@ always_comb
                      o_riscv_cu_asel      = 1'b1;
                      o_riscv_cu_bsel      = 1'b1;
                      o_riscv_cu_memw      = 1'b1;
-                     o_riscv_cu_storesrc  = i_riscv_cu_func_3[1:0];
+                     o_riscv_cu_storesrc  = i_riscv_cu_funct3[1:0];
                      o_riscv_cu_resultsrc = 2'b00;//xx
                      o_riscv_cu_bcond     = 4'b0000;
                      o_riscv_cu_memext    = 3'b000;//xx
@@ -537,7 +537,7 @@ always_comb
                      o_riscv_cu_memw       = 1'b0;
                      o_riscv_cu_storesrc   = 2'b00;//xx
                      o_riscv_cu_resultsrc  = 2'b00;//xx
-                     o_riscv_cu_bcond[2:0] = i_riscv_cu_func_3;
+                     o_riscv_cu_bcond[2:0] = i_riscv_cu_funct3;
                      o_riscv_cu_bcond[3]   = 1'b1;
                      o_riscv_cu_memext     = 3'b000;//xx
                      o_riscv_cu_immsrc     = 3'b100;
