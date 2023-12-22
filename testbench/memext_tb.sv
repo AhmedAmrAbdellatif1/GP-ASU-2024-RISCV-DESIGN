@@ -22,7 +22,7 @@ module riscv_memext_tb();
   integer i;
 /********************* Initial Blocks *********************/
   initial begin : proc_testing
-    $readmemh("100_random_64bits",data_random);
+    $readmemh("100_random_64bits.txt",data_random);
     
     //Load Byte 
     sel = 000; //signed load byte
@@ -42,7 +42,7 @@ module riscv_memext_tb();
     sel = 010;
     Signed_random_inputs_Word();
     #DELAY
-    sel = 010;
+    sel = 110;
     Unsigned_random_inputs_Word();
     // Double word
     sel = 011;
