@@ -39,7 +39,7 @@
     begin:write_proc
       if(i_riscv_dm_rst)
         begin
-          for (i=0; i<31; i++)
+          for (i=0; i<32; i++)
             dmemo[i]<=8'b0;
         end
       else if (i_riscv_dm_wen) 
