@@ -26,36 +26,37 @@ module riscv_memext_tb();
     
     //Load Byte 
     sel = 000; //signed load byte
-    Signed_all_inputs_posibiltes_BYTE();
+    Signed_all_inputs_BYTE();
     #DELAY
     sel = 100;
-    Unsigned_all_inputs_posibiltes("Load Byte",data,BYTE_SIZE);
+    Unsigned_all_inputs_BYTE();
     #DELAY
     //Half word
     sel = 001;
-    Signed_all_inputs_posibiltes_HALFWORD();
+    Signed_all_inputs_HALFWORD();
     #DELAY
     sel = 101;
-    Unsigned_all_inputs_posibiltes("Half word",data,HALF_WORD_SIZE);
+    Unsigned_all_inputs_HalfWord();
     #DELAY
     //Word
     sel = 010;
     Signed_random_inputs_Word();
     #DELAY
     sel = 010;
-    Unsigned_random_inputs("Word",data,WORD_SIZE);
+    Unsigned_random_inputs_Word();
     // Double word
     sel = 011;
-    Unsigned_random_inputs("Word",data,DOUBLE_WORD_SIZE);
-       
-    
+    Unsigned_random_inputs_Doubleword();
+  
+   #DELAY 
+   $stop 
   end
   
   
 
 
 /******************** Tasks & Functions *******************/
-task Signed_all_inputs_posibiltes_BYTE();
+task Signed_all_inputs_BYTE();
     for(i=0;i<2^BYTE_SIZE;i=i+1)
       begin
       data = i; 
@@ -63,29 +64,42 @@ task Signed_all_inputs_posibiltes_BYTE();
       if(out !== {{56{data[7]}},{data[7:0]}})
         $display("BYTE %b error_signed out = %b",data,out);
      end
+     
+task Unsigned_all_inputs_BYTE();
+    for(i=0;i<2^BYTE_SIZE;i=i+1)
+      begin
+      data = i; 
+      #DELAY
+      if((out !== {{56{0}},{data[7:0]}}))
+        $display("BYTE %b error_unsigned out = %b",data,out);
+     end
   
 endtask
-task Signed_all_inputs_posibiltes_HALFWORD();
+  
+endtask
+task Signed_all_inputs_HALFWORD();
     for(i=0;i<2^HALF_WORD_SIZE;i=i+1)
       begin
       data = i; 
       #DELAY
-      if(out !== {{48{data[15]}},{data[15-1:0]}})
+      if(out !== {{48{data[15]}},{data[15:0]}})
         $display("Half WORD %b error_signed out = %b",data,out);
      end
   
 endtask
 
-task Unsigned_all_inputs_posibiltes(string TYPE, logic [63:0] data , [6:0] Size);
-    for(i=0;i<2^Size;i=i+1)
+
+task Unsigned_all_inputs_HalfWord();
+    for(i=0;i<2^HALF_WORD_SIZE;i=i+1)
       begin
       data = i; 
       #DELAY
-      if(out !== data)
-        $display("%s %b error_unsigned out = %b",TYPE,data,out);
+      if((out !== {{48{0}},{data[15:0]}}))
+        $display("Half word %b error_unsigned out = %b",data,out);
      end
   
 endtask
+
 
 task Signed_random_inputs_Word();
     for(i=0;i<TEST_NUM;i=i+1)
@@ -96,14 +110,25 @@ task Signed_random_inputs_Word();
         $display("Word %b error_signed out = %b",data,out);
      end
   
+  task Unsigned_random_inputs_Word();
+    for(i=0;i<TEST_NUM;i=i+1)
+      begin
+      data = data_random[i]; 
+      #DELAY
+      if((out !== {{32{0}},{data[31:0]}}))
+        $display("Word %b error_unsigned out = %b",data,out);
+     end
+  
 endtask
-task Unsigned_random_inputs(string TYPE, logic [63:0] data , [6:0] Size);
+  
+endtask
+task Unsigned_random_inputs_Doubleword();
     for(i=0;i<TEST_NUM;i=i+1)
       begin
       data = data_random[i]; 
       #DELAY
       if(out !== data)
-        $display("%s %b error_unsigned out = %b",TYPE,data,out);
+        $display("Doubleword %b error_unsigned out = %b",data,out);
      end
   
 endtask
@@ -118,4 +143,5 @@ endtask
     .o_riscv_memext_loaded(out)
   );
 endmodule
+
 
