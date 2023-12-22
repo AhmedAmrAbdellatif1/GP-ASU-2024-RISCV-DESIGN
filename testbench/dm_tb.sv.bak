@@ -45,7 +45,8 @@ module riscv_dm_tb();
    #CLK_PERIOD; 
     
  // Perform byte load
-   i_riscv_dm_wen = 1'b0; 
+   i_riscv_dm_wen = 1'b0;
+   i_riscv_dm_waddr = 64'h100; 
    #CLK_PERIOD; 
    if (o_riscv_dm_rdata !== 64'h0088) 
    $display("Byte store and load failed");

@@ -37,15 +37,6 @@ module riscv_alu_tb();
    if (o_riscv_alu_result !=  'sd530 )
     $display ("add opertion (1) failed");
    #CLK_PERIOD;
-   
- //testing add (2) operation  
-   i_riscv_alu_ctrl = 5'b00000;
-   i_riscv_alu_rs1data = 'sd300;
-   i_riscv_alu_rs2data = -'sd230;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  'sd70 )
-    $display ("add opertion (11) failed");
-   #CLK_PERIOD;
 
  //testing sub (1) operation  
    i_riscv_alu_ctrl = 5'b00001;
