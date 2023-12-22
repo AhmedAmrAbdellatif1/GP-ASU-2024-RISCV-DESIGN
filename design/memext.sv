@@ -11,11 +11,11 @@ module riscv_memext(
   3'b100: o_riscv_memext_loaded={{56{0}},i_riscv_memext_data[7:0]};                      // Lbu
     
   //load half word
-  3'b001: o_riscv_memext_loaded={{48{i_riscv_memext_data[7]}},i_riscv_memext_data[15:0]};  // Lh
+  3'b001: o_riscv_memext_loaded={{48{i_riscv_memext_data[15]}},i_riscv_memext_data[15:0]};  // Lh
   3'b101: o_riscv_memext_loaded={{48{0}},i_riscv_memext_data[15:0]};                       // Lhu
 
 //load word
-  3'b010: o_riscv_memext_loaded={{32{i_riscv_memext_data[7]}},i_riscv_memext_data[31:0]} ; // Lw
+  3'b010: o_riscv_memext_loaded={{32{i_riscv_memext_data[31]}},i_riscv_memext_data[31:0]} ; // Lw
   3'b110: o_riscv_memext_loaded={{32{0}},i_riscv_memext_data[31:0]} ;                      // Lwu
 
 
