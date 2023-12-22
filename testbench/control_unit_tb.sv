@@ -575,7 +575,7 @@ task branch_test();
           (aluctrl == 5'b00000) &&
           (bcond[3] == 1'b1) &&
           (bcond[2:0] == funct3) &&
-          (memw == 1'b1) &&
+          (memw == 1'b0) &&
           (jump == 1'b0) )
             $display("Instruction(#%2d): Passed",(i+1));
       else
