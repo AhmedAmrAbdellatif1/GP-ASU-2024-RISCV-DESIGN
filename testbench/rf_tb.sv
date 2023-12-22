@@ -12,6 +12,7 @@ module riscv_rf_tb();
 
 /************** Internal Signals Declaration **************/
 logic              clk_n;
+logic              rst;
 logic              regwrite;
 logic  [ADDR-1:0]  rs1addr;
 logic  [ADDR-1:0]  rs2addr;
@@ -19,6 +20,7 @@ logic  [WIDTH-1:0] rddata;
 logic  [ADDR-1:0]  rdaddr;
 logic  [WIDTH-1:0] rs1data;
 logic  [WIDTH-1:0] rs2data; 
+
 integer       i;
 
   /** Clock Generation Block **/
@@ -30,6 +32,7 @@ integer       i;
   end
 initial
 begin
+Reset();
   // writing checking
 regwrite='b1;
 rddata= 'b111;
@@ -40,7 +43,8 @@ for(i=0;i<DEPTH;i=i+1) // check that only the address 101 in written in it
   begin
     $display("Register %d: %d",i,dut.rf[i]); 
   end
-      CheckEquality("Register", rddata, dut.rf[rdaddr]);
+      CheckEquality("Register Write", rddata, dut.rf[rdaddr]);
+      CheckEquality("Register SP intialization", 'h000000007ffffff0, dut.rf[2]); //checking SP intialization
       
 #CLK_PERIOD
 for(i=0;i<DEPTH;i=i+1) // check that every address can be written in
@@ -63,7 +67,7 @@ for(i=0;i<DEPTH;i=i+1) // check that every address can be written in
     rs1addr = 'b1111;
     regwrite = 'b1;
     #CLK_PERIOD
-for(i=0;i<DEPTH;i=i+1) // check that every rs1 address can be reads succsfully
+for(i=0;i<DEPTH;i=i+1) // check that every rs1 address can be read succsfully
   begin
     rs1addr = i;
     #CLK_PERIOD
@@ -71,7 +75,7 @@ for(i=0;i<DEPTH;i=i+1) // check that every rs1 address can be reads succsfully
     CheckEquality("Register", rs1data, dut.rf[rs1addr]);    
   end 
       #CLK_PERIOD
-for(i=0;i<DEPTH;i=i+1) // check that every rs2 address can be reads succsfully
+for(i=0;i<DEPTH;i=i+1) // check that every rs2 address can be read succsfully
   begin
     rs2addr = i;
     #CLK_PERIOD
@@ -103,6 +107,13 @@ task CheckEquality(string signal_name, logic [WIDTH-1:0] A, logic [WIDTH-1:0] B)
       end
 endtask
 
+task Reset();
+ #CLK_PERIOD
+ rst=1'b1;
+ #CLK_PERIOD
+ rst=1'b0;
+endtask
+
 riscv_rf dut( 
     .i_riscv_rf_clk_n(clk_n),
     .i_riscv_rf_regwrite(regwrite),
@@ -111,7 +122,7 @@ riscv_rf dut(
     .o_riscv_rf_rs1data(rs1data),
     .o_riscv_rf_rs2data(rs2data),
     .i_riscv_rf_rddata(rddata),
+    .i_riscv_rf_rst(rst),
     .i_riscv_rf_rdaddr(rdaddr)
 ); 
 endmodule
-
