@@ -514,8 +514,7 @@ always_comb
                      o_riscv_cu_aluctrl   = 5'b00000;//xx 
                   end 
 
-        7'b0100011:begin
-				             //sb instruction signals  		
+        7'b0100011:begin//all store instruction signals  		
                      o_riscv_cu_jump      = 1'b0;
                      o_riscv_cu_regw      = 1'b0;
                      o_riscv_cu_asel      = 1'b1;
@@ -528,8 +527,7 @@ always_comb
                      o_riscv_cu_immsrc    = 3'b011;
                      o_riscv_cu_aluctrl   = 5'b00000;
                    end     						  																																	 			 																																				          										          			 																																				 				    
-        7'b1100011:begin
-					           //all branch instruction signals  	
+        7'b1100011:begin//all branch instruction signals  	
                      o_riscv_cu_jump       = 1'b0;
                      o_riscv_cu_regw       = 1'b0;
                      o_riscv_cu_asel       = 1'b0;
