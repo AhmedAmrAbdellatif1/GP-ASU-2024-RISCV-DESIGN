@@ -1,5 +1,5 @@
 module riscv_memext(
-  input logic  [2:0]  i_riscv_memext_sel,          //the lower 2-bits for determining the size of loading and the MSB for signed/zero extension selection.
+  input logic  [2:0]  i_riscv_memext_sel,
   input logic  [63:0] i_riscv_memext_data,
   output logic [63:0] o_riscv_memext_loaded);
   
