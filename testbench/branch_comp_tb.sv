@@ -24,7 +24,10 @@ module riscv_branch_tb()
   end
 
 /******************** Tasks & Functions *******************/
-
+  task beq_test();
+    begin
+    end
+  endtask
 
 
 /******************** DUT Instantiation *******************/
