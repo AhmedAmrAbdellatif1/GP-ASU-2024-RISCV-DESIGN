@@ -118,6 +118,7 @@ task r_type_test();
       end
 
       3'b001:  begin
+            if((funct7_5 == 1'b0) && (opcode[3] == 1'b0)) begin
               if( (regw == 1'b1) &&
                   (asel == 1'b1) &&
                   (bsel == 1'b0) &&
@@ -129,6 +130,21 @@ task r_type_test();
                     $display("Instruction(#%2d): Passed",(i+1));
                   else
                     $display("Instruction(#%2d): Failed",(i+1));
+
+            end else if((funct7_5 == 1'b0) && (opcode[3] == 1'b1)) begin
+              if( (regw == 1'b1) &&
+                  (asel == 1'b1) &&
+                  (bsel == 1'b0) &&
+                  (aluctrl == 5'b10010) &&
+                  (bcond == 4'b0000) &&
+                  (memw == 1'b0) &&
+                  (resultsrc == 2'b01) &&
+                  (jump == 1'b0) )
+                    $display("Instruction(#%2d): Passed",(i+1));
+                  else
+                    $display("Instruction(#%2d): Failed",(i+1));
+
+            end
       end
 
       3'b010:  begin
@@ -204,7 +220,7 @@ task r_type_test();
               if( (regw == 1'b1) &&
                   (asel == 1'b1) &&
                   (bsel == 1'b0) &&
-                  (aluctrl == 5'b10101) &&
+                  (aluctrl == 5'b10110) &&
                   (bcond == 4'b0000) &&
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
@@ -217,7 +233,7 @@ task r_type_test();
               if( (regw == 1'b1) &&
                   (asel == 1'b1) &&
                   (bsel == 1'b0) &&
-                  (aluctrl == 5'b10110) &&
+                  (aluctrl == 5'b10111) &&
                   (bcond == 4'b0000) &&
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
@@ -394,7 +410,7 @@ task imm_type_test();
             (regw == 1'b1) &&
             (asel == 1'b1) &&
             (bsel == 1'b1) &&
-            (aluctrl == 5'b10101) &&
+            (aluctrl == 5'b10110) &&
             (bcond == 4'b0000) &&
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
@@ -407,7 +423,7 @@ task imm_type_test();
             (regw == 1'b1) &&
             (asel == 1'b1) &&
             (bsel == 1'b1) &&
-            (aluctrl == 5'b10110) &&
+            (aluctrl == 5'b10111) &&
             (bcond == 4'b0000) &&
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
@@ -526,7 +542,7 @@ task auipc_test();
             (bcond == 4'b0000) &&
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
-            (jump == 1'b1) )
+            (jump == 1'b0) )
               $display("Instruction(#%2d): Passed",(i+1));
     else
               $display("Instruction(#%2d): Failed",(i+1));
