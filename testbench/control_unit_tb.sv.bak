@@ -11,7 +11,7 @@ module riscv_cu_tb();
   parameter TESTCASES = 49;
   parameter INST_SIZE = 32;
 
-  integer i;
+  integer f,i;
 
 /************** Internal Signals Declaration **************/
   logic [6:0] opcode;
@@ -34,7 +34,8 @@ module riscv_cu_tb();
 /********************* Initial Blocks *********************/
   initial begin : proc_testing
     $readmemh("cu_testcases.txt", instruction);
-     
+    f = $fopen("cu_testresults.txt","w");
+    
     for(i=0;i<TESTCASES;i++) begin
       opcode    = instruction[i][6:0];
       funct3    = instruction[i][14:12];
@@ -55,6 +56,7 @@ module riscv_cu_tb();
       endcase
       #DELAY;
     end
+    $fclose(f);
   end
   
 /******************** Tasks & Functions *******************/
@@ -72,9 +74,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
 
             end else if((funct7_5 == 1'b1) && (opcode[3] == 1'b0)) begin
               if( (regw == 1'b1) &&
@@ -85,9 +87,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
 
             end else if((funct7_5 == 1'b0) && (opcode[3] == 1'b1)) begin
               if( (regw == 1'b1) &&
@@ -98,9 +100,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
 
             end else if((funct7_5 == 1'b1) && (opcode[3] == 1'b1)) begin
               if( (regw == 1'b1) &&
@@ -111,9 +113,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
             end
       end
 
@@ -126,9 +128,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end
 
       3'b010:  begin
@@ -140,9 +142,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end
 
       3'b011:  begin
@@ -154,9 +156,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end
 
       3'b100:  begin
@@ -168,9 +170,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end
 
       3'b101:  begin
@@ -183,9 +185,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
 
             end else if((funct7_5 == 1'b1) && (opcode[3] == 1'b0)) begin
               if( (regw == 1'b1) &&
@@ -196,9 +198,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
 
             end else if((funct7_5 == 1'b0) && (opcode[3] == 1'b1)) begin
               if( (regw == 1'b1) &&
@@ -209,9 +211,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
 
             end else if((funct7_5 == 1'b1) && (opcode[3] == 1'b1)) begin
               if( (regw == 1'b1) &&
@@ -222,9 +224,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
             end
       end
 
@@ -237,9 +239,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end
 
       3'b111:  begin
@@ -251,9 +253,9 @@ task r_type_test();
                   (memw == 1'b0) &&
                   (resultsrc == 2'b01) &&
                   (jump == 1'b0) )
-                    $display("Instruction(#%2d): Passed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
                   else
-                    $display("Instruction(#%2d): Failed",(i+1));
+                    $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end
     endcase
   end
@@ -273,9 +275,9 @@ task imm_type_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
             (jump == 1'b0) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end else if(opcode == 7'd27) begin
         if( (immsrc == 3'b000) &&
             (regw == 1'b1) &&
@@ -286,9 +288,9 @@ task imm_type_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
             (jump == 1'b0) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end
     end
     3'b001: begin
@@ -302,9 +304,9 @@ task imm_type_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
             (jump == 1'b0) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end else if((funct7_5 == 1'b0) && (opcode[3] == 1'b1)) begin
         if( (immsrc == 3'b000) &&
             (regw == 1'b1) &&
@@ -315,9 +317,9 @@ task imm_type_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
             (jump == 1'b0) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end      
     end
     3'b010: begin
@@ -330,9 +332,9 @@ task imm_type_test();
           (memw == 1'b0) &&
           (resultsrc == 2'b01) &&
           (jump == 1'b0) )
-            $display("Instruction(#%2d): Passed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
           else
-            $display("Instruction(#%2d): Failed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
     end
     3'b011: begin
       if( (immsrc == 3'b000) &&
@@ -344,9 +346,9 @@ task imm_type_test();
           (memw == 1'b0) &&
           (resultsrc == 2'b01) &&
           (jump == 1'b0) )
-            $display("Instruction(#%2d): Passed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
           else
-            $display("Instruction(#%2d): Failed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
     end
     3'b100: begin
       if( (immsrc == 3'b000) &&
@@ -358,9 +360,9 @@ task imm_type_test();
           (memw == 1'b0) &&
           (resultsrc == 2'b01) &&
           (jump == 1'b0) )
-            $display("Instruction(#%2d): Passed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
           else
-            $display("Instruction(#%2d): Failed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
     end
     3'b101: begin
       if((funct7_5 == 1'b0) && (opcode[3] == 1'b0)) begin
@@ -373,9 +375,9 @@ task imm_type_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
             (jump == 1'b0) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end else if((funct7_5 == 1'b1) && (opcode[3] == 1'b0)) begin
         if( (immsrc == 3'b000) &&
             (regw == 1'b1) &&
@@ -386,9 +388,9 @@ task imm_type_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
             (jump == 1'b0) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end else if((funct7_5 == 1'b0) && (opcode[3] == 1'b1)) begin
         if( (immsrc == 3'b000) &&
             (regw == 1'b1) &&
@@ -399,9 +401,9 @@ task imm_type_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
             (jump == 1'b0) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end else if((funct7_5 == 1'b1) && (opcode[3] == 1'b1)) begin
         if( (immsrc == 3'b000) &&
             (regw == 1'b1) &&
@@ -412,9 +414,9 @@ task imm_type_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
             (jump == 1'b0) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end      
     end
     3'b110: begin
@@ -427,9 +429,9 @@ task imm_type_test();
           (memw == 1'b0) &&
           (resultsrc == 2'b01) &&
           (jump == 1'b0) )
-            $display("Instruction(#%2d): Passed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
           else
-            $display("Instruction(#%2d): Failed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
     end
     3'b111: begin
       if( (immsrc == 3'b000) &&
@@ -441,9 +443,9 @@ task imm_type_test();
           (memw == 1'b0) &&
           (resultsrc == 2'b01) &&
           (jump == 1'b0) )
-            $display("Instruction(#%2d): Passed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
           else
-            $display("Instruction(#%2d): Failed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
     end
     endcase
   end
@@ -461,9 +463,9 @@ task load_test();
         (memext == funct3) &&
         (resultsrc == 2'b10) &&
         (jump == 1'b0) )
-          $display("Instruction(#%2d): Passed",(i+1));
+          $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
     else
-          $display("Instruction(#%2d): Failed",(i+1));
+          $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
   end
 endtask
 
@@ -480,9 +482,9 @@ task jump_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b00) &&
             (jump == 1'b1) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end
       'd111: begin
         if( (immsrc == 3'b010) &&
@@ -494,9 +496,9 @@ task jump_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b00) &&
             (jump == 1'b1) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
             else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
       end
     endcase
   end
@@ -510,9 +512,9 @@ task lui_test();
         (memw == 1'b0) &&
         (resultsrc == 2'b11) &&
         (jump == 1'b0) )
-          $display("Instruction(#%2d): Passed",(i+1));
+          $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
     else
-          $display("Instruction(#%2d): Failed",(i+1));
+          $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
   end
 endtask
 
@@ -527,9 +529,9 @@ task auipc_test();
             (memw == 1'b0) &&
             (resultsrc == 2'b01) &&
             (jump == 1'b1) )
-              $display("Instruction(#%2d): Passed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
     else
-              $display("Instruction(#%2d): Failed",(i+1));
+              $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
   end
 endtask
 
@@ -544,9 +546,9 @@ task store_test();
         (bcond == 4'b0000) &&
         (memw == 1'b1) &&
         (jump == 1'b0) )
-          $display("Instruction(#%2d): Passed",(i+1));
+          $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
     else
-          $display("Instruction(#%2d): Failed",(i+1));
+          $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
   end
 endtask
 
@@ -561,9 +563,9 @@ task branch_test();
           (bcond[2:0] == funct3) &&
           (memw == 1'b1) &&
           (jump == 1'b0) )
-            $display("Instruction(#%2d): Passed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Passed",(i+1));
       else
-            $display("Instruction(#%2d): Failed",(i+1));
+            $fdisplay(f,"Instruction(#%2d): Failed",(i+1));
   end
 endtask
 
