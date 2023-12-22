@@ -6,13 +6,13 @@
     input   logic  [4:0]     i_riscv_rf_rs2addr,
     input   logic  [4:0]     i_riscv_rf_rdaddr,
     input   logic  [63:0]    i_riscv_rf_rddata,
-    output  logic  [63:0]    i_riscv_rf_rs1data,
-    output  logic  [63:0]    i_riscv_rf_rs2data
+    output  logic  [63:0]    o_riscv_rf_rs1data,
+    output  logic  [63:0]    o_riscv_rf_rs2data
   );
   logic [63:0] rf [31:0];
   integer i ;
-  assign i_riscv_rf_rs1data = (i_riscv_rf_rs1addr == 0) ? 0 : rf[i_riscv_rf_rs1addr];
-  assign i_riscv_rf_rs2data = (i_riscv_rf_rs2addr == 0) ? 0 : rf[i_riscv_rf_rs2addr];
+  assign o_riscv_rf_rs1data = (i_riscv_rf_rs1addr == 0) ? 0 : rf[i_riscv_rf_rs1addr];
+  assign o_riscv_rf_rs2data = (i_riscv_rf_rs2addr == 0) ? 0 : rf[i_riscv_rf_rs2addr];
 
 
   always_ff @(posedge i_riscv_rf_rst or negedge i_riscv_rf_clk_n ) 
