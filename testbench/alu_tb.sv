@@ -16,250 +16,228 @@ module riscv_alu_tb();
   logic [63:0] i_riscv_alu_rs1data;
   logic [63:0] i_riscv_alu_rs2data;
   logic [63:0] o_riscv_alu_result;
-
-  reg [31:0]word_reg;   
-
-/********************* Initial Blocks *********************/
-  initial begin : proc_testing
-   i_riscv_alu_ctrl = 5'b0;
-   i_riscv_alu_rs1data = 64'b0;
-   i_riscv_alu_rs2data = 64'b0;
-
- #CLK_PERIOD ;
  
- //double word operation alu_ctrl[4]=0 
+/********************* Initial Blocks *********************/
+ // Testbench initialization
+  initial begin : proc_testing
+    i_riscv_alu_ctrl = 5'b0;
+    i_riscv_alu_rs1data = 64'b0;
+    i_riscv_alu_rs2data = 64'b0;
 
- //testing add (1) operation  
-   i_riscv_alu_ctrl = 5'b00000;
-   i_riscv_alu_rs1data = 'sd300;
-   i_riscv_alu_rs2data = 'sd230;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  'sd530 )
-    $display ("add opertion (1) failed");
-   #CLK_PERIOD;
-   
- //testing add (2) operation  
-   i_riscv_alu_ctrl = 5'b00000;
-   i_riscv_alu_rs1data = 'sd300;
-   i_riscv_alu_rs2data = -'sd230;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  'sd70 )
-    $display ("add opertion (11) failed");
-   #CLK_PERIOD;
-
- //testing sub (1) operation  
-   i_riscv_alu_ctrl = 5'b00001;
-   i_riscv_alu_rs1data = 64'd780;
-   i_riscv_alu_rs2data = 64'd300;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  (i_riscv_alu_rs1data - i_riscv_alu_rs2data))
-    $display ("sub opertion (1) failed");
-   #CLK_PERIOD;
-
- //testing sll (1) operation  
-   i_riscv_alu_ctrl = 5'b00010;
-   i_riscv_alu_rs1data = 64'd780;
-   i_riscv_alu_rs2data = 64'd30;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  (i_riscv_alu_rs1data << i_riscv_alu_rs2data[5:0]))
-    $display ("sll opertion (1) failed") ;
-   #CLK_PERIOD;
-
- //testing slt signed operation  
-   i_riscv_alu_ctrl = 5'b00011;
-   i_riscv_alu_rs1data = - 64'sd780;
-   i_riscv_alu_rs2data = - 64'sd300;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result != 0)
-    $display ("slt signed opertion failed");
-   #CLK_PERIOD;
-   i_riscv_alu_ctrl = 5'b00011;
-   i_riscv_alu_rs1data = 64'sd50;
-   i_riscv_alu_rs2data = 64'sd300;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result != 1)
-    $display ("slt signed opertion failed");
-   #CLK_PERIOD;
+    #CLK_PERIOD;
 
 
- //testing slt unsigned operation  
-   i_riscv_alu_ctrl = 5'b00100;
-   i_riscv_alu_rs1data = 64'd780;
-   i_riscv_alu_rs2data = 64'd300;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result != 0)
-    $display ("slt unsigned opertion failed");
-   #CLK_PERIOD;
-   i_riscv_alu_ctrl = 5'b00100;
-   i_riscv_alu_rs1data = 64'd50;
-   i_riscv_alu_rs2data = 64'd300;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result != 1)
-    $display ("slt unsigned opertion failed");
-   #CLK_PERIOD;
+    // Run test cases
+    add_test(64'h300, 64'h230, 64'h530);
+    add_test('sd12268, 'sd45973, 'sd58241);
+    add_test('sd51279, -'sd38166, 'sd13113);
+    add_test(-'sd61581, 'sd34976, -'sd26605);
+    add_test(-'sd1289, -'sd5023, -'sd6312);
+    add_test('sh886431DBF4092325, 'sh17FD2488CB26BEE6, 'shA0615664BF2FE20B);
+    add_test('shFFFFFFFFFFFFFFFF, 'sh1, 'sh0);
 
- //testing xor (1) operation  
-   i_riscv_alu_ctrl = 5'b00101;
-   i_riscv_alu_rs1data = 64'd80;
-   i_riscv_alu_rs2data = 64'd30;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  (i_riscv_alu_rs1data ^ i_riscv_alu_rs2data))
-    $display ("xor opertion (1) failed");
-   #CLK_PERIOD;
+    sub_test(64'd780, 64'd300, 64'd480);
+    sub_test('sd12268, 'sd45973, -'sd33705);
+    sub_test('sd51279, -'sd38166, 'sd89445);
+    sub_test(-'sd61581, 'sd34976, -'sd96557);
+    sub_test(-'sd1289, -'sd5023, 'sd3734);
 
- //testing sra (1) operation  
-   i_riscv_alu_ctrl = 5'b00111;
-   i_riscv_alu_rs1data = 64'd800;
-   i_riscv_alu_rs2data = 64'd30;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  (i_riscv_alu_rs1data >> i_riscv_alu_rs2data [5:0]))
-    $display ("sra opertion (1) failed") ;
-   #CLK_PERIOD;
+    sll_test('sd12268,'d1,'sd24536);
+    sll_test('sd51279,'d2,'sd205116);
+    sll_test(-'sd61581,'d3,-'sd492648);
+    sll_test(-'sd1289,'d4,-'sd20624);
 
- //testing or operation  
-   i_riscv_alu_ctrl = 5'b01000;
-   i_riscv_alu_rs1data = 64'd80;
-   i_riscv_alu_rs2data = 64'd30;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  (i_riscv_alu_rs1data | i_riscv_alu_rs2data))
-    $display ("or opertion failed") ;
-   #CLK_PERIOD;
+    slt_test('sd12268,'sd45973,'sd1);
+    slt_test('sd51279,-'sd38166,'sd0);
+    slt_test(-'sd61581,'sd34976,'sd1);
+    slt_test(-'sd1289,-'sd5023,'sd0);
 
- //testing and operation  
-   i_riscv_alu_ctrl = 5'b01001;
-   i_riscv_alu_rs1data = 64'd80;
-   i_riscv_alu_rs2data = 64'd30;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  (i_riscv_alu_rs1data & i_riscv_alu_rs2data))
-    $display ("and opertion failed") ;
-   #CLK_PERIOD;
+    sltu_test('sd12268,'sd45973,'sd1);
+    sltu_test('sd51279,-'sd38166,'sd1);
+    sltu_test(-'sd61581,'sd34976,'sd1);
+    sltu_test(-'sd1289,-'sd5023,'sd0);
 
- //testing Jalr operation  
-   i_riscv_alu_ctrl = 5'b01010;
-   i_riscv_alu_rs1data = 64'd53;
-   i_riscv_alu_rs2data = 64'd32;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result != 64'd84  )
-    $display ("jalr opertion failed") ;
-   #CLK_PERIOD;
+    xor_test('sd12268,'sd45973,'sd40057);
+    xor_test('sd51279,-'sd38166,-'sd23899);
+    xor_test(-'sd61581,'sd34976,-'sd30765);
+    xor_test(-'sd1289,-'sd5023,'sd5782);
 
+    srl_test('sd12268,'d1,'sd6134);
+    srl_test('sd51279,'d2,'sd12819);
+    srl_test(-'sd61581,'d3,64'sh1FFFFFFFFFFFE1EE);
+    srl_test(-'sd1289,'d4,64'shFFFFFFFFFFFFFAF);
 
-// word operation alu_ctrl[4]=1
+    sra_test('sd12268,'d1,'sd6134);
+    sra_test('sd51279,'d2,'sd12819);
+    sra_test(-'sd61581,'d3,-'sd7698);
+    sra_test(-'sd1289,'d4,-'sd81);
 
- //testing add (2) operation  
-   i_riscv_alu_ctrl = 5'b10000;
-   i_riscv_alu_rs1data = 64'd4398046511000;
-   i_riscv_alu_rs2data = 64'd4398046000000;
-   #CLK_PERIOD;
-   word_reg = i_riscv_alu_rs1data[31:0] + i_riscv_alu_rs2data[31:0];
-    if (o_riscv_alu_result != ({ {32 {word_reg[31]}} , word_reg}));
-     $display ("add opertion (2) failed") ;
-   #CLK_PERIOD;
+    or_test('sd12268,'sd45973,'sd49149);
+    or_test('sd51279,-'sd38166,-'sd5393);
+    or_test(-'sd61581,'sd34976,-'sd28685);
+    or_test(-'sd1289,-'sd5023,-'sd265);
 
- //testing sub (2) operation  
-   i_riscv_alu_ctrl = 5'b10001;
-   i_riscv_alu_rs1data = 64'd4398046511000;
-   i_riscv_alu_rs2data = 64'd4398046000000;
-   #CLK_PERIOD;
-   word_reg=i_riscv_alu_rs1data[31:0] - i_riscv_alu_rs2data[31:0];
-   if (o_riscv_alu_result != ({ {32 {word_reg[31]}} , word_reg}));
-     $display ("sub opertion (2) failed") ;
-   #CLK_PERIOD;
+    and_test('sd12268,'sd45973,'sd9092);
+    and_test('sd51279,-'sd38166,'sd18506);
+    and_test(-'sd61581,'sd34976,'sd2080);
+    and_test(-'sd1289,-'sd5023,-'sd6047);
 
- //testing sll (2) operation  
-   i_riscv_alu_ctrl = 5'b10010;
-   i_riscv_alu_rs1data = 64'd4398046511000;
-   i_riscv_alu_rs2data = 64'd4398046000000;
-   #CLK_PERIOD;
-   word_reg = i_riscv_alu_rs1data[31:0] << i_riscv_alu_rs2data[5:0];
-   if (o_riscv_alu_result != ({ {32 {word_reg[31]}} , word_reg}));
-     $display ("sll opertion (2) failed") ;
-   #CLK_PERIOD;
-
- //testing xor (2) operation  
-   i_riscv_alu_ctrl = 5'b10101;
-   i_riscv_alu_rs1data = 64'd4398046511000;
-   i_riscv_alu_rs2data = 64'd4398046000000;
-   #CLK_PERIOD;
-   word_reg = i_riscv_alu_rs1data[31:0] ^ i_riscv_alu_rs2data[31:0];
-   if (o_riscv_alu_result != ({ {32 {word_reg[31]}} , word_reg}));
-     $display ("xor opertion (2) failed") ;
-   #CLK_PERIOD;
-
- //testing sra (2) operation  
-   i_riscv_alu_ctrl = 5'b10111;
-   i_riscv_alu_rs1data = 64'd4398046511000;
-   i_riscv_alu_rs2data = 64'd4398046000000;
-   #CLK_PERIOD;
-   word_reg = i_riscv_alu_rs1data[31:0] >> i_riscv_alu_rs2data[5:0];
-   if (o_riscv_alu_result != ({ {32 {word_reg[31]}} , word_reg}));
-     $display ("sra opertion (2) failed") ; 
-   #CLK_PERIOD;
+    jalr_test('sd12268,'sd45973,'sd58240);
+    jalr_test('sd51279,-'sd38166,'sd13112);
+    jalr_test(-'sd61581,'sd34976,-'sd26604);
+    jalr_test(-'sd1289,-'sd5023,-'sd6312);
 
 
-   
- //double word operation alu_ctrl[4]=0 //corner cases
 
- //testing add (3) operation  
-   i_riscv_alu_ctrl = 5'b00000;
-   i_riscv_alu_rs1data = 64'hFFFFFFFFFFFFFFFF;  //addtion with overflow
-   i_riscv_alu_rs2data = 64'hFFFFFFFFFFFFFFFF;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  - 64'sd9223372036854775808)
-    $display ("add opertion (3) failed");
-   #CLK_PERIOD;
-   
- //testing add (3) operation  
-   i_riscv_alu_ctrl = 5'b00000;
-   i_riscv_alu_rs1data = 64'hFFFFFFFFFFFFFFFF;  //addtion with overflow
-   i_riscv_alu_rs2data = 64'hFFFFFFFFFFFFFFFF;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  - 64'sd9223372036854775808)
-    $display ("add opertion (3) failed");
-   #CLK_PERIOD;
-
- //testing sub (3) operation  
-   i_riscv_alu_ctrl = 5'b00001;
-   i_riscv_alu_rs1data = -64'sd9223372036854775808;
-   i_riscv_alu_rs2data = 64'd1;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  64'd9223372036854775807)
-    $display ("sub opertion (3) failed");
-   #CLK_PERIOD;
-
- //testing xor (2) operation  
-   i_riscv_alu_ctrl = 5'b00101;
-   i_riscv_alu_rs1data = 64'hAAAAAAAAAAAAAAAA;
-   i_riscv_alu_rs2data = 64'h5555555555555555;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result != 64'hFFFFFFFFFFFFFFFF)
-    $display ("xor opertion (2) failed") ;
-   #CLK_PERIOD;
-
- //testing or (2) operation  
-   i_riscv_alu_ctrl = 5'b01000;
-   i_riscv_alu_rs1data = 64'hFFFFFFFFFFFFFFFF;
-   i_riscv_alu_rs2data = 64'h0000000000000001;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  64'hFFFFFFFFFFFFFFFF)
-    $display ("or opertion (2) failed") ;
-   #CLK_PERIOD;
-
- //testing and (2) operation  
-   i_riscv_alu_ctrl = 5'b01001;
-   i_riscv_alu_rs1data = 64'hFFFFFFFFFFFFFFFF;
-   i_riscv_alu_rs2data = 64'h0000000000000001;
-   #CLK_PERIOD;
-   if (o_riscv_alu_result !=  64'h0000000000000001 )
-    $display ("and opertion (2) failed");
-   #CLK_PERIOD;
-  
-  
-   #(10*CLK_PERIOD);
     
-    $stop ;
 
-  end
+  #1000 $stop; // Stop simulation after all test cases are executed
+    
+  end 
+ 
+/******************** Tasks & Functions *******************/
+  // Task to perform ALU operation and check result
+  task run_alu_test ;
+    input string op_name; 
+    input [4:0] ctrl; 
+    input [63:0] rs1; 
+    input [63:0] rs2; 
+    input [63:0] expected_result ;
+    
+    begin
+    i_riscv_alu_ctrl = ctrl;
+    i_riscv_alu_rs1data = rs1;
+    i_riscv_alu_rs2data = rs2;
+    #CLK_PERIOD;
+
+    if (o_riscv_alu_result !== expected_result)
+      $display("%s operation failed. Expected: %0h, Actual: %0h", op_name, expected_result, o_riscv_alu_result);
+      
+    end 
+  endtask
+
+ 
+
+    // Task to perform add test
+    task add_test ;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result; 
+     begin 
+      run_alu_test("Add", 5'b00000, rs1, rs2, expected_result);
+    end 
+    endtask
+
+    // Task to perform sub test
+    task sub_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin
+      run_alu_test("Sub", 5'b00001, rs1, rs2, expected_result);
+    end 
+    endtask
+
+    // Task to perform sll test
+    task sll_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin 
+      run_alu_test("Sll", 5'b00010, rs1, rs2, expected_result);
+    end 
+    endtask
+
+    // Task to perform slt test
+    task slt_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin
+      run_alu_test("slt", 5'b00011, rs1, rs2, expected_result);
+    end 
+    endtask
+
+    // Task to perform sltu test
+    task sltu_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin
+      run_alu_test("sltu", 5'b00100, rs1, rs2, expected_result);
+    end 
+    endtask
+
+    // Task to perform xor test
+    task xor_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin
+      run_alu_test("xor", 5'b00101, rs1, rs2, expected_result);
+    end 
+    endtask
+
+    // Task to perform srl test
+    task srl_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin
+      run_alu_test("srl", 5'b00110, rs1, rs2, expected_result);
+    end 
+    endtask
+
+    // Task to perform sra test
+    task sra_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin
+      run_alu_test("sra", 5'b00111, rs1, rs2, expected_result);
+    end 
+    endtask
+
+    // Task to perform or test
+    task or_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin
+      run_alu_test("or", 5'b01000, rs1, rs2, expected_result);
+    end 
+    endtask
+
+
+    // Task to perform and test
+    task and_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin
+      run_alu_test("and", 5'b01001, rs1, rs2, expected_result);
+    end 
+    endtask
+
+    // Task to perform jalr test
+    task jalr_test;
+    input [63:0] rs1;
+    input [63:0] rs2;
+    input [63:0] expected_result;
+    begin
+      run_alu_test("jalr", 5'b01010, rs1, rs2, expected_result);
+    end 
+    endtask
+
+
+    // Add more tasks for other ALU operations as needed
+
+
+
+
+
+
+
 
 /******************** DUT Instantiation *******************/
 
