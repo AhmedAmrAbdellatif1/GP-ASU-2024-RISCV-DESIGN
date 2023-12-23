@@ -54,11 +54,14 @@ else
  
 //Set less than operation unsigned 
 4'b0100:  begin
+/*
   if(i_riscv_alu_rs1data[63])
    o_riscv_alu_result=(i_riscv_alu_rs1data < i_riscv_alu_rs2data)? 64'b0:64'b1;
  else
    o_riscv_alu_result=(i_riscv_alu_rs1data < i_riscv_alu_rs2data)? 64'b1:64'b0;
+  */
   
+  o_riscv_alu_result= ($unsigned(i_riscv_alu_rs1data) < $unsigned(i_riscv_alu_rs2data))? 64'b1:64'b0; 
        end
        
   //xor  
