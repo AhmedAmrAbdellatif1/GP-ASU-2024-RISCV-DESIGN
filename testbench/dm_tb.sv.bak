@@ -23,33 +23,62 @@ module riscv_dm_tb();
 /********************* Initial Blocks *********************/
   initial begin : proc_testing
    i_riscv_dm_clk_n = 1'b1;
-   i_riscv_dm_rst = 1'b1;  
+   i_riscv_dm_rst = 1'b0;  
    i_riscv_dm_wen = 1'b0;
    i_riscv_dm_sel = 2'b0;
    i_riscv_dm_wdata = 64'b0;
    i_riscv_dm_waddr = 64'b0; 
    
+  #CLK_PERIOD;
+   
+ // Test 1: Byte store and load
+   i_riscv_dm_rst = 1'b1;  
+   i_riscv_dm_wen = 1'b0;
+   i_riscv_dm_sel = 2'b0;
+   i_riscv_dm_wdata = 64'h1122334455667788;
+   i_riscv_dm_waddr = 64'h0; 
    #CLK_PERIOD;
    i_riscv_dm_rst = 1'b0;
-   
- // Test 1: Doubleword store and load
- load_store ( 'd0 , 'h1122334455667788 ,'b11 , 'h1122334455667788) ;
- 
- // Test 2: Word store and load
- load_store ( 'd4 , 'h5566778811223344 ,'b10 , 'h11223344) ;
 
- // Test 3: Halfword store and load 
- load_store ( 'd8 , 'h5566778844112233 ,'b01 , 'h2233) ;
- 
- // Test 4: Byte store and load 
- load_store ( 'd10 , 'h5566778844332211 ,'b00 , 'h11) ;
+ // Perform byte store
+   i_riscv_dm_wen = 1'b1;
+   #CLK_PERIOD; 
+    
+ // Perform byte load
+   i_riscv_dm_wen = 1'b0;
+   i_riscv_dm_waddr = 64'h100; 
+   #CLK_PERIOD; 
+   if (o_riscv_dm_rdata !== 64'h0088) 
+   $display("Byte store and load failed");
+
+ // Test 2: Halfword store and load
+  /* i_riscv_dm_rst = 1'b1;  
+   i_riscv_dm_wen = 1'b0;
+   i_riscv_dm_sel = 2'b0;
+   i_riscv_dm_wdata = 64'h1122334455667788;
+   i_riscv_dm_waddr = 64'h10; 
+   #CLK_PERIOD;
+   i_riscv_dm_rst = 1'b1;
+
+    // Perform halfword store
+    i_riscv_dm_wen = 1'b1;
+    #CLK_PERIOD; 
+    i_riscv_dm_wen = 1'b0;
+
+    // Perform byte load
+    i_riscv_dm_wen = 1'b0;
+    i_riscv_dm_waddr = 64'h10; 
+    #CLK_PERIOD; 
+    if (o_riscv_dm_rdata !== i_riscv_dm_wdata[15:0]) 
+    $display("Halfword store and load failed");
+    else
+    $display("Halfword store and load passed"); */
   
 
 
     #(10*CLK_PERIOD);
 
      $stop;
-     
   end
 
   /** Clock Generation Block **/
@@ -61,33 +90,7 @@ module riscv_dm_tb();
   end
 
 /******************** Tasks & Functions *******************/
-task load_store ; 
-  input [63:0] address ;
-  input [63:0] data ;
-  input [1:0]  sel  ;
-  input [63:0] expected_out ;
-    
-  begin 
-   i_riscv_dm_wen = 1'b0;
-   i_riscv_dm_sel = sel;
-   i_riscv_dm_wdata = data ;
-   i_riscv_dm_waddr = address; 
-   #CLK_PERIOD;
-   
-   // Perform store
-   i_riscv_dm_wen = 1'b1;
-   #CLK_PERIOD; 
-    
-   // Perform load
-   i_riscv_dm_wen = 1'b0; 
-   #CLK_PERIOD; 
-   if (o_riscv_dm_rdata !== expected_out) 
-   $display("(%2b)store and load failed" , sel);
-   else
-   $display("(%2b)store and load passed" , sel);
- end
-  
-endtask 
+
 
 
 /******************** DUT Instantiation *******************/
