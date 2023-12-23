@@ -1,8 +1,8 @@
 module riscv_alu(
-   input  logic signed [4:0]      i_riscv_alu_ctrl,
+   input  logic        [4:0]      i_riscv_alu_ctrl,
    input  logic signed [63:0]     i_riscv_alu_rs1data,
-   input  logic        [63:0]     i_riscv_alu_rs2data,
-   output logic        [63:0]     o_riscv_alu_result
+   input  logic signed [63:0]     i_riscv_alu_rs2data,
+   output logic signed [63:0]     o_riscv_alu_result
    );
 
 logic [31:0] word_reg;
