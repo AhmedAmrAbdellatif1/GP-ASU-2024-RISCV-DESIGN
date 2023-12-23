@@ -31,121 +31,121 @@ module riscv_alu_tb();
     // Run test cases
     i = 1;
     /************ add ************/
-    add_test(64'h300, 64'h230, 64'h530);
+    add_test(64'h300, 64'h230, 64'h530); // 1
     i++;
-    add_test('sd12268, 'sd45973, 'sd58241);
+    add_test('sd12268, 'sd45973, 'sd58241); // 2
     i++;
-    add_test('sd51279, -'sd38166, 'sd13113);
+    add_test('sd51279, -'sd38166, 'sd13113); // 3
     i++;
-    add_test(-'sd61581, 'sd34976, -'sd26605);
+    add_test(-'sd61581, 'sd34976, -'sd26605); // 4
     i++;
-    add_test(-'sd1289, -'sd5023, -'sd6312);
+    add_test(-'sd1289, -'sd5023, -'sd6312); // 5
     i++;
-    add_test('sh886431DBF4092325, 'sh17FD2488CB26BEE6, 'shA0615664BF2FE20B);
+    add_test('sh886431DBF4092325, 'sh17FD2488CB26BEE6, 'shA0615664BF2FE20B); // 6
     i++;
-    add_test('shFFFFFFFFFFFFFFFF, 'sh1, 'sh0);
+    add_test('shFFFFFFFFFFFFFFFF, 'sh1, 'sh0); // 7
     i++;
 
     /************ sub ************/
-    sub_test(64'd780, 64'd300, 64'd480);
+    sub_test(64'd780, 64'd300, 64'd480); // 8
     i++;
-    sub_test('sd12268, 'sd45973, -'sd33705);
+    sub_test('sd12268, 'sd45973, -'sd33705); // 9
     i++;
-    sub_test('sd51279, -'sd38166, 'sd89445);
+    sub_test('sd51279, -'sd38166, 'sd89445); // 10
     i++;
-    sub_test(-'sd61581, 'sd34976, -'sd96557);
+    sub_test(-'sd61581, 'sd34976, -'sd96557); // 11
     i++;
-    sub_test(-'sd1289, -'sd5023, 'sd3734);
+    sub_test(-'sd1289, -'sd5023, 'sd3734); // 12
     i++;
 
     /************ sll ************/
-    sll_test('sd12268,'d1,'sd24536);
+    sll_test('sd12268,'d1,'sd24536); // 13
     i++;
-    sll_test('sd51279,'d2,'sd205116);
+    sll_test('sd51279,'d2,'sd205116); // 14
     i++;
-    sll_test(-'sd61581,'d3,-'sd492648);
+    sll_test(-'sd61581,'d3,-'sd492648); // 15
     i++;
-    sll_test(-'sd1289,'d4,-'sd20624);
+    sll_test(-'sd1289,'d4,-'sd20624); // 16
     i++;
 
     /************ slt ************/
-    slt_test('sd12268,'sd45973,'sd1);
+    slt_test('sd12268,'sd45973,'sd1); // 17
     i++;
-    slt_test('sd51279,-'sd38166,'sd0);
+    slt_test('sd51279,-'sd38166,'sd0); // 18
     i++;
-    slt_test(-'sd61581,'sd34976,'sd1);
+    slt_test(-'sd61581,'sd34976,'sd1); // 19
     i++;
-    slt_test(-'sd1289,-'sd5023,'sd0);
+    slt_test(-'sd1289,-'sd5023,'sd0); // 20
     i++;
 
     /************ sltu ************/
-    sltu_test('sd12268,'sd45973,'sd1);
+    sltu_test('sd12268,'sd45973,'sd1); // 21
     i++;
-    sltu_test('sd51279,-'sd38166,'sd1);
+    sltu_test('sd51279,-'sd38166,'sd1); // 22
     i++;
-    sltu_test(-'sd61581,'sd34976,'sd1);
+    sltu_test(-'sd61581,'sd34976,'sd1); // 23
     i++;
-    sltu_test(-'sd1289,-'sd5023,'sd0);
+    sltu_test(-'sd1289,-'sd5023,'sd0); // 24
     i++;
 
     /************ xor ************/
-    xor_test('sd12268,'sd45973,'sd40057);
+    xor_test('sd12268,'sd45973,'sd40057); // 25
     i++;
-    xor_test('sd51279,-'sd38166,-'sd23899);
+    xor_test('sd51279,-'sd38166,-'sd23899); // 26
     i++;
-    xor_test(-'sd61581,'sd34976,-'sd30765);
+    xor_test(-'sd61581,'sd34976,-'sd30765); // 27
     i++;
-    xor_test(-'sd1289,-'sd5023,'sd5782);
+    xor_test(-'sd1289,-'sd5023,'sd5782); // 28
     i++;
 
     /************ srl ************/
-    srl_test('sd12268,'d1,'sd6134);
+    srl_test('sd12268,'d1,'sd6134); // 29
     i++;
-    srl_test('sd51279,'d2,'sd12819);
+    srl_test('sd51279,'d2,'sd12819); // 30
     i++;
-    srl_test(-'sd61581,'d3,64'sh1FFFFFFFFFFFE1EE);
+    srl_test(-'sd61581,'d3,64'sh1FFFFFFFFFFFE1EE); // 31
     i++;
-    srl_test(-'sd1289,'d4,64'shFFFFFFFFFFFFFAF);
+    srl_test(-'sd1289,'d4,64'shFFFFFFFFFFFFFAF); // 32
     i++;
 
     /************ sra ************/
-    sra_test('sd12268,'d1,'sd6134);
+    sra_test('sd12268,'d1,'sd6134); // 33
     i++;
-    sra_test('sd51279,'d2,'sd12819);
+    sra_test('sd51279,'d2,'sd12819); // 34
     i++;
-    sra_test(-'sd61581,'d3,-'sd7698);
+    sra_test(-'sd61581,'d3,-'sd7698); // 35
     i++;
-    sra_test(-'sd1289,'d4,-'sd81);
+    sra_test(-'sd1289,'d4,-'sd81); // 36
     i++;
 
     /************ or ************/
-    or_test('sd12268,'sd45973,'sd49149);
+    or_test('sd12268,'sd45973,'sd49149); // 37
     i++;
-    or_test('sd51279,-'sd38166,-'sd5393);
+    or_test('sd51279,-'sd38166,-'sd5393); // 38
     i++;
-    or_test(-'sd61581,'sd34976,-'sd28685);
+    or_test(-'sd61581,'sd34976,-'sd28685); // 39
     i++;
-    or_test(-'sd1289,-'sd5023,-'sd265);
+    or_test(-'sd1289,-'sd5023,-'sd265); // 40
     i++;
 
     /************ and ************/
-    and_test('sd12268,'sd45973,'sd9092);
+    and_test('sd12268,'sd45973,'sd9092); // 41
     i++;
-    and_test('sd51279,-'sd38166,'sd18506);
+    and_test('sd51279,-'sd38166,'sd18506); // 42
     i++;
-    and_test(-'sd61581,'sd34976,'sd2080);
+    and_test(-'sd61581,'sd34976,'sd2080); // 43
     i++;
-    and_test(-'sd1289,-'sd5023,-'sd6047);
+    and_test(-'sd1289,-'sd5023,-'sd6047); // 44
     i++;
 
     /************ jalr ************/
-    jalr_test('sd12268,'sd45973,'sd58240);
+    jalr_test('sd12268,'sd45973,'sd58240); // 45
     i++;
-    jalr_test('sd51279,-'sd38166,'sd13112);
+    jalr_test('sd51279,-'sd38166,'sd13112); // 46
     i++;
-    jalr_test(-'sd61581,'sd34976,-'sd26606);
+    jalr_test(-'sd61581,'sd34976,-'sd26606); // 47
     i++;
-    jalr_test(-'sd1289,-'sd5023,-'sd6312);
+    jalr_test(-'sd1289,-'sd5023,-'sd6312); // 48
     i++;
 
     /************ addw ************/
