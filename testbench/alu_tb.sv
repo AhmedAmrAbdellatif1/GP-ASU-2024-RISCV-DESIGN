@@ -11,6 +11,8 @@ module riscv_alu_tb();
   parameter CLK_PERIOD = 50;
   parameter HALF_PERIOD = CLK_PERIOD/2;
 
+  integer i;
+
 /************** Internal Signals Declaration **************/
   logic [4:0]  i_riscv_alu_ctrl;
   logic [63:0] i_riscv_alu_rs1data;
@@ -26,70 +28,130 @@ module riscv_alu_tb();
 
     #CLK_PERIOD;
 
-
     // Run test cases
+    i = 1;
+    /************ add ************/
     add_test(64'h300, 64'h230, 64'h530);
+    i++;
     add_test('sd12268, 'sd45973, 'sd58241);
+    i++;
     add_test('sd51279, -'sd38166, 'sd13113);
+    i++;
     add_test(-'sd61581, 'sd34976, -'sd26605);
+    i++;
     add_test(-'sd1289, -'sd5023, -'sd6312);
+    i++;
     add_test('sh886431DBF4092325, 'sh17FD2488CB26BEE6, 'shA0615664BF2FE20B);
+    i++;
     add_test('shFFFFFFFFFFFFFFFF, 'sh1, 'sh0);
+    i++;
 
+    /************ sub ************/
     sub_test(64'd780, 64'd300, 64'd480);
+    i++;
     sub_test('sd12268, 'sd45973, -'sd33705);
+    i++;
     sub_test('sd51279, -'sd38166, 'sd89445);
+    i++;
     sub_test(-'sd61581, 'sd34976, -'sd96557);
+    i++;
     sub_test(-'sd1289, -'sd5023, 'sd3734);
+    i++;
 
+    /************ sll ************/
     sll_test('sd12268,'d1,'sd24536);
+    i++;
     sll_test('sd51279,'d2,'sd205116);
+    i++;
     sll_test(-'sd61581,'d3,-'sd492648);
+    i++;
     sll_test(-'sd1289,'d4,-'sd20624);
+    i++;
 
+    /************ slt ************/
     slt_test('sd12268,'sd45973,'sd1);
+    i++;
     slt_test('sd51279,-'sd38166,'sd0);
+    i++;
     slt_test(-'sd61581,'sd34976,'sd1);
+    i++;
     slt_test(-'sd1289,-'sd5023,'sd0);
+    i++;
 
+    /************ sltu ************/
     sltu_test('sd12268,'sd45973,'sd1);
+    i++;
     sltu_test('sd51279,-'sd38166,'sd1);
+    i++;
     sltu_test(-'sd61581,'sd34976,'sd1);
+    i++;
     sltu_test(-'sd1289,-'sd5023,'sd0);
+    i++;
 
+    /************ xor ************/
     xor_test('sd12268,'sd45973,'sd40057);
+    i++;
     xor_test('sd51279,-'sd38166,-'sd23899);
+    i++;
     xor_test(-'sd61581,'sd34976,-'sd30765);
+    i++;
     xor_test(-'sd1289,-'sd5023,'sd5782);
+    i++;
 
+    /************ srl ************/
     srl_test('sd12268,'d1,'sd6134);
+    i++;
     srl_test('sd51279,'d2,'sd12819);
+    i++;
     srl_test(-'sd61581,'d3,64'sh1FFFFFFFFFFFE1EE);
+    i++;
     srl_test(-'sd1289,'d4,64'shFFFFFFFFFFFFFAF);
+    i++;
 
+    /************ sra ************/
     sra_test('sd12268,'d1,'sd6134);
+    i++;
     sra_test('sd51279,'d2,'sd12819);
+    i++;
     sra_test(-'sd61581,'d3,-'sd7698);
+    i++;
     sra_test(-'sd1289,'d4,-'sd81);
+    i++;
 
+    /************ or ************/
     or_test('sd12268,'sd45973,'sd49149);
+    i++;
     or_test('sd51279,-'sd38166,-'sd5393);
+    i++;
     or_test(-'sd61581,'sd34976,-'sd28685);
+    i++;
     or_test(-'sd1289,-'sd5023,-'sd265);
+    i++;
 
+    /************ and ************/
     and_test('sd12268,'sd45973,'sd9092);
+    i++;
     and_test('sd51279,-'sd38166,'sd18506);
+    i++;
     and_test(-'sd61581,'sd34976,'sd2080);
+    i++;
     and_test(-'sd1289,-'sd5023,-'sd6047);
+    i++;
 
+    /************ jalr ************/
     jalr_test('sd12268,'sd45973,'sd58240);
+    i++;
     jalr_test('sd51279,-'sd38166,'sd13112);
+    i++;
     jalr_test(-'sd61581,'sd34976,-'sd26606);
+    i++;
     jalr_test(-'sd1289,-'sd5023,-'sd6312);
+    i++;
 
-
-
-    
+    /************ addw ************/
+    /************ sllw ************/
+    /************ srlw ************/
+    /************ sraw ************/
 
   #1000 $stop; // Stop simulation after all test cases are executed
     
@@ -111,13 +173,12 @@ module riscv_alu_tb();
     #CLK_PERIOD;
 
     if (o_riscv_alu_result !== expected_result)
-      $display("%s operation failed. Expected: %0h, Actual: %0h", op_name, expected_result, o_riscv_alu_result);
+      $display("[%2d] %s operation failed. Expected: %0h, Actual: %0h", op_name, expected_result, o_riscv_alu_result,i);
       
     end 
   endtask
 
- 
-
+  
     // Task to perform add test
     task add_test ;
     input [63:0] rs1;
@@ -128,6 +189,7 @@ module riscv_alu_tb();
     end 
     endtask
 
+
     // Task to perform sub test
     task sub_test;
     input [63:0] rs1;
@@ -137,6 +199,7 @@ module riscv_alu_tb();
       run_alu_test("Sub", 5'b00001, rs1, rs2, expected_result);
     end 
     endtask
+    
 
     // Task to perform sll test
     task sll_test;
@@ -148,6 +211,7 @@ module riscv_alu_tb();
     end 
     endtask
 
+
     // Task to perform slt test
     task slt_test;
     input [63:0] rs1;
@@ -157,6 +221,7 @@ module riscv_alu_tb();
       run_alu_test("slt", 5'b00011, rs1, rs2, expected_result);
     end 
     endtask
+
 
     // Task to perform sltu test
     task sltu_test;
@@ -168,6 +233,7 @@ module riscv_alu_tb();
     end 
     endtask
 
+
     // Task to perform xor test
     task xor_test;
     input [63:0] rs1;
@@ -177,6 +243,7 @@ module riscv_alu_tb();
       run_alu_test("xor", 5'b00101, rs1, rs2, expected_result);
     end 
     endtask
+
 
     // Task to perform srl test
     task srl_test;
@@ -188,6 +255,7 @@ module riscv_alu_tb();
     end 
     endtask
 
+
     // Task to perform sra test
     task sra_test;
     input [63:0] rs1;
@@ -197,6 +265,7 @@ module riscv_alu_tb();
       run_alu_test("sra", 5'b00111, rs1, rs2, expected_result);
     end 
     endtask
+
 
     // Task to perform or test
     task or_test;
@@ -219,6 +288,7 @@ module riscv_alu_tb();
     end 
     endtask
 
+
     // Task to perform jalr test
     task jalr_test;
     input [63:0] rs1;
@@ -231,13 +301,6 @@ module riscv_alu_tb();
 
 
     // Add more tasks for other ALU operations as needed
-
-
-
-
-
-
-
 
 /******************** DUT Instantiation *******************/
 
