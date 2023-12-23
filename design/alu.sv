@@ -6,6 +6,7 @@ module riscv_alu(
    );
 
 logic [31:0] word_reg;
+logic [63:0] result;
 //logic [3:0] operation;                    
 //assign operation= i_riscv_alu_ctrl[3:0];
 
@@ -93,7 +94,8 @@ else
 
 //JALR  rs1+imm & lsb=0 
 4'b1010: begin
-  o_riscv_alu_result= (i_riscv_alu_rs1data+i_riscv_alu_rs2data) & !(64'b1);
+  result=(i_riscv_alu_rs1data+i_riscv_alu_rs2data) ;
+  o_riscv_alu_result= {result[63:1],1'b0};
       end 
 default:  o_riscv_alu_result=i_riscv_alu_rs1data+i_riscv_alu_rs2data;
 endcase
