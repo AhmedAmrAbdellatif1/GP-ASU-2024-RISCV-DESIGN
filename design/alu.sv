@@ -1,11 +1,12 @@
 module riscv_alu(
-   input  logic signed [4:0]      i_riscv_alu_ctrl,
+   input  logic        [4:0]      i_riscv_alu_ctrl,
    input  logic signed [63:0]     i_riscv_alu_rs1data,
-   input  logic        [63:0]     i_riscv_alu_rs2data,
-   output logic        [63:0]     o_riscv_alu_result
+   input  logic signed [63:0]     i_riscv_alu_rs2data,
+   output logic signed [63:0]     o_riscv_alu_result
    );
 
 logic [31:0] word_reg;
+logic [63:0] result;
 //logic [3:0] operation;                    
 //assign operation= i_riscv_alu_ctrl[3:0];
 
@@ -53,11 +54,14 @@ else
  
 //Set less than operation unsigned 
 4'b0100:  begin
+/*
   if(i_riscv_alu_rs1data[63])
    o_riscv_alu_result=(i_riscv_alu_rs1data < i_riscv_alu_rs2data)? 64'b0:64'b1;
  else
    o_riscv_alu_result=(i_riscv_alu_rs1data < i_riscv_alu_rs2data)? 64'b1:64'b0;
+  */
   
+  o_riscv_alu_result= ($unsigned(i_riscv_alu_rs1data) < $unsigned(i_riscv_alu_rs2data))? 64'b1:64'b0; 
        end
        
   //xor  
@@ -93,7 +97,8 @@ else
 
 //JALR  rs1+imm & lsb=0 
 4'b1010: begin
-  o_riscv_alu_result= (i_riscv_alu_rs1data+i_riscv_alu_rs2data) & !(64'b1);
+  result=(i_riscv_alu_rs1data+i_riscv_alu_rs2data) ;
+  o_riscv_alu_result= {result[63:1],1'b0};
       end 
 default:  o_riscv_alu_result=i_riscv_alu_rs1data+i_riscv_alu_rs2data;
 endcase
