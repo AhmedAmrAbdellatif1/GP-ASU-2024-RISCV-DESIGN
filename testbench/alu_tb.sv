@@ -84,7 +84,7 @@ module riscv_alu_tb();
 
     jalr_test('sd12268,'sd45973,'sd58240);
     jalr_test('sd51279,-'sd38166,'sd13112);
-    jalr_test(-'sd61581,'sd34976,-'sd26604);
+    jalr_test(-'sd61581,'sd34976,-'sd26606);
     jalr_test(-'sd1289,-'sd5023,-'sd6312);
 
 
