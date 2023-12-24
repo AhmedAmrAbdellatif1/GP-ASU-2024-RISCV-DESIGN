@@ -26,7 +26,7 @@
   always_ff @ (posedge i_riscv_em_clk)
     begin :em_pff_write_proc
         if (i_riscv_em_rst)
-          begin
+          begin:em_pff_write_proc
             o_riscv_em_memw_m      <='b0;
             o_riscv_em_regw_m      <='b0;
             o_riscv_em_resultsrc_m <='b0;
