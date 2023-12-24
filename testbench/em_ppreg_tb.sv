@@ -51,7 +51,7 @@ module riscv_em_ppreg_tb();
    i_riscv_em_regw_e = 1'b0; 
 
    #CLK_PERIOD ;
-   i_riscv_mw_rst = 1'b1;
+   i_riscv_em_rst = 1'b1;
    #CLK_PERIOD ;
    i_riscv_em_rst = 1'b0;
    i_riscv_em_pcplus4_e = 64'd7688;
@@ -100,7 +100,7 @@ module riscv_em_ppreg_tb();
 
 
    #CLK_PERIOD ;
-   i_riscv_mw_rst = 1'b1;
+   i_riscv_em_rst = 1'b1;
    #CLK_PERIOD ;
    i_riscv_em_rst = 1'b0;
    #1;
@@ -140,7 +140,7 @@ module riscv_em_ppreg_tb();
 
    #(10*CLK_PERIOD) ;
 
-   $stop 
+   $stop ;
 
   end
 
