@@ -13,6 +13,7 @@ module riscv_branch
 //logic [2:0] check_condotion ; 
 //assign {negelect,check_condotion} = i_riscv_branch_cond  ;
 
+typedef enum logic [2:0] {beq = 0 , bne = 1 , blt=4 , bge = 5 , bltu=6,bgeu=7} States ;
 
 assign EQ = (i_riscv_branch_rs1data==i_riscv_branch_rs2data)? 1:0;  
   
@@ -35,6 +36,7 @@ begin
 end
 
 
+
 always @(*) 
 
     begin
@@ -50,14 +52,14 @@ always @(*)
                 case (i_riscv_branch_cond[2:0])
                 
                 //equlaity , non equality doesnt mean either signed/unsigned 
-                    3'b000:  assign o_riscv_branch_taken =  (  EQ )    ? 1 : 0 ;  //beq
-                    3'b001:  assign o_riscv_branch_taken =  ( ~EQ )    ? 1 : 0 ;  //bne
+                    beq:  assign o_riscv_branch_taken =  (  EQ )    ? 1 : 0 ;  //beq
+                    bne:  assign o_riscv_branch_taken =  ( ~EQ )    ? 1 : 0 ;  //bne
                 //signed
-                    3'b100:  assign o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //blt  
-                    3'b101:  assign o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bge
+                    blt:  assign o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //blt  
+                    bge:  assign o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bge
                 //unsigned
-                    3'b110:  assign o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //blu
-                    3'b111:  assign o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bgeu
+                    bltu:  assign o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //bltu
+                    bgeu:  assign o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bgeu
                     default:        o_riscv_branch_taken = 0 ;
 
                 endcase     
