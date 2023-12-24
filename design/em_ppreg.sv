@@ -23,7 +23,7 @@
     output logic [63:0] o_riscv_em_imm_m    
   );
 
-  always_ff @ (posedge i_riscv_em_clk)
+  always_ff @ (posedge i_riscv_em_clk or posedge i_riscv_em_rst)
     begin :em_pff_write_proc
         if (i_riscv_em_rst)
           begin:em_pff_write_proc
