@@ -39,13 +39,21 @@ rddata= 'b111;
 rdaddr='b101;
 
 #CLK_PERIOD
-for(i=0;i<DEPTH;i=i+1) // check that only the address 101 in written in it
+for(i=0;i<DEPTH;i=i+1) // check that only the address 101 is written in it
   begin
     $display("Register %d: %d",i,dut.rf[i]); 
   end
       CheckEquality("Register Write", rddata, dut.rf[rdaddr]);
       CheckEquality("Register SP intialization", 'h000000007ffffff0, dut.rf[2]); //checking SP intialization
-      
+   
+   regwrite='b0;
+   rdaddr='b111;
+    
+    #CLK_PERIOD
+  CheckEquality("Register Write & regwrite=0", 0, dut.rf[rdaddr]);  
+    regwrite='b1;  
+    
+    
 #CLK_PERIOD
 for(i=0;i<DEPTH;i=i+1) // check that every address can be written in
   begin
@@ -126,3 +134,6 @@ riscv_rf dut(
     .i_riscv_rf_rdaddr(rdaddr)
 ); 
 endmodule
+
+
+
