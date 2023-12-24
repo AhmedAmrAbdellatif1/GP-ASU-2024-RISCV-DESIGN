@@ -13,6 +13,7 @@ module riscv_em_ppreg_tb();
 
 /************** Internal Signals Declaration **************/
   logic        i_riscv_em_clk;
+  logic        i_riscv_em_rst;
   logic [63:0] i_riscv_em_pcplus4_e;
   logic [63:0] i_riscv_em_aluresult_e;
   logic [63:0] i_riscv_em_storedata_e;
@@ -20,6 +21,7 @@ module riscv_em_ppreg_tb();
   logic [63:0] i_riscv_em_imm_e;
   logic        i_riscv_em_memw_e; 
   logic [2:0]  i_riscv_em_memext_e;
+  logic [1:0]  i_riscv_em_storesrc_e;
   logic [1:0]  i_riscv_em_resultsrc_e;
   logic        i_riscv_em_regw_e;
   logic [63:0] o_riscv_em_pcplus4_m;  
@@ -29,12 +31,14 @@ module riscv_em_ppreg_tb();
   logic [63:0] o_riscv_em_imm_m;
   logic        o_riscv_em_memw_m; 
   logic [2:0]  o_riscv_em_memext_m;
+  logic [1:0]  o_riscv_em_storesrc_m;
   logic [1:0]  o_riscv_em_resultsrc_m;
   logic        o_riscv_em_regw_m;
 
 /********************* Initial Blocks *********************/
   initial begin : proc_testing
    i_riscv_em_clk = 1'b0;
+   i_riscv_em_rst = 1'b0;
    i_riscv_em_pcplus4_e = 64'd0;
    i_riscv_em_aluresult_e = 64'd0;
    i_riscv_em_storedata_e = 64'd0;
@@ -43,10 +47,13 @@ module riscv_em_ppreg_tb();
    i_riscv_em_memw_e = 1'b0; 
    i_riscv_em_memext_e = 3'd0;
    i_riscv_em_resultsrc_e = 2'd0;
+   i_riscv_em_storesrc_e = 2'd0;
    i_riscv_em_regw_e = 1'b0; 
 
-
    #CLK_PERIOD ;
+   i_riscv_mw_rst = 1'b1;
+   #CLK_PERIOD ;
+   i_riscv_em_rst = 1'b0;
    i_riscv_em_pcplus4_e = 64'd7688;
    i_riscv_em_aluresult_e = 64'd980;
    i_riscv_em_storedata_e = 64'd689;
@@ -59,6 +66,8 @@ module riscv_em_ppreg_tb();
 
    #CLK_PERIOD ; 
 
+   //testing reg capture
+
    if (o_riscv_em_pcplus4_m != i_riscv_em_pcplus4_e)
     $display ("riscv_em_pcplus4 capture  falied");
 
@@ -67,6 +76,9 @@ module riscv_em_ppreg_tb();
 
    if (o_riscv_em_storedata_m != i_riscv_em_storedata_e)
     $display ("riscv_em_storedata capture falied");
+
+  if (o_riscv_em_storesrc_m != i_riscv_em_storesrc_e)
+    $display ("riscv_em_storesrc capture falied");
 
    if (o_riscv_em_rdaddr_m != i_riscv_em_rdaddr_e)
     $display ("riscv_em_rdaddr capture falied");
@@ -85,6 +97,46 @@ module riscv_em_ppreg_tb();
 
    if (o_riscv_em_regw_m != i_riscv_em_regw_e)
     $display ("riscv_em_regw capture falied");
+
+
+   #CLK_PERIOD ;
+   i_riscv_mw_rst = 1'b1;
+   #CLK_PERIOD ;
+   i_riscv_em_rst = 1'b0;
+   #1;
+
+
+   //testing reg rst
+
+   if (o_riscv_em_pcplus4_m != 0)
+    $display ("riscv_em_pcplus4 rst  falied");
+
+   if (o_riscv_em_aluresult_m != 0)
+    $display ("riscv_em_aluresult rst falied");
+
+   if (o_riscv_em_storedata_m != 0)
+    $display ("riscv_em_storedata rst falied");
+
+  if (o_riscv_em_storesrc_m != 0)
+    $display ("riscv_em_storesrc rst falied");
+
+   if (o_riscv_em_rdaddr_m != 0)
+    $display ("riscv_em_rdaddr rst falied");
+
+   if (o_riscv_em_imm_m != 0)
+    $display ("riscv_em_imm rst falied");
+
+   if (o_riscv_em_memw_m != 0)
+    $display ("riscv_em_memw rst falied");
+
+   if (o_riscv_em_memext_m != 0)
+    $display ("riscv_em_memext rst falied");
+
+   if (o_riscv_em_resultsrc_m != 0)
+    $display ("riscv_em_memext rst falied");
+
+   if (o_riscv_em_regw_m != 0)
+    $display ("riscv_em_regw rst falied");
 
    #(10*CLK_PERIOD) ;
 
