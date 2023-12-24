@@ -29,8 +29,8 @@ module riscv_alu_tb();
     #CLK_PERIOD;
 
     // Run test cases
-    i = 1;
     /************ add ************/
+    i = 1;
     add_test(64'h300, 64'h230, 64'h530); // 1
     i++;
     add_test('sd12268, 'sd45973, 'sd58241); // 2
@@ -47,156 +47,171 @@ module riscv_alu_tb();
     i++;
 
     /************ sub ************/
-    sub_test(64'd780, 64'd300, 64'd480); // 8
+    i = 1;
+    sub_test(64'd780, 64'd300, 64'd480); // 1
     i++;
-    sub_test('sd12268, 'sd45973, -'sd33705); // 9
+    sub_test('sd12268, 'sd45973, -'sd33705); // 3
     i++;
-    sub_test('sd51279, -'sd38166, 'sd89445); // 10
+    sub_test('sd51279, -'sd38166, 'sd89445); // 3
     i++;
-    sub_test(-'sd61581, 'sd34976, -'sd96557); // 11
+    sub_test(-'sd61581, 'sd34976, -'sd96557); // 4
     i++;
-    sub_test(-'sd1289, -'sd5023, 'sd3734); // 12
+    sub_test(-'sd1289, -'sd5023, 'sd3734); // 5
     i++;
 
     /************ sll ************/
-    sll_test('sd12268,'d1,'sd24536); // 13
+    i = 1;
+    sll_test('sd12268,'d1,'sd24536); // 1
     i++;
-    sll_test('sd51279,'d2,'sd205116); // 14
+    sll_test('sd51279,'d2,'sd205116); // 2
     i++;
-    sll_test(-'sd61581,'d3,-'sd492648); // 15
+    sll_test(-'sd61581,'d3,-'sd492648); // 3
     i++;
-    sll_test(-'sd1289,'d255,'h8000000000000000); // 16
+    sll_test(-'sd1289,'d255,'h8000000000000000); // 4
     i++;
 
     /************ slt ************/
-    slt_test('sd12268,'sd45973,'sd1); // 17
+    i = 1;
+    slt_test('sd12268,'sd45973,'sd1); // 1
     i++;
-    slt_test('sd51279,-'sd38166,'sd0); // 18
+    slt_test('sd51279,-'sd38166,'sd0); // 2
     i++;
-    slt_test(-'sd61581,'sd34976,'sd1); // 19
+    slt_test(-'sd61581,'sd34976,'sd1); // 3
     i++;
-    slt_test(-'sd1289,-'sd5023,'sd0); // 20
+    slt_test(-'sd1289,-'sd5023,'sd0); // 4
     i++;
 
     /************ sltu ************/
-    sltu_test('sd12268,'sd45973,'sd1); // 21
+    i = 1;
+    sltu_test('sd12268,'sd45973,'sd1); // 1
     i++;
-    sltu_test('sd51279,-'sd38166,'sd1); // 22
+    sltu_test('sd51279,-'sd38166,'sd1); // 2
     i++;
-    sltu_test(-'sd61581,'sd34976,'sd0); // 23
+    sltu_test(-'sd61581,'sd34976,'sd0); // 3
     i++;
-    sltu_test(-'sd1289,-'sd5023,'sd0); // 24
+    sltu_test(-'sd1289,-'sd5023,'sd0); // 4
     i++;
 
     /************ xor ************/
-    xor_test('sd12268,'sd45973,'sd40057); // 25
+    i = 1;
+    xor_test('sd12268,'sd45973,'sd40057); // 1
     i++;
-    xor_test('sd51279,-'sd38166,-'sd23899); // 26
+    xor_test('sd51279,-'sd38166,-'sd23899); // 2
     i++;
-    xor_test(-'sd61581,'sd34976,-'sd30765); // 27
+    xor_test(-'sd61581,'sd34976,-'sd30765); // 3
     i++;
-    xor_test(-'sd1289,-'sd5023,'sd5782); // 28
+    xor_test(-'sd1289,-'sd5023,'sd5782); // 4
     i++;
 
     /************ srl ************/
-    srl_test('sd12268,'d1,'sd6134); // 29
+    i = 1;
+    srl_test('sd12268,'d1,'sd6134); // 1
     i++;
-    srl_test('sd51279,'d2,'sd12819); // 30
+    srl_test('sd51279,'d2,'sd12819); // 2
     i++;
-    srl_test(-'sd61581,'d3,64'sh1FFFFFFFFFFFE1EE); // 31
+    srl_test(-'sd61581,'d3,64'sh1FFFFFFFFFFFE1EE); // 3
     i++;
-    srl_test(-'sd1289,'d4,64'shFFFFFFFFFFFFFAF); // 32
+    srl_test(-'sd1289,'d4,64'shFFFFFFFFFFFFFAF); // 4
     i++;
 
     /************ sra ************/
-    sra_test('sd12268,'d1,'sd6134); // 33
+    i = 1;
+    sra_test('sd12268,'d1,'sd6134); // 1
     i++;
-    sra_test('sd51279,'d2,'sd12819); // 34
+    sra_test('sd51279,'d2,'sd12819); // 2
     i++;
-    sra_test(-'sd61581,'d3,-'sd7698); // 35
+    sra_test(-'sd61581,'d3,-'sd7698); // 3
     i++;
-    sra_test(-'sd1289,'d4,-'sd81); // 36
+    sra_test(-'sd1289,'d4,-'sd81); // 4
     i++;
 
     /************ or ************/
-    or_test('sd12268,'sd45973,'sd49149); // 37
+    i = 1;
+    or_test('sd12268,'sd45973,'sd49149); // 1
     i++;
-    or_test('sd51279,-'sd38166,-'sd5393); // 38
+    or_test('sd51279,-'sd38166,-'sd5393); // 2
     i++;
-    or_test(-'sd61581,'sd34976,-'sd28685); // 39
+    or_test(-'sd61581,'sd34976,-'sd28685); // 3
     i++;
-    or_test(-'sd1289,-'sd5023,-'sd265); // 40
+    or_test(-'sd1289,-'sd5023,-'sd265); // 4
     i++;
 
     /************ and ************/
-    and_test('sd12268,'sd45973,'sd9092); // 41
+    i = 1;
+    and_test('sd12268,'sd45973,'sd9092); // 1
     i++;
-    and_test('sd51279,-'sd38166,'sd18506); // 42
+    and_test('sd51279,-'sd38166,'sd18506); // 2
     i++;
-    and_test(-'sd61581,'sd34976,'sd2080); // 43
+    and_test(-'sd61581,'sd34976,'sd2080); // 3
     i++;
-    and_test(-'sd1289,-'sd5023,-'sd6047); // 44
+    and_test(-'sd1289,-'sd5023,-'sd6047); // 4
     i++;
 
     /************ jalr ************/
-    jalr_test('sd12268,'sd45973,'sd58240); // 45
+    i = 1;
+    jalr_test('sd12268,'sd45973,'sd58240); // 1
     i++;
-    jalr_test('sd51279,-'sd38166,'sd13112); // 46
+    jalr_test('sd51279,-'sd38166,'sd13112); // 2
     i++;
-    jalr_test(-'sd61581,'sd34976,-'sd26606); // 47
+    jalr_test(-'sd61581,'sd34976,-'sd26606); // 3
     i++;
-    jalr_test(-'sd1289,-'sd5023,-'sd6312); // 48
+    jalr_test(-'sd1289,-'sd5023,-'sd6312); // 4
     i++;
 
     /************ addw ************/
-    addw_test('h166D0D2A6FA83EF0,'h16C45C2364CB265,'hFFFFFFFFA5F4F155); // 49
+    i = 1;
+    addw_test('h166D0D2A6FA83EF0,'h16C45C2364CB265,'hFFFFFFFFA5F4F155); // 1
     i++;
-    addw_test('h084760DA96D6FEE,'hD70A0561E19C47FC,'hFFFFFFFF8B09B7EA); // 50
+    addw_test('h084760DA96D6FEE,'hD70A0561E19C47FC,'hFFFFFFFF8B09B7EA); // 2
     i++;
-    addw_test('hB9DB66F2117B2978,'h6810A5D2D5909A9,'h000000003ED43321); // 51
+    addw_test('hB9DB66F2117B2978,'h6810A5D2D5909A9,'h000000003ED43321); // 3
     i++;
-    addw_test('hFBC8A34FA13AB781,'hA6955F953DE170C1,'hFFFFFFFFDF1C2842); // 52
+    addw_test('hFBC8A34FA13AB781,'hA6955F953DE170C1,'hFFFFFFFFDF1C2842); // 4
     i++;
 
     /************ subw ************/
-    subw_test('h166D0D2A6FA83EF0,'h16C45C2364CB265,'h0000000395B8C8B); // 53
+    i = 1;
+    subw_test('h166D0D2A6FA83EF0,'h16C45C2364CB265,'h0000000395B8C8B); // 1
     i++;
-    subw_test('h084760DA96D6FEE,'hD70A0561E19C47FC,'hFFFFFFFFC7D127F2); // 54
+    subw_test('h084760DA96D6FEE,'hD70A0561E19C47FC,'hFFFFFFFFC7D127F2); // 2
     i++;
-    subw_test('hB9DB66F2117B2978,'h6810A5D2D5909A9,'hFFFFFFFFE4221FCF); // 55
+    subw_test('hB9DB66F2117B2978,'h6810A5D2D5909A9,'hFFFFFFFFE4221FCF); // 3
     i++;
-    subw_test('hFBC8A34FA13AB781,'hA6955F953DE170C1,'h0000000635946C0); // 56
+    subw_test('hFBC8A34FA13AB781,'hA6955F953DE170C1,'h0000000635946C0); // 4
     i++;
 
 
     /************ sllw ************/
-    sllw_test('h166D0D2A6FA83EF0,'d10,'hFFFFFFFFA0FBC000); // 57
+    i = 1;
+    sllw_test('h166D0D2A6FA83EF0,'d10,'hFFFFFFFFA0FBC000); // 1
     i++;
-    sllw_test('h084760DA96D6FEE,'d20,'hFFFFFFFFFEE00000); // 58
+    sllw_test('h084760DA96D6FEE,'d20,'hFFFFFFFFFEE00000); // 2
     i++;
-    sllw_test('hB9DB66F2117B2978,'d5,'h000000002F652F00); // 59
+    sllw_test('hB9DB66F2117B2978,'d5,'h000000002F652F00); // 3
     i++;
-    sllw_test('hFBC8A34FA13AB781,'d7,'hFFFFFFFF9D5BC080); // 60
+    sllw_test('hFBC8A34FA13AB781,'d7,'hFFFFFFFF9D5BC080); // 4
     i++;
 
     /************ srlw ************/
-    srlw_test('h166D0D2A6FA83EF0,'d10,'h00000000001BEA0F); // 61
+    i = 1;
+    srlw_test('h166D0D2A6FA83EF0,'d10,'h00000000001BEA0F); // 1
     i++;
-    srlw_test('h084760DA96D6FEE,'d20,'h0000000000000A96); // 62
+    srlw_test('h084760DA96D6FEE,'d20,'h0000000000000A96); // 2
     i++;
-    srlw_test('hB9DB66F2117B2978,'d5,'h00000000008BD94B); // 63
+    srlw_test('hB9DB66F2117B2978,'d5,'h00000000008BD94B); // 3
     i++;
-    srlw_test('hFBC8A34FA13AB781,'d7,'h000000000142756F); // 64
+    srlw_test('hFBC8A34FA13AB781,'d7,'h000000000142756F); // 4
     i++;
 
     /************ sraw ************/
-    sraw_test('h166D0D2A6FA83EF0,'d4,'h0000000006FA83EF); // 65
+    i = 1;
+    sraw_test('h166D0D2A6FA83EF0,'d4,'h0000000006FA83EF); // 1
     i++;
-    sraw_test('h084760DA96D6FEE,'d8,'h0000000000A96D6F); // 66
+    sraw_test('h084760DA96D6FEE,'d8,'h0000000000A96D6F); // 2
     i++;
-    sraw_test('hB9DB66F2117B2978,'d16,'h000000000000117B); // 67
+    sraw_test('hB9DB66F2117B2978,'d16,'h000000000000117B); // 3
     i++;
-    sraw_test('hFBC8A34FA13AB781,'d32,'h0); // 68
+    sraw_test('hFBC8A34FA13AB781,'d32,'h0); // 4
     i++;
 
   #1000 $stop; // Stop simulation after all test cases are executed
