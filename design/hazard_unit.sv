@@ -27,6 +27,7 @@ module riscv_hazardunit
     input      [4:0]     i_riscv_hzrdu_rdaddr_e ,
     input                i_risc_hzrdu_memwrite_m ,
     input                i_risc_hzrdu_memwrite_d 
+  //output reg           o_riscv_hzrdu_fw_dc
 
  );
 
