@@ -16,13 +16,13 @@ module riscv_hazardunit
     // input op1,op2
    input       [1:0]   i_riscv_hzrdu_resultsrc   ,
 
-   output reg  [1:0]   o_riscv_hzrdu_fw_da  , 
-                       o_riscv_hzrdu_fw_db , //Concept behind Forwarding unit
+   output reg  [1:0]   o_riscv_hzrdu_fwda  , 
+                       o_riscv_hzrdu_fwdb , //Concept behind Forwarding unit
 
- 	 output reg          o_riscv_hzrdu_stall_pc  ,
-                       o_riscv_hzrdu_stall_fd  ,
-                       o_riscv_hzrdu_flush_fd ,
-                       o_riscv_hzrdu_flush_de
+ 	 output reg          o_riscv_hzrdu_stallpc  ,
+                       o_riscv_hzrdu_stallfd  ,
+                       o_riscv_hzrdu_flushfd ,
+                       o_riscv_hzrdu_flushde
  );
 
 
@@ -40,7 +40,7 @@ always @(*)
                 (i_riscv_hzrdu_regw_m ) && 
                 (i_riscv_hzrdu_rdaddr_m !=0) )
                     begin
-                      o_riscv_hzrdu_fw_db = 1  ;
+                      o_riscv_hzrdu_fwdb = 1  ;
                     end
 
         else if ( (i_riscv_hzrdu_rs2addr_e == i_riscv_hzrdu_rdaddr_w ) &&
@@ -48,11 +48,11 @@ always @(*)
                 (i_riscv_hzrdu_rdaddr_w !=0 )  &&
                 (mem_asserted_data_hazard == 0 )  )
                     begin
-                      o_riscv_hzrdu_fw_db = 2 ;
+                      o_riscv_hzrdu_fwdb = 2 ;
                     end
         else 
 
-                      o_riscv_hzrdu_fw_db = 0 ; 
+                      o_riscv_hzrdu_fwdb = 0 ; 
     
     end
 
@@ -68,7 +68,7 @@ always @(*)
                 (i_riscv_hzrdu_regw_m) &&
                 (i_riscv_hzrdu_rdaddr_m !=0) )
                    begin
-                     o_riscv_hzrdu_fw_da  = 1  ;
+                     o_riscv_hzrdu_fwda  = 1  ;
                    end
 
         else if ( i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_w && 
@@ -76,11 +76,11 @@ always @(*)
                 (i_riscv_hzrdu_rdaddr_w !=0 ) && 
                 (~ mem_asserted_data_hazard ) )
                    begin
-                     o_riscv_hzrdu_fw_da  = 2 ;
+                     o_riscv_hzrdu_fwda  = 2 ;
                    end
         else 
 
-                     o_riscv_hzrdu_fw_da  = 0 ; 
+                     o_riscv_hzrdu_fwda  = 0 ; 
     end
 
 
@@ -95,16 +95,16 @@ always @(*)
                 i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard
 
                   begin
-                    o_riscv_hzrdu_stall_pc = 1 ; 
-                    o_riscv_hzrdu_stall_fd = 1 ;  
-                    o_riscv_hzrdu_flush_de = 1 ; 
+                    o_riscv_hzrdu_stallpc = 1 ; 
+                    o_riscv_hzrdu_stallfd = 1 ;  
+                    o_riscv_hzrdu_flushde = 1 ; 
                   end
  
         else     
                   begin
-                    o_riscv_hzrdu_stall_pc = 0 ;
-                    o_riscv_hzrdu_stall_fd = 0 ;  
-                    o_riscv_hzrdu_flush_de = 0 ; 
+                    o_riscv_hzrdu_stallpc = 0 ;
+                    o_riscv_hzrdu_stallfd = 0 ;  
+                    o_riscv_hzrdu_flushde = 0 ; 
                   end
 
 
@@ -122,16 +122,16 @@ always @(*)
                 i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard
 
                   begin
-                    o_riscv_hzrdu_stall_pc = 1 ; 
-                    o_riscv_hzrdu_stall_fd = 1 ;  
-                    o_riscv_hzrdu_flush_de = 1 ; 
+                    o_riscv_hzrdu_stallpc = 1 ; 
+                    o_riscv_hzrdu_stallfd = 1 ;  
+                    o_riscv_hzrdu_flushde = 1 ; 
                   end
  
         else     
                   begin
-                    o_riscv_hzrdu_stall_pc = 0 ;
-                    o_riscv_hzrdu_stall_fd = 0 ;  
-                    o_riscv_hzrdu_flush_de = 0 ; 
+                    o_riscv_hzrdu_stallpc = 0 ;
+                    o_riscv_hzrdu_stallfd = 0 ;  
+                    o_riscv_hzrdu_flushde = 0 ; 
                   end
 
 
@@ -160,10 +160,10 @@ always @(*)
 */
 
 
-assign o_riscv_hzrdu_flush_fd =  ( i_riscv_hzrdu_pcsrc )? 1 : 0 ;
+assign o_riscv_hzrdu_flushfd =  ( i_riscv_hzrdu_pcsrc )? 1 : 0 ;
 
-/*assign o_riscv_hzrdu_flush_de = (i_riscv_hzrdu_pcsrc)?1:0 ;
-assign o_riscv_hzrdu_stall_fd = (i_riscv_hzrdu_pcsrc)?1:0;*/
+/*assign o_riscv_hzrdu_flushde = (i_riscv_hzrdu_pcsrc)?1:0 ;
+assign o_riscv_hzrdu_stallfd = (i_riscv_hzrdu_pcsrc)?1:0;*/
 
 
 
