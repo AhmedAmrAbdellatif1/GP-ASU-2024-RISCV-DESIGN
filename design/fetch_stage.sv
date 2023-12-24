@@ -5,8 +5,9 @@ module riscv_fstage #(parameter width=64)(
   input  logic             i_riscv_fstage_pcsrc,
   input  logic [width-1:0] i_riscv_fstage_aluexe,
   output logic [width-1:0] o_riscv_fstage_pc,
-  output logic [width-1:0] o_riscv_fstage_pcplus4,
-  output logic [width-1:0] o_riscv_fstage_inst);
+  //output logic [width-1:0] o_riscv_fstage_inst,
+  output logic [width-1:0] o_riscv_fstage_pcplus4
+  );
 
 logic [width-1:0] o_riscv_pcmux_nextpc;
 
