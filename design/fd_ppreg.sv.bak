@@ -13,7 +13,7 @@
   always_ff @(posedge i_riscv_df_clk or posedge i_riscv_df_rst)
     begin:f_d_pff_wirte
       if(i_riscv_df_rst)
-        begin:f_d_pff_wirte
+        begin
           o_riscv_df_pc_d      <=64'b0;
           o_riscv_df_inst_d    <=64'b0;
           o_riscv_df_pcplus4_d <=64'b0; 
@@ -32,3 +32,4 @@
          end 
     end
   endmodule
+
