@@ -1,6 +1,6 @@
   module riscv_mstage #(parameter width=64)(
   input  logic [width-1:0] i_riscv_mstage_dm_rdata,
-   input  logic [2:0]  i_riscv_mstage_memext,
+   input  logic [2:0]      i_riscv_mstage_memext,
   output logic [width-1:0] o_riscv_mstage_memload
   /*// input  logic             i_riscv_mstage_fw_mem
   input   logic [width-1:0]   i_riscv_mstage_storedata
