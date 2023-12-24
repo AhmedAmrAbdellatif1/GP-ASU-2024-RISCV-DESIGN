@@ -50,14 +50,14 @@ always @(*)
                 case (i_riscv_branch_cond[2:0])
                 
                 //equlaity , non equality doesnt mean either signed/unsigned 
-                    3'b000:  assign o_riscv_branch_taken =(EQ )?1:0  ;       //beq
-                    3'b001:  assign o_riscv_branch_taken =(~EQ)?1:0 ;        //bne
+                    3'b000:  assign o_riscv_branch_taken =  (  EQ )    ? 1 : 0 ;  //beq
+                    3'b001:  assign o_riscv_branch_taken =  ( ~EQ )    ? 1 : 0 ;  //bne
                 //signed
-                    3'b100:  assign o_riscv_branch_taken =(LT ) ?1 :0 ;       //blt  
-                    3'b101:  assign o_riscv_branch_taken =(GT || EQ  ) ?1 :0 ;//bge
+                    3'b100:  assign o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //blt  
+                    3'b101:  assign o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bge
                 //unsigned
-                    3'b110:  assign o_riscv_branch_taken =(LT ) ?1 :0 ;       //blu
-                    3'b111:  assign o_riscv_branch_taken =(GT || EQ ) ?1 :0 ; //bgeu
+                    3'b110:  assign o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //blu
+                    3'b111:  assign o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bgeu
                     default:        o_riscv_branch_taken = 0 ;
 
                 endcase     
