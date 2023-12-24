@@ -6,9 +6,9 @@ module riscv_hazardunit
                        i_riscv_hzrdu_rs2addr_d ,
                        i_riscv_hzrdu_rs1addr_e ,
                        i_riscv_hzrdu_rs2addr_e ,
- 	                     i_riscv_hzrdu_rdaddr_m  ,
+                         i_riscv_hzrdu_rdaddr_m  ,
                        i_riscv_hzrdu_rdaddr_w , 
- 	  
+      
      input             i_riscv_hzrdu_pcsrc ,
                        i_riscv_hzrdu_regw_m   ,
                        i_riscv_hzrdu_regw_w  ,
@@ -19,10 +19,10 @@ module riscv_hazardunit
    output reg  [1:0]   o_riscv_hzrdu_fwda  , 
                        o_riscv_hzrdu_fwdb , //Concept behind Forwarding unit
 
- 	 output reg          o_riscv_hzrdu_stallpc  ,
+     output reg          o_riscv_hzrdu_stallpc  ,
                        o_riscv_hzrdu_stallfd  ,
                        o_riscv_hzrdu_flushfd ,
-                       o_riscv_hzrdu_flushde
+                       o_riscv_hzrdu_flushde ,
    //extra Siganls
     input      [4:0]     i_riscv_hzrdu_rdaddr_e ,
     input                i_risc_hzrdu_memwrite_m ,
@@ -152,7 +152,7 @@ always @(*)
         /*if(~rst_n) begin
              <= 0;
         end else begin */
-
+/*
         if      ( (i_riscv_hzrdu_rs2addr_m == i_riscv_hzrdu_rdaddr_w) && 
                // (i_riscv_hzrdu_regw_m )
                  (i_riscv_hzrdu_regw_w ) && (i_risc_hzrdu_memwrite_m = 1 );
