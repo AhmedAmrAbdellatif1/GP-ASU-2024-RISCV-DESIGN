@@ -23,7 +23,7 @@
   );
 
   always_ff @ (posedge i_riscv_em_clk)
-    begin
+    begin:em_pff_write_proc
       o_riscv_em_memw_m      <= i_riscv_em_memw_e ; 
       o_riscv_em_regw_m      <= i_riscv_em_regw_e ;
       o_riscv_em_resultsrc_m <= i_riscv_em_resultsrc_e;
