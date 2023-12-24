@@ -1,0 +1,7 @@
+module riscv_datapath #(parameter width=64) (
+input  logic             i_riscv_datapath_clk,
+input  logic             i_riscv_datapath_rst,
+///////////////////fetch//////////////////
+input  logic             i_riscv_datapath_stallpc,
+input  logic [31:0]      i_riscv_datapath_inst,      ////output from inst
+output logic [width-1:0] o_riscv_datapath_pc 

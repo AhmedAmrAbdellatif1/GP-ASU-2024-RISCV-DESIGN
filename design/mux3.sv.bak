@@ -7,7 +7,7 @@ module riscv_mux3 #(parameter width= 64) (
   
 always_comb 
 begin
-  case(i_riscv_mux3_sel)
+  case(i_riscv_mux2_sel)
   2'b00: o_riscv_mux3_out=i_riscv_mux3_in0;
   2'b01: o_riscv_mux3_out=i_riscv_mux3_in1;
   2'b10: o_riscv_mux3_out=i_riscv_mux3_in2;
