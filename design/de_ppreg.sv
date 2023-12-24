@@ -17,6 +17,7 @@
       input  logic  [2:0]   i_riscv_de_memext_d,
       input  logic  [1:0]   i_riscv_de_resultsrc_d,
       input  logic          i_riscv_de_regwrite_d,
+      input  logic          i_riscv_de_jump_d,
       input  logic  [63:0]  i_riscv_de_pcplus4_d,
       output logic  [63:0]  o_riscv_de_pc_e,
       output logic  [63:0]  o_riscv_de_pcplus4_e,
@@ -34,7 +35,8 @@
       output logic          o_riscv_de_memwrite_e,
       output logic  [2:0]   o_riscv_de_memext_e,
       output logic  [1:0]   o_riscv_de_resultsrc_e,
-      output logic          o_riscv_de_regwrite_e
+      output logic          o_riscv_de_regwrite_e,
+      output logic          o_riscv_de_jump_e
   );
     always_ff @(posedge i_riscv_de_clk or posedge i_riscv_de_rst )
       begin:de_pff_write_proc
@@ -57,6 +59,7 @@
            o_riscv_de_memext_e      <= 64'b0;
            o_riscv_de_resultsrc_e   <= 64'b0;
            o_riscv_de_regwrite_e    <= 64'b0;
+           o_riscv_de_jump_e        <= 64'b0;
         end
       else
         begin
@@ -76,7 +79,8 @@
            o_riscv_de_memwrite_e    <= i_riscv_de_memwrite_d;
            o_riscv_de_memext_e      <= i_riscv_de_memext_d;
            o_riscv_de_resultsrc_e   <= i_riscv_de_resultsrc_d;
-           o_riscv_de_regwrite_e    <= i_riscv_de_regwrite_d;       
+           o_riscv_de_regwrite_e    <= i_riscv_de_regwrite_d;
+           o_riscv_de_jump_e        <= i_riscv_de_jump_d;       
         end
       end
   endmodule
