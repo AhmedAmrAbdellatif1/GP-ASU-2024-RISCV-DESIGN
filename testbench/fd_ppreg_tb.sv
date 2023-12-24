@@ -13,8 +13,10 @@ module riscv_fd_ppreg_tb();
 
 /************** Internal Signals Declaration **************/
   logic clk,rst,en;
-  logic [63:0]  pc_f, inst_f, pcplus4_f;
-  logic [63:0]  pc_d, inst_d, pcplus4_d;
+  logic [63:0]  pc_f, pcplus4_f;
+  logic [31:0]  inst_f;
+  logic [63:0]  pc_d, pcplus4_d;
+  logic [31:0]  inst_d;
 
 /********************* Initial Blocks *********************/
   initial begin : proc_testing
@@ -31,9 +33,9 @@ module riscv_fd_ppreg_tb();
 
   /** Reseting Block **/
   initial begin : proc_reseting
-    rst = 1'b0;
-    #CLK_PERIOD;
     rst = 1'b1;
+    #CLK_PERIOD;
+    rst = 1'b0;
   end
 
   /** Clock Generation Block **/
@@ -49,10 +51,11 @@ module riscv_fd_ppreg_tb();
     begin
       rst = 1'b0;
       #CLK_PERIOD
-      rst = 1'b0;
+      rst = 1'b1;
       #CLK_PERIOD
       if({pc_d,inst_d,pcplus4_d} != 'h0)  $display("[CLR] TEST FAILED");
       else                                $display("[CLR] TEST PASSED");
+      rst = 1'b0;
     end
   endtask
 
@@ -67,9 +70,9 @@ task enable_test();
     #HALF_PERIOD
     @(posedge clk)
     if((pc_d != 'b0) && (inst_d != 'b0) && (pcplus4_d != 'b0)) 
-      $display("[EN] TEST FAILED");
+      $display(" [EN] TEST FAILED");
     else
-      $display("[EN] TEST PASSED");
+      $display(" [EN] TEST PASSED");
   end
 endtask
 
@@ -82,6 +85,7 @@ task normal_test();
     pcplus4_f = pc_f + 'h4;
     #HALF_PERIOD
     @(posedge clk)
+    #1
     if((pc_d != 'h457ef8c2) && (inst_d != 'hff010113) && (pcplus4_d != 'h457ef8c6)) 
       $display("[PPR] TEST FAILED");
     else
@@ -94,8 +98,8 @@ endtask
   riscv_fd_ppreg DUT
   (
     .i_riscv_fd_clk(clk),
-    .i_riscv_fd_clr(rst),
-    .i_riscv_fd_en(en),
+    .i_riscv_fd_rst(rst),
+    .i_riscv_fd_en(!en),
     .i_riscv_fd_pc_f(pc_f),
     .i_riscv_fd_inst_f(inst_f),
     .i_riscv_fd_pcplus4_f(pcplus4_f),
