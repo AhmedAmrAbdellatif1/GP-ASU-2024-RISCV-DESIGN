@@ -23,6 +23,11 @@ module riscv_hazardunit
                        o_riscv_hzrdu_stallfd  ,
                        o_riscv_hzrdu_flushfd ,
                        o_riscv_hzrdu_flushde
+   //extra Siganls
+    input      [4:0]     i_riscv_hzrdu_rdaddr_e ,
+    input                i_risc_hzrdu_memwrite_m ,
+    input                i_risc_hzrdu_memwrite_d 
+
  );
 
 
@@ -90,10 +95,12 @@ always @(*)
         /*if(~rst_n) 
          <= 0; else */
    
-        if      ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rs1addr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rs1addr_e  ) && 
+       /* if      ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rs1addr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rs1addr_e  ) && 
                 i_riscv_hzrdu_resultsrc == 2'b10 ) || 
-                i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard
-
+                i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard */
+         if      ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
+                i_riscv_hzrdu_resultsrc == 2'b10 ) || 
+                i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard 
                   begin
                     o_riscv_hzrdu_stallpc = 1 ; 
                     o_riscv_hzrdu_stallfd = 1 ;  
@@ -117,8 +124,8 @@ always @(*)
         /*if(~rst_n) 
          <= 0; else 
    
-        if      ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rs1addr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rs1addr_e  ) && 
-                i_riscv_hzrdu_resultsrc == 2'b10 && MEM_Write_d !=1) //dont stall if it is sw instruction || 
+        if      ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
+                i_riscv_hzrdu_resultsrc == 2'b10 && i_risc_hzrdu_memwrite_d !=1) //dont stall if it is sw instruction || 
                 i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard
 
                   begin
@@ -147,7 +154,8 @@ always @(*)
         end else begin */
 
         if      ( (i_riscv_hzrdu_rs2addr_m == i_riscv_hzrdu_rdaddr_w) && 
-                (i_riscv_hzrdu_regw_m ) && (MEM_WRITE_M = 1 );
+               // (i_riscv_hzrdu_regw_m )
+                 (i_riscv_hzrdu_regw_w ) && (i_risc_hzrdu_memwrite_m = 1 );
                 (i_riscv_hzrdu_rdaddr_m !=0) )
                    begin
                      o_riscv_hzrdu_fw_dc  = 1  ;
