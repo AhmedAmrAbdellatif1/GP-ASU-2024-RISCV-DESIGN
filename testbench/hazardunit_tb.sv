@@ -85,6 +85,7 @@ module riscv_hazardunit_tb();
 
 
 // Test 3: rs2 forwarded from memory stage 
+ i = 1;
  rs2_forward (4'd30, 4'd30, 4'd11, 1'b1, 1'b0, 2'b01) ;  //10 //rs2 forwarded
  i++;
  rs2_forward (4'd30, 4'd30, 4'd30, 1'b1, 1'b1, 2'b01) ;  //11 //mem stage priority 
@@ -109,29 +110,17 @@ module riscv_hazardunit_tb();
 
 // Test 5: stalling and flushing
  i = 1;
- stall_flush ( 4'd30, 4'd10, 4'd30, 2'b10, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1) ; //19 //pc stall
+ stall_flush (4'd30, 4'd10, 4'd30, 2'b10, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1) ; //19 //pc stall
  i++;
- stall_flush ( 4'd30, 4'd10, 4'd10, 2'b10, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1) ; //20 //pc stall
+ stall_flush (4'd30, 4'd10, 4'd10, 2'b10, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1) ; //20 //pc stall
  i++;
- stall_flush ( 4'd30, 4'd10, 4'd20, 2'b10, 1'b1, 1'b0, 1'b0, 1'b0, 1'b1) ; //21 //pc flush //different addresses but pcsrc =1
+ stall_flush (4'd30, 4'd10, 4'd20, 2'b10, 1'b1, 1'b0, 1'b0, 1'b0, 1'b1) ; //21 //pc flush //different addresses but pcsrc =1
  i++; 
- stall_flush ( 4'd30, 4'd30, 4'd20, 2'b00, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0) ; //22 //no stall
+ stall_flush (4'd30, 4'd30, 4'd20, 2'b00, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0) ; //22 //no stall
  i++;
- stall_flush ( 4'd30, 4'd10, 4'd30, 2'b11, 1'b1, 1'b0, 1'b0, 1'b0, 1'b1) ; //23 //no stall 
+ stall_flush (4'd30, 4'd10, 4'd30, 2'b11, 1'b1, 1'b0, 1'b0, 1'b0, 1'b1) ; //23 //no stall 
  i++;
 
-
-
-
-  input [4:0]  rs1addr_d ;
-  input [4:0]  rs2addr_d ;
-  input [4:0]  rdaddr_e ;
-  input [1:0]  resultsrc_e  ;
-  input        pcsrc ;
-  input        expected_out1 ; //stall pc
-  input        expected_out2 ; //stall fd
-  input        expected_out3 ; //flush fd
-  input        expected_out4 ; //flush de
 
     #(10*CLK_PERIOD);
 
@@ -160,9 +149,9 @@ task rs1_forward ;
    #CLK_PERIOD;
 
    if (o_riscv_hzrdu_fwda !== expected_out) 
-   $display("rs1_forward failed");
+   $display("[%2d] rs1_forward failed" , i);
    else
-   $display("rs1_forward passed");
+   $display("[%2d] rs1_forward passed" , i);
  end
 endtask
 
@@ -185,9 +174,9 @@ task rs2_forward ;
    #CLK_PERIOD;
 
    if (o_riscv_hzrdu_fwdb !== expected_out) 
-   $display("rs2_forward failed");
+   $display("[%2d] rs2_forward failed" , i);
    else
-   $display("rs2_forward passed");
+   $display("[%2d] rs2_forward passed" , i);
  end
 endtask
   
@@ -214,9 +203,9 @@ task stall_flush ;
    #CLK_PERIOD;
 
    if ((o_riscv_hzrdu_stallpc !== expected_out1) && (o_riscv_hzrdu_stallfd !== expected_out2) && (o_riscv_hzrdu_flushfd !== expected_out3) && (o_riscv_hzrdu_flushde !== expected_out4)) 
-   $display("stall_flush failed");
+   $display("[%2d] stall_flush failed" , i);
    else
-   $display("stall_flush passed");
+   $display("[%2d] stall_flush passed", i);
  end
 endtask 
 

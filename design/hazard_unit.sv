@@ -25,8 +25,8 @@ module riscv_hazardunit
                        o_riscv_hzrdu_flushde ,
    //extra Siganls
     input      [4:0]     i_riscv_hzrdu_rdaddr_e ,
-    input                i_risc_hzrdu_memwr_m ,
-    input                i_risc_hzrdu_memwr_d 
+    input                i_riscv_hzrdu_memw_m ,
+    input                i_riscv_hzrdu_memw_d 
   //output reg           o_riscv_hzrdu_fw_dc
 
  );
