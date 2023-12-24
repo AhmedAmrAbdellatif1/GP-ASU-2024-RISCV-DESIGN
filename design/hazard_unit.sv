@@ -6,7 +6,7 @@ module riscv_hazardunit
                        i_riscv_hzrdu_rs2addr_d ,
                        i_riscv_hzrdu_rs1addr_e ,
                        i_riscv_hzrdu_rs2addr_e ,
-                         i_riscv_hzrdu_rdaddr_m  ,
+                       i_riscv_hzrdu_rdaddr_m  ,
                        i_riscv_hzrdu_rdaddr_w , 
       
      input             i_riscv_hzrdu_pcsrc ,
@@ -14,7 +14,7 @@ module riscv_hazardunit
                        i_riscv_hzrdu_regw_w  ,
 
     // input op1,op2
-   input       [1:0]   i_riscv_hzrdu_resultsrc   ,
+   input       [1:0]   i_riscv_hzrdu_resultsrc_e   ,
 
    output reg  [1:0]   o_riscv_hzrdu_fwda  , 
                        o_riscv_hzrdu_fwdb , //Concept behind Forwarding unit
@@ -25,8 +25,8 @@ module riscv_hazardunit
                        o_riscv_hzrdu_flushde ,
    //extra Siganls
     input      [4:0]     i_riscv_hzrdu_rdaddr_e ,
-    input                i_risc_hzrdu_memwrite_m ,
-    input                i_risc_hzrdu_memwrite_d 
+    input                i_risc_hzrdu_memwr_m ,
+    input                i_risc_hzrdu_memwr_d 
   //output reg           o_riscv_hzrdu_fw_dc
 
  );
@@ -100,7 +100,7 @@ always @(*)
                 i_riscv_hzrdu_resultsrc == 2'b10 ) || 
                 i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard */
          if      ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
-                i_riscv_hzrdu_resultsrc == 2'b10 ) || 
+                i_riscv_hzrdu_resultsrc_e == 2'b10 ) || 
                 i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard 
                   begin
                     o_riscv_hzrdu_stallpc = 1 ; 
