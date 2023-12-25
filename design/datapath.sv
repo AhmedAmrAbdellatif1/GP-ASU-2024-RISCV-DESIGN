@@ -79,7 +79,7 @@ module riscv_datapath #(parameter width=64) (
   logic  [4:0]           riscv_rs2addr_e;
   logic  [4:0]           riscv_rdaddr_e;
   logic  [width-1:0]     riscv_extendedimm_e;
-  logic  [2:0]           riscv_b_condition_e;
+  logic  [3:0]           riscv_b_condition_e;
   logic                  riscv_oprnd2sel_e;
   logic  [1:0]           riscv_storesrc_e;
   logic  [4:0]           riscv_alucontrol_e;
@@ -96,7 +96,7 @@ module riscv_datapath #(parameter width=64) (
   logic [1:0]           riscv_resultsrc_m;
   logic [2:0]           riscv_memext_m;
   logic [width-1:0]     riscv_pcplus4_m;
-  logic [width-1:0]     riscv_rdaddr_m;
+  logic [4:0]           riscv_rdaddr_m;
   logic [width-1:0]     riscv_imm_m;
   logic [width-1:0]     riscv_memload_m;
   ////// write back ineternal signals///////

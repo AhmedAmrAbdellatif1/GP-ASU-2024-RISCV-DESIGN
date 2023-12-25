@@ -8,7 +8,7 @@
       input  logic  [4:0]   i_riscv_de_rs2addr_d,
       input  logic  [4:0]   i_riscv_de_rdaddr_d,
       input  logic  [63:0]  i_riscv_de_extendedimm_d,
-      input  logic  [2:0]   i_riscv_de_b_condition_d,
+      input  logic  [3:0]   i_riscv_de_b_condition_d,
       input  logic          i_riscv_de_oprnd2sel_d,
       input  logic  [1:0]   i_riscv_de_storesrc_d,
       input  logic  [4:0]   i_riscv_de_alucontrol_d,
@@ -27,7 +27,7 @@
       output logic  [4:0]   o_riscv_de_rs2addr_e,
       output logic  [4:0]   o_riscv_de_rdaddr_e,
       output logic  [63:0]  o_riscv_de_extendedimm_e,
-      output logic  [2:0]   o_riscv_de_b_condition_e,
+      output logic  [3:0]   o_riscv_de_b_condition_e,
       output logic          o_riscv_de_oprnd2sel_e,
       output logic  [1:0]   o_riscv_de_storesrc_e,
       output logic  [4:0]   o_riscv_de_alucontrol_e,
@@ -42,24 +42,24 @@
       begin:de_pff_write_proc
         if(i_riscv_de_rst)
         begin
-           o_riscv_de_pc_e          <= 64'b0;
-           o_riscv_de_pcplus4_e     <= 64'b0;
-           o_riscv_de_rs1addr_e     <= 64'b0;
-           o_riscv_de_rs1data_e     <= 64'b0;
-           o_riscv_de_rs2data_e     <= 64'b0;
-           o_riscv_de_rs2addr_e     <= 64'b0;
-           o_riscv_de_rdaddr_e      <= 64'b0;
-           o_riscv_de_extendedimm_e <= 64'b0;
-           o_riscv_de_b_condition_e <= 64'b0;
-           o_riscv_de_oprnd2sel_e   <= 64'b0;
-           o_riscv_de_storesrc_e    <= 64'b0;
-           o_riscv_de_alucontrol_e  <= 64'b0;
-           o_riscv_de_oprnd1sel_e   <= 64'b0;
-           o_riscv_de_memwrite_e    <= 64'b0;
-           o_riscv_de_memext_e      <= 64'b0;
-           o_riscv_de_resultsrc_e   <= 64'b0;
-           o_riscv_de_regwrite_e    <= 64'b0;
-           o_riscv_de_jump_e        <= 64'b0;
+           o_riscv_de_pc_e          <= 0;
+           o_riscv_de_pcplus4_e     <= 0;
+           o_riscv_de_rs1addr_e     <=0;
+           o_riscv_de_rs1data_e     <= 0;
+           o_riscv_de_rs2data_e     <= 0;
+           o_riscv_de_rs2addr_e     <= 0;
+           o_riscv_de_rdaddr_e      <= 0;
+           o_riscv_de_extendedimm_e <= 0;
+           o_riscv_de_b_condition_e <= 0;
+           o_riscv_de_oprnd2sel_e   <= 0;
+           o_riscv_de_storesrc_e    <= 0;
+           o_riscv_de_alucontrol_e  <= 0;
+           o_riscv_de_oprnd1sel_e   <= 0;
+           o_riscv_de_memwrite_e    <= 0;
+           o_riscv_de_memext_e      <= 0;
+           o_riscv_de_resultsrc_e   <= 0;
+           o_riscv_de_regwrite_e    <= 0;
+           o_riscv_de_jump_e        <= 0;
         end
       else
         begin

@@ -9,7 +9,7 @@
     input  logic [63:0] i_riscv_em_pcplus4_e,
     input  logic [63:0] i_riscv_em_aluresult_e,
     input  logic [63:0] i_riscv_em_storedata_e,
-    input  logic [63:0] i_riscv_em_rdaddr_e,
+    input  logic [4:0]  i_riscv_em_rdaddr_e,
     input  logic [63:0] i_riscv_em_imm_e,
     output logic        o_riscv_em_memw_m, 
     output logic        o_riscv_em_regw_m,
@@ -19,7 +19,7 @@
     output logic [63:0] o_riscv_em_pcplus4_m,
     output logic [63:0] o_riscv_em_aluresult_m,
     output logic [63:0] o_riscv_em_storedata_m,
-    output logic [63:0] o_riscv_em_rdaddr_m,
+    output logic [4:0]  o_riscv_em_rdaddr_m,
     output logic [63:0] o_riscv_em_imm_m    
   );
 
