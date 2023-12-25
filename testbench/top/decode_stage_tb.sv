@@ -17,14 +17,14 @@ module riscv_top_tb();
 
   /** Reseting Block **/
   initial begin : proc_reseting
-    rst = 1'b0;
-    #CLK_PERIOD;
     rst = 1'b1;
+    #CLK_PERIOD;
+    rst = 1'b0;
   end
 
   /** Clock Generation Block **/
   initial begin : proc_clock
-    clk = 1'b0;
+    clk = 1'b1;
     forever begin
       #HALF_PERIOD clk = ~clk;
     end
