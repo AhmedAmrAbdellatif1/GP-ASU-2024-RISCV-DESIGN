@@ -23,14 +23,14 @@ begin
 
 
         1 : begin
-                assign LT = ($unsigned(i_riscv_branch_rs1data) < $unsigned(i_riscv_branch_rs2data)) ? 1:0;
+                 LT = ($unsigned(i_riscv_branch_rs1data) < $unsigned(i_riscv_branch_rs2data)) ? 1:0;
                 //assign GT = ($unsigned(i_riscv_branch_rs1data) > $unsigned(i_riscv_branch_rs2data)) ? 1:0;
-                assign GT = (~LT) && (~EQ) ? 1:0;
+                 GT = (~LT) && (~EQ) ? 1:0;
             end 
         0 : begin
-                assign LT = (i_riscv_branch_rs1data < i_riscv_branch_rs2data) ? 1:0;
+                 LT = (i_riscv_branch_rs1data < i_riscv_branch_rs2data) ? 1:0;
                 //assign GT = (i_riscv_branch_rs1data > i_riscv_branch_rs2data) ? 1:0;
-                assign GT = (~LT) && (~EQ) ? 1:0;
+                 GT = (~LT) && (~EQ) ? 1:0;
             end
     endcase
 end
@@ -52,14 +52,14 @@ always @(*)
                 case (i_riscv_branch_cond[2:0])
                 
                 //equlaity , non equality doesnt mean either signed/unsigned 
-                    beq:  assign o_riscv_branch_taken =  (  EQ )    ? 1 : 0 ;  //beq
-                    bne:  assign o_riscv_branch_taken =  ( ~EQ )    ? 1 : 0 ;  //bne
+                    beq:   o_riscv_branch_taken =  (  EQ )    ? 1 : 0 ;  //beq
+                    bne:   o_riscv_branch_taken =  ( ~EQ )    ? 1 : 0 ;  //bne
                 //signed
-                    blt:  assign o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //blt  
-                    bge:  assign o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bge
+                    blt:   o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //blt  
+                    bge:   o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bge
                 //unsigned
-                    bltu:  assign o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //bltu
-                    bgeu:  assign o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bgeu
+                    bltu:   o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //bltu
+                    bgeu:   o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bgeu
                     default:        o_riscv_branch_taken = 0 ;
 
                 endcase     

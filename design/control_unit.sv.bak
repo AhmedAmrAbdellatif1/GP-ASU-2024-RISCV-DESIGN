@@ -549,7 +549,7 @@ always_comb
                   o_riscv_cu_memw       = 1'b0;
                   o_riscv_cu_storesrc   = 2'b00;//xx
                   o_riscv_cu_resultsrc  = 2'b00;//xx
-                  o_riscv_cu_bcond      = 4'b0000;
+                  o_riscv_cu_bcond[2:0] = 4'b0000;
                   o_riscv_cu_memext     = 3'b000;//xx
                   o_riscv_cu_immsrc     = 3'b000;
                   o_riscv_cu_aluctrl    = 5'b00000;

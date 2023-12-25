@@ -100,8 +100,7 @@ always @(*)
                 i_riscv_hzrdu_resultsrc == 2'b10 ) || 
                 i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard */
          if      ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
-                i_riscv_hzrdu_resultsrc_e == 2'b10 ) || 
-                i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard 
+                i_riscv_hzrdu_resultsrc_e == 2'b10 ) ) //Condition For branch hazard 
                   begin
                     o_riscv_hzrdu_stallpc = 1 ; 
                     o_riscv_hzrdu_stallfd = 1 ;  
