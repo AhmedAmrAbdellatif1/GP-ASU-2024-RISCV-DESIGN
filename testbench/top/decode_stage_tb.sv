@@ -11,7 +11,8 @@ module riscv_top_tb();
 
 /********************* Initial Blocks *********************/
   initial begin : proc_decode
-    
+    #CLK_PERIOD // delay for reste
+    #CLK_PERIOD // delay for first instruction to come
   end
 
   /** Reseting Block **/
