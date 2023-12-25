@@ -33,6 +33,7 @@ module riscv_de_ppreg_tb();
   logic          RegWrite_D;
   logic  [63:0]  pcplus4_D;
   logic          Flush;
+  logic          Jump_D;
   // Outputs (E)
   logic  [63:0] PC_E;
   logic  [63:0] pcplus4_E;
@@ -51,6 +52,7 @@ module riscv_de_ppreg_tb();
   logic  [2:0]  MemExt_E;
   logic  [1:0]  ResultSrc_E;
   logic         RegWrite_E;
+  logic          Jump_E;
 /********************* Initial Blocks *********************/
   initial begin : proc_testing
     
@@ -72,7 +74,7 @@ module riscv_de_ppreg_tb();
     RegWrite_D = 1'b1;
     Flush = 1'b0;
     pcplus4_D= 64'h123456789ABCDEF4;
-    
+    Jump_D = 1'b1;
   #CLK_PERIOD
  
   check_outputs();
@@ -120,6 +122,7 @@ task check_outputs();
     CheckEquality("ResultSrc", ResultSrc_D, ResultSrc_E);
     CheckEquality("RegWrite", RegWrite_D, RegWrite_E);
     CheckEquality("PCplus4", pcplus4_D, pcplus4_E);
+    CheckEquality("Jump", Jump_D, Jump_E);
   endtask
   
   
@@ -141,6 +144,7 @@ CheckEquality("PC", 0, PC_E);
     CheckEquality("ResultSrc", 0, ResultSrc_E);
     CheckEquality("RegWrite", 0, RegWrite_E);
     CheckEquality("PCplus4", 0, pcplus4_E);
+    CheckEquality("Jump", 0, Jump_E);
   endtask 
     
 task CheckEquality(string signal_name, logic [63:0]signal_D, logic [63:0]signal_E);
@@ -162,37 +166,41 @@ endtask
     .i_riscv_de_rs2data_d(Rs2Data_D),
     .i_riscv_de_rs2addr_d(Rs2Addr_D),
     .i_riscv_de_rdaddr_d(RdAddr_D),
-    .i_riscv_de_imm_d(Extendedimm_D),
-    .i_riscv_de_b_cond_d(B_condition_D),
+    .i_riscv_de_extendedimm_d(Extendedimm_D),
+    .i_riscv_de_b_condition_d(B_condition_D),
     .i_riscv_de_oprnd2sel_d(Oprnd2sel_D),
     .i_riscv_de_storesrc_d(StoreSrc_D),
-    .i_riscv_de_aluctrl_d(ALUControl_D),
+    .i_riscv_de_alucontrol_d(ALUControl_D),
     .i_riscv_de_oprnd1sel_d(Oprnd1sel_D),
-    .i_riscv_de_memw_d(MemWrite_D),
+    .i_riscv_de_memwrite_d(MemWrite_D),
     .i_riscv_de_memext_d(MemExt_D),
     .i_riscv_de_resultsrc_d(ResultSrc_D),
-    .i_riscv_de_regw_d(RegWrite_D),
-    .i_riscv_de_clr(Flush),
+    .i_riscv_de_regwrite_d(RegWrite_D),
+    .i_riscv_de_rst(Flush),
     .i_riscv_de_pcplus4_d(pcplus4_D),
     .i_riscv_de_clk(clk),
-    
+    .i_riscv_de_jump_d(Jump_D),
+
     .o_riscv_de_pc_e(PC_E),
     .o_riscv_de_rs1addr_e(Rs1Addr_E),
     .o_riscv_de_rs1data_e(Rs1Data_E),
     .o_riscv_de_rs2data_e(Rs2Data_E),
     .o_riscv_de_rs2addr_e(Rs2Addr_E),
     .o_riscv_de_rdaddr_e(RdAddr_E),
-    .o_riscv_de_imm_e(Extendedimm_E),
-    .o_riscv_de_b_cond_e(B_condition_E),
+    .o_riscv_de_extendedimm_e(Extendedimm_E),
+    .o_riscv_de_b_condition_e(B_condition_E),
     .o_riscv_de_oprnd2sel_e(Oprnd2sel_E),
     .o_riscv_de_storesrc_e(StoreSrc_E),
-    .o_riscv_de_aluctrl_e(ALUControl_E),
+    .o_riscv_de_alucontrol_e(ALUControl_E),
     .o_riscv_de_oprnd1sel_e(Oprnd1sel_E),
-    .o_riscv_de_memw_e(MemWrite_E),
+    .o_riscv_de_memwrite_e(MemWrite_E),
     .o_riscv_de_memext_e(MemExt_E),
     .o_riscv_de_resultsrc_e(ResultSrc_E),
-    .o_riscv_de_regw_e(RegWrite_E)
-
+    .o_riscv_de_regwrite_e(RegWrite_E),
+    .o_riscv_de_jump_e(Jump_E),
+    .o_riscv_de_pcplus4_e(pcplus4_E)
   );
 endmodule
+
+
 
