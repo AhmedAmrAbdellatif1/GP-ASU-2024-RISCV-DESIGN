@@ -22,9 +22,9 @@ output logic                      o_riscv_dstage_func7_5);
 assign o_riscv_dstage_rs1addr=i_riscv_dstage_inst[19:15];
 assign o_riscv_dstage_rs2addr=i_riscv_dstage_inst[24:20];
 assign o_riscv_dstage_rdaddr=i_riscv_dstage_inst[11:7];
-assign func_7_5= i_riscv_dstage_inst[30];
-assign func_3= i_riscv_dstage_inst[14:12];
-assign op_code= i_riscv_dstage_inst[6:0];
+assign o_riscv_dstage_func7_5= i_riscv_dstage_inst[30];
+assign o_riscv_dstage_funct3= i_riscv_dstage_inst[14:12];
+assign oo_riscv_dstage_opcode= i_riscv_dstage_inst[6:0];
 
 
 
