@@ -35,10 +35,10 @@ module riscv_datapath #(parameter width=64) (
   output logic [4:0]       o_riscv_datapath_rs1addr_e,   ///input to hazard unit
   output logic [4:0]       o_riscv_datapath_rs2addr_e,   ///input to hazard unit
   output logic [4:0]       o_riscv_datapath_rdaddr_e ,   ///input to hazard unit
-  output logic [1:0]       o_riscv_datapath_resultsrc_e,  ///input to hazard unit
+  output logic [1:0]       o_riscv_datapath_resultsrc_e  ///input to hazard unit
   /////////////////////memory/////////////
   input  logic [width-1:0] i_riscv_datapath_dm_rdata,      ///output from dm
-  output logic [4:0]       o_riscv_datapath_rdaddr_m,      ///input to hazard unit
+  output logic [4:0]       o_riscv_datapath_rdaddr_m      ///input to hazard unit
   output logic             o_riscv_datapath_memw_m,       ///input to dm &&&&&& input to hazard unit
   output logic [1:0]       o_riscv_datapath_storesrc_m,   ///input to dm
   output logic [width-1:0] o_riscv_datapath_memodata_addr,///input to dm
@@ -52,7 +52,7 @@ module riscv_datapath #(parameter width=64) (
  );
   
   ////// fetch internal signals ////////
- // logic                 riscv_pcsrc_fe;
+  // logic                 riscv_pcsrc_fe;
   logic [width-1:0]     riscv_aluexe_fe;
   logic [width-1:0]     riscv_pcplus4_f;
   logic                 riscv_rstctrl_f;
@@ -116,9 +116,9 @@ module riscv_datapath #(parameter width=64) (
   assign o_riscv_datapath_rdaddr_wb    = riscv_rdaddr_wb;                                  // to hazard unit
   assign o_riscv_datapath_regw_m       = riscv_regw_m;                                     // to hazard unit
   assign o_riscv_datapath_regw_wb      = riscv_regw_wb;                                    // to hazard unit
-  assign o_riscv_datapath_resultsrc_e  = riscv_resultsrc_e;                                 // to hazard unit
-  assign o_riscv_datapath_rs1addr_d    = riscv_rs1addr_d;
-  assign o_riscv_datapath_rs2addr_d    = riscv_rs2addr_d;
+  assign o_riscv_datapath_resultsrc_e  = riscv_resultsrc_e ;                               // to hazard unit
+  assign o_riscv_datapath_rs1addr_d    = riscv_rs1addr_d ;                                 //to hazard unit
+  assign o_riscv_datapath_rs2addr_d    = riscv_rs2addr_d  ;                                //to hazard unit
   ////fetch stage instantiation////
   riscv_fstage u_riscv_fstage(
     .i_riscv_fstage_clk    (i_riscv_datapath_clk),
@@ -165,10 +165,10 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_de_clk          (i_riscv_datapath_clk),
     .i_riscv_de_rst          (riscv_rstctrl_d),
     .i_riscv_de_pc_d         (riscv_pc_d),
-    .i_riscv_de_rs1addr_d    (riscv_rs1addr_d),//
+    .i_riscv_de_rs1addr_d    (riscv_rs1addr_d),
     .i_riscv_de_rs1data_d    (riscv_rs1data_d),
     .i_riscv_de_rs2data_d    (riscv_rs2data_d),
-    .i_riscv_de_rs2addr_d    (riscv_rs2addr_d),//
+    .i_riscv_de_rs2addr_d    (riscv_rs2addr_d),
     .i_riscv_de_rdaddr_d     (riscv_rdaddr_d),
     .i_riscv_de_extendedimm_d(riscv_simm_d),
     .i_riscv_de_b_condition_d(i_riscv_datapath_bcond),
@@ -254,7 +254,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_mw_clk         (i_riscv_datapath_clk),
     .i_riscv_mw_rst         (i_riscv_datapath_rst),
     .i_riscv_mw_pcplus4_m   (riscv_pcplus4_m),
-    .i_riscv_mw_aluresult_m (riscv_rddata_me),////
+    .i_riscv_mw_aluresult_m (riscv_rddata_me),//
     .i_riscv_mw_uimm_m      (riscv_imm_m),
     .i_riscv_mw_memload_m   (i_riscv_datapath_dm_rdata),
     .i_riscv_mw_rdaddr_m    (riscv_rdaddr_m),
