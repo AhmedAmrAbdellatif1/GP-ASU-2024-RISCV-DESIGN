@@ -97,6 +97,14 @@ for(i=0;i<DEPTH;i=i+1) // check that every rs2 address can be read succsfully
   #CLK_PERIOD
   CheckEquality("Read Rs1 Register 0", rs1data, 0);
   CheckEquality("Read Rs2 Register 0", rs2data, 0);
+  // checking writting and reading at the same time at same register
+   rs1addr = 'b111;
+   rdaddr = 'b111;
+   regwrite=1'b1;
+   rddata = 'b1111;
+   #CLK_PERIOD
+  CheckEquality("write then read same register", rddata, rs1data);
+   
   
 #100  
 $stop;
@@ -134,6 +142,8 @@ riscv_rf dut(
     .i_riscv_rf_rdaddr(rdaddr)
 ); 
 endmodule
+
+
 
 
 
