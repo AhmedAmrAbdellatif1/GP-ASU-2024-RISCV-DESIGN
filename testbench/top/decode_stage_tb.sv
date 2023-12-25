@@ -16,29 +16,38 @@ module riscv_top_tb();
 /********************* Initial Blocks *********************/
   initial begin : proc_decode
     #CLK_PERIOD     // delay for first instruction to come
-    @(negedge clk)
     i = 1;
-    // addi x8, x0, 10
-      itype_check('d0,'d8,'d0,'sd10);
-    // addi x9, x0, 20
-      itype_check('d0,'d9,'d0,'sd20);
+    @(negedge clk)
+    #1
     // auipc x6, 0x100 
       utype_check('d6,'h100000);
+    
+    // addi x8, x0, 10
+      itype_check('d0,'d8,'d0,'sd10);
+
+    // addi x9, x0, 20
+      itype_check('d0,'d9,'d0,'sd20);
+
     // sd x6 0 x0
-      store_check('d0,'d6,'d0);   
+      store_check('d0,'d6,'d0);  
+
     // ld x7 0 x0
       load_check('d0,'d7,'d0);
+
     // add x10 x8 x9
       rtype_check('d8, 'd9, 'd10, 10, 20);
+
     // lui x5 0x20000
       utype_check('d5,'sh20000000);
-    // bne x6 x7 -20
-      btype_check('d6,'d7,'h100008,'h100008,-'sd20);
-    // addiw x1 x0 18
-      itype_check('d0,'d1,'d0,'sd18);
-    // sltu x3 x8 x9
-      rtype_check('d8, 'd9, 'd3, 10, 20);
 
+    // addiw x4 x0 18
+      itype_check('d0,'d4,'d0,'sd18);
+      
+    // sltu x3 x8 x9
+      rtype_check('d8, 'd9, 'd3, 'd10, 'd20);
+
+    // bne x6 x7 -20
+      btype_check('d6,'d7,'h100000,'h100000,-'sd20);
     $stop;
   end
 
@@ -165,7 +174,7 @@ assign rdaddr   = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rdaddr;
 task rdaddr_check;
     input [4:0] expect_addr;
     begin
-      if(rdaddr!= expect_addr) $display("[%2d] rs1 addr failed",i);
+      if(rdaddr!= expect_addr) $display("[%2d] rd addr failed",i);
     end
 endtask
 
