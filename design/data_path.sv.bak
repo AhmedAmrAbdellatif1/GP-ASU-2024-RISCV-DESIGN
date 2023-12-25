@@ -116,9 +116,9 @@ module riscv_datapath #(parameter width=64) (
   assign o_riscv_datapath_rdaddr_wb    = riscv_rdaddr_wb;                                  // to hazard unit
   assign o_riscv_datapath_regw_m       = riscv_regw_m;                                     // to hazard unit
   assign o_riscv_datapath_regw_wb      = riscv_regw_wb;                                    // to hazard unit
-  assign o_riscv_datapath_resultsrc_e  = riscv_resultsrc_e                                 // to hazard unit
-  assign o_riscv_datapath_rs1addr_d    = riscv_rs1addr_d
-  assign o_riscv_datapath_rs2addr_d    = riscv_rs2addr_d
+  assign o_riscv_datapath_resultsrc_e  = riscv_resultsrc_e;                                 // to hazard unit
+  assign o_riscv_datapath_rs1addr_d    = riscv_rs1addr_d;
+  assign o_riscv_datapath_rs2addr_d    = riscv_rs2addr_d;
   ////fetch stage instantiation////
   riscv_fstage u_riscv_fstage(
     .i_riscv_fstage_clk    (i_riscv_datapath_clk),
