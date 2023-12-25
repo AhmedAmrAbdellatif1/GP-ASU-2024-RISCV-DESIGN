@@ -23,14 +23,18 @@ module riscv_dm_tb();
 /********************* Initial Blocks *********************/
   initial begin : proc_testing
    i_riscv_dm_clk_n = 1'b1;
-   i_riscv_dm_rst = 1'b1;  
+   i_riscv_dm_rst = 1'b0;  
    i_riscv_dm_wen = 1'b0;
    i_riscv_dm_sel = 2'b0;
    i_riscv_dm_wdata = 64'b0;
    i_riscv_dm_waddr = 64'b0; 
    
+   @(posedge i_riscv_dm_clk_n)
+   i_riscv_dm_rst = 1'b1;
    #CLK_PERIOD;
    i_riscv_dm_rst = 1'b0;
+   #CLK_PERIOD;
+   
    
  // Test 1: Doubleword store and load
  load_store ( 'd0 , 'h1122334455667788 ,'b11 , 'h1122334455667788) ;
@@ -43,8 +47,11 @@ module riscv_dm_tb();
  
  // Test 4: Byte store and load 
  load_store ( 'd10 , 'h5566778844332211 ,'b00 , 'h11) ;
-  
 
+// Test 5: over write 
+ load_store ( 'd12 , 'h1122334455667788 ,'b11 , 'h1122334455667788) ;
+ load_store ( 'd12 , 'h5566778811223344 ,'b00 , 'h1122334455667744) ;
+ 
 
     #(10*CLK_PERIOD);
 
@@ -70,7 +77,7 @@ task load_store ;
   begin 
    i_riscv_dm_wen = 1'b0;
    i_riscv_dm_sel = sel;
-   i_riscv_dm_wdata = data ;
+   i_riscv_dm_wdata = data;
    i_riscv_dm_waddr = address; 
    #CLK_PERIOD;
    
