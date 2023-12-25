@@ -7,7 +7,8 @@
     input  logic  [63:0] i_riscv_dm_waddr,
     output logic  [63:0] o_riscv_dm_rdata
   );
-  logic [7:0]  dmemo [0:(2**64)-1];//the the byte address bus is 64 bit and the width of of each memory location is 1 byte 
+  parameter MEM_DEPTH = 64 ;
+  logic [7:0]  dmemo [0:MEM_DEPTH-1];//the the byte address bus is 64 bit and the width of of each memory location is 1 byte 
   logic [63:0] byte0_addr;
   logic [63:0] byte1_addr;
   logic [63:0] byte2_addr;
@@ -39,7 +40,7 @@
     begin:write_proc
       if(i_riscv_dm_rst)
         begin
-          for (i=0; i<(2**64); i=i+1)
+          for (i=0; i<MEM_DEPTH; i=i+1)
             dmemo[i]<=8'b0;
         end
       else if (i_riscv_dm_wen) 
