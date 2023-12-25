@@ -20,8 +20,8 @@ sltu x3, x8, x9          # (0x38) No operation (I-type instruction)
 # Hazards !!!
 # case (1)
 addi x8, x0, 15          # (0x3c) Initialize x8 with value 15 (R-type instruction)
-sub x27, x8, x9           # (0x40) [ForwardAE = 10]   x8 before was 10, recently it's 15
-or x29, x9, x8            # (0x44) [ForwardBE = 01]   x8 before was 10, recently it's 15
+sub x27, x8, x9          # (0x40) [ForwardAE = 10]   x8 before was 10, recently it's 15
+or x29, x9, x8           # (0x44) [ForwardBE = 01]   x8 before was 10, recently it's 15
 slliw x28, x9, 2         # (0x4c) No Forwarding
 nop                      # (0x50) No operation (I-type instruction)
 

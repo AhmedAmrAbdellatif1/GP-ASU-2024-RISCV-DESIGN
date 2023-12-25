@@ -24,7 +24,7 @@
               if(i!=2)
                 rf[i]<=64'b0;
               else
-                rf[2] <= 'h38;//example last double word in the cache indicating the stack
+                rf[2] <= 'h3c;//example last double word in the cache indicating the stack
             end
         end         
       else

@@ -3,18 +3,18 @@ module riscv_estage #(parameter width=64)(
  // input  logic             i_riscv_fstage_rst,
 
 //Common Signals to Forward_mux_A,B , Branch Compartor
-input  logic [width-1:0] i_riscv_estage_rs1data ,
- input  logic [width-1:0] i_riscv_estage_rs2data  ,
+ input  logic signed [width-1:0] i_riscv_estage_rs1data ,
+ input  logic signed [width-1:0] i_riscv_estage_rs2data  ,
   //u_Forward_mux_A Signals
-  input  logic  [1:0]      i_riscv_estage_fwda , 
+ input  logic  [1:0]      i_riscv_estage_fwda , 
    
   //u_Forward_mux_B Signals
   input  logic   [1:0]      i_riscv_estage_fwdb  ,
   
   //u_Forward_mux_A,B Signals
-  input  logic [width-1:0] i_riscv_estage_rdata_wb  ,
+  input  logic signed [width-1:0] i_riscv_estage_rdata_wb  ,
                              
-  input  logic [width-1:0] i_riscv_estage_rddata_m ,
+  input  logic signed [width-1:0] i_riscv_estage_rddata_m ,
                               
   //u_Forward_mux_ operand A ,B Signals
   input  logic             i_riscv_estage_oprnd1sel  ,
@@ -29,13 +29,13 @@ input  logic [width-1:0] i_riscv_estage_rs1data ,
                              
   
 //Operand2 MUX signal
-  input  logic [width-1:0] i_riscv_estage_simm ,
+  input  logic signed [width-1:0] i_riscv_estage_simm ,
 
   //u_Branch Comparator Siganls
    input  logic [ 3:0 ]     i_riscv_estage_bcond  ,
    
 // ALU  Signals to E/M FF
-  output  logic [width-1:0] o_riscv_estage_aluresult ,
+  output  logic signed [width-1:0] o_riscv_estage_aluresult ,
   // Branch Comparator  Signals to hazard_unit
   output logic               o_riscv_estage_branchtaken 
 
@@ -43,12 +43,12 @@ input  logic [width-1:0] i_riscv_estage_rs1data ,
 ); 
 
 //u_Forward_mux_A,B Connected to OperandA,B muxes Signals
- logic   [width-1:0]    o_riscv_FWmuxA_OperandmuxA ;
- logic   [width-1:0]    o_riscv_FWmuxB_OperandmuxB ;
+ logic signed  [width-1:0]    o_riscv_FWmuxA_OperandmuxA ;
+ logic signed  [width-1:0]    o_riscv_FWmuxB_OperandmuxB ;
 
 //u_OperandA,B muxes  Connected to ALU  Signals
-logic    [width-1:0]  o_riscv_OperandmuxA_OperandALUA ;
-logic    [width-1:0]   o_riscv_OperandmuxB_OperandALUB ;
+logic  signed  [width-1:0]  o_riscv_OperandmuxA_OperandALUA ;
+logic  signed [width-1:0]   o_riscv_OperandmuxB_OperandALUB ;
 
 
 
