@@ -99,7 +99,7 @@ riscv_mux2 u_Operand_mux_B(
     .i_riscv_branch_cond(i_riscv_estage_bcond)    , 
     .i_riscv_branch_rs1data(i_riscv_estage_rs1data) ,   
     .i_riscv_branch_rs2data(i_riscv_estage_rs2data) , 
-    .o_riscv_estage_branchtaken(o_riscv_estage_branchtaken)
+    .o_riscv_branch_taken(o_riscv_estage_branchtaken)
     );
 
 endmodule

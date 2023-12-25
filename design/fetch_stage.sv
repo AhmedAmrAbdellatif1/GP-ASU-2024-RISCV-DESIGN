@@ -29,7 +29,7 @@ riscv_pc u_riscv_pc (
 
 ///////////////////////////PC ADDER//////////////////////
 riscv_pcadder u_riscv_pcadder (
-.i_riscv_pcadder_size('d4),
+.i_riscv_pcadder_size(64'd4),
 .i_riscv_pcadder_pc(o_riscv_fstage_pc),
 .o_riscv_pcadder_pcplussize(o_riscv_fstage_pcplus4));
 

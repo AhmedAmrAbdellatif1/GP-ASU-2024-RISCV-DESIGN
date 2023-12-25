@@ -5,14 +5,14 @@
     input  logic [63:0] i_riscv_mw_aluresult_m,
     input  logic [63:0] i_riscv_mw_uimm_m,
     input  logic [63:0] i_riscv_mw_memload_m,
-    input  logic [63:0] i_riscv_mw_rdaddr_m,
+    input  logic [4:0]  i_riscv_mw_rdaddr_m,
     input  logic [1:0]  i_riscv_mw_resultsrc_m,
     input  logic        i_riscv_mw_regw_m,
     output logic [63:0] o_riscv_mw_pcplus4_wb,
     output logic [63:0] o_riscv_mw_aluresult_wb,
     output logic [63:0] o_riscv_mw_uimm_wb,
     output logic [63:0] o_riscv_mw_memload_wb,
-    output logic [63:0] o_riscv_mw_rdaddr_wb,
+    output logic [4:0] o_riscv_mw_rdaddr_wb,
     output logic [1:0]  o_riscv_mw_resultsrc_wb,
     output logic        o_riscv_mw_regw_wb
 

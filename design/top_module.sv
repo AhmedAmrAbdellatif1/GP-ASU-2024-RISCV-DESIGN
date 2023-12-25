@@ -1,7 +1,7 @@
-module TOP_module 
+module riscv_top
   (
-     input logic i_riscv_clk ; 
-     input logic i_riscv_rst ;
+     input logic i_riscv_clk , 
+     input logic i_riscv_rst
   ) ;
 
 
@@ -13,7 +13,7 @@ logic       riscv_datapath_func7_5_cu       ;
 
 
 /////////////Signal From CU to datapath ////////////////
-logic       riscv_cu_regw_datapath,     /// from control unit
+logic       riscv_cu_regw_datapath;    /// from control unit
 logic       riscv_cu_jump_datapath;     /// from control unit      
 logic       riscv_cu_asel_datapath;     /// from control unit
 logic       riscv_cu_bsel_datapath;     /// from control unit
@@ -23,16 +23,10 @@ logic [1:0] riscv_cu_resultsrc_datapath;/// from control unit  [1:0]
 logic [3:0] riscv_cu_bcond_datapath;    /// from control unit [3:0] 
 logic [2:0] riscv_cu_memext_datapath;   /// from control unit [2:0]
 logic [4:0] riscv_cu_aluctrl_datapath;  /// from control unit [4:0]
-logic       riscv_cu_immsrc_datapath ;
+logic [2:0] riscv_cu_immsrc_datapath ; /// from control unit [2:0]
   
 
-/////////////Signal From DataPath to CU ////////////////
-logic [6:0] riscv_datapath_opcode_cu  ;
-logic [2:0] riscv_datapath_func3_cu   ;
-logic       riscv_datapath_func7_5_cu       ;
-
-
-  /////////////////////Signals datapath >< haazard unit /////////////
+ /////////////////////Signals datapath >< haazard unit /////////////
   logic [1:0] riscv_datapath_fwda_hzrdu;        /// from hazard unit  [1:0] 
   logic [1:0] riscv_datapath_fwdb_hzrdu;        /// from hazard unit  [1:0]
   logic       riscv_datapath_pcsrc_e_hzrdu;     /// to hazard unit   
@@ -59,15 +53,35 @@ logic       riscv_datapath_func7_5_cu       ;
   logic [4:0] riscv_datapath_rs2addr_d_hzrdu;/// to hazard unit [4:0]  
 
 
-riscv_datapath uut_datapath(               //#(parameter width=64) (
-    .i_riscv_datapath_clk(),
-    .i_riscv_datapath_rst(),
+////////////////////////signals from datapath to IM/////////////////////////
+logic [63:0] riscv_datapath_pc_im;
+////////////////////////signals from im to datapath/////////////////////////
+logic [31:0] riscv_im_inst_datapath;
+
+///////////////////////signals from datapath to DM/////////////////////////
+logic        riscv_datapath_memw_m_dm;
+logic [1:0]  riscv_datapath_storesrc_m_dm;
+logic [63:0] riscv_datapath_memodata_addr_dm;
+logic [63:0] riscv_datapath_storedata_m_dm;
+
+////////////////////////signals from im to datapath/////////////////////////
+logic [63:0] riscv_datapath_rdata_dm;
+
+
+
+
+
+
+
+riscv_datapath u_top_datapath(               //#(parameter width=64) (
+    .i_riscv_datapath_clk(i_riscv_clk),
+    .i_riscv_datapath_rst(i_riscv_rst),
   
   ///////////////////fetch//////////////////
   .i_riscv_datapath_stallpc(riscv_datapath_stallpc_hzrdu),  /// from hazard unit
-  .o_riscv_datapath_pc() ,                                    /// to im   [width-1:0]
+  .o_riscv_datapath_pc(riscv_datapath_pc_im) ,                                    /// to im   [width-1:0]
   ///////////////////fd_pff//////////////////
-  .i_riscv_datapath_inst(),                                 /// from im  [31:0]
+  .i_riscv_datapath_inst(riscv_im_inst_datapath),                                 /// from im  [31:0]
   .i_riscv_datapath_flush_fd(riscv_datapath_flush_fd_hzrdu), /// from hazard unit
   .i_riscv_datapath_stall_fd(riscv_datapath_stall_fd_hzrdu), /// from hazard unit
   /////////////////////decode///////////// 
@@ -102,12 +116,12 @@ riscv_datapath uut_datapath(               //#(parameter width=64) (
   .o_riscv_datapath_rdaddr_e(riscv_datapath_rdaddr_e_hzrdu),   /// to hazard unit [4:0]
   .o_riscv_datapath_resultsrc_e(riscv_datapath_resultsrc_e_hzrdu),  /// to hazard unit [1:0]  
   /////////////////////memory/////////////
-  .i_riscv_datapath_dm_rdata(),      /// from dm [width-1:0]
-  .o_riscv_datapath_storesrc_m(),   /// to dm [1:0]
-  .o_riscv_datapath_memodata_addr(),/// to dm [width-1:0]
-  .o_riscv_datapath_storedata_m(),  /// to dm [width-1:0]
+  .i_riscv_datapath_dm_rdata(riscv_datapath_rdata_dm),      /// from dm [width-1:0]
+  .o_riscv_datapath_storesrc_m(riscv_datapath_storesrc_m_dm),   /// to dm [1:0]
+  .o_riscv_datapath_memodata_addr(riscv_datapath_memodata_addr_dm),/// to dm [width-1:0]
+  .o_riscv_datapath_storedata_m(riscv_datapath_storedata_m_dm),  /// to dm [width-1:0]
+  .o_riscv_datapath_memw_m(riscv_datapath_memw_m_dm),       /// to dm &&&&&&  to hazard unit
 
-  .o_riscv_datapath_memw_m(riscv_datapath_memw_m_hzrdu),       /// to dm &&&&&&  to hazard unit
   .o_riscv_datapath_rdaddr_m(riscv_datapath_rdaddr_m_hzrdu),      /// to hazard unit [4:0]
   .o_riscv_datapath_regw_m(riscv_datapath_regw_m_hzrdu),       /// to hazard unit
   
@@ -119,7 +133,7 @@ riscv_datapath uut_datapath(               //#(parameter width=64) (
 
 
 
-riscv_cu uut_cu (
+riscv_cu u_top_cu (
 
   /////////////Signal From DataPath to CU ////////////////
   .i_riscv_cu_opcode(riscv_datapath_opcode_cu), //7-bit  opcode[6:0]             [6:0] 
@@ -143,7 +157,7 @@ riscv_cu uut_cu (
 
 
 
-riscv_hazardunit uut_hzrdu
+riscv_hazardunit u_top_hzrdu
 
  (  
   .i_riscv_hzrdu_rs1addr_d(riscv_datapath_rs1addr_d_hzrdu) ,  //// [4:0]
@@ -177,3 +191,21 @@ riscv_hazardunit uut_hzrdu
   .o_riscv_hzrdu_flushde(riscv_datapath_flush_de_hzrdu) 
 
   );
+
+riscv_im u_top_im(
+  .i_riscv_im_pc(riscv_datapath_pc_im),
+  .o_riscv_im_inst(riscv_im_inst_datapath)
+);
+
+riscv_dm u_top_dm(
+  .i_riscv_dm_clk_n(!i_riscv_clk),
+  .i_riscv_dm_rst(i_riscv_rst),
+  .i_riscv_dm_wen(riscv_datapath_memw_m_dm),
+  .i_riscv_dm_sel(riscv_datapath_storesrc_m_dm),
+  .i_riscv_dm_wdata(riscv_datapath_storedata_m_dm),
+  .i_riscv_dm_waddr(riscv_datapath_memodata_addr_dm),
+  .o_riscv_dm_rdata(riscv_datapath_rdata_dm)
+);
+
+endmodule
+
