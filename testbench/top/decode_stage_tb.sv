@@ -92,6 +92,32 @@ module riscv_top_tb();
     // addi x20 x20 10 --> branched to this inst
       itype_check('d20, 'd20, 'd0, 'd10);
 
+    // jal x5 8
+      jtype_check('d5, 'd8);
+
+    // addi x0 x0 0
+      itype_check('d0, 'd0, 'd0, 'd0);
+    
+    // addi x0 x0 0 --> flushed = nop
+      itype_check('d0, 'd0, 'd0, 'd0);
+    
+    // addi x0 x0 0 --> jumped to this inst
+      itype_check('d0, 'd0, 'd0, 'd0);
+
+    // jalr x11 x0 120
+      itype_check('d0, 'd11, 'd0, 'd120);
+    
+    // addi x1 x2 124
+      itype_check('d2, 'd1, 'd0, 'd124);
+    
+    // addi x0 x0 0 --> flushed = nop
+      itype_check('d0, 'd0, 'd0, 'd0);
+
+    // addi x1 x2 124
+      itype_check('d2, 'd1, 'd0, 'd124);
+    
+    // addi x1 x2 10
+      itype_check('d2, 'd1, 'd0, 'd10);
     $stop;
   end
 
