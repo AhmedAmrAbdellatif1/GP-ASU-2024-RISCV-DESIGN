@@ -197,7 +197,7 @@ instr_check('h00700233);
 
 #CLK_PERIOD;
 pc_check(76);              // beq x0, x0, 16
-instr_check('h00000863);   
+instr_check('h00000863);   // pcsrc =1 after 2 cycles 
 stall_check(1);
 
 #CLK_PERIOD;
@@ -208,6 +208,7 @@ instr_check('h07c88893);
 #CLK_PERIOD;
 pc_check(84);              // addi x18, x18, 125
 instr_check('h07d90913);
+pcsrc_check = (1);
 
 #CLK_PERIOD;
 pc_check(92);              // addi x20, x20, 10
@@ -215,7 +216,8 @@ instr_check('h00aa0a13);
 
 #CLK_PERIOD;
 pc_check(96);              // jal x5, 8
-instr_check('h008002ef);
+instr_check('h008002ef);   // pcsrc =1 after 2 cycles
+
 
 #CLK_PERIOD;
 pc_check(100);             // nop
@@ -223,7 +225,8 @@ instr_check('h00000013);
 
 #CLK_PERIOD;
 pc_check(104);             // nop
-instr_check('h00000013);
+instr_check('h00000013);   // pcsrc =1
+pcsrc_check = (1);
 
 #CLK_PERIOD;
 pc_check(104);             // nop (Jumped in) 
@@ -231,7 +234,7 @@ instr_check('h00000013);
 
 #CLK_PERIOD;              
 pc_check(108);             // jalr x11, x0, 0x78
-instr_check('h078005e7);
+instr_check('h078005e7);   // pcsrc =1 after 2 cycles
 
 #CLK_PERIOD;
 pc_check(112);             // addi x1, x2, 124
@@ -240,6 +243,7 @@ instr_check('h07c10093);
 #CLK_PERIOD;
 pc_check(116);             // addi x1, x2, 125
 instr_check('h07d10093);
+pcsrc_check = (1);
 
 #CLK_PERIOD;
 pc_check(120);             // addi x1, x2, 127
