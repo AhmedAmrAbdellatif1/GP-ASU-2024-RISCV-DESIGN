@@ -48,6 +48,36 @@ module riscv_top_tb();
 
     // bne x6 x7 -20
       btype_check('d6,'d7,'h100000,'h100000,-'sd20);
+
+    // addi x8 x0 15
+      itype_check('d0,'d8,'d0,'d15);
+
+    // sub x27 x8 x9
+      rtype_check('d8, 'd9, 'd27, 'd10, 'd20);
+
+    // or x29 x9 x8
+      rtype_check('d9, 'd8, 'd29, 'd20, 'd10);
+
+    // slliw x28 x9 2
+      itype_check('d9, 'd28, 'd20, 'd2);
+
+    // addi x0 x0 0
+      itype_check('d0, 'd0, 'd0, 'd0);
+
+    // addi x9 x0 30
+      itype_check('d0, 'd9, 'd0, 'd30);
+
+    // add x0 x9 x9
+      rtype_check('d9, 'd9, 'd0, 'd20, 'd20);
+    
+    // lb x7 0 x6
+      load_check('d6, 'd7, 'd0);
+    
+    // add x4 x0 x7
+      rtype_check('d0, 'd7, 'd4, 'd0, 'sd1048576);
+    
+    // beq x0 x0 16
+      btype_check('d0,'d0,'d0,'d0,'sd16)
     $stop;
   end
 
@@ -183,7 +213,7 @@ assign rs1data  = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rs1data;
 task rs1data_check;
     input [63:0] expect_data;
     begin
-      if(rs1data!= expect_data) $display("[%2d] rs1 addr failed",i);
+      if(rs1data!= expect_data) $display("[%2d] rs1 data failed",i);
     end
 endtask
 
