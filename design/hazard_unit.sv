@@ -46,7 +46,7 @@ always @(*)
                 (i_riscv_hzrdu_regw_m ) && 
                 (i_riscv_hzrdu_rdaddr_m !=0) )
                     begin
-                      o_riscv_hzrdu_fwdb = 1  ;
+                      o_riscv_hzrdu_fwdb = 2  ;
                     end
 
         else if ( (i_riscv_hzrdu_rs2addr_e == i_riscv_hzrdu_rdaddr_w ) &&
@@ -54,7 +54,7 @@ always @(*)
                 (i_riscv_hzrdu_rdaddr_w !=0 )  &&
                 (mem_asserted_data_hazard == 0 )  )
                     begin
-                      o_riscv_hzrdu_fwdb = 2 ;
+                      o_riscv_hzrdu_fwdb = 1 ;
                     end
         else 
 
@@ -74,7 +74,7 @@ always @(*)
                 (i_riscv_hzrdu_regw_m) &&
                 (i_riscv_hzrdu_rdaddr_m !=0) )
                    begin
-                     o_riscv_hzrdu_fwda  = 1  ;
+                     o_riscv_hzrdu_fwda  = 2  ;
                    end
 
         else if ( i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_w && 
@@ -82,7 +82,7 @@ always @(*)
                 (i_riscv_hzrdu_rdaddr_w !=0 ) && 
                 (~ mem_asserted_data_hazard ) )
                    begin
-                     o_riscv_hzrdu_fwda  = 2 ;
+                     o_riscv_hzrdu_fwda  = 1 ;
                    end
         else 
 
