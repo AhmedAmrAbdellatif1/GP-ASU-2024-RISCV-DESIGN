@@ -104,18 +104,27 @@ always @(*)
                   begin
                     o_riscv_hzrdu_stallpc = 1 ; 
                     o_riscv_hzrdu_stallfd = 1 ;  
-                    o_riscv_hzrdu_flushde = 1 ; 
+                    
                   end
  
         else     
                   begin
                     o_riscv_hzrdu_stallpc = 0 ;
                     o_riscv_hzrdu_stallfd = 0 ;  
-                    o_riscv_hzrdu_flushde = 0 ; 
+                    
                   end
 
 
     end
+
+    always @(*)
+        begin
+           if     ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
+                i_riscv_hzrdu_resultsrc_e == 2'b10 ) || i_riscv_hzrdu_pcsrc ) //Condition For branch hazard   
+                o_riscv_hzrdu_flushde = 1 ;
+            else
+                o_riscv_hzrdu_flushde = 0 ;        
+        end
 
 
 /*  supporting lw sw hazardalways @(*) 
@@ -169,7 +178,6 @@ always @(*)
 
 
 assign o_riscv_hzrdu_flushfd =  ( i_riscv_hzrdu_pcsrc )? 1 : 0 ;
-assign o_riscv_hzrdu_flushde =  ( i_riscv_hzrdu_pcsrc )? 1 : 0 ;
 
 /*assign o_riscv_hzrdu_flushde = (i_riscv_hzrdu_pcsrc)?1:0 ;
 assign o_riscv_hzrdu_stallfd = (i_riscv_hzrdu_pcsrc)?1:0;*/
