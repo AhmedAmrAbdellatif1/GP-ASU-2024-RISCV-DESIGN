@@ -71,7 +71,7 @@ always @(*)
 
     end
 
-/*always @(*) 
+    /*always @(*) make that always if input , output is assumed to be unsigned 
 begin 
     case (i_riscv_branch_cond[1])
 
