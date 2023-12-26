@@ -16,10 +16,10 @@ module riscv_hazardunit
     // input op1,op2
    input       [1:0]   i_riscv_hzrdu_resultsrc_e   ,
 
-   output reg  [1:0]   o_riscv_hzrdu_fwda  , 
+   output logic  [1:0]   o_riscv_hzrdu_fwda  , 
                        o_riscv_hzrdu_fwdb , //Concept behind Forwarding unit
 
-     output reg          o_riscv_hzrdu_stallpc  ,
+     output logic          o_riscv_hzrdu_stallpc  ,
                        o_riscv_hzrdu_stallfd  ,
                        o_riscv_hzrdu_flushfd ,
                        o_riscv_hzrdu_flushde ,
