@@ -77,7 +77,18 @@ module riscv_top_tb();
       rtype_check('d0, 'd7, 'd4, 'd0, 'sd1048576);
     
     // beq x0 x0 16
-      btype_check('d0,'d0,'d0,'d0,'sd16)
+      btype_check('d0,'d0,'d0,'d0,'sd16);
+    
+    // addi x17 x17 124
+      itype_check('d17,'d17,'d0, 'd124);
+
+    // addi x18 x18 125 --> flushed = nop
+      itype_check('d0, 'd0, 'd0, 'd0);
+    // addi x19 x19 127 --> ignored due to branch
+
+    // addi x20 x20 10
+      itype_check('d20, 'd20, 'd0, 'd10);
+
     $stop;
   end
 
