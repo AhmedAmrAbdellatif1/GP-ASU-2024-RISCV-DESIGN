@@ -10,7 +10,7 @@
     output logic [63:0] o_riscv_fd_pcplus4_d
   );
   
-  always_ff @(posedge i_riscv_fd_clk or posedge i_riscv_fd_rst)
+  always_ff @(posedge i_riscv_fd_clk)
     begin:f_d_pff_wirte
       if(i_riscv_fd_rst)
         begin

@@ -38,7 +38,7 @@
       output logic          o_riscv_de_regwrite_e,
       output logic          o_riscv_de_jump_e
   );
-    always_ff @(posedge i_riscv_de_clk or posedge i_riscv_de_rst )
+    always_ff @(posedge i_riscv_de_clk)
       begin:de_pff_write_proc
         if(i_riscv_de_rst)
         begin
