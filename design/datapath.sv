@@ -55,7 +55,7 @@ module riscv_datapath #(parameter width=64) (
   // logic                 riscv_pcsrc_fe;
   logic [width-1:0]     riscv_aluexe_fe;
   logic [width-1:0]     riscv_pcplus4_f;
-  logic                 riscv_rstctrl_f;
+  //logic                 riscv_rstctrl_f;
   //////decode internal signals ////////
   logic [31:0]           riscv_inst_d;
   logic [4:0]            riscv_rdaddr_d;
@@ -69,7 +69,7 @@ module riscv_datapath #(parameter width=64) (
   logic [width-1:0]      riscv_pc_d;
   logic [4:0]            riscv_rs1addr_d;
   logic [4:0]            riscv_rs2addr_d;
-  logic                  riscv_rstctrl_d;
+  //logic                  riscv_rstctrl_d;
   //////execute internal signals ////////
   logic  [width-1:0]     riscv_pc_e;
   logic  [width-1:0]     riscv_pcplus4_e;
@@ -107,8 +107,8 @@ module riscv_datapath #(parameter width=64) (
   logic [1:0]           riscv_resultsrc_wb;
 
   /////////
-  assign riscv_rstctrl_f               = i_riscv_datapath_flush_fd | i_riscv_datapath_rst;
-  assign riscv_rstctrl_d               = i_riscv_datapath_flush_de | i_riscv_datapath_rst;
+  //assign riscv_rstctrl_f               = i_riscv_datapath_flush_fd | i_riscv_datapath_rst;
+  //assign riscv_rstctrl_d               = i_riscv_datapath_flush_de | i_riscv_datapath_rst;
   assign o_riscv_datapath_pcsrc_e      = riscv_jump_e | riscv_branchtaken;
   assign o_riscv_datapath_rdaddr_m     = riscv_rdaddr_m;                                   // to hazard unit 
   assign o_riscv_datapath_memodata_addr= riscv_rddata_me;                                  // to data memory
@@ -132,7 +132,8 @@ module riscv_datapath #(parameter width=64) (
   ////fetch decode pipeline flip flops ////
   riscv_fd_ppreg u_riscv_fd_ppreg(
     .i_riscv_fd_clk      (i_riscv_datapath_clk),
-    .i_riscv_fd_rst      (riscv_rstctrl_f),
+    .i_riscv_fd_rst      (i_riscv_datapath_rst),
+    .i_riscv_fd_flush    (i_riscv_datapath_flush_fd),
     .i_riscv_fd_en       (i_riscv_datapath_stall_fd),
     .i_riscv_fd_pc_f     (o_riscv_datapath_pc),
     .i_riscv_fd_inst_f   (i_riscv_datapath_inst),
@@ -163,7 +164,8 @@ module riscv_datapath #(parameter width=64) (
   ////decode execute pipeline flip flops ////
   riscv_de_ppreg u_riscv_de_ppreg(
     .i_riscv_de_clk          (i_riscv_datapath_clk),
-    .i_riscv_de_rst          (riscv_rstctrl_d),
+    .i_riscv_de_rst          (i_riscv_datapath_rst),
+    .i_riscv_de_flush        (i_riscv_datapath_flush_de),
     .i_riscv_de_pc_d         (riscv_pc_d),
     .i_riscv_de_rs1addr_d    (riscv_rs1addr_d),
     .i_riscv_de_rs1data_d    (riscv_rs1data_d),

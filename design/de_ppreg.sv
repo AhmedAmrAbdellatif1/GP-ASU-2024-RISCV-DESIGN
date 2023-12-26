@@ -1,6 +1,7 @@
   module riscv_de_ppreg(
       input  logic          i_riscv_de_clk,
       input  logic          i_riscv_de_rst,
+      input  logic          i_riscv_de_flush,
       input  logic  [63:0]  i_riscv_de_pc_d,
       input  logic  [4:0]   i_riscv_de_rs1addr_d,
       input  logic  [63:0]  i_riscv_de_rs1data_d,
@@ -38,13 +39,34 @@
       output logic          o_riscv_de_regwrite_e,
       output logic          o_riscv_de_jump_e
   );
-    always_ff @(posedge i_riscv_de_clk)
+    always_ff @(posedge i_riscv_de_clk or posedge i_riscv_de_rst )
       begin:de_pff_write_proc
         if(i_riscv_de_rst)
         begin
            o_riscv_de_pc_e          <= 0;
            o_riscv_de_pcplus4_e     <= 0;
-           o_riscv_de_rs1addr_e     <=0;
+           o_riscv_de_rs1addr_e     <= 0;
+           o_riscv_de_rs1data_e     <= 0;
+           o_riscv_de_rs2data_e     <= 0;
+           o_riscv_de_rs2addr_e     <= 0;
+           o_riscv_de_rdaddr_e      <= 0;
+           o_riscv_de_extendedimm_e <= 0;
+           o_riscv_de_b_condition_e <= 0;
+           o_riscv_de_oprnd2sel_e   <= 0;
+           o_riscv_de_storesrc_e    <= 0;
+           o_riscv_de_alucontrol_e  <= 0;
+           o_riscv_de_oprnd1sel_e   <= 0;
+           o_riscv_de_memwrite_e    <= 0;
+           o_riscv_de_memext_e      <= 0;
+           o_riscv_de_resultsrc_e   <= 0;
+           o_riscv_de_regwrite_e    <= 0;
+           o_riscv_de_jump_e        <= 0;
+        end
+      if(i_riscv_de_flush)
+        begin
+           o_riscv_de_pc_e          <= 0;
+           o_riscv_de_pcplus4_e     <= 0;
+           o_riscv_de_rs1addr_e     <= 0;
            o_riscv_de_rs1data_e     <= 0;
            o_riscv_de_rs2data_e     <= 0;
            o_riscv_de_rs2addr_e     <= 0;

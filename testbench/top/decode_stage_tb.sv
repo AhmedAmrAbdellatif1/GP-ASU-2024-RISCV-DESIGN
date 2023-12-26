@@ -75,6 +75,9 @@ module riscv_top_tb();
     
     // add x4 x0 x7
       rtype_check('d0, 'd7, 'd4, 'd0, 'sd1048576);
+
+    // add x4 x0 x7 --> stalled  due to load
+      rtype_check('d0, 'd7, 'd4, 'd0, 'sd1048576);
     
     // beq x0 x0 16
       btype_check('d0,'d0,'d0,'d0,'sd16);
@@ -86,7 +89,7 @@ module riscv_top_tb();
       itype_check('d0, 'd0, 'd0, 'd0);
     // addi x19 x19 127 --> ignored due to branch
 
-    // addi x20 x20 10
+    // addi x20 x20 10 --> branched to this inst
       itype_check('d20, 'd20, 'd0, 'd10);
 
     $stop;
