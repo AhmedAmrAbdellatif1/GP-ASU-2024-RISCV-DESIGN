@@ -43,35 +43,59 @@ CheckEquality("sd x6, 0(x0) memload", memload, 0);
 CheckEquality("sd x6, 0(x0) memwrite", memwrite, 1);
 CheckEquality("sd x6, 0(x0) storesrc", storesrc, 'b11);
 CheckEquality("sd x6, 0(x0) data_addr", data_addr, 0);
-CheckEquality("sd x6, 0(x0) store_data", store_data, 'h100000);
+CheckEquality("sd x6, 0(x0) store_data", store_data, 'h100);
 
 #CLK_PERIOD;
 CheckEquality("ld x7, 0(x0) memext", memext,'b011);
-CheckEquality("ld x7, 0(x0) memload", memload, 'h1000000);
+CheckEquality("ld x7, 0(x0) memload", memload, 'h100);
 CheckEquality("ld x7, 0(x0) memwrite", memwrite, 0);
 CheckEquality("ld x7, 0(x0) data_addr", data_addr, 0);
 
 
 #CLK_PERIOD;
-
+CheckEquality("add x10, x8, x9 data", data, 0);
+CheckEquality("add x10, x8, x9 memext", memext, 0);
+CheckEquality("add x10, x8, x9 memload", memload, 0);
 CheckEquality("add x10, x8, x9 memwrite", memwrite, 0);
+CheckEquality("add x10, x8, x9 storesrc", storesrc, 0);
+CheckEquality("add x10, x8, x9 data_addr", data_addr, 0);
+CheckEquality("add x10, x8, x9 store_data", store_data, 0);
 
 #CLK_PERIOD;
-
+CheckEquality("lui x5, 0x20000 data", data, 0);
+CheckEquality("lui x5, 0x20000 memext", memext, 0);
+CheckEquality("lui x5, 0x20000 memload", memload, 0);
 CheckEquality("lui x5, 0x20000 memwrite", memwrite, 0);
+CheckEquality("lui x5, 0x20000 storesrc", storesrc, 0);
+CheckEquality("lui x5, 0x20000 data_addr", data_addr, 0);
+CheckEquality("lui x5, 0x20000 store_data", store_data, 0);
 
 #CLK_PERIOD;
-
+CheckEquality("addiw x4, x0, 18 data", data, 0);
+CheckEquality("addiw x4, x0, 18 memext", memext, 0);
+CheckEquality("addiw x4, x0, 18 memload", memload, 0);
 CheckEquality("addiw x4, x0, 18 memwrite", memwrite, 0);
+CheckEquality("addiw x4, x0, 18 storesrc", storesrc, 0);
+CheckEquality("addiw x4, x0, 18 data_addr", data_addr, 0);
+CheckEquality("addiw x4, x0, 18 store_data", store_data, 0);
 
 #CLK_PERIOD;
-
+CheckEquality("sltu x3, x8, x9 data", data, 0);
+CheckEquality("sltu x3, x8, x9 memext", memext, 0);
+CheckEquality("sltu x3, x8, x9 memload", memload, 0);
 CheckEquality("sltu x3, x8, x9 memwrite", memwrite, 0);
+CheckEquality("sltu x3, x8, x9 storesrc", storesrc, 0);
+CheckEquality("sltu x3, x8, x9 data_addr", data_addr, 0);
+CheckEquality("sltu x3, x8, x9 store_data", store_data, 0);
 
 #CLK_PERIOD;
-
+CheckEquality("bne x6, x7, -20 data", data, 0);
+CheckEquality("bne x6, x7, -20 memext", memext, 0);
+CheckEquality("bne x6, x7, -20 memload", memload, 0);
 CheckEquality("bne x6, x7, -20 memwrite", memwrite, 0);
-
+CheckEquality("bne x6, x7, -20 storesrc", storesrc, 0);
+CheckEquality("bne x6, x7, -20 data_addr", data_addr, 0);
+CheckEquality("bne x6, x7, -20 store_data", store_data, 0);
 
   
 

@@ -208,7 +208,7 @@ instr_check('h07c88893);
 #CLK_PERIOD;
 pc_check(84);              // addi x18, x18, 125
 instr_check('h07d90913);
-pcsrc_check = (1);
+pcsrc_check (1);
 
 #CLK_PERIOD;
 pc_check(92);              // addi x20, x20, 10
@@ -226,7 +226,7 @@ instr_check('h00000013);
 #CLK_PERIOD;
 pc_check(104);             // nop
 instr_check('h00000013);   // pcsrc =1
-pcsrc_check = (1);
+pcsrc_check(1);
 
 #CLK_PERIOD;
 pc_check(104);             // nop (Jumped in) 
@@ -243,7 +243,7 @@ instr_check('h07c10093);
 #CLK_PERIOD;
 pc_check(116);             // addi x1, x2, 125
 instr_check('h07d10093);
-pcsrc_check = (1);
+pcsrc_check (1);
 
 #CLK_PERIOD;
 pc_check(120);             // addi x1, x2, 127
