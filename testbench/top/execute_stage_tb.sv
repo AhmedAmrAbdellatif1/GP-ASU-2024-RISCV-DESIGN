@@ -55,6 +55,34 @@ module riscv_top_tb();
   #CLK_PERIOD; 
   i ++ ; 
   execute_stage_check ('h24, -'sd20, 'd16) ;       //10  //bne x6, x7, -20 
+   #CLK_PERIOD;
+
+
+ //Testing Hazards : Case (1)
+  i ++ ; 
+  execute_stage_check ('d0, 'd15, 'd15) ;          //11  //addi x8, x0, 15 
+  #CLK_PERIOD;
+  i ++ ;   
+  execute_stage_check ('d15, 'd20, -'sd5) ;        //12  //sub x27, x8, x9  --> rs1 value forwarded
+  #CLK_PERIOD;
+  i ++ ;
+  execute_stage_check ('d20, 'd15, 'd31) ;         //13  //or x29, x9, x8  --> rs2 value forwarded
+  #CLK_PERIOD;
+  i ++ ;  
+  execute_stage_check ('d20, 'd2, 'd80) ;          //14  //slliw x28, x9, 2             
+  #CLK_PERIOD;
+  i ++ ;  
+  execute_stage_check ('d0, 'd0, 'd0) ;            //15  //nop
+  #CLK_PERIOD;
+
+ //Testing Hazards : Case (2)
+  i ++ ;  
+  execute_stage_check ('d0, 'd30, 'd30) ;          //16  //addi x9, x0, 30
+  #CLK_PERIOD; 
+  i ++ ;  
+  execute_stage_check ('d20, 'd20, 'd40) ;         //17  //add  x0, x9, x9  --> rs1,rs2 value not forwarded (rdaddr = 0x0)
+ 
+ 
   
   #(10*CLK_PERIOD) ;
   $stop ;
