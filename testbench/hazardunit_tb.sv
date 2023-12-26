@@ -1,6 +1,6 @@
 /**********************************************************/
 /* Module Name: riscv_hazardunit                        */
-/* Last Modified Date: 24/12/2023                       */
+/* Last Modified Date: 25/12/2023                       */
 /* By: Rana Mohamed                                     */
 /**********************************************************/
 `timescale 1ns/1ns
@@ -110,15 +110,15 @@ module riscv_hazardunit_tb();
 
 // Test 5: stalling and flushing
  i = 1;
- stall_flush (4'd30, 4'd10, 4'd30, 2'b10, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1) ; //19 //pc stall
+ stall_flush (4'd30, 4'd10, 4'd30, 2'b10, 1'b0, 1'b1, 1'b1, 1'b1, 1'b1) ; //19 //pc stall
  i++;
- stall_flush (4'd30, 4'd10, 4'd10, 2'b10, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1) ; //20 //pc stall
+ stall_flush (4'd30, 4'd10, 4'd10, 2'b10, 1'b0, 1'b1, 1'b1, 1'b1, 1'b1) ; //20 //pc stall
  i++;
  stall_flush (4'd30, 4'd10, 4'd20, 2'b10, 1'b1, 1'b0, 1'b0, 1'b0, 1'b1) ; //21 //pc flush //different addresses but pcsrc =1
  i++; 
  stall_flush (4'd30, 4'd30, 4'd20, 2'b00, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0) ; //22 //no stall
  i++;
- stall_flush (4'd30, 4'd10, 4'd30, 2'b11, 1'b1, 1'b0, 1'b0, 1'b0, 1'b1) ; //23 //no stall 
+ stall_flush (4'd30, 4'd10, 4'd30, 2'b11, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0) ; //23 //no stall 
  i++;
 
 
