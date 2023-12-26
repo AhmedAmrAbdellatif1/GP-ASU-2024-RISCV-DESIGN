@@ -109,9 +109,9 @@ module riscv_alu_tb();
     i++;
     srl_test('sd51279,'d2,'sd12819); // 2
     i++;
-    srl_test(-'sd61581,'d3,64'sh1FFFFFFFFFFFE1EE); // 3
+    srl_test(-'sd61581,'d3,'sh1FFFFFFFFFFFE1EE); // 3
     i++;
-    srl_test(-'sd1289,'d4,64'shFFFFFFFFFFFFFAF); // 4
+    srl_test(-'sd1289,'d4,'shFFFFFFFFFFFFFAF); // 4
     i++;
 
     /************ sra ************/
