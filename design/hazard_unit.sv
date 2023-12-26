@@ -169,6 +169,7 @@ always @(*)
 
 
 assign o_riscv_hzrdu_flushfd =  ( i_riscv_hzrdu_pcsrc )? 1 : 0 ;
+assign o_riscv_hzrdu_flushde =  ( i_riscv_hzrdu_pcsrc )? 1 : 0 ;
 
 /*assign o_riscv_hzrdu_flushde = (i_riscv_hzrdu_pcsrc)?1:0 ;
 assign o_riscv_hzrdu_stallfd = (i_riscv_hzrdu_pcsrc)?1:0;*/
