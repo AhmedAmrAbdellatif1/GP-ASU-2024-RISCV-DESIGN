@@ -169,22 +169,22 @@ riscv_hazardunit u_top_hzrdu
   .i_riscv_hzrdu_resultsrc_e(riscv_datapath_resultsrc_e_hzrdu)   ,  //[1:0]
   .i_riscv_hzrdu_rdaddr_e(riscv_datapath_rdaddr_e_hzrdu) ,  //[4:0]
   //Excute
-  .o_riscv_hzrdu_fwda(riscv_datapath_fwda_hzrdu)  ,   //[1:0]  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>define their postion in excute
-  .o_riscv_hzrdu_fwdb(riscv_datapath_fwdb_hzrdu) , //Concept behind Forwarding unit [1:0]
+   .o_riscv_hzrdu_fwda(riscv_datapath_fwda_hzrdu)  ,   //[1:0]  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>define their postion in excute >>_e
+   .o_riscv_hzrdu_fwdb(riscv_datapath_fwdb_hzrdu) , // [1:0]
 
   .i_riscv_hzrdu_rdaddr_m(riscv_datapath_rdaddr_m_hzrdu) , // [4:0]
- // .i_riscv_hzrdu_memw_m(riscv_datapath_memw_m_hzrdu) ,    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+   // .i_riscv_hzrdu_memw_m(riscv_datapath_memw_m_hzrdu) ,    //>>>>>>>>>>>> added when support load sw forwadding
   .i_riscv_hzrdu_regw_m(riscv_datapath_regw_m_hzrdu)   ,
   
       
-  .i_riscv_hzrdu_pcsrc(riscv_datapath_pcsrc_e_hzrdu) ,   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>??excute
+   .i_riscv_hzrdu_pcsrc(riscv_datapath_pcsrc_e_hzrdu) ,   //>>>>>>>>>>>>>>>>>??excute >>_e : is missed
 
   .i_riscv_hzrdu_rdaddr_w(riscv_datapath_rdaddr_wb_hzrdu) ,  // [4:0]
   .i_riscv_hzrdu_regw_w(riscv_datapath_regw_wb_hzrdu)  ,
 
  
   
-  //>>>>>> name check
+  //>>>>>> name check to define their location in stages or not _e ,_d , ..
   .o_riscv_hzrdu_stallpc(riscv_datapath_stallpc_hzrdu)  , 
   .o_riscv_hzrdu_stallfd(riscv_datapath_stall_fd_hzrdu)  , 
   .o_riscv_hzrdu_flushfd(riscv_datapath_flush_fd_hzrdu) ,  
