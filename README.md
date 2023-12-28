@@ -4,12 +4,12 @@
 This project focuses on the design and implementation of a pipelined RISC-V 64-bit base I instruction architecture using SystemVerilog.
 
 ### Team Members
-- Ahmed Amr Abdellatif - Verification
-- Rana Mohamed Abdullah - Verification
-- Abdelrahman Mohamed Abdelhalim - Verification
-- Bishoy Emad William - Design
-- Hebatallah Hesham Sayed - Design
-- Omar Ezzeldin Mohamed
+- [Ahmed Amr Abdellatif](mailto:ahmedamrabdellatif@gmail.com) - Verification
+- [Rana Mohamed Abdullah](mailto:rana.abdalluh.1d@gmail.com) - Verification
+- [Abdelrahman Mohamed Abdelhalim](mailto:abdomohamed1961@gmail.com) - Verification
+- [Bishoy Emad William](mailto:Emadwilliam055@gmail.com) - Design
+- [Hebatallah Hesham Sayed](mailto:hheba0770@gmail.com) - Design
+- [Omar Ezzeldin Mohamed](mailto:omarezzeldin121@gmail.com) - Design
 
 ## Repository Structure
 The GitHub repository contains the following directories and files:
