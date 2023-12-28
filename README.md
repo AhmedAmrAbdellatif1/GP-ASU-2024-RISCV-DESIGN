@@ -4,11 +4,11 @@
 This project focuses on the design and implementation of a pipelined RISC-V 64-bit base I instruction architecture using SystemVerilog.
 
 ### Team Members
-- [Ahmed Amr Abdellatif](mailto:ahmedamrabdellatif@gmail.com) - Verification
+- [Ahmed Amr Abdellatif](https://www.linkedin.com/in/ahmed-amr-abdellatif/) - Verification
 - [Rana Mohamed Abdullah](mailto:rana.abdalluh.1d@gmail.com) - Verification
 - [Abdelrahman Mohamed Abdelhalim](mailto:abdomohamed1961@gmail.com) - Verification
-- [Bishoy Emad William](mailto:Emadwilliam055@gmail.com) - Design
-- [Hebatallah Hesham Sayed](mailto:hheba0770@gmail.com) - Design
+- [Bishoy Emad William](https://www.linkedin.com/in/bishoy-emad-527812227/) - Design
+- [Hebatallah Hesham Sayed](https://www.linkedin.com/in/hebatallah-hesham-a68818240/) - Design
 - [Omar Ezzeldin Mohamed](mailto:omarezzeldin121@gmail.com) - Design
 
 ## Repository Structure
@@ -27,7 +27,7 @@ This file provides an overview of the design, including:
 - Pipeline stages and their functionalities.
 
 ### 2. `design/rv64i_processor.sv`
-The main SystemVerilog file containing the implementation of the pipelined RISC-V 64-bit processor.
+The main SystemVerilog file contains the implementation of the pipelined RISC-V 64-bit processor.
 
 ### 3. `design/module1.sv`, `design/module2.sv`, ...
 Description of individual modules or components, such as ALU, control unit, register file, etc., if present.
