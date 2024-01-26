@@ -47,7 +47,7 @@ CheckEquality("sd x6, 0(x0) store_data", store_data, 'h100000);
 
 #CLK_PERIOD;
 CheckEquality("ld x7, 0(x0) memext", memext,'b011);
-CheckEquality("ld x7, 0(x0) memload", memload, 'h100000);
+CheckEquality("ld x7, 0(x0) memload", memload, 'h1000000);
 CheckEquality("ld x7, 0(x0) memwrite", memwrite, 0);
 CheckEquality("ld x7, 0(x0) data_addr", data_addr, 0);
 
