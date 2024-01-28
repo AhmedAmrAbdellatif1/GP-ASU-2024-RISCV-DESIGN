@@ -1,0 +1,3 @@
+var g_data = {'dummy':null,
+'1':'branch_comp.sv',
+'2':'branch_comp_tb.sv'};

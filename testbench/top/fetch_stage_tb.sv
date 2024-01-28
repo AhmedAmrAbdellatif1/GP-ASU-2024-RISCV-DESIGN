@@ -9,7 +9,7 @@ module riscv_top_tb();
 /************** Internal Signals Declaration **************/
   logic clk,rst;
   logic [31:0] instr;
-    logic [63:0] nextpc;
+  logic [63:0] nextpc;
   logic [63:0] pc;
   logic [63:0] pcplus4;
   logic [63:0] aluexe;

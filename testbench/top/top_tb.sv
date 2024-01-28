@@ -14,6 +14,7 @@ module riscv_top_tb();
   logic [31:0]  instr;
   logic [63:0]  nextpc;
   logic [63:0]  pc;
+  logic         stall_pc,pcsrc;
   logic [63:0]  pcplus4;
   logic [63:0]  aluexe;
   logic [63:0]  op1 ;
@@ -28,6 +29,30 @@ module riscv_top_tb();
   logic [63:0]  store_data;
 
   integer i,k,m;
+
+  assign rs1addr    = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rs1addr;  
+  assign rs2addr    = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rs2addr;
+  assign rdaddr     = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rdaddr;
+  assign rs1data    = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rs1data;
+  assign rs2data    = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rs2data;  
+  assign imm        = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_simm;
+  assign pc         = DUT.u_top_datapath.u_riscv_fstage.o_riscv_fstage_pc;
+  assign stall_pc   = DUT.u_top_datapath.u_riscv_fstage.i_riscv_fstage_stallpc;
+  assign pcsrc      = DUT.u_top_datapath.u_riscv_fstage.i_riscv_fstage_pcsrc;
+  assign aluexe     = DUT.u_top_datapath.u_riscv_fstage.i_riscv_fstage_aluexe;
+  assign pcplus4    = DUT.u_top_datapath.u_riscv_fstage.o_riscv_fstage_pcplus4;
+  assign nextpc     = DUT.u_top_datapath.u_riscv_fstage.o_riscv_pcmux_nextpc;
+  assign instr      = DUT.riscv_im_inst_datapath;
+  assign op1        = DUT.u_top_datapath.u_riscv_estage.o_riscv_OperandmuxA_OperandALUA ;
+  assign op2        = DUT.u_top_datapath.u_riscv_estage.o_riscv_OperandmuxB_OperandALUB ;
+  assign result     = DUT.u_top_datapath.u_riscv_estage.o_riscv_estage_aluresult ;
+  assign memload    = DUT.u_top_datapath.uriscv_mstage.o_riscv_mstage_memload;
+  assign memext     = DUT.u_top_datapath.uriscv_mstage.i_riscv_mstage_memext;
+  assign data       = DUT.u_top_datapath.uriscv_mstage.i_riscv_mstage_dm_rdata;
+  assign storesrc   = DUT.riscv_datapath_storesrc_m_dm;
+  assign memwrite   = DUT.riscv_datapath_memw_m_dm;
+  assign data_addr  = DUT.riscv_datapath_memodata_addr_dm;
+  assign store_data = DUT.riscv_datapath_storedata_m_dm;
 
 /********************* Initial Blocks *********************/
   initial begin : proc_decode
@@ -681,29 +706,7 @@ task execute_stage_check ;
     end 
   endtask
 
-assign rs1addr    = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rs1addr;  
-assign rs2addr    = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rs2addr;
-assign rdaddr     = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rdaddr;
-assign rs1data    = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rs1data;
-assign rs2data    = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_rs2data;  
-assign imm        = DUT.u_top_datapath.u_riscv_dstage.o_riscv_dstage_simm;
-assign pc         = DUT.u_top_datapath.u_riscv_fstage.o_riscv_fstage_pc;
-assign stall_pc   = DUT.u_top_datapath.u_riscv_fstage.i_riscv_fstage_stallpc;
-assign pcsrc      = DUT.u_top_datapath.u_riscv_fstage.i_riscv_fstage_pcsrc;
-assign aluexe     = DUT.u_top_datapath.u_riscv_fstage.i_riscv_fstage_aluexe;
-assign pcplus4    = DUT.u_top_datapath.u_riscv_fstage.o_riscv_fstage_pcplus4;
-assign nextpc     = DUT.u_top_datapath.u_riscv_fstage.o_riscv_pcmux_nextpc;
-assign instr      = DUT.riscv_im_inst_datapath;
-assign op1        = DUT.u_top_datapath.u_riscv_estage.o_riscv_OperandmuxA_OperandALUA ;
-assign op2        = DUT.u_top_datapath.u_riscv_estage.o_riscv_OperandmuxB_OperandALUB ;
-assign result     = DUT.u_top_datapath.u_riscv_estage.o_riscv_estage_aluresult ;
-assign memload    = DUT.u_top_datapath.uriscv_mstage.o_riscv_mstage_memload;
-assign memext     = DUT.u_top_datapath.uriscv_mstage.i_riscv_mstage_memext;
-assign data       = DUT.u_top_datapath.uriscv_mstage.i_riscv_mstage_dm_rdata;
-assign storesrc   = DUT.riscv_datapath_storesrc_m_dm;
-assign memwrite   = DUT.riscv_datapath_memw_m_dm;
-assign data_addr  = DUT.riscv_datapath_memodata_addr_dm;
-assign store_data = DUT.riscv_datapath_storedata_m_dm;
+
 
 /******************** DUT Instantiation *******************/
 

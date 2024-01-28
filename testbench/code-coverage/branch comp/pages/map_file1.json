@@ -1,0 +1,5 @@
+var g_data = {'dummy':{null},
+'work.riscv_branch':{h:'3',z:1},
+'/riscv_branch_tb/DUT':{h:'205',z:1},
+'work.riscv_branch_tb':{h:'2',z:1},
+'/riscv_branch_tb':{h:'4',z:1}};
