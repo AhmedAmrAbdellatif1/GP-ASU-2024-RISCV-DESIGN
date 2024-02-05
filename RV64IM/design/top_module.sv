@@ -22,7 +22,7 @@ logic [1:0] riscv_cu_storesrc_datapath; /// from control unit [1:0]
 logic [1:0] riscv_cu_resultsrc_datapath;/// from control unit  [1:0] 
 logic [3:0] riscv_cu_bcond_datapath;    /// from control unit [3:0] 
 logic [2:0] riscv_cu_memext_datapath;   /// from control unit [2:0]
-logic [4:0] riscv_cu_aluctrl_datapath;  /// from control unit [4:0]
+logic [5:0] riscv_cu_aluctrl_datapath;  /// from control unit [4:0]
 logic [2:0] riscv_cu_immsrc_datapath ; /// from control unit [2:0]
   
 
