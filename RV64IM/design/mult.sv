@@ -4,8 +4,7 @@ input  logic signed [63:0]   rs2,
 input  logic        [2:0]    MULControl,
 output logic signed [63:0]  product
 );
-typedef enum logic [2:0] {mul=3'b100,mulh=3'b101,mulhu=3'b110,mulhsu=3'b111} t_control ;
-t_control MULControl;
+
 logic signed [127:0]  result;
 integer i;
 

@@ -1,11 +1,8 @@
 module mult_tb();
-
-    typedef enum logic [2:0] {mul=3'b100,mulh=3'b101,mulhu=3'b110,mulhsu=3'b111} TEST ;
-
     logic signed [63:0]   A;
     logic signed [63:0]   B;
     logic signed [63:0]   Y;
-    TEST                  ctrl;
+    enum  logic [2:0] {mul=3'b100,mulh=3'b101,mulhu=3'b110,mulhsu=3'b111} ctrl;
 
     initial
     begin
