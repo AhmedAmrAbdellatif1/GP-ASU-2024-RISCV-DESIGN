@@ -43,7 +43,7 @@ riscv_multiplier u_mul (
 riscv_divider u_divider (
     .i_riscv_div_rs1data (i_riscv_icu_rs1data),
     .i_riscv_div_rs2data (i_riscv_icu_rs2data),
-    .i_riscv_div_mulctrl (i_riscv_icu_divctrl),
+    .i_riscv_div_divctrl (i_riscv_icu_divctrl),
     .o_riscv_div_product (div_result)
 );
 
