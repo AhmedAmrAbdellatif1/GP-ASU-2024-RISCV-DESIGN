@@ -4,6 +4,8 @@ module riscv_estage #(parameter width=64)(
 //Common Signals to Forward_mux_A,B , Branch Compartor
  input  logic signed [width-1:0] i_riscv_estage_rs1data ,
  input  logic signed [width-1:0] i_riscv_estage_rs2data  ,
+ input  logic signed [63:0]      i_riscv_icu_alurs1data,
+ input  logic signed [63:0]      i_riscv_icu_alurs2data,
   //u_Forward_mux_A Signals
  input  logic  [1:0]      i_riscv_estage_fwda , 
    
@@ -105,8 +107,10 @@ riscv_mux2 u_Operand_mux_B(
 
   ///////////////////////////////////ICU//////////////////
 riscv_ICU u_icu (
-  .i_riscv_icu_rs1data (o_riscv_OperandmuxA_OperandALUA),
-  .i_riscv_icu_rs2data (o_riscv_OperandmuxB_OperandALUB),
+  .i_riscv_icu_alurs1data(o_riscv_OperandmuxA_OperandALUA),
+  .i_riscv_icu_alurs2data (o_riscv_OperandmuxB_OperandALUB),
+  .i_riscv_icu_rs1data(i_riscv_estage_rs1data),
+  .i_riscv_icu_rs2data(i_riscv_estage_rs2data),
   .i_riscv_icu_bcond   (i_riscv_estage_bcond),
   .i_riscv_icu_mulctrl (i_riscv_estage_mulctrl),
   .i_riscv_icu_divctrl (i_riscv_estage_divctrl),

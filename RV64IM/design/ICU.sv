@@ -1,6 +1,8 @@
 module riscv_ICU (
 input  logic signed [63:0]     i_riscv_icu_rs1data,
 input  logic signed [63:0]     i_riscv_icu_rs2data,
+input  logic signed [63:0]     i_riscv_icu_alurs1data,
+input  logic signed [63:0]     i_riscv_icu_alurs2data,
 input  logic        [3:0]      i_riscv_icu_bcond,
 input  logic        [2:0]      i_riscv_icu_mulctrl,
 input  logic        [2:0]      i_riscv_icu_divctrl,
@@ -17,8 +19,8 @@ logic signed [63:0]     mul_result;
 ////////////////////////////////ALU//////////////////////
 riscv_alu u_ALU (
     .i_riscv_alu_ctrl    (i_riscv_icu_aluctrl),
-    .i_riscv_alu_rs1data (i_riscv_icu_rs1data),
-    .i_riscv_alu_rs2data (i_riscv_icu_rs2data),
+    .i_riscv_alu_rs1data (i_riscv_icu_alurs1data),
+    .i_riscv_alu_rs2data (i_riscv_icu_alurs2data),
     .o_riscv_alu_result  (alu_result)
 );
 
