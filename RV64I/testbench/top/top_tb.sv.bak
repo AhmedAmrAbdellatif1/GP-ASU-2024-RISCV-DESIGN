@@ -45,7 +45,7 @@ module riscv_top_tb();
   assign instr      = DUT.riscv_im_inst_datapath;
   assign op1        = DUT.u_top_datapath.u_riscv_estage.o_riscv_OperandmuxA_OperandALUA ;
   assign op2        = DUT.u_top_datapath.u_riscv_estage.o_riscv_OperandmuxB_OperandALUB ;
-  assign result     = DUT.u_top_datapath.u_riscv_estage.o_riscv_estage_result ;
+  assign result     = DUT.u_top_datapath.u_riscv_estage.o_riscv_estage_aluresult ;
   assign memload    = DUT.u_top_datapath.uriscv_mstage.o_riscv_mstage_memload;
   assign memext     = DUT.u_top_datapath.uriscv_mstage.i_riscv_mstage_memext;
   assign data       = DUT.u_top_datapath.uriscv_mstage.i_riscv_mstage_dm_rdata;

@@ -807,7 +807,7 @@ always_comb
                      o_riscv_cu_bcond[3]   = 1'b1;
                      o_riscv_cu_memext     = 3'b000;//xx
                      o_riscv_cu_immsrc     = 3'b100;
-                     o_riscv_cu_aluctrl    = 6'b000000;
+                     o_riscv_cu_aluctrl    = 6'b100000;
                      o_riscv_cu_mulctrl = 3'b000;
                      o_riscv_cu_divctrl = 3'b000;
                      o_riscv_cu_funcsel=2'b10;
@@ -824,6 +824,9 @@ always_comb
                   o_riscv_cu_memext     = 3'b000;//xx
                   o_riscv_cu_immsrc     = 3'b000;
                   o_riscv_cu_aluctrl    = 6'b100000;
+                  o_riscv_cu_mulctrl = 3'b000;
+                  o_riscv_cu_divctrl = 3'b000;
+                  o_riscv_cu_funcsel=2'b10;
                 end
                    
 	  endcase
