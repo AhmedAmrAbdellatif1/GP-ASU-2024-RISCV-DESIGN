@@ -1,4 +1,4 @@
-module riscv_datapath_wrong #(parameter width=64) (
+/*module riscv_datapath_wrong #(parameter width=64) (
   input  logic             i_riscv_datapath_clk,
   input  logic             i_riscv_datapath_rst,
   
@@ -298,3 +298,4 @@ module riscv_datapath_wrong #(parameter width=64) (
   );
 
 endmodule
+*/
