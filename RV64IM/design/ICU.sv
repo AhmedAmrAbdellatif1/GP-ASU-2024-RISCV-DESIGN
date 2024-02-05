@@ -19,7 +19,7 @@ riscv_alu u_ALU (
     .i_riscv_alu_ctrl    (i_riscv_icu_aluctrl),
     .i_riscv_alu_rs1data (i_riscv_icu_rs1data),
     .i_riscv_alu_rs2data (i_riscv_icu_rs2data),
-    .o_riscv_alu_result  (o_riscv_icu_result)
+    .o_riscv_alu_result  (alu_result)
 );
 
 ////////////////////////////BRANCH///////////////////////
