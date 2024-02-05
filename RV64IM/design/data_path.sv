@@ -108,7 +108,7 @@ module riscv_datapath_wrong #(parameter width=64) (
   logic [width-1:0]     riscv_memload_m;
   ////// write back ineternal signals///////
   logic [width-1:0]     riscv_pcplus4_wb;
-  logic [width-1:0]     riscv_aluresult_wb;
+  logic [width-1:0]     riscv_result_wb;
   logic [width-1:0]     riscv_uimm_wb;
   logic [width-1:0]     riscv_memload_wb;
   logic [1:0]           riscv_resultsrc_wb;
@@ -234,7 +234,7 @@ module riscv_datapath_wrong #(parameter width=64) (
     
     .i_riscv_estage_simm       (riscv_extendedimm_e),
     .i_riscv_estage_bcond      (riscv_b_condition_e),
-    .o_riscv_estage_aluresult  (riscv_aluexe_fe),
+    .o_riscv_estage_result  (riscv_aluexe_fe),
     .o_riscv_estage_branchtaken(riscv_branchtaken)
   );
    ////execute memory pipeline flip flops ////
@@ -247,7 +247,7 @@ module riscv_datapath_wrong #(parameter width=64) (
     .i_riscv_em_storesrc_e (riscv_storesrc_e),
     .i_riscv_em_memext_e   (riscv_memext_e),
     .i_riscv_em_pcplus4_e  (riscv_pcplus4_e),
-    .i_riscv_em_aluresult_e(riscv_aluexe_fe),
+    .i_riscv_em_result_e(riscv_aluexe_fe),
     .i_riscv_em_storedata_e(riscv_rs2data_e),
     .i_riscv_em_rdaddr_e   (riscv_rdaddr_e),
     .i_riscv_em_imm_e      (riscv_extendedimm_e),
@@ -257,7 +257,7 @@ module riscv_datapath_wrong #(parameter width=64) (
     .o_riscv_em_storesrc_m (o_riscv_datapath_storesrc_m),
     .o_riscv_em_memext_m   (riscv_memext_m),
     .o_riscv_em_pcplus4_m  (riscv_pcplus4_m),
-    .o_riscv_em_aluresult_m(riscv_rddata_me ),
+    .o_riscv_em_result_m(riscv_rddata_me ),
     .o_riscv_em_storedata_m(o_riscv_datapath_storedata_m),
     .o_riscv_em_rdaddr_m   (riscv_rdaddr_m),
     .o_riscv_em_imm_m      (riscv_imm_m)
@@ -273,14 +273,14 @@ module riscv_datapath_wrong #(parameter width=64) (
     .i_riscv_mw_clk         (i_riscv_datapath_clk),
     .i_riscv_mw_rst         (i_riscv_datapath_rst),
     .i_riscv_mw_pcplus4_m   (riscv_pcplus4_m),
-    .i_riscv_mw_aluresult_m (riscv_rddata_me),//
+    .i_riscv_mw_result_m (riscv_rddata_me),//
     .i_riscv_mw_uimm_m      (riscv_imm_m),
     .i_riscv_mw_memload_m   (i_riscv_datapath_dm_rdata),
     .i_riscv_mw_rdaddr_m    (riscv_rdaddr_m),
     .i_riscv_mw_resultsrc_m (riscv_resultsrc_m),
     .i_riscv_mw_regw_m      (riscv_regw_m),
     .o_riscv_mw_pcplus4_wb  (riscv_pcplus4_wb),
-    .o_riscv_mw_aluresult_wb(riscv_aluresult_wb),
+    .o_riscv_mw_result_wb(riscv_result_wb),
     .o_riscv_mw_uimm_wb     (riscv_uimm_wb),
     .o_riscv_mw_memload_wb  (riscv_memload_wb),
     .o_riscv_mw_rdaddr_wb   (riscv_rdaddr_wb),
@@ -291,7 +291,7 @@ module riscv_datapath_wrong #(parameter width=64) (
   riscv_wbstage u_riscv_wbstage(
     .i_riscv_wb_resultsrc(riscv_resultsrc_wb),
     .i_riscv_wb_pcplus4  (riscv_pcplus4_wb),
-    .i_riscv_wb_aluresult(riscv_aluresult_wb),
+    .i_riscv_wb_result(riscv_result_wb),
     .i_riscv_wb_memload  (riscv_memload_wb),
     .i_riscv_wb_uimm     (riscv_uimm_wb),
     .o_riscv_wb_rddata   (riscv_rddata_wb)

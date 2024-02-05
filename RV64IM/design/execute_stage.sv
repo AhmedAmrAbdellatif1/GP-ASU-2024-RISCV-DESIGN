@@ -1,6 +1,5 @@
 module riscv_estage #(parameter width=64)(
- // input  logic             i_riscv_fstage_clk,
- // input  logic             i_riscv_fstage_rst,
+
 
 //Common Signals to Forward_mux_A,B , Branch Compartor
  input  logic signed [width-1:0] i_riscv_estage_rs1data ,
@@ -21,13 +20,12 @@ module riscv_estage #(parameter width=64)(
    
 
   input  logic             i_riscv_estage_oprnd2sel  ,
-
-
+  
   input  logic [width-1:0] i_riscv_estage_pc  ,
   //u_ALU Signals
 
-  input  logic [ 5 : 0 ] i_riscv_estage_aluctrl ,                             
-  input  logic [ 2 : 0 ] i_riscv_estage_mulctrl , 
+  input  logic  [ 5 : 0 ] i_riscv_estage_aluctrl ,                             
+  input  logic  [ 2 : 0 ] i_riscv_estage_mulctrl , 
    input  logic [ 2 : 0 ] i_riscv_estage_divctrl , 
    input  logic [ 1 : 0 ] i_riscv_estage_funcsel , 
 //Operand2 MUX signal
@@ -36,8 +34,8 @@ module riscv_estage #(parameter width=64)(
   //u_Branch Comparator Siganls
    input  logic [ 3:0 ]     i_riscv_estage_bcond  ,
    
-// ALU  Signals to E/M FF
-  output  logic signed [width-1:0] o_riscv_estage_aluresult ,
+//  Signals to E/M FF
+  output  logic signed [width-1:0] o_riscv_estage_result ,
   // Branch Comparator  Signals to hazard_unit
   output logic               o_riscv_estage_branchtaken 
 
@@ -88,7 +86,7 @@ riscv_mux2 u_Operand_mux_B(
 .i_riscv_mux2_in1(i_riscv_estage_simm),
 .o_riscv_mux2_out(o_riscv_OperandmuxB_OperandALUB));
 
-
+/*
 ///////////////////////////ALU//////////////////////
  riscv_alu u_ALU (
    .i_riscv_alu_ctrl(i_riscv_estage_aluctrl),
@@ -103,5 +101,18 @@ riscv_mux2 u_Operand_mux_B(
     .i_riscv_branch_rs2data(i_riscv_estage_rs2data) , 
     .o_riscv_branch_taken(o_riscv_estage_branchtaken)
     );
+    */
 
+  ///////////////////////////////////ICU//////////////////
+riscv_ICU u_icu (
+  .i_riscv_icu_rs1data (i_riscv_estage_rs1data),
+  .i_riscv_icu_rs2data (i_riscv_estage_rs2data),
+  .i_riscv_icu_bcond   (i_riscv_estage_bcond),
+  .i_riscv_icu_mulctrl (i_riscv_estage_mulctrl),
+  .i_riscv_icu_divctrl (i_riscv_estage_divctrl),
+  .i_riscv_icu_aluctrl (i_riscv_estage_aluctrl),
+  .i_riscv_icu_funcsel (i_riscv_estage_funcsel),
+  .o_riscv_branch_taken(o_riscv_estage_branchtaken),
+  .o_riscv_icu_result  (o_riscv_estage_result)
+);
 endmodule
