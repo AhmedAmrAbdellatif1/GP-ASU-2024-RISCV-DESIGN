@@ -1,8 +1,8 @@
 module multiplier(
-input  logic signed [63:0]   rs1,
-input  logic signed [63:0]   rs2,
-input  logic        [2:0]    MULControl,
-output logic signed [63:0]  product
+input  logic signed [63:0]   i_riscv_mul_rs1data,
+input  logic signed [63:0]   i_riscv_mul_rs2data,
+input  logic        [2:0]    i_riscv_mul_mulctrl,
+output logic signed [63:0]  o_riscv_mul_product
 );
 
 logic signed [127:0]  result;
@@ -11,58 +11,58 @@ integer i;
 
 always @(*)
 begin
-    product=0;
+    o_riscv_mul_product=0;
     result=0; 
-    case (MULControl)
+    case (i_riscv_mul_mulctrl)
 
     3'b100:begin                               //mul
     for (i=0; i<64; i=i+1)
     begin
-        if(rs2[i]==1'b1)
-        result=result+ (rs1<<i);
+        if(i_riscv_mul_rs2data[i]==1'b1)
+        result=result+ (i_riscv_mul_rs1data<<i);
         else
             result=result+128'b0;
     end
-    product=result[63:0];
+    o_riscv_mul_product=result[63:0];
     end
 
      3'b101:begin                               //mulh
     for (i=0; i<64; i=i+1)
     begin
-        if(rs2[i]==1'b1)
-        result=result+ (rs1<<i);
+        if(i_riscv_mul_rs2data[i]==1'b1)
+        result=result+ (i_riscv_mul_rs1data<<i);
         else
             result=result+128'b0;
     end
-    product=result[127:64];
+    o_riscv_mul_product=result[127:64];
     end
 
      3'b110:begin                               //mulhu
     for (i=0; i<64; i=i+1)
     begin
-        if(($unsigned(rs2[i]))==1'b1)
-        result=result+ (($unsigned(rs1))<<i);
+        if(($unsigned(i_riscv_mul_rs2data[i]))==1'b1)
+        result=result+ (($unsigned(i_riscv_mul_rs1data))<<i);
         else
             result=result+128'b0;
     end
-    product=result[127:64];
+    o_riscv_mul_product=result[127:64];
 
     end
 
  3'b111:begin                               //mulhsu
     for (i=0; i<64; i=i+1)
     begin
-        if(($unsigned(rs2[i]))==1'b1)
-        result=result+ (rs1<<i);
+        if(($unsigned(i_riscv_mul_rs2data[i]))==1'b1)
+        result=result+ (i_riscv_mul_rs1data<<i);
         else
             result=result+128'b0;
     end
-    product=result[127:64];
+    o_riscv_mul_product=result[127:64];
  end
 
  default:  begin     
     result=0;
-    product=64'b0;
+    o_riscv_mul_product=64'b0;
     end
     endcase
 
