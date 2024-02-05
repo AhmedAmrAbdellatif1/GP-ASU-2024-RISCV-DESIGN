@@ -24,6 +24,30 @@ begin
     end
     product=result[63:0];
     end
+
+     3'b101:begin                               //mulh
+    for (i=0; i<64; i=i+1)
+    begin
+        if(rs2[i]==1'b1)
+        result=result+ (rs1<<i);
+        else
+            result=result+128'b0;
+    end
+    product=result[127:64];
+    end
+
+     3'b110:begin                               //mulhu
+    for (i=0; i<64; i=i+1)
+    begin
+        if(($unsigned(rs2[i]))==1'b1)
+        result=result+ (($unsigned(rs1<<i)));
+        else
+            result=result+128'b0;
+    end
+    product=result[127:64];
+    end
+
+
     
 
     endcase
