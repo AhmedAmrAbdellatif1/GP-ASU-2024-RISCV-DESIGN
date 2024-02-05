@@ -2,7 +2,7 @@ module multiplier(
 input  logic signed [63:0]   rs1,
 input  logic signed [63:0]   rs2,
 input  logic        [2:0]    MULControl,
-output logic signed [127:0]  product
+output logic signed [63:0]  product
 );
 
 logic signed [127:0]  result;

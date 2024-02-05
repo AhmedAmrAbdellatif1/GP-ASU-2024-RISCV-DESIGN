@@ -16,20 +16,20 @@ begin
     rs2_tb='d66;
     MULControl_tb='b100;
     #20
-    rs1_tb='d1;
-    rs2_tb='d66;
+    rs1_tb= 'sd1;
+    rs2_tb= 'sd66;
     #20
-    rs1_tb=-'d25;
-    rs2_tb=-'d4;
+    rs1_tb= -'sd25;
+    rs2_tb= -'sd4;
     #20
-    rs1_tb=-'d1;
-    rs2_tb='d66;
+    rs1_tb= -'sd1;
+    rs2_tb= 'sd66;
     #20
-    rs1_tb=-'d40;
-    rs2_tb='d40;
+    rs1_tb= -'sd40;
+    rs2_tb= 'sd40;
     #20
-    rs1_tb='d900000000000000;
-    rs2_tb='d9800;
+    rs1_tb= 'sd900000000000000;
+    rs2_tb= 'sd9800;
 
     #50
     $stop;
