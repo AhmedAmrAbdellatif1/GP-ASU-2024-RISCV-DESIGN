@@ -1,4 +1,4 @@
-module ICU (
+module riscv_ICU (
 input  logic signed [63:0]     i_riscv_icu_rs1data,
 input  logic signed [63:0]     i_riscv_icu_rs2data,
 input  logic        [3:0]      i_riscv_icu_bcond,
