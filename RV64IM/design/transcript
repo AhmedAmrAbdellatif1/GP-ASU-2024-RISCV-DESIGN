@@ -1,0 +1,139 @@
+# Reading C:/altera/13.0sp1/modelsim_ase/tcl/vsim/pref.tcl 
+# OpenFile E:/RISC-V/GP-RV64IMAC/RV64IM/design/control_unit.sv 
+# Loading project MULT
+# Compile of alu.sv was successful.
+# Compile of branch_comp.sv was successful.
+# Compile of control_unit.sv was successful.
+# Compile of data_path.sv was successful.
+# Compile of datapath.sv was successful.
+# Compile of de_ppreg.sv was successful.
+# Compile of decode_stage.sv was successful.
+# Compile of dm.sv was successful.
+# Compile of em_ppreg.sv was successful.
+# Compile of execute_stage.sv was successful.
+# Compile of fd_ppreg.sv was successful.
+# Compile of fetch_stage.sv was successful.
+# Compile of hazard_unit.sv was successful.
+# Compile of im.sv was successful.
+# Compile of immext.sv was successful.
+# Compile of mem_stage.sv was successful.
+# Compile of memext.sv was successful.
+# Compile of mux2.sv was successful.
+# Compile of mux3.sv was successful.
+# Compile of mux4.sv was successful.
+# Compile of mw_ppreg.sv was successful.
+# Compile of pc.sv was successful.
+# Compile of pcadder.sv was successful.
+# Compile of rf.sv was successful.
+# Compile of top_module.sv was successful.
+# Compile of wb_stage.sv was successful.
+# 26 compiles, 0 failed with no errors. 
+# Compile of control_unit.sv was successful.
+# Compile of control_unit.sv failed with 4 errors.
+# Compile of control_unit.sv failed with 4 errors.
+# Compile of control_unit.sv failed with 4 errors.
+# Compile of control_unit.sv failed with 4 errors.
+# Compile of control_unit.sv was successful.
+# Compile of control_unit.sv failed with 3 errors.
+# Compile of control_unit.sv failed with 3 errors.
+# Compile of control_unit.sv was successful.
+# Compile of alu.sv was successful.
+# Compile of branch_comp.sv was successful.
+# Compile of control_unit.sv failed with 1 errors.
+# Compile of data_path.sv was successful.
+# Compile of datapath.sv was successful.
+# Compile of de_ppreg.sv was successful.
+# Compile of decode_stage.sv was successful.
+# Compile of dm.sv was successful.
+# Compile of em_ppreg.sv was successful.
+# Compile of execute_stage.sv was successful.
+# Compile of fd_ppreg.sv was successful.
+# Compile of fetch_stage.sv was successful.
+# Compile of hazard_unit.sv was successful.
+# Compile of im.sv was successful.
+# Compile of immext.sv was successful.
+# Compile of mem_stage.sv was successful.
+# Compile of memext.sv was successful.
+# Compile of mux2.sv was successful.
+# Compile of mux3.sv was successful.
+# Compile of mux4.sv was successful.
+# Compile of mw_ppreg.sv was successful.
+# Compile of pc.sv was successful.
+# Compile of pcadder.sv was successful.
+# Compile of rf.sv was successful.
+# Compile of top_module.sv was successful.
+# Compile of wb_stage.sv was successful.
+# 26 compiles, 1 failed with 1 error. 
+# Compile of control_unit.sv failed with 1 errors.
+# Compile of control_unit.sv failed with 1 errors.
+# Compile of control_unit.sv failed with 1 errors.
+# Compile of control_unit.sv was successful.
+# Compile of control_unit.sv was successful.
+# Compile of control_unit.sv was successful.
+# Compile of control_unit.sv was successful.
+# Compile of alu.sv was successful.
+# Compile of branch_comp.sv was successful.
+# Compile of control_unit.sv was successful.
+# Compile of data_path.sv was successful.
+# Compile of datapath.sv was successful.
+# Compile of de_ppreg.sv was successful.
+# Compile of decode_stage.sv was successful.
+# Compile of dm.sv was successful.
+# Compile of em_ppreg.sv was successful.
+# Compile of execute_stage.sv was successful.
+# Compile of fd_ppreg.sv was successful.
+# Compile of fetch_stage.sv was successful.
+# Compile of hazard_unit.sv was successful.
+# Compile of im.sv was successful.
+# Compile of immext.sv was successful.
+# Compile of mem_stage.sv was successful.
+# Compile of memext.sv was successful.
+# Compile of mux2.sv was successful.
+# Compile of mux3.sv was successful.
+# Compile of alu.sv was successful.
+# Compile of branch_comp.sv was successful.
+# Compile of control_unit.sv was successful.
+# Compile of data_path.sv was successful.
+# Compile of datapath.sv was successful.
+# Compile of de_ppreg.sv was successful.
+# Compile of decode_stage.sv was successful.
+# Compile of dm.sv was successful.
+# Compile of em_ppreg.sv was successful.
+# Compile of execute_stage.sv was successful.
+# Compile of fd_ppreg.sv was successful.
+# Compile of fetch_stage.sv was successful.
+# Compile of hazard_unit.sv was successful.
+# Compile of im.sv was successful.
+# Compile of immext.sv was successful.
+# Compile of mem_stage.sv was successful.
+# Compile of memext.sv was successful.
+# Compile of mux2.sv was successful.
+# Compile of mux3.sv was successful.
+# Compile of mux4.sv was successful.
+# Compile of mw_ppreg.sv was successful.
+# Compile of pc.sv was successful.
+# Compile of pcadder.sv was successful.
+# Compile of rf.sv was successful.
+# Compile of top_module.sv was successful.
+# Compile of wb_stage.sv was successful.
+# Compile of decode_stage_tb.sv was successful.
+# Compile of execute_stage_tb.sv was successful.
+# Compile of fetch_stage_tb.sv was successful.
+# Compile of memory_stage_tb.sv was successful.
+# Compile of top_tb.sv was successful.
+# Compile of wb_stage_tb.sv was successful.
+# 32 compiles, 0 failed with no errors. 
+# Compile of mux4.sv was successful.
+# Compile of mw_ppreg.sv was successful.
+# Compile of pc.sv was successful.
+# Compile of pcadder.sv was successful.
+# Compile of rf.sv was successful.
+# Compile of top_module.sv was successful.
+# Compile of wb_stage.sv was successful.
+# 26 compiles, 0 failed with no errors. 
+# Load canceled
+# Load canceled
+# Compile of execute_stage_tb.sv was successful.
+# Compile of execute_stage_tb.sv was successful.
+# Load canceled
+# Load canceled

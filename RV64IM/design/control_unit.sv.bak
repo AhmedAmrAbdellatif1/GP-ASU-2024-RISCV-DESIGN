@@ -277,7 +277,7 @@ always_comb
                                   end
                               end    
                        3'b110:begin // or instruction signals
-                         if (!i_riscv_cu_funct7_0)
+                         if (i_riscv_cu_funct7_0)
                            begin
                                 o_riscv_cu_jump      = 1'b0;
                                 o_riscv_cu_regw      = 1'b1;

@@ -56,7 +56,6 @@ module riscv_top_tb();
 
 /********************* Initial Blocks *********************/
   initial begin : proc_decode
-      $display("Testing Decode Stage");
     #CLK_PERIOD  ;
     #CLK_PERIOD   ;  // delay for first instruction to come
     i = 1;
@@ -164,7 +163,6 @@ module riscv_top_tb();
 
   end
 initial begin : proc_execute
-      $display("Testing Execute Stage");
   #CLK_PERIOD;
   #CLK_PERIOD;
   #CLK_PERIOD ;
@@ -235,7 +233,6 @@ initial begin : proc_execute
 end
 
  initial begin : proc_mem
-       $display("Testing Memory Stage");
   #(3*CLK_PERIOD);
   #CLK_PERIOD;
   CheckEquality("auipc x6, 0x100 memwrite", memwrite, 0);
@@ -283,7 +280,6 @@ end
   end
 
  initial begin : proc_fetch
-       $display("Testing Fetch Stage");
     /* #CLK_PERIOD;
       pc_check (0);
       instr_check('h00a00413);

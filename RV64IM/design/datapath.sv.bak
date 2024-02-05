@@ -14,7 +14,6 @@ module riscv_datapath #(parameter width=64) (
   output logic [6:0]       o_riscv_datapath_opcode,   ///input to control unit
   output logic [2:0]       o_riscv_datapath_func3,    ///input to control unit
   output logic             o_riscv_datapath_func7_5,  ///input to control unit
-  output logic             o_riscv_datapath_func7_0,  ///input to control unit  
   output logic [4:0]       o_riscv_datapath_rs1addr_d,///input to hazard unit
   output logic [4:0]       o_riscv_datapath_rs2addr_d,///input to hazard unit
   ///////////////////de_pff//////////////////
