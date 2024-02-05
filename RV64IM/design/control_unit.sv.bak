@@ -126,7 +126,7 @@ always_comb
                                 o_riscv_cu_bcond     = 4'b0000;
                                 o_riscv_cu_memext    = 3'b000;
                                 o_riscv_cu_immsrc    = 3'b000;
-                                o_riscv_cu_aluctrl   = 6'b000011;
+                                o_riscv_cu_aluctrl   = 6'b100011;
                                 o_riscv_cu_mulsel = 3'b000;
                                 o_riscv_cu_divsel = 3'b000;
                                 o_riscv_cu_funcsel=2'b10;

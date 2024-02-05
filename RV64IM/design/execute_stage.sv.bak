@@ -26,7 +26,7 @@ module riscv_estage #(parameter width=64)(
   input  logic [width-1:0] i_riscv_estage_pc  ,
   //u_ALU Signals
 
-  input  logic [ 7 : 0 ] i_riscv_estage_aluctrl ,                             
+  input  logic [ 5 : 0 ] i_riscv_estage_aluctrl ,                             
   
 //Operand2 MUX signal
   input  logic signed [width-1:0] i_riscv_estage_simm ,

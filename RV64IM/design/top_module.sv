@@ -23,6 +23,9 @@ logic [1:0] riscv_cu_resultsrc_datapath;/// from control unit  [1:0]
 logic [3:0] riscv_cu_bcond_datapath;    /// from control unit [3:0] 
 logic [2:0] riscv_cu_memext_datapath;   /// from control unit [2:0]
 logic [5:0] riscv_cu_aluctrl_datapath;  /// from control unit [4:0]
+logic [2:0] riscv_cu_mulctrl_datapath;
+logic [2:0] riscv_cu_divctrl_datapath;
+logic [1:0] riscv_cu_funcsel_datapath;
 logic [2:0] riscv_cu_immsrc_datapath ; /// from control unit [2:0]
   
 
@@ -103,9 +106,9 @@ riscv_datapath u_top_datapath(               //#(parameter width=64) (
   .i_riscv_datapath_bcond(riscv_cu_bcond_datapath),       /// from control unit [3:0] 
   .i_riscv_datapath_memext(riscv_cu_memext_datapath),     /// from control unit [2:0]
   .i_riscv_datapath_aluctrl(riscv_cu_aluctrl_datapath),    /// from control unit [4:0]
-
-
-
+  .i_riscv_datapath_mulctrl(riscv_cu_mulctrl_datapath), 
+  .i_riscv_datapath_divctrl(riscv_cu_divctrl_datapath), 
+  .i_riscv_datapath_funcsel(riscv_cu_funcsel_datapath), 
   .i_riscv_datapath_flush_de(riscv_datapath_flush_de_hzrdu), /// from hazard unit
   /////////////////////execute/////////////
   .i_riscv_datapath_fwda(riscv_datapath_fwda_hzrdu),        /// from hazard unit  [1:0] 
@@ -152,7 +155,10 @@ riscv_cu u_top_cu (
   .o_riscv_cu_memext(riscv_cu_memext_datapath), //[2:0]
 
   .o_riscv_cu_immsrc(riscv_cu_immsrc_datapath),  //[2:0] 
-  .o_riscv_cu_aluctrl(riscv_cu_aluctrl_datapath) //[4:0]
+  .o_riscv_cu_aluctrl(riscv_cu_aluctrl_datapath), //[4:0]
+  .o_riscv_cu_funcsel(riscv_cu_funcsel_datapath),
+  .o_riscv_cu_mulctrl(riscv_cu_mulctrl_datapath),
+  .o_riscv_cu_divctrl(riscv_cu_divctrl_datapath)
 );
 
 

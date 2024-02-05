@@ -31,7 +31,7 @@
       output logic  [3:0]   o_riscv_de_b_condition_e,
       output logic          o_riscv_de_oprnd2sel_e,
       output logic  [1:0]   o_riscv_de_storesrc_e,
-      output logic  [4:0]   o_riscv_de_alucontrol_e,
+      output logic  [5:0]   o_riscv_de_alucontrol_e,
       output logic          o_riscv_de_oprnd1sel_e,
       output logic          o_riscv_de_memwrite_e,
       output logic  [2:0]   o_riscv_de_memext_e,

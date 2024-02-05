@@ -27,6 +27,9 @@ module riscv_datapath_wrong #(parameter width=64) (
   input  logic [3:0]       i_riscv_datapath_bcond,    ///output from control unit
   input  logic [2:0]       i_riscv_datapath_memext,   ///output from control unit
   input  logic [5:0]       i_riscv_datapath_aluctrl,  ///output from control unit
+  input  logic [2:0]       i_riscv_datapath_mulctrl, 
+  input  logic [2:0]       i_riscv_datapath_divctrl, 
+  input  logic [1:0]       i_riscv_datapath_funcsel, 
   input  logic             i_riscv_datapath_flush_de, ///output from hazard unit
   /////////////////////execute/////////////
   input  logic [1:0]       i_riscv_datapath_fwda,        ///output from hazard unit
@@ -84,6 +87,9 @@ module riscv_datapath_wrong #(parameter width=64) (
   logic                  riscv_oprnd2sel_e;
   logic  [1:0]           riscv_storesrc_e;
   logic  [5:0]           riscv_alucontrol_e;
+  logic  [2:0]           riscv_mulctrl_e;
+  logic  [2:0]           riscv_divctrl_e;
+  logic  [1:0]           riscv_funcsel_e;
   logic                  riscv_oprnd1sel_e;
   logic                  riscv_memwrite_e;
   logic  [2:0]           riscv_memext_e;
@@ -177,6 +183,9 @@ module riscv_datapath_wrong #(parameter width=64) (
     .i_riscv_de_oprnd2sel_d  (i_riscv_datapath_bsel),
     .i_riscv_de_storesrc_d   (i_riscv_datapath_storesrc),
     .i_riscv_de_alucontrol_d (i_riscv_datapath_aluctrl),
+    .i_riscv_de_mulctrl_d (i_riscv_datapath_mulctrl),
+    .i_riscv_de_divctrl_d (i_riscv_datapath_divctrl),
+    .i_riscv_de_funcsel_d (i_riscv_datapath_funcsel),
     .i_riscv_de_oprnd1sel_d  (i_riscv_datapath_asel),
     .i_riscv_de_memwrite_d   (i_riscv_datapath_memw),
     .i_riscv_de_memext_d     (i_riscv_datapath_memext),
@@ -196,6 +205,9 @@ module riscv_datapath_wrong #(parameter width=64) (
     .o_riscv_de_oprnd2sel_e  (riscv_oprnd2sel_e),
     .o_riscv_de_storesrc_e   (riscv_storesrc_e),
     .o_riscv_de_alucontrol_e (riscv_alucontrol_e),
+     .o_riscv_de_mulctrl_e (riscv_mulctrl_e),
+     .o_riscv_de_divctrl_e (riscv_divctrl_e),
+     .o_riscv_de_funcsel_e (riscv_funcsel_e),
     .o_riscv_de_oprnd1sel_e  (riscv_oprnd1sel_e),
     .o_riscv_de_memwrite_e   (riscv_memwrite_e),
     .o_riscv_de_memext_e     (riscv_memext_e),
@@ -215,6 +227,11 @@ module riscv_datapath_wrong #(parameter width=64) (
     .i_riscv_estage_oprnd2sel  (riscv_oprnd2sel_e),
     .i_riscv_estage_pc         (riscv_pc_e),
     .i_riscv_estage_aluctrl    (riscv_alucontrol_e),
+    .i_riscv_estage_mulctrl    (riscv_mulctrl_e),
+    .i_riscv_estage_divctrl    (riscv_divctrl_e),
+    .i_riscv_estage_funcsel    (riscv_funcsel_e),
+    
+    
     .i_riscv_estage_simm       (riscv_extendedimm_e),
     .i_riscv_estage_bcond      (riscv_b_condition_e),
     .o_riscv_estage_aluresult  (riscv_aluexe_fe),

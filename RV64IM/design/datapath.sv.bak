@@ -27,7 +27,7 @@ module riscv_datapath #(parameter width=64) (
   input  logic [1:0]       i_riscv_datapath_resultsrc,///output from control unit
   input  logic [3:0]       i_riscv_datapath_bcond,    ///output from control unit
   input  logic [2:0]       i_riscv_datapath_memext,   ///output from control unit
-  input  logic [4:0]       i_riscv_datapath_aluctrl,  ///output from control unit
+  input  logic [5:0]       i_riscv_datapath_aluctrl,  ///output from control unit
   input  logic             i_riscv_datapath_flush_de, ///output from hazard unit
   /////////////////////execute/////////////
   input  logic [1:0]       i_riscv_datapath_fwda,        ///output from hazard unit
@@ -83,7 +83,7 @@ module riscv_datapath #(parameter width=64) (
   logic  [3:0]           riscv_b_condition_e;
   logic                  riscv_oprnd2sel_e;
   logic  [1:0]           riscv_storesrc_e;
-  logic  [4:0]           riscv_alucontrol_e;
+  logic  [5:0]           riscv_alucontrol_e;
   logic                  riscv_oprnd1sel_e;
   logic                  riscv_memwrite_e;
   logic  [2:0]           riscv_memext_e;
