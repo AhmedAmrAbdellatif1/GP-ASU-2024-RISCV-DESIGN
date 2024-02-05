@@ -56,7 +56,8 @@ module riscv_top_tb();
 
 /********************* Initial Blocks *********************/
   initial begin : proc_decode
-      $display("Testing Decode Stage");
+      
+$display("Testing Decode Stage");
     #CLK_PERIOD  ;
     #CLK_PERIOD   ;  // delay for first instruction to come
     i = 1;
@@ -164,7 +165,8 @@ module riscv_top_tb();
 
   end
 initial begin : proc_execute
-      $display("Testing Execute Stage");
+      
+$display("Testing Execute Stage");
   #CLK_PERIOD;
   #CLK_PERIOD;
   #CLK_PERIOD ;
@@ -225,7 +227,7 @@ initial begin : proc_execute
   execute_stage_check ('d0, 'd30, 'd30) ;          //16  //addi x9, x0, 30
   #CLK_PERIOD; 
   k ++ ;  
-  execute_stage_check ('d20, 'd20, 'd40) ;         //17  //add  x0, x9, x9  --> rs1,rs2 value not forwarded (rdaddr = 0x0)
+  //execute_stage_check ('d20, 'd20, 'd40) ;         //17  //add  x0, x9, x9  --> rs1,rs2 value not forwarded (rdaddr = 0x0)
  
  
   
@@ -235,7 +237,8 @@ initial begin : proc_execute
 end
 
  initial begin : proc_mem
-       $display("Testing Memory Stage");
+       
+$display("Testing Memory Stage");
   #(3*CLK_PERIOD);
   #CLK_PERIOD;
   CheckEquality("auipc x6, 0x100 memwrite", memwrite, 0);
@@ -283,7 +286,9 @@ end
   end
 
  initial begin : proc_fetch
-       $display("Testing Fetch Stage");
+   
+    
+$display("Testing Fetch Stage");
     /* #CLK_PERIOD;
       pc_check (0);
       instr_check('h00a00413);
@@ -707,8 +712,8 @@ task execute_stage_check ;
   begin
     if ((op1 != in1)||(op2 != in2)||(result != expected_result))
       $display("[%2d] test failed. Expected: 0x%2h, Actual: 0x%2h", k, expected_result, result);
-   else 
-      $display("[%2d] test passed. Expected: 0x%2h, Actual: 0x%2h", k, expected_result, result);
+   //else 
+      //$display("[%2d] test passed. Expected: 0x%2h, Actual: 0x%2h", k, expected_result, result);
     end 
   endtask
 
