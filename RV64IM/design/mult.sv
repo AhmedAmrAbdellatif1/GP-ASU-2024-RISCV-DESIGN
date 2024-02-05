@@ -1,4 +1,4 @@
-module multiplier(
+module riscv_multiplier(
 input  logic signed [63:0]   i_riscv_mul_rs1data,
 input  logic signed [63:0]   i_riscv_mul_rs2data,
 input  logic        [2:0]    i_riscv_mul_mulctrl,
