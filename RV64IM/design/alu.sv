@@ -1,5 +1,5 @@
 module riscv_alu(
-   input  logic        [4:0]      i_riscv_alu_ctrl,
+   input  logic        [5:0]      i_riscv_alu_ctrl,
    input  logic signed [63:0]     i_riscv_alu_rs1data,
    input  logic signed [63:0]     i_riscv_alu_rs2data,
    output logic signed [63:0]     o_riscv_alu_result
@@ -100,7 +100,7 @@ else
   result=(i_riscv_alu_rs1data+i_riscv_alu_rs2data) ;
   o_riscv_alu_result= {result[63:1],1'b0};
       end 
-default:  o_riscv_alu_result=i_riscv_alu_rs1data+i_riscv_alu_rs2data;
+default:  o_riscv_alu_result=64'b0;
 endcase
 
 
