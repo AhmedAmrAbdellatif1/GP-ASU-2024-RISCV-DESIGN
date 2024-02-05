@@ -59,18 +59,12 @@ begin
     end
     product=result[127:64];
  end
- default:  begin                               //mul
-    for (i=0; i<64; i=i+1)
-    begin
-        if(rs2[i]==1'b1)
-        result=result+ (rs1<<i);
-        else
-            result=result+128'b0;
-    end
-    product=result[63:0];
+
+ default:  begin     
+    result=0;
+    product=64'b0;
     end
     endcase
-
 
 end 
 endmodule 
