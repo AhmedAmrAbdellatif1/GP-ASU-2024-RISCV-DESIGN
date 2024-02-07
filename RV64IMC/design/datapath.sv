@@ -4,6 +4,7 @@ module riscv_datapath #(parameter width=64) (
   
   ///////////////////fetch//////////////////
   input  logic             i_riscv_datapath_stallpc,  ///output from hazard unit
+  input  logic             i_riscv_datapath_addermuxsel,
   output logic [width-1:0] o_riscv_datapath_pc ,      ///input to im
   ///////////////////fd_pff//////////////////
   input  logic [31:0]      i_riscv_datapath_inst,     ///output from im
@@ -133,6 +134,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_fstage_stallpc(i_riscv_datapath_stallpc),
     .i_riscv_fstage_pcsrc  (o_riscv_datapath_pcsrc_e),
     .i_riscv_fstage_aluexe (riscv_aluexe_fe),
+    .i_riscv_fstage_addermuxsel(i_riscv_datapath_addermuxsel),
     .o_riscv_fstage_pc     (o_riscv_datapath_pc),
     .o_riscv_fstage_pcplus4(riscv_pcplus4_f)
   );

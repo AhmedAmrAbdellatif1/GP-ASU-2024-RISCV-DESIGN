@@ -60,7 +60,8 @@ logic [2:0] riscv_cu_immsrc_datapath ; /// from control unit [2:0]
 logic [63:0] riscv_datapath_pc_im;
 ////////////////////////signals from im to datapath/////////////////////////
 logic [31:0] riscv_im_inst_datapath;
-
+logic [31:0] riscv_im_inst_cdecode;
+logic riscv_cdecoder_compressed_datapath;
 ///////////////////////signals from datapath to DM/////////////////////////
 logic        riscv_datapath_memw_m_dm;
 logic [1:0]  riscv_datapath_storesrc_m_dm;
@@ -83,6 +84,7 @@ riscv_datapath u_top_datapath(               //#(parameter width=64) (
   ///////////////////fetch//////////////////
   .i_riscv_datapath_stallpc(riscv_datapath_stallpc_hzrdu),  /// from hazard unit
   .o_riscv_datapath_pc(riscv_datapath_pc_im) ,                                    /// to im   [width-1:0]
+  .i_riscv_datapath_addermuxsel(riscv_cdecoder_compressed_datapath),
   ///////////////////fd_pff//////////////////
   .i_riscv_datapath_inst(riscv_im_inst_datapath),                                 /// from im  [31:0]
   .i_riscv_datapath_flush_fd(riscv_datapath_flush_fd_hzrdu), /// from hazard unit
@@ -201,8 +203,15 @@ riscv_hazardunit u_top_hzrdu
 
 riscv_im u_top_im(
   .i_riscv_im_pc(riscv_datapath_pc_im),
-  .o_riscv_im_inst(riscv_im_inst_datapath)
+  .o_riscv_im_inst(riscv_im_inst_cdecode)
 );
+
+riscv_compressed_decoder u_top_cdecoder(
+.i_riscv_cdecoder_inst(riscv_im_inst_cdecode),
+.o_riscv_cdecoder_inst(riscv_im_inst_datapath),
+.o_riscv_cdecoder_compressed(riscv_cdecoder_compressed_datapath)
+);
+
 
 riscv_dm u_top_dm(
   .i_riscv_dm_clk_n(!i_riscv_clk),
@@ -213,6 +222,7 @@ riscv_dm u_top_dm(
   .i_riscv_dm_waddr(riscv_datapath_memodata_addr_dm),
   .o_riscv_dm_rdata(riscv_datapath_rdata_dm)
 );
+
 
 endmodule
 
