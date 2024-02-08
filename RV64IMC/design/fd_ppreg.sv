@@ -19,7 +19,7 @@
           o_riscv_fd_inst_d    <=32'b0;
           o_riscv_fd_pcplus4_d <=64'b0; 
         end
-      if(i_riscv_fd_flush)
+    else if(i_riscv_fd_flush)
         begin
           o_riscv_fd_pc_d      <=64'b0;
           o_riscv_fd_inst_d    <=32'b0;
