@@ -3,15 +3,17 @@ module riscv_fstage #(parameter width=64)(
   input  logic             i_riscv_fstage_rst,
   input  logic             i_riscv_fstage_stallpc,
   input  logic             i_riscv_fstage_pcsrc,
-  input  logic             i_riscv_fstage_addermuxsel,
+  //input  logic             i_riscv_fstage_addermuxsel,
   input  logic [width-1:0] i_riscv_fstage_aluexe,
+  input  logic [31:0]    i_riscv_fstage_inst ,  
   output logic [width-1:0] o_riscv_fstage_pc,
-  //output logic [width-1:0] o_riscv_fstage_inst,
+  output logic [31:0] o_riscv_fstage_inst,
   output logic [width-1:0] o_riscv_fstage_pcplus4
   );
 
 logic [width-1:0] o_riscv_pcmux_nextpc;
 logic [width-1:0] riscv_pcadder1_operand;
+//logic riscv_fstage_addermuxsel;
 
 ///////////////////////////PC MUX//////////////////////
 riscv_mux2 u_pcmux(
@@ -35,9 +37,15 @@ riscv_pcadder u_riscv_pcadder (
 .o_riscv_pcadder_pcplussize(o_riscv_fstage_pcplus4));
 ///////////////////////////PC ADDER MUX//////////////////////
 riscv_mux2 u_pcmuxadder(
-.i_riscv_mux2_sel(i_riscv_fstage_addermuxsel),
+.i_riscv_mux2_sel(riscv_fstage_addermuxsel),
 .i_riscv_mux2_in0(64'd4),
 .i_riscv_mux2_in1(64'd2),
 .o_riscv_mux2_out(riscv_pcadder1_operand));
+///////////////////////////COMPRESSED DECODER//////////////////////
+riscv_compressed_decoder u_top_cdecoder(
+.i_riscv_cdecoder_inst(i_riscv_fstage_inst),
+.o_riscv_cdecoder_inst(o_riscv_fstage_inst),
+.o_riscv_cdecoder_compressed(riscv_fstage_addermuxsel)
+);
 
 endmodule

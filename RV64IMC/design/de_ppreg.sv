@@ -71,6 +71,8 @@
            o_riscv_de_regwrite_e    <= 0;
            o_riscv_de_jump_e        <= 0;
         end
+      else
+        begin
       if(i_riscv_de_flush)
         begin
            o_riscv_de_pc_e          <= 0;
@@ -120,4 +122,5 @@
            o_riscv_de_jump_e        <= i_riscv_de_jump_d;       
         end
       end
+    end
   endmodule

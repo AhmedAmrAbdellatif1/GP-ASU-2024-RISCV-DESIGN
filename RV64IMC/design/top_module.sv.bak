@@ -209,7 +209,7 @@ riscv_im u_top_im(
 riscv_compressed_decoder u_top_cdecoder(
 .i_riscv_cdecoder_inst(riscv_im_inst_cdecode),
 .o_riscv_cdecoder_inst(riscv_im_inst_datapath),
-.o_compressed(riscv_cdecoder_compressed_datapath)
+.o_riscv_cdecoder_compressed(riscv_cdecoder_compressed_datapath)
 );
 
 

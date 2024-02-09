@@ -13,6 +13,9 @@
       input  logic          i_riscv_de_oprnd2sel_d,
       input  logic  [1:0]   i_riscv_de_storesrc_d,
       input  logic  [5:0]   i_riscv_de_alucontrol_d,
+      input  logic  [2:0]   i_riscv_de_mulctrl_d,
+      input  logic  [2:0]   i_riscv_de_divctrl_d,
+      input  logic  [1:0]   i_riscv_de_funcsel_d,
       input  logic          i_riscv_de_oprnd1sel_d,
       input  logic          i_riscv_de_memwrite_d,
       input  logic  [2:0]   i_riscv_de_memext_d,
@@ -32,6 +35,9 @@
       output logic          o_riscv_de_oprnd2sel_e,
       output logic  [1:0]   o_riscv_de_storesrc_e,
       output logic  [5:0]   o_riscv_de_alucontrol_e,
+      output logic  [2:0]   o_riscv_de_mulctrl_e,
+      output logic  [2:0]   o_riscv_de_divctrl_e,
+      output logic  [1:0]   o_riscv_de_funcsel_e,
       output logic          o_riscv_de_oprnd1sel_e,
       output logic          o_riscv_de_memwrite_e,
       output logic  [2:0]   o_riscv_de_memext_e,
@@ -55,6 +61,9 @@
            o_riscv_de_oprnd2sel_e   <= 0;
            o_riscv_de_storesrc_e    <= 0;
            o_riscv_de_alucontrol_e  <= 0;
+           o_riscv_de_mulctrl_e  <= 0;
+           o_riscv_de_divctrl_e  <= 0;
+           o_riscv_de_funcsel_e  <= 0;
            o_riscv_de_oprnd1sel_e   <= 0;
            o_riscv_de_memwrite_e    <= 0;
            o_riscv_de_memext_e      <= 0;
@@ -76,6 +85,9 @@
            o_riscv_de_oprnd2sel_e   <= 0;
            o_riscv_de_storesrc_e    <= 0;
            o_riscv_de_alucontrol_e  <= 0;
+           o_riscv_de_mulctrl_e  <= 0;
+           o_riscv_de_divctrl_e  <= 0;
+           o_riscv_de_funcsel_e  <= 0;
            o_riscv_de_oprnd1sel_e   <= 0;
            o_riscv_de_memwrite_e    <= 0;
            o_riscv_de_memext_e      <= 0;
@@ -97,6 +109,9 @@
            o_riscv_de_oprnd2sel_e   <= i_riscv_de_oprnd2sel_d;
            o_riscv_de_storesrc_e    <= i_riscv_de_storesrc_d;
            o_riscv_de_alucontrol_e  <= i_riscv_de_alucontrol_d;
+           o_riscv_de_mulctrl_e  <= i_riscv_de_mulctrl_d;
+           o_riscv_de_divctrl_e  <= i_riscv_de_divctrl_d;
+           o_riscv_de_funcsel_e  <= i_riscv_de_funcsel_d;
            o_riscv_de_oprnd1sel_e   <= i_riscv_de_oprnd1sel_d;
            o_riscv_de_memwrite_e    <= i_riscv_de_memwrite_d;
            o_riscv_de_memext_e      <= i_riscv_de_memext_d;
