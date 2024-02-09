@@ -14,19 +14,18 @@ logic  [63:0] temp;
 always_comb 
 begin
 	temp = 0;
-	if(!i_riscv_div_divctrl[0]&&i_riscv_div_rs2data[63]) 
+	if(!i_riscv_div_divctrl[0]&&i_riscv_div_rs2data[63])
 	i_riscv_div_rs2data_copy = ~i_riscv_div_rs2data+1;
-	else 
+	else
 	i_riscv_div_rs2data_copy=i_riscv_div_rs2data;
 
    if (!i_riscv_div_divctrl[0]&&i_riscv_div_rs1data[63])
 	i_riscv_div_rs1data_copy = ~i_riscv_div_rs1data+1;
-	else 
+	else
 	i_riscv_div_rs1data_copy = i_riscv_div_rs1data;
 
 
 
-	
 	for(i = 0;i < 64;i = i + 1)
 	begin
 		temp = {temp[62:0], i_riscv_div_rs1data_copy[63]};
@@ -80,21 +79,23 @@ begin
 	end    
 
 	3'b101: begin                             //divu
-            //if(i_riscv_div_rs2data[63])  
-		    //o_riscv_div_result=0;
-	        //else 
 			if (i_riscv_div_rs2data==0)              //division by 0
 			o_riscv_div_result= (2**64)-1;
 			else
+			begin
+			if(i_riscv_div_rs2data[63]&&!i_riscv_div_rs1data[3])  
+			   o_riscv_div_result=0;
+			else
 			o_riscv_div_result=i_riscv_div_rs1data_copy;
 	        end    
-
+	end
 
 	3'b110: begin                                 //rem
 	        if (i_riscv_div_rs2data==0)              //division by 0
 	        o_riscv_div_result=i_riscv_div_rs1data;
 			else if ((i_riscv_div_rs1data==-(2**63))&&(i_riscv_div_rs2data==-1) )        //overflow
 	        o_riscv_div_result=0 ; 
+
 			else begin
             if (i_riscv_div_rs1data[63])          //remainder same sign as dividend
             o_riscv_div_result=~temp+1;         //2's complement
@@ -107,6 +108,7 @@ begin
 	3'b111: begin
 		    if (i_riscv_div_rs2data==0)              //division by 0
 	        o_riscv_div_result=i_riscv_div_rs1data;
+
 			else begin
 		    if(i_riscv_div_rs2data[63]&&!i_riscv_div_rs1data[3])                       //remu
 			o_riscv_div_result=i_riscv_div_rs1data;
