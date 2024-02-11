@@ -6,31 +6,31 @@ module mult_tb();
 
     initial
     begin
-        A='sh58000001FE;
-        B='shB800000000;
+        A='sh000000580000062b;
+        B='sh000000b800000000;
         ctrl=mul;
         #1
-        if(Y != 'sh00016E9000000000)
+        if(Y != 'sh00046ee800000000)
             $display("[PP] mul failed");
         #1
         ctrl=mulh;
         #1
-        if(Y != 'sh3F40)
+        if(Y != 'sh0000000000046ee8)
             $display("[PP] mulh failed");
         #1
         ctrl=mulhu;
         #1
-        if(Y != 'sh3F40)
+        if(Y != 'sh0000000000046ee8)
             $display("[PP] mulhu failed");
         #1
         ctrl=mulhsu;
         #1
-        if(Y != 'sh3F40)
+        if(Y != 'sh0000000000046ee8)
             $display("[PP] mulhsu failed");
         #5
         //////////////////////////////////
-        A='sh58000001FE;
-        B='shB800000000;
+        A=-'sh17592186042837;
+        B='sh12384898975268864;
         ctrl=mul;
         #1
         if(Y != 'sh1109011408239984640)
@@ -52,8 +52,8 @@ module mult_tb();
             $display("[NP] mulhsu failed");
         #5
         //////////////////////////////////
-        A='sh58000001FE;
-        B='shB800000000;
+        A=-'sh21990232553941;
+        B=-'sh25895697857380352;
         ctrl=mul;
         #1
         if(Y != -'sh3995818769384472576)
@@ -75,8 +75,8 @@ module mult_tb();
             $display("[NN] mulhsu failed");
         #5
         //////////////////////////////////
-        A='sh58000001FE;
-        B='shB800000000;
+        A='sh35184372090411;
+        B=-'sh19140298416324608;
         ctrl=mul;
         #1
         if(Y != 'sh6670956948042547200)

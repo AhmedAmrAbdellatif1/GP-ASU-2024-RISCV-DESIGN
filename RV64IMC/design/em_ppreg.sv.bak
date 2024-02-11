@@ -46,7 +46,7 @@
             o_riscv_em_storesrc_m  <= i_riscv_em_storesrc_e;
             o_riscv_em_memext_m    <= i_riscv_em_memext_e;
             o_riscv_em_pcplus4_m   <= i_riscv_em_pcplus4_e;
-            o_riscv_em_result_m <= i_riscv_em_result_e;
+            o_riscv_em_result_m <= i_riscv_em_aluresult_e;
             o_riscv_em_storedata_m <= i_riscv_em_storedata_e;
             o_riscv_em_rdaddr_m    <= i_riscv_em_rdaddr_e;
             o_riscv_em_imm_m       <= i_riscv_em_imm_e;

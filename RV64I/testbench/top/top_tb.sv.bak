@@ -49,10 +49,10 @@ module riscv_top_tb();
   assign memload    = DUT.u_top_core.u_top_datapath.uriscv_mstage.o_riscv_mstage_memload;
   assign memext     = DUT.u_top_core.u_top_datapath.uriscv_mstage.i_riscv_mstage_memext;
   assign data       = DUT.u_top_core.u_top_datapath.uriscv_mstage.i_riscv_mstage_dm_rdata;
-  assign storesrc   = DUT.riscv_datapath_storesrc_m_dm;
-  assign memwrite   = DUT.riscv_datapath_memw_m_dm;
-  assign data_addr  = DUT.riscv_datapath_memodata_addr_dm;
-  assign store_data = DUT.riscv_datapath_storedata_m_dm;
+  assign storesrc   = DUT.u_top_core.riscv_datapath_storesrc_m_dm;
+  assign memwrite   = DUT.u_top_core.riscv_datapath_memw_m_dm;
+  assign data_addr  = DUT.u_top_core.riscv_datapath_memodata_addr_dm;
+  assign store_data = DUT.u_top_core.riscv_datapath_storedata_m_dm;
 
 /********************* Initial Blocks *********************/
   initial begin : proc_decode

@@ -15,7 +15,6 @@ begin
   if(!i_riscv_alu_ctrl[5])
     begin
       o_riscv_alu_result = 'b0;
-    end
     else
       begin
   case(i_riscv_alu_ctrl[3:0])
