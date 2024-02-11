@@ -1,29 +1,34 @@
 module riscv_divider(
-input logic   [2:0]    i_riscv_div_divctrl,
-input logic   [63:0]   i_riscv_div_rs2data, i_riscv_div_rs1data,
-output logic  [63:0]   o_riscv_div_result
+input  logic          [2:0]    i_riscv_div_divctrl,
+input  logic  signed  [63:0]   i_riscv_div_rs2data, i_riscv_div_rs1data,
+output logic  signed  [63:0]   o_riscv_div_result
 );
 
 
 // Variables
 integer i;
-logic  [63:0] i_riscv_div_rs2data_copy, i_riscv_div_rs1data_copy;
-logic  [63:0] temp;
+logic    [63:0] i_riscv_div_rs2data_copy;
+logic    [63:0] i_riscv_div_rs1data_copy;
+logic    [63:0] temp;
 
 
 always_comb 
 begin
 	temp = 0;
+	///////////////////////////////////////divider/////////////////////////
 	if(!i_riscv_div_divctrl[0]&&i_riscv_div_rs2data[63])
 	i_riscv_div_rs2data_copy = ~i_riscv_div_rs2data+1;
-	else
+	else if (i_riscv_div_divctrl[0])
+	i_riscv_div_rs2data_copy=$unsigned(i_riscv_div_rs2data);
+    else
 	i_riscv_div_rs2data_copy=i_riscv_div_rs2data;
-
+  ////////////////////////////////////divideend/////////////////////////////
    if (!i_riscv_div_divctrl[0]&&i_riscv_div_rs1data[63])
 	i_riscv_div_rs1data_copy = ~i_riscv_div_rs1data+1;
+	else if (i_riscv_div_divctrl[0])
+	i_riscv_div_rs1data_copy = $unsigned(i_riscv_div_rs1data);
 	else
 	i_riscv_div_rs1data_copy = i_riscv_div_rs1data;
-
 
 
 	for(i = 0;i < 64;i = i + 1)
@@ -58,14 +63,15 @@ begin
 
 
 
-	//////////////////////////////////////control//////////////////
+	//////////////////////////////////////control////////////////////////////
 	case (i_riscv_div_divctrl)
 
-	3'b100: begin                             //div
+    /////////////////////////////////////////div////////////////////
+	3'b100: begin
 	if (i_riscv_div_rs2data==0)              //division by 0
 	o_riscv_div_result =-1;
 	else if ((i_riscv_div_rs1data==-(2**63))&&(i_riscv_div_rs2data==-1) )        //overflow
-	o_riscv_div_result=i_riscv_div_rs1data ; 
+	o_riscv_div_result=i_riscv_div_rs1data ;
 	else begin
 	if (i_riscv_div_rs1data[63]==i_riscv_div_rs2data[63])
 	begin
@@ -76,20 +82,26 @@ begin
 	o_riscv_div_result = ~i_riscv_div_rs1data_copy+1;
 	end
 	end
-	end    
 
+	end
+  /////////////////////////////////////////divu////////////////////
 	3'b101: begin                             //divu
 			if (i_riscv_div_rs2data==0)              //division by 0
 			o_riscv_div_result= (2**64)-1;
 			else
 			begin
-			if(i_riscv_div_rs2data[63]&&!i_riscv_div_rs1data[3])  
-			   o_riscv_div_result=0;
+		    if(i_riscv_div_rs2data[63])
+			begin  
+				if($unsigned(i_riscv_div_rs2data)>$unsigned(i_riscv_div_rs1data))
+		    o_riscv_div_result=0;
+			else 
+			 o_riscv_div_result=1;
+			end
 			else
-			o_riscv_div_result=i_riscv_div_rs1data_copy;
+			o_riscv_div_result=(i_riscv_div_rs1data_copy);
 	        end    
 	end
-
+   /////////////////////////////////////////rem////////////////////
 	3'b110: begin                                 //rem
 	        if (i_riscv_div_rs2data==0)              //division by 0
 	        o_riscv_div_result=i_riscv_div_rs1data;
@@ -104,18 +116,25 @@ begin
 	        end
 	end
 
-
+   /////////////////////////////////////////remu////////////////////
 	3'b111: begin
 		    if (i_riscv_div_rs2data==0)              //division by 0
 	        o_riscv_div_result=i_riscv_div_rs1data;
 
 			else begin
-		    if(i_riscv_div_rs2data[63]&&!i_riscv_div_rs1data[3])                       //remu
-			o_riscv_div_result=i_riscv_div_rs1data;
-			else
-			o_riscv_div_result=temp;
+		
+		  if(i_riscv_div_rs2data[63])
+			begin  
+				if($unsigned(i_riscv_div_rs2data)>$unsigned(i_riscv_div_rs1data))
+		    o_riscv_div_result=i_riscv_div_rs1data;
+			else 
+			o_riscv_div_result=$unsigned(i_riscv_div_rs1data)-$unsigned(i_riscv_div_rs2data);
 	        end
+			else 
+			o_riscv_div_result=temp;
 	end
+	end
+
 	default: o_riscv_div_result=0;
 	endcase
 end
