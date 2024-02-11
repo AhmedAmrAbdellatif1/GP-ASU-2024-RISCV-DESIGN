@@ -22,7 +22,7 @@ begin
 	i_riscv_div_rs2data_copy=$unsigned(i_riscv_div_rs2data);
     else
 	i_riscv_div_rs2data_copy=i_riscv_div_rs2data;
-  ////////////////////////////////////divideend/////////////////////////////
+  ////////////////////////////////////dividend/////////////////////////////
    if (!i_riscv_div_divctrl[0]&&i_riscv_div_rs1data[63])
 	i_riscv_div_rs1data_copy = ~i_riscv_div_rs1data+1;
 	else if (i_riscv_div_divctrl[0])
