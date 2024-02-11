@@ -40,6 +40,9 @@ module riscv_compressed_decoder (
                        2'b01, i_riscv_cdecoder_inst[9:7], 3'b010, i_riscv_cdecoder_inst[11:10], i_riscv_cdecoder_inst[6],
                        2'b00, {OPCODE_STORE}};
           end
+          default: begin
+            o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+          end
         endcase
       end
 
@@ -118,9 +121,15 @@ module riscv_compressed_decoder (
                     // c.and -> and rd', rd', rs2'
                     o_riscv_cdecoder_inst = {7'b0, 2'b01, i_riscv_cdecoder_inst[4:2], 2'b01, i_riscv_cdecoder_inst[9:7], 3'b111,
                                2'b01, i_riscv_cdecoder_inst[9:7], {OPCODE_OP}};
-                  end
+                  end 
+          default: begin
+            o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+          end                  
                 endcase
               end
+          default: begin
+            o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+          end
             endcase
           end
 
@@ -130,6 +139,9 @@ module riscv_compressed_decoder (
             o_riscv_cdecoder_inst = {{4 {i_riscv_cdecoder_inst[12]}}, i_riscv_cdecoder_inst[6:5], i_riscv_cdecoder_inst[2], 5'b0, 2'b01,
                        i_riscv_cdecoder_inst[9:7], 2'b00, i_riscv_cdecoder_inst[13], i_riscv_cdecoder_inst[11:10], i_riscv_cdecoder_inst[4:3],
                        i_riscv_cdecoder_inst[12], {OPCODE_BRANCH}};
+          end
+         default: begin
+            o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
           end
         endcase
       end
@@ -178,8 +190,14 @@ module riscv_compressed_decoder (
             o_riscv_cdecoder_inst = {4'b0, i_riscv_cdecoder_inst[8:7], i_riscv_cdecoder_inst[12], i_riscv_cdecoder_inst[6:2], 5'h02, 3'b010,
                        i_riscv_cdecoder_inst[11:9], 2'b00, {OPCODE_STORE}};
           end
+          default: begin
+            o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+          end
         endcase
       end
+          default: begin
+            o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+          end
     endcase
   end
   

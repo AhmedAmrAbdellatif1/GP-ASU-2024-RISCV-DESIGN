@@ -1,7 +1,7 @@
 module riscv_compressed_decoder (
   input  logic [31:0] i_riscv_cdecoder_inst,
   output logic [31:0] o_riscv_cdecoder_inst,
-  output logic o_compressed
+  output logic o_riscv_cdecoder_compressed
 );
 
   typedef enum logic [6:0] {
@@ -183,5 +183,5 @@ module riscv_compressed_decoder (
     endcase
   end
   
-assign o_compressed = (i_riscv_cdecoder_inst[1:0] != 2'b11);
+assign o_riscv_cdecoder_compressed = (i_riscv_cdecoder_inst[1:0] != 2'b11);
 endmodule
