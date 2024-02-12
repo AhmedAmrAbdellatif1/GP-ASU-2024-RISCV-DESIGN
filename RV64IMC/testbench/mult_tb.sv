@@ -2,111 +2,91 @@ module mult_tb();
     longint A;
     longint B;
     longint Y;
-    enum  logic [2:0] {mul=3'b100,mulh=3'b101,mulhu=3'b110,mulhsu=3'b111} ctrl;
+    enum logic [2:0] {mul=3'b100,mulh=3'b101,mulhu=3'b110,mulhsu=3'b111} ctrl;
+    int i;
+
 
     initial
     begin
-        A='sh000000580000062b;
-        B='sh000000b800000000;
-        ctrl=mul;
-        #1
-        if(Y != 'sh00046ee800000000)
-            $display("[PP] mul failed");
-        #1
+        /*ctrl=mul;
+        for (i = 0; i < 10; i++) begin
+            A = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            B = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            mul_verify();
+            #1;
+        end
+        #5;
+        /////////////////////////////////////////////////////////////////////////////
         ctrl=mulh;
-        #1
-        if(Y != 'sh0000000000046ee8)
-            $display("[PP] mulh failed");
-        #1
+        for (i = 0; i < 10; i++) begin
+            A = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            B = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            mul_verify();
+            #1;
+        end
+        #5;
+        /////////////////////////////////////////////////////////////////////////////
         ctrl=mulhu;
-        #1
-        if(Y != 'sh0000000000046ee8)
-            $display("[PP] mulhu failed");
-        #1
+        for (i = 0; i < 10; i++) begin
+            A = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            B = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            mul_verify();
+            #1;
+        end
+        #5;
+        /////////////////////////////////////////////////////////////////////////////
         ctrl=mulhsu;
-        #1
-        if(Y != 'sh0000000000046ee8)
-            $display("[PP] mulhsu failed");
-        #5
-        //////////////////////////////////
-        A=-'sh17592186042837;
-        B='sh12384898975268864;
-        ctrl=mul;
-        #1
-        if(Y != 'sh1109011408239984640)
-            $display("[NP] mul failed");
-        #1
+        for (i = 0; i < 10; i++) begin
+            A = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            B = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            mul_verify();
+            #1;
+        end*/
         ctrl=mulh;
-        #1
-        if(Y != 'sh258211840)
-            $display("[NP] mulh failed");
-        #1
-        ctrl=mulhu;
-        #1
-        if(Y != 'sh258211840)
-            $display("[NP] mulhu failed");
-        #1
-        ctrl=mulhsu;
-        #1
-        if(Y != 'sh258211840)
-            $display("[NP] mulhsu failed");
-        #5
-        //////////////////////////////////
-        A=-'sh21990232553941;
-        B=-'sh25895697857380352;
-        ctrl=mul;
-        #1
-        if(Y != -'sh3995818769384472576)
-            $display("[NN] mul failed");
-        #1
-        ctrl=mulh;
-        #1
-        if(Y != -'sh930349056)
-            $display("[NN] mulh failed");
-        #1
-        ctrl=mulhu;
-        #1
-        if(Y != 'sh3364618240)
-            $display("[NN] mulhu failed");
-        #1
-        ctrl=mulhsu;
-        #1
-        if(Y != -'sh930349056)
-            $display("[NN] mulhsu failed");
-        #5
-        //////////////////////////////////
-        A='sh35184372090411;
-        B=-'sh19140298416324608;
-        ctrl=mul;
-        #1
-        if(Y != 'sh6670956948042547200)
-            $display("[PN] mul failed");
-        #1
-        ctrl=mulh;
-        #1
-        if(Y != 'sh1553203200)
-            $display("[PN] mulh failed");
-        #1
-        ctrl=mulhu;
-        #1
-        if(Y != 'sh1553203200)
-            $display("[PN] mulhu failed");
-        #1
-        ctrl=mulhsu;
-        #1
-        if(Y != 'sh1553203200)
-            $display("[PN] mulhsu failed");
-        #5
-        //////////////////////////////////
-        #5
-        $stop;
+        A = (-'sd5)<<32;
+        B = (-'sd3)<<32;
+        mul_verify();
+        #1 $stop; 
     end
 
-multiplier DUT (
-    .rs1(A),
-    .rs2(B),
-    .product(Y),
-    .MULControl(ctrl)
+    function logic signed [63:0] result (logic signed [63:0] a, logic signed [63:0] b, logic [2:0] sel);
+        logic [127:0] intrnl;
+        if (sel == 3'b100) begin
+            intrnl = a*b;
+            result = intrnl[63:0];
+        end
+        else if (sel == 3'b101) begin
+            intrnl = a*b;
+            result = intrnl[127:64];
+        end
+        else if (sel == 3'b110) begin
+            intrnl = $unsigned(a)*$unsigned(b);
+            result = intrnl[127:64];
+        end
+        else if (sel == 3'b111) begin
+            intrnl = a*$unsigned(b);
+            result = intrnl[127:64];
+        end
+        else begin
+            result = 0;
+        end
+    endfunction
+
+    task mul_verify();
+        logic signed [63:0] temp;
+        begin
+        temp = result(A,B,ctrl);
+        #1
+        if(Y != temp)
+            $display("[%4d] %s failed: rs1=0x%h     rs2=0x%h    rd=0x%h     expected=0x%h",i,ctrl,A,B,Y,temp);
+        end
+    endtask
+
+riscv_multiplier DUT  (
+    .i_riscv_mul_rs1data(A),
+    .i_riscv_mul_rs2data(B),
+    .o_riscv_mul_product(Y),
+    .i_riscv_mul_mulctrl(ctrl)
 );
 
 endmodule
