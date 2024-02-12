@@ -42,15 +42,16 @@ module mult_tb();
             mul_verify();
             #1;
         end*/
-        ctrl=mulh;
+        ctrl=mulhsu;
         A = (-'sd5)<<32;
-        B = (-'sd3)<<32;
+        B = (-'sd2)<<32;
         mul_verify();
         #1 $stop; 
     end
 
     function logic signed [63:0] result (logic signed [63:0] a, logic signed [63:0] b, logic [2:0] sel);
         logic [127:0] intrnl;
+        logic [63:0] b_unsigned;
         if (sel == 3'b100) begin
             intrnl = a*b;
             result = intrnl[63:0];
@@ -64,7 +65,8 @@ module mult_tb();
             result = intrnl[127:64];
         end
         else if (sel == 3'b111) begin
-            intrnl = a*$unsigned(b);
+            b_unsigned = $unsigned(b);
+            intrnl = a*b_unsigned;
             result = intrnl[127:64];
         end
         else begin
