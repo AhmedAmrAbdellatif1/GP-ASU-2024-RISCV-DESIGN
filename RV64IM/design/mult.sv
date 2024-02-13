@@ -48,7 +48,7 @@ else
         else
           begin
             result=result+128'b0;
-          end 
+          end
     end
 result_copy=~result+1;
 
@@ -68,7 +68,7 @@ case (i_riscv_mul_mulctrl)
 
 3'b110: o_riscv_mul_product=result[127:64];
 
-3'b111: begin if(i_riscv_mul_rs2data[63] )
+3'b111: begin if(i_riscv_mul_rs1data[63] )
           o_riscv_mul_product=result_copy[127:64];
          else 
           o_riscv_mul_product=result[127:64];
