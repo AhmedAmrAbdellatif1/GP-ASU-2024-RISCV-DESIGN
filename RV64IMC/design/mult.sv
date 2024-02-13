@@ -77,12 +77,4 @@ default: o_riscv_mul_product=0;
 
 endcase
 end
-
-
-
-
-
-
-
-
 endmodule
