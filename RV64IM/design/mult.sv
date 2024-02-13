@@ -73,6 +73,7 @@ case (i_riscv_mul_mulctrl)
          else 
           o_riscv_mul_product=result[127:64];
         end 
+        
 default: o_riscv_mul_product=0;
 
 endcase
