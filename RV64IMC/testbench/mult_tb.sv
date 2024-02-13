@@ -2,7 +2,7 @@ module mult_tb();
     longint A;
     longint B;
     longint Y;
-    enum logic [2:0] {mul=3'b100,mulh=3'b101,mulhu=3'b110,mulhsu=3'b111} ctrl;
+    enum logic [2:0] {off=3'b0xx,mul=3'b100,mulh=3'b101,mulhu=3'b110,mulhsu=3'b111} ctrl;
     int i;
 
 
@@ -36,6 +36,14 @@ module mult_tb();
         #5;
         /////////////////////////////////////////////////////////////////////////////
         ctrl=mulhsu;
+        for (i = 1; i < 1001; i++) begin
+            A = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            B = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
+            mul_verify();
+            #1;
+        end
+        /////////////////////////////////////////////////////////////////////////////
+        ctrl=off;
         for (i = 1; i < 1001; i++) begin
             A = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
             B = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
