@@ -35,13 +35,13 @@ module mult_tb();
         end
         #5;
         /////////////////////////////////////////////////////////////////////////////
-        /*ctrl=mulhsu;
+        ctrl=mulhsu;
         for (i = 1; i < 1001; i++) begin
             A = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
             B = $signed($urandom_range(64'h8000000000000000, 64'h7FFFFFFFFFFFFFFF));
             mul_verify();
             #1;
-        end*/
+        end
         #1 $stop; 
     end
 
@@ -60,7 +60,7 @@ module mult_tb();
             result = intrnl[127:64];
         end
         else if (sel == 3'b111) begin
-            intrnl = a*$unsigned(b);
+            intrnl = {{64{a[63]}},a}*{{64{1'b0}},b};
             result = intrnl[127:64];
         end
         else begin
