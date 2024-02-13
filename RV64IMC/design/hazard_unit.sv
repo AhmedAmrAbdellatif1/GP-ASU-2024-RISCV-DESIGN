@@ -33,7 +33,7 @@ module riscv_hazardunit
 
 
 //Note : needing of mem_Asserted >>not useful i thimk if it is implented as priority mux will not check 2nd condition if 1st is satisfied
-assign mem_asserted_data_hazard = ( i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_m) && i_riscv_hzrdu_regw_m && i_riscv_hzrdu_rdaddr_m ;
+//assign mem_asserted_data_hazard = ( i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_m) && i_riscv_hzrdu_regw_m && i_riscv_hzrdu_rdaddr_m ;
 
 always @(*)
 
@@ -51,8 +51,7 @@ always @(*)
 
         else if ( (i_riscv_hzrdu_rs2addr_e == i_riscv_hzrdu_rdaddr_w ) &&
                 (i_riscv_hzrdu_regw_w )        && (i_riscv_hzrdu_rdaddr_e !=0)   &&
-                (i_riscv_hzrdu_rdaddr_w !=0 )  &&
-                (mem_asserted_data_hazard == 0 )  )
+                (i_riscv_hzrdu_rdaddr_w !=0 ) )
                     begin
                       o_riscv_hzrdu_fwdb = 1 ;
                     end
@@ -79,8 +78,8 @@ always @(*)
 
         else if ( i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_w && 
                 i_riscv_hzrdu_regw_w && 
-                (i_riscv_hzrdu_rdaddr_w !=0 ) && (i_riscv_hzrdu_rdaddr_e !=0)   &&
-                (~ mem_asserted_data_hazard ) )
+                (i_riscv_hzrdu_rdaddr_w !=0 ) && (i_riscv_hzrdu_rdaddr_e !=0) 
+               )
                    begin
                      o_riscv_hzrdu_fwda  = 1 ;
                    end
