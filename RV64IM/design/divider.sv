@@ -7,9 +7,9 @@ output logic  signed  [63:0]   o_riscv_div_result
 
 // Variables
 integer i;
-logic    [63:0] i_riscv_div_rs2data_copy;
-logic    [63:0] i_riscv_div_rs1data_copy;
-logic    [63:0] temp;
+logic    [64:0] i_riscv_div_rs2data_copy;
+logic    [64:0] i_riscv_div_rs1data_copy;
+logic    [64:0] temp;
 
 
 always_comb 
@@ -19,14 +19,14 @@ begin
 	if(!i_riscv_div_divctrl[0]&&i_riscv_div_rs2data[63])
 	i_riscv_div_rs2data_copy = ~i_riscv_div_rs2data+1;
 	else if (i_riscv_div_divctrl[0])
-	i_riscv_div_rs2data_copy=$unsigned(i_riscv_div_rs2data);
+	i_riscv_div_rs2data_copy={0,i_riscv_div_rs2data};
     else
 	i_riscv_div_rs2data_copy=i_riscv_div_rs2data;
   ////////////////////////////////////dividend/////////////////////////////
    if (!i_riscv_div_divctrl[0]&&i_riscv_div_rs1data[63])
 	i_riscv_div_rs1data_copy = ~i_riscv_div_rs1data+1;
 	else if (i_riscv_div_divctrl[0])
-	i_riscv_div_rs1data_copy = $unsigned(i_riscv_div_rs1data);
+	i_riscv_div_rs1data_copy = {0,i_riscv_div_rs1data};
 	else
 	i_riscv_div_rs1data_copy = i_riscv_div_rs1data;
 
@@ -92,7 +92,7 @@ begin
 			begin
 		    if(i_riscv_div_rs2data[63])
 			begin  
-				if($unsigned(i_riscv_div_rs2data)>$unsigned(i_riscv_div_rs1data))
+				if({0,i_riscv_div_rs2data}>{0,i_riscv_div_rs1data})
 		    o_riscv_div_result=0;
 			else 
 			 o_riscv_div_result=1;
@@ -125,10 +125,10 @@ begin
 		
 		  if(i_riscv_div_rs2data[63])
 			begin  
-				if($unsigned(i_riscv_div_rs2data)>$unsigned(i_riscv_div_rs1data))
+				if({0,i_riscv_div_rs2data}>{0,i_riscv_div_rs1data})
 		    o_riscv_div_result=i_riscv_div_rs1data;
 			else 
-			o_riscv_div_result=$unsigned(i_riscv_div_rs1data)-$unsigned(i_riscv_div_rs2data);
+			o_riscv_div_result={0,i_riscv_div_rs1data}-{0,i_riscv_div_rs2data};
 	        end
 			else 
 			o_riscv_div_result=temp;
