@@ -44,7 +44,7 @@ logic [2:0] riscv_cu_immsrc_datapath ; /// from control unit [2:0]
   logic [4:0] riscv_datapath_rs2addr_e_hzrdu;   /// to hazard unit [4:0]
   logic [4:0] riscv_datapath_rdaddr_e_hzrdu;   /// to hazard unit [4:0]
   logic [1:0] riscv_datapath_resultsrc_e_hzrdu;  /// to hazard unit [1:0] 
-
+  logic [6:0] riscv_datapath_opcode_hzrdu; 
  // logic       riscv_datapath_memw_m_hzrdu;       /// to dm &&&&&&  to hazard unit  //mem
   logic [4:0] riscv_datapath_rdaddr_m_hzrdu;      /// to hazard unit [4:0]
   logic       riscv_datapath_regw_m_hzrdu;       /// to hazard unit
@@ -105,6 +105,7 @@ riscv_datapath u_top_datapath(               //#(parameter width=64) (
   .o_riscv_datapath_rs2addr_e(riscv_datapath_rs2addr_e_hzrdu),   /// to hazard unit [4:0]
   .o_riscv_datapath_rdaddr_e(riscv_datapath_rdaddr_e_hzrdu),   /// to hazard unit [4:0]
   .o_riscv_datapath_resultsrc_e(riscv_datapath_resultsrc_e_hzrdu),  /// to hazard unit [1:0]  
+  .o_riscv_datapath_opcode_m(riscv_datapath_opcode_hzrdu),
   /////////////////////memory/////////////
   .i_riscv_datapath_dm_rdata(i_riscv_core_rdata),      /// from dm [width-1:0]
   .o_riscv_datapath_storesrc_m(o_riscv_core_storesrc_m),   /// to dm [1:0]
@@ -176,7 +177,7 @@ riscv_hazardunit u_top_hzrdu
   .i_riscv_hzrdu_rdaddr_w(riscv_datapath_rdaddr_wb_hzrdu) ,  // [4:0]
   .i_riscv_hzrdu_regw_w(riscv_datapath_regw_wb_hzrdu)  ,
 
- 
+ .i_riscv_hzrdu_opcode_m(riscv_datapath_opcode_hzrdu),
   
   //>>>>>> name check to define their location in stages or not _e ,_d , ..
   .o_riscv_hzrdu_stallpc(riscv_datapath_stallpc_hzrdu)  , 

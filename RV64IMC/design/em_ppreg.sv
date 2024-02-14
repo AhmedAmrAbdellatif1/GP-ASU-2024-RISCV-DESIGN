@@ -11,6 +11,7 @@
     input  logic [63:0] i_riscv_em_storedata_e,
     input  logic [4:0]  i_riscv_em_rdaddr_e,
     input  logic [63:0] i_riscv_em_imm_e,
+    input logic  [6:0]    i_riscv_de_opcode_e,
     output logic        o_riscv_em_memw_m,
     output logic        o_riscv_em_regw_m,
     output logic [1:0]  o_riscv_em_resultsrc_m,
@@ -20,7 +21,9 @@
     output logic [63:0] o_riscv_em_result_m,
     output logic [63:0] o_riscv_em_storedata_m,
     output logic [4:0]  o_riscv_em_rdaddr_m,
-    output logic [63:0] o_riscv_em_imm_m
+    output logic [63:0] o_riscv_em_imm_m,
+  output logic  [6:0]    o_riscv_de_opcode_m
+  
   );
 
   always_ff @ (posedge i_riscv_em_clk or posedge i_riscv_em_rst)
@@ -37,6 +40,7 @@
             o_riscv_em_storedata_m <='b0;
             o_riscv_em_rdaddr_m    <='b0;
             o_riscv_em_imm_m       <='b0;            
+            o_riscv_de_opcode_m <= 'b0;
           end
         else
           begin
@@ -50,6 +54,7 @@
             o_riscv_em_storedata_m <= i_riscv_em_storedata_e;
             o_riscv_em_rdaddr_m    <= i_riscv_em_rdaddr_e;
             o_riscv_em_imm_m       <= i_riscv_em_imm_e;
+            o_riscv_de_opcode_m <= i_riscv_de_opcode_e;
           end
     end
   endmodule

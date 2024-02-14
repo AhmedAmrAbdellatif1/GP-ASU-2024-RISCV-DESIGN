@@ -8,7 +8,7 @@ module riscv_hazardunit
                        i_riscv_hzrdu_rs2addr_e ,
                        i_riscv_hzrdu_rdaddr_m  ,
                        i_riscv_hzrdu_rdaddr_w , 
-      
+      input [6:0] i_riscv_hzrdu_opcode_m,
      input             i_riscv_hzrdu_pcsrc ,
                        i_riscv_hzrdu_regw_m   ,
                        i_riscv_hzrdu_regw_w  ,
@@ -41,8 +41,16 @@ always @(*)
        /*if(~rst_n) begin
              <= 0;
         end else begin */
-    
+
         if      ( (i_riscv_hzrdu_rs2addr_e == i_riscv_hzrdu_rdaddr_m ) &&
+                (i_riscv_hzrdu_regw_m ) && (i_riscv_hzrdu_rdaddr_e !=0)  &&
+                (i_riscv_hzrdu_rdaddr_m !=0) && i_riscv_hzrdu_opcode_m == 7'b0110111 )
+                    begin
+                      o_riscv_hzrdu_fwdb = 3 ;
+                    end
+
+    
+      else if      ( (i_riscv_hzrdu_rs2addr_e == i_riscv_hzrdu_rdaddr_m ) &&
                 (i_riscv_hzrdu_regw_m ) && (i_riscv_hzrdu_rdaddr_e !=0)  &&
                 (i_riscv_hzrdu_rdaddr_m !=0) )
                     begin
@@ -70,6 +78,13 @@ always @(*)
         end else begin */
 
         if      ( (i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_m) && 
+                (i_riscv_hzrdu_regw_m) && (i_riscv_hzrdu_rdaddr_e !=0)    &&
+                (i_riscv_hzrdu_rdaddr_m !=0) && i_riscv_hzrdu_opcode_m == 7'b0110111 )
+                   begin
+                     o_riscv_hzrdu_fwda  = 3  ;
+                   end
+
+      else if      ( (i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_m) && 
                 (i_riscv_hzrdu_regw_m) && (i_riscv_hzrdu_rdaddr_e !=0)    &&
                 (i_riscv_hzrdu_rdaddr_m !=0) )
                    begin

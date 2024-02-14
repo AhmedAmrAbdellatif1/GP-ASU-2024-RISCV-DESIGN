@@ -1,6 +1,6 @@
 module riscv_estage #(parameter width=64)(
 
-
+input logic [width-1:0] i_riscv_estage_imm_m,
 //Common Signals to Forward_mux_A,B , Branch Compartor
  input  logic signed [width-1:0] i_riscv_estage_rs1data ,
  input  logic signed [width-1:0] i_riscv_estage_rs2data  ,
@@ -57,21 +57,23 @@ logic  signed [width-1:0]   o_riscv_OperandmuxB_OperandALUB ;
 
 
 /////////////////////////// ForwardA MUX //////////////////////
-riscv_mux3 u_Forward_mux_A (
-.i_riscv_mux3_sel(i_riscv_estage_fwda),
-.i_riscv_mux3_in0(i_riscv_estage_rs1data),
-.i_riscv_mux3_in1(i_riscv_estage_rdata_wb),
-.i_riscv_mux3_in2(i_riscv_estage_rddata_m),
-.o_riscv_mux3_out(o_riscv_FWmuxA_OperandmuxA) );
+riscv_mux4 u_Forward_mux_A (
+.i_riscv_mux4_sel(i_riscv_estage_fwda),
+.i_riscv_mux4_in0(i_riscv_estage_rs1data),
+.i_riscv_mux4_in1(i_riscv_estage_rdata_wb),
+.i_riscv_mux4_in2(i_riscv_estage_rddata_m),
+.i_riscv_mux4_in3(i_riscv_estage_imm_m),
+.o_riscv_mux4_out(o_riscv_FWmuxA_OperandmuxA) );
 
 
 /////////////////////////// ForwardB MUX //////////////////////
-riscv_mux3 u_Forward_mux_B (
-.i_riscv_mux3_sel(i_riscv_estage_fwdb),
-.i_riscv_mux3_in0(i_riscv_estage_rs2data),
-.i_riscv_mux3_in1(i_riscv_estage_rdata_wb),
-.i_riscv_mux3_in2(i_riscv_estage_rddata_m),
-.o_riscv_mux3_out(o_riscv_FWmuxB_OperandmuxB) );
+riscv_mux4 u_Forward_mux_B (
+.i_riscv_mux4_sel(i_riscv_estage_fwdb),
+.i_riscv_mux4_in0(i_riscv_estage_rs2data),
+.i_riscv_mux4_in1(i_riscv_estage_rdata_wb),
+.i_riscv_mux4_in2(i_riscv_estage_rddata_m),
+.i_riscv_mux4_in3(i_riscv_estage_imm_m),
+.o_riscv_mux4_out(o_riscv_FWmuxB_OperandmuxB) );
 
 ///////////////////////////Operand_mux_A//////////////////////
 riscv_mux2 u_Operand_mux_A(

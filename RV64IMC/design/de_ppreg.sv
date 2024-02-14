@@ -23,6 +23,7 @@
       input  logic          i_riscv_de_regwrite_d,
       input  logic          i_riscv_de_jump_d,
       input  logic  [63:0]  i_riscv_de_pcplus4_d,
+      input  logic  [6:0]    i_riscv_de_opcode_d,
       output logic  [63:0]  o_riscv_de_pc_e,
       output logic  [63:0]  o_riscv_de_pcplus4_e,
       output logic  [4:0]   o_riscv_de_rs1addr_e,
@@ -43,7 +44,8 @@
       output logic  [2:0]   o_riscv_de_memext_e,
       output logic  [1:0]   o_riscv_de_resultsrc_e,
       output logic          o_riscv_de_regwrite_e,
-      output logic          o_riscv_de_jump_e
+      output logic          o_riscv_de_jump_e,
+      output logic [6:0]  o_riscv_de_opcode_e
   );
     always_ff @(posedge i_riscv_de_clk or posedge i_riscv_de_rst )
       begin:de_pff_write_proc
@@ -70,6 +72,7 @@
            o_riscv_de_resultsrc_e   <= 0;
            o_riscv_de_regwrite_e    <= 0;
            o_riscv_de_jump_e        <= 0;
+           o_riscv_de_opcode_e <=0;
         end
       else
         begin
@@ -96,7 +99,8 @@
            o_riscv_de_resultsrc_e   <= 0;
            o_riscv_de_regwrite_e    <= 0;
            o_riscv_de_jump_e        <= 0;
-        end
+           o_riscv_de_opcode_e <=0;
+        end
       else
         begin
            o_riscv_de_pc_e          <= i_riscv_de_pc_d;
@@ -119,7 +123,8 @@
            o_riscv_de_memext_e      <= i_riscv_de_memext_d;
            o_riscv_de_resultsrc_e   <= i_riscv_de_resultsrc_d;
            o_riscv_de_regwrite_e    <= i_riscv_de_regwrite_d;
-           o_riscv_de_jump_e        <= i_riscv_de_jump_d;       
+           o_riscv_de_jump_e        <= i_riscv_de_jump_d;    
+           o_riscv_de_opcode_e <= i_riscv_de_opcode_d;   
         end
       end
     end

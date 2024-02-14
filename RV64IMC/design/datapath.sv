@@ -18,6 +18,7 @@ module riscv_datapath #(parameter width=64) (
   output logic             o_riscv_datapath_func7_0,  ///input to control unit  
   output logic [4:0]       o_riscv_datapath_rs1addr_d,///input to hazard unit
   output logic [4:0]       o_riscv_datapath_rs2addr_d,///input to hazard unit
+  
   ///////////////////de_pff//////////////////
   input  logic             i_riscv_datapath_regw,     ///output from control unit
   input  logic             i_riscv_datapath_jump,     ///output from control unit      
@@ -41,6 +42,7 @@ module riscv_datapath #(parameter width=64) (
   output logic [4:0]       o_riscv_datapath_rs2addr_e,   ///input to hazard unit
   output logic [4:0]       o_riscv_datapath_rdaddr_e ,   ///input to hazard unit
   output logic [1:0]       o_riscv_datapath_resultsrc_e, ///input to hazard unit
+  output logic  [6:0]       o_riscv_datapath_opcode_m,
   /////////////////////memory/////////////
   input  logic [width-1:0] i_riscv_datapath_dm_rdata,      ///output from dm
   output logic [4:0]       o_riscv_datapath_rdaddr_m ,     ///input to hazard unit
@@ -76,6 +78,8 @@ module riscv_datapath #(parameter width=64) (
   logic [4:0]            riscv_rs1addr_d;
   logic [4:0]            riscv_rs2addr_d;
   //logic                  riscv_rstctrl_d;
+  logic [6:0]           riscv_opcode_d;
+  logic [6:0]           riscv_opcode_e;  
   //////execute internal signals ////////
   logic  [width-1:0]     riscv_pc_e;
   logic  [width-1:0]     riscv_pcplus4_e;
@@ -99,6 +103,7 @@ module riscv_datapath #(parameter width=64) (
   logic                  riscv_regwrite_e;
   logic                  riscv_jump_e;
   logic                  riscv_branchtaken;
+  
    ////// memory internal signals ////////
   logic [width-1:0]     riscv_rddata_me ;
   logic                 riscv_regw_m;
@@ -118,6 +123,7 @@ module riscv_datapath #(parameter width=64) (
   /////////
   //assign riscv_rstctrl_f               = i_riscv_datapath_flush_fd | i_riscv_datapath_rst;
   //assign riscv_rstctrl_d               = i_riscv_datapath_flush_de | i_riscv_datapath_rst;
+  assign    o_riscv_datapath_opcode = riscv_opcode_d ;
   assign o_riscv_datapath_pcsrc_e      = riscv_jump_e | riscv_branchtaken;
   assign o_riscv_datapath_rdaddr_m     = riscv_rdaddr_m;                                   // to hazard unit 
   assign o_riscv_datapath_memodata_addr= riscv_rddata_me;                                  // to data memory
@@ -170,7 +176,7 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_dstage_rs2data(riscv_rs2data_d),
     .o_riscv_dstage_rdaddr (riscv_rdaddr_d),
     .o_riscv_dstage_simm   (riscv_simm_d),
-    .o_riscv_dstage_opcode (o_riscv_datapath_opcode),
+    .o_riscv_dstage_opcode (riscv_opcode_d),
     .o_riscv_dstage_funct3 (o_riscv_datapath_func3),
     .o_riscv_dstage_func7_5(o_riscv_datapath_func7_5),
     .o_riscv_dstage_func7_0(o_riscv_datapath_func7_0)
@@ -201,6 +207,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_de_regwrite_d   (i_riscv_datapath_regw),
     .i_riscv_de_jump_d       (i_riscv_datapath_jump),
     .i_riscv_de_pcplus4_d    (riscv_pcplus4_d),
+    .i_riscv_de_opcode_d (riscv_opcode_d),
     .o_riscv_de_pc_e         (riscv_pc_e),
     .o_riscv_de_pcplus4_e    (riscv_pcplus4_e),
     .o_riscv_de_rs1addr_e    (o_riscv_datapath_rs1addr_e),
@@ -221,7 +228,9 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_de_memext_e     (riscv_memext_e),
     .o_riscv_de_resultsrc_e  (riscv_resultsrc_e),
     .o_riscv_de_regwrite_e   (riscv_regwrite_e),
-    .o_riscv_de_jump_e       (riscv_jump_e)
+    .o_riscv_de_jump_e       (riscv_jump_e),
+    .o_riscv_de_opcode_e (riscv_opcode_e)
+    
   );
   ////execute stage instantiation////
   riscv_estage u_riscv_estage(
@@ -231,6 +240,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_estage_fwdb       (i_riscv_datapath_fwdb),
     .i_riscv_estage_rdata_wb   (riscv_rddata_wb),
     .i_riscv_estage_rddata_m   (riscv_rddata_me),
+    .i_riscv_estage_imm_m (riscv_imm_m),
     .i_riscv_estage_oprnd1sel  (riscv_oprnd1sel_e),
     .i_riscv_estage_oprnd2sel  (riscv_oprnd2sel_e),
     .i_riscv_estage_pc         (riscv_pc_e),
@@ -257,6 +267,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_em_storedata_e(riscv_rs2data_e),
     .i_riscv_em_rdaddr_e   (riscv_rdaddr_e),
     .i_riscv_em_imm_e      (riscv_extendedimm_e),
+    .i_riscv_de_opcode_e (riscv_opcode_e),
     .o_riscv_em_memw_m     (o_riscv_datapath_memw_m),
     .o_riscv_em_regw_m     (riscv_regw_m),
     .o_riscv_em_resultsrc_m(riscv_resultsrc_m),
@@ -266,7 +277,8 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_em_result_m(riscv_rddata_me ),
     .o_riscv_em_storedata_m(o_riscv_datapath_storedata_m),
     .o_riscv_em_rdaddr_m   (riscv_rdaddr_m),
-    .o_riscv_em_imm_m      (riscv_imm_m)
+    .o_riscv_em_imm_m      (riscv_imm_m),
+     .o_riscv_de_opcode_m (o_riscv_datapath_opcode_m)
   );
   ////memory stage instantiation////
   riscv_mstage uriscv_mstage(
