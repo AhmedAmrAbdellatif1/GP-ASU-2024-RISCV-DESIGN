@@ -19,6 +19,7 @@ module div_tb();
             if( (B=='sd0) )
               continue; 
             div_verify();
+            counter++;
             #1;
         end
         #5;
@@ -32,6 +33,7 @@ module div_tb();
             if( (B=='sd0) )
               continue; 
             div_verify();
+            counter++;
             #1;
         end
         #5;
@@ -45,6 +47,7 @@ module div_tb();
             if( (B=='sd0) )
               continue; 
             div_verify();
+            counter++;
             #1;
         end
         #5;
@@ -58,6 +61,7 @@ module div_tb();
             if( (B=='sd0) )
               continue; 
             div_verify();
+            counter++;
             #1;
         end
         /////////////////////////////////////////////////////////////////////////////
@@ -70,6 +74,7 @@ module div_tb();
             if( (B=='sd0) )
               continue; 
             div_verify();
+            counter++;
             #1;
         end
         /////////////////////////////////////////////////////////////////////////////
@@ -77,7 +82,8 @@ module div_tb();
         /////////////////////////////////////////////////////////////////////////////
         overflow();
         /////////////////////////////////////////////////////////////////////////////
-        #1 $stop;
+        #5
+        if(!failed.triggered) $display("RAN %4d TESTS WITH NO ERRORS!", counter);  
     end
 riscv_divider DUT  (
     .i_riscv_div_rs1data(A),

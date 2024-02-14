@@ -14,6 +14,7 @@ module mult_tb();
             A = $signed($urandom_range(INT64_MIN, INT64_MAX));
             B = $signed($urandom_range(INT64_MIN, INT64_MAX));
             mul_verify();
+            counter++;
             #1;
         end
         #5;
@@ -23,6 +24,7 @@ module mult_tb();
             A = $signed($urandom_range(INT64_MIN, INT64_MAX));
             B = $signed($urandom_range(INT64_MIN, INT64_MAX));
             mul_verify();
+            counter++;
             #1;
         end
         #5;
@@ -32,6 +34,7 @@ module mult_tb();
             A = $signed($urandom_range(INT64_MIN, INT64_MAX));
             B = $signed($urandom_range(INT64_MIN, INT64_MAX));
             mul_verify();
+            counter++;
             #1;
         end
         #5;
@@ -41,6 +44,7 @@ module mult_tb();
             A = $signed($urandom_range(INT64_MIN, INT64_MAX));
             B = $signed($urandom_range(INT64_MIN, INT64_MAX));
             mul_verify();
+            counter++;
             #1;
         end
         /////////////////////////////////////////////////////////////////////////////
@@ -49,9 +53,11 @@ module mult_tb();
             A = $signed($urandom_range(INT64_MIN, INT64_MAX));
             B = $signed($urandom_range(INT64_MIN, INT64_MAX));
             mul_verify();
+            counter++;
             #1;
         end
-        #1 $stop; 
+        #5
+        if(!failed.triggered) $display("RAN %4d TESTS WITH NO ERRORS!", counter); 
     end
 
 riscv_multiplier DUT  (

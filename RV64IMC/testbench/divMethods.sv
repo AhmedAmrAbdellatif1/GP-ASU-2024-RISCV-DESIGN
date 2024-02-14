@@ -33,7 +33,7 @@ task div_by_zero();
     for(i=0; i<NO_TESTS+1; i++)
     begin
       A = $signed($urandom_range(INT64_MIN, INT64_MAX));
-      #1
+      #1 counter++;
       if(Y!=-'sd1)
         $display("[%4d] %s failed: rs1=0x%h     rs2=0x%h    rd=0x%h     expected=0x%h",i,ctrl_div,A,B,Y,-'sd1);
     end
@@ -42,7 +42,7 @@ task div_by_zero();
     for(i=0; i<NO_TESTS+1; i++)
     begin
       A = $signed($urandom_range(INT64_MIN, INT64_MAX));
-      #1
+      #1 counter++;
       if(Y!=((2**64)-1))
         $display("[%4d] %s failed: rs1=0x%h     rs2=0x%h    rd=0x%h     expected=0x%h",i,ctrl_div,A,B,Y,((2**64)-1));
     end
@@ -51,7 +51,7 @@ task div_by_zero();
     for(i=0; i<NO_TESTS+1; i++)
     begin
       A = $signed($urandom_range(INT64_MIN, INT64_MAX));
-      #1
+      #1 counter++;
       if(Y!=A)
         $display("[%4d] %s failed: rs1=0x%h     rs2=0x%h    rd=0x%h     expected=0x%h",i,ctrl_div,A,B,Y,A);
     end
@@ -60,9 +60,11 @@ task div_by_zero();
     for(i=0; i<NO_TESTS+1; i++)
     begin
       A = $signed($urandom_range(INT64_MIN, INT64_MAX));
-      #1
-      if(Y!=A) 
+      #1 counter++;
+      if(Y!=A) begin
         $display("[%4d] %s failed: rs1=0x%h     rs2=0x%h    rd=0x%h     expected=0x%h",i,ctrl_div,A,B,Y,A);
+        ->failed;
+      end
     end
 endtask
 
@@ -70,10 +72,17 @@ task overflow();
   A = INT64_MIN;
   B = -'sd1;
   ctrl_div=div;
-  #1
-  if(Y!=INT64_MIN) $display("[    ] %s OVERFLOW failed",ctrl_div);
+  #1 counter++;
+  if(Y!=INT64_MIN) begin
+    $display("[    ] %s OVERFLOW failed",ctrl_div);
+    ->failed;
+  end
+  
   #5
   ctrl_div=rem;
-  #1
-  if(Y!=0) $display("[    ] %s OVERFLOW failed",ctrl_div);
+  #1 counter++;
+  if(Y!=0) begin
+     $display("[    ] %s OVERFLOW failed",ctrl_div);
+    ->failed;
+  end
 endtask

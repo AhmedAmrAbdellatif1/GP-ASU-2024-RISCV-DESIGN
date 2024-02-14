@@ -27,7 +27,9 @@ task mul_verify();
     begin
     temp = mul_result(A,B,ctrl_mul);
     #1
-    if(Y != temp)
+    if(Y != temp) begin
         $display("[%4d] %s failed: rs1=0x%h     rs2=0x%h    rd=0x%h     expected=0x%h",i,ctrl_mul,A,B,Y,temp);
+        ->failed;
+    end
     end
 endtask
