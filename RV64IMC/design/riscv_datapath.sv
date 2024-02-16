@@ -244,7 +244,7 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_de_opcode_e        (riscv_opcode_e)              ,
     //---------------------------->
     .i_riscv_de_inst(riscv_inst_d),
-    .o_riscv_de_inst(riscv_inst_e),
+    .o_riscv_de_inst(riscv_inst_e)
     //<----------------------------
   );
 
@@ -298,7 +298,7 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_de_opcode_m        (o_riscv_datapath_opcode_m)       ,
     //---------------------------->
     .i_riscv_em_inst(riscv_inst_e),
-    .o_riscv_em_inst(riscv_inst_m),
+    .o_riscv_em_inst(riscv_inst_m)
     //<----------------------------
   );
 
@@ -329,7 +329,7 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_mw_regw_wb         (riscv_regw_wb)             ,
     //--------------------------->
     .i_riscv_mw_inst(riscv_inst_m),
-    .o_riscv_mw_inst(riscv_inst_wb),
+    .o_riscv_mw_inst(riscv_inst_wb)
     //<-----------------------------
   );
 

@@ -22,7 +22,7 @@
     output  logic   [63:0]  o_riscv_em_storedata_m,
     output  logic   [4:0]   o_riscv_em_rdaddr_m,
     output  logic   [63:0]  o_riscv_em_imm_m,
-    output  logic   [6:0]   o_riscv_de_opcode_m
+    output  logic   [6:0]   o_riscv_de_opcode_m,
 
     //------------------------------------>
     input   logic   [31:0]  i_riscv_em_inst,

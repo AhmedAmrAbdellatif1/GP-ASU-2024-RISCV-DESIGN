@@ -6,9 +6,9 @@ input  logic [awidth-1:0]   i_riscv_trc_rdaddr   ,
 input  logic [dwidth-1:0]   i_riscv_trc_rddata   );
 
   // internal registers
-  logic [iwidth-1:0]   reg_riscv_trc_inst     ,
-  logic [awidth-1:0]   reg_riscv_trc_rdaddr   ,
-  logic [dwidth-1:0]   reg_riscv_trc_rddata   );
+  logic [iwidth-1:0]   reg_riscv_trc_inst     ;
+  logic [awidth-1:0]   reg_riscv_trc_rdaddr   ;
+  logic [dwidth-1:0]   reg_riscv_trc_rddata   ;
 
 
  always_ff @(posedge i_riscv_clk or posedge i_riscv_rst )
