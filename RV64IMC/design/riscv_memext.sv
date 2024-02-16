@@ -8,15 +8,15 @@ module riscv_memext(
     case(i_riscv_memext_sel)
   //load byte 
   3'b000: o_riscv_memext_loaded={{56{i_riscv_memext_data[7]}},i_riscv_memext_data[7:0]};  // Lb
-  3'b100: o_riscv_memext_loaded={{56{0}},i_riscv_memext_data[7:0]};                      // Lbu
+  3'b100: o_riscv_memext_loaded={{56{1'b0}},i_riscv_memext_data[7:0]};                      // Lbu
     
   //load half word
   3'b001: o_riscv_memext_loaded={{48{i_riscv_memext_data[15]}},i_riscv_memext_data[15:0]};  // Lh
-  3'b101: o_riscv_memext_loaded={{48{0}},i_riscv_memext_data[15:0]};                       // Lhu
+  3'b101: o_riscv_memext_loaded={{48{1'b0}},i_riscv_memext_data[15:0]};                       // Lhu
 
 //load word
   3'b010: o_riscv_memext_loaded={{32{i_riscv_memext_data[31]}},i_riscv_memext_data[31:0]} ; // Lw
-  3'b110: o_riscv_memext_loaded={{32{0}},i_riscv_memext_data[31:0]} ;                      // Lwu
+  3'b110: o_riscv_memext_loaded={{32{1'b0}},i_riscv_memext_data[31:0]} ;                      // Lwu
 
 
 //load double word

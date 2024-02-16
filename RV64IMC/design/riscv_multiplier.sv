@@ -23,7 +23,7 @@ begin
         rs1_copy=~i_riscv_mul_rs1data+1;
     end
     else if (i_riscv_mul_mulctrl==3'b110 && i_riscv_mul_rs1data[63])
-    rs1_copy={0,i_riscv_mul_rs1data};
+    rs1_copy={1'b0,i_riscv_mul_rs1data};
     else
     begin
         rs1_copy=i_riscv_mul_rs1data;
@@ -36,7 +36,7 @@ begin
         rs2_copy=~i_riscv_mul_rs2data+1;
     end
     else if ((i_riscv_mul_mulctrl==3'b110||i_riscv_mul_mulctrl==3'b111) && i_riscv_mul_rs2data[63])
-    rs2_copy={0,i_riscv_mul_rs2data};
+    rs2_copy={1'b0,i_riscv_mul_rs2data};
 else 
  rs2_copy=i_riscv_mul_rs2data;
 
