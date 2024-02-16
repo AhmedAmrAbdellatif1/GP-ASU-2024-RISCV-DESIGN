@@ -1,3 +1,5 @@
+//`include "sign_pkg.svh"
+
 module riscv_alu(
    input  logic        [5:0]      i_riscv_alu_ctrl,
    input  logic signed [63:0]     i_riscv_alu_rs1data,
@@ -9,6 +11,8 @@ logic [31:0] word_reg;
 logic [63:0] result;
 //logic [3:0] operation;                    
 //assign operation= i_riscv_alu_ctrl[3:0];
+
+ // import sign_pkg::*;
 
 always_comb 
 begin
@@ -48,7 +52,7 @@ if (!i_riscv_alu_ctrl[4])
   o_riscv_alu_result=i_riscv_alu_rs1data << i_riscv_alu_rs2data[5:0] ;
 else                                   
   begin
-  word_reg=i_riscv_alu_rs1data[31:0] << i_riscv_alu_rs2data[5:0];
+  word_reg=i_riscv_alu_rs1data[31:0] << i_riscv_alu_rs2data[4:0];
   o_riscv_alu_result= { {32 {word_reg[31]}} , word_reg};
   end 
       end
@@ -79,7 +83,7 @@ if (!i_riscv_alu_ctrl[4])
   o_riscv_alu_result=i_riscv_alu_rs1data >> i_riscv_alu_rs2data[5:0] ;
 else                                   
   begin
-  word_reg=i_riscv_alu_rs1data[31:0] >> i_riscv_alu_rs2data[5:0];
+  word_reg=i_riscv_alu_rs1data[31:0] >> i_riscv_alu_rs2data[4:0];
   o_riscv_alu_result= { {32 {word_reg[31]}} , word_reg};
   end 
       end
@@ -90,7 +94,7 @@ if (!i_riscv_alu_ctrl[4])
   o_riscv_alu_result=i_riscv_alu_rs1data >>> i_riscv_alu_rs2data[5:0] ;
 else                                   
   begin
-  word_reg=i_riscv_alu_rs1data[31:0] >>> i_riscv_alu_rs2data[5:0];
+  word_reg= $signed(i_riscv_alu_rs1data[31:0]) >>> i_riscv_alu_rs2data[4:0];
   o_riscv_alu_result= { {32 {word_reg[31]}} , word_reg};
   end 
       end

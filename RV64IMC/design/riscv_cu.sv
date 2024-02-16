@@ -44,144 +44,144 @@ always_comb
                                   end
                                 else if (i_riscv_cu_funct7_0) // mul 
                                   begin
-                                    o_riscv_cu_jump      = 1'b0;
-                                    o_riscv_cu_regw      = 1'b1;
-                                    o_riscv_cu_asel      = 1'b1;
-                                    o_riscv_cu_bsel      = 1'b0;
-                                    o_riscv_cu_memw      = 1'b0;
-                                    o_riscv_cu_storesrc  = 2'b00;
-                                    o_riscv_cu_resultsrc = 2'b01;
-                                    o_riscv_cu_bcond     = 4'b0000;
-                                    o_riscv_cu_memext    = 3'b000;
-                                    o_riscv_cu_immsrc    = 3'b000;
-                                    o_riscv_cu_aluctrl   = 6'b000000;
-                                    o_riscv_cu_mulctrl = 3'b100;
-                                    o_riscv_cu_divctrl = 3'b000;
-                                    o_riscv_cu_funcsel=2'b00;           
+                                    o_riscv_cu_jump       = 1'b0;
+                                    o_riscv_cu_regw       = 1'b1;
+                                    o_riscv_cu_asel       = 1'b1;
+                                    o_riscv_cu_bsel       = 1'b0;
+                                    o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_storesrc   = 2'b00;
+                                    o_riscv_cu_resultsrc  = 2'b01;
+                                    o_riscv_cu_bcond      = 4'b0000;
+                                    o_riscv_cu_memext     = 3'b000;
+                                    o_riscv_cu_immsrc     = 3'b000;
+                                    o_riscv_cu_aluctrl    = 6'b000000;
+                                    o_riscv_cu_mulctrl    = 3'b100;
+                                    o_riscv_cu_divctrl    = 3'b000;
+                                    o_riscv_cu_funcsel    = 2'b00;           
                                   end                         
                                 else  
                                   begin //sub instruction signals
-                                    o_riscv_cu_jump      = 1'b0;
-                                    o_riscv_cu_regw      = 1'b1;
-                                    o_riscv_cu_asel      = 1'b1;
-                                    o_riscv_cu_bsel      = 1'b0;
-                                    o_riscv_cu_memw      = 1'b0;
-                                    o_riscv_cu_storesrc  = 2'b00;
-                                    o_riscv_cu_resultsrc = 2'b01;
-                                    o_riscv_cu_bcond     = 4'b0000;
-                                    o_riscv_cu_memext    = 3'b000;
-                                    o_riscv_cu_immsrc    = 3'b000;
-                                    o_riscv_cu_aluctrl   = 6'b100001;
-                                    o_riscv_cu_mulctrl = 3'b000;
-                                    o_riscv_cu_divctrl = 3'b000;
-                                    o_riscv_cu_funcsel=2'b10;
+                                    o_riscv_cu_jump       = 1'b0;
+                                    o_riscv_cu_regw       = 1'b1;
+                                    o_riscv_cu_asel       = 1'b1;
+                                    o_riscv_cu_bsel       = 1'b0;
+                                    o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_storesrc   = 2'b00;
+                                    o_riscv_cu_resultsrc  = 2'b01;
+                                    o_riscv_cu_bcond      = 4'b0000;
+                                    o_riscv_cu_memext     = 3'b000;
+                                    o_riscv_cu_immsrc     = 3'b000;
+                                    o_riscv_cu_aluctrl    = 6'b100001;
+                                    o_riscv_cu_mulctrl    = 3'b000;
+                                    o_riscv_cu_divctrl    = 3'b000;
+                                    o_riscv_cu_funcsel    = 2'b10;
                                   end
                               end
                        3'b001:begin
                        if (!i_riscv_cu_funct7_0)// sll instruction signals
                          begin
-                                o_riscv_cu_jump      = 1'b0;
-                                o_riscv_cu_regw      = 1'b1;
-                                o_riscv_cu_asel      = 1'b1;
-                                o_riscv_cu_bsel      = 1'b0;
-                                o_riscv_cu_memw      = 1'b0;
-                                o_riscv_cu_storesrc  = 2'b00;
-                                o_riscv_cu_resultsrc = 2'b01;
-                                o_riscv_cu_bcond     = 4'b0000;
-                                o_riscv_cu_memext    = 3'b000;
-                                o_riscv_cu_immsrc    = 3'b000;
-                                o_riscv_cu_aluctrl   = 6'b100010;
-                                o_riscv_cu_mulctrl = 3'b000;
-                                o_riscv_cu_divctrl = 3'b000;
-                                o_riscv_cu_funcsel=2'b10;
+                                o_riscv_cu_jump       = 1'b0;
+                                o_riscv_cu_regw       = 1'b1;
+                                o_riscv_cu_asel       = 1'b1;
+                                o_riscv_cu_bsel       = 1'b0;
+                                o_riscv_cu_memw       = 1'b0;
+                                o_riscv_cu_storesrc   = 2'b00;
+                                o_riscv_cu_resultsrc  = 2'b01;
+                                o_riscv_cu_bcond      = 4'b0000;
+                                o_riscv_cu_memext     = 3'b000;
+                                o_riscv_cu_immsrc     = 3'b000;
+                                o_riscv_cu_aluctrl    = 6'b100010;
+                                o_riscv_cu_mulctrl    = 3'b000;
+                                o_riscv_cu_divctrl    = 3'b000;
+                                o_riscv_cu_funcsel    =2'b10;
                                end 
                             else
                               begin // mulh
-                                    o_riscv_cu_jump      = 1'b0;
-                                    o_riscv_cu_regw      = 1'b1;
-                                    o_riscv_cu_asel      = 1'b1;
-                                    o_riscv_cu_bsel      = 1'b0;
-                                    o_riscv_cu_memw      = 1'b0;
-                                    o_riscv_cu_storesrc  = 2'b00;
-                                    o_riscv_cu_resultsrc = 2'b01;
-                                    o_riscv_cu_bcond     = 4'b0000;
-                                    o_riscv_cu_memext    = 3'b000;
-                                    o_riscv_cu_immsrc    = 3'b000;
-                                    o_riscv_cu_aluctrl   = 6'b000000;
-                                    o_riscv_cu_mulctrl = 3'b101;
-                                    o_riscv_cu_divctrl = 3'b000;
-                                    o_riscv_cu_funcsel=2'b00;           
+                                    o_riscv_cu_jump       = 1'b0;
+                                    o_riscv_cu_regw       = 1'b1;
+                                    o_riscv_cu_asel       = 1'b1;
+                                    o_riscv_cu_bsel       = 1'b0;
+                                    o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_storesrc   = 2'b00;
+                                    o_riscv_cu_resultsrc  = 2'b01;
+                                    o_riscv_cu_bcond      = 4'b0000;
+                                    o_riscv_cu_memext     = 3'b000;
+                                    o_riscv_cu_immsrc     = 3'b000;
+                                    o_riscv_cu_aluctrl    = 6'b000000;
+                                    o_riscv_cu_mulctrl    = 3'b101;
+                                    o_riscv_cu_divctrl    = 3'b000;
+                                    o_riscv_cu_funcsel    = 2'b00;           
                               end
                             end
                        3'b010:begin
                        if(!i_riscv_cu_funct7_0) // slt instruction signals
                          begin
-                                o_riscv_cu_jump      = 1'b0;
-                                o_riscv_cu_regw      = 1'b1;
-                                o_riscv_cu_asel      = 1'b1;
-                                o_riscv_cu_bsel      = 1'b0;
-                                o_riscv_cu_memw      = 1'b0;
-                                o_riscv_cu_storesrc  = 2'b00;
-                                o_riscv_cu_resultsrc = 2'b01;
-                                o_riscv_cu_bcond     = 4'b0000;
-                                o_riscv_cu_memext    = 3'b000;
-                                o_riscv_cu_immsrc    = 3'b000;
-                                o_riscv_cu_aluctrl   = 6'b100011;
-                                o_riscv_cu_mulctrl = 3'b000;
-                                o_riscv_cu_divctrl = 3'b000;
-                                o_riscv_cu_funcsel=2'b10;
+                                o_riscv_cu_jump       = 1'b0;
+                                o_riscv_cu_regw       = 1'b1;
+                                o_riscv_cu_asel       = 1'b1;
+                                o_riscv_cu_bsel       = 1'b0;
+                                o_riscv_cu_memw       = 1'b0;
+                                o_riscv_cu_storesrc   = 2'b00;
+                                o_riscv_cu_resultsrc  = 2'b01;
+                                o_riscv_cu_bcond      = 4'b0000;
+                                o_riscv_cu_memext     = 3'b000;
+                                o_riscv_cu_immsrc     = 3'b000;
+                                o_riscv_cu_aluctrl    = 6'b100011;
+                                o_riscv_cu_mulctrl    = 3'b000;
+                                o_riscv_cu_divctrl    = 3'b000;
+                                o_riscv_cu_funcsel    = 2'b10;
                             end
                           else begin //mulhsu
-                                    o_riscv_cu_jump      = 1'b0;
-                                    o_riscv_cu_regw      = 1'b1;
-                                    o_riscv_cu_asel      = 1'b1;
-                                    o_riscv_cu_bsel      = 1'b0;
-                                    o_riscv_cu_memw      = 1'b0;
-                                    o_riscv_cu_storesrc  = 2'b00;
-                                    o_riscv_cu_resultsrc = 2'b01;
-                                    o_riscv_cu_bcond     = 4'b0000;
-                                    o_riscv_cu_memext    = 3'b000;
-                                    o_riscv_cu_immsrc    = 3'b000;
-                                    o_riscv_cu_aluctrl   = 6'b000000;
-                                    o_riscv_cu_mulctrl = 3'b110;
-                                    o_riscv_cu_divctrl = 3'b000;
-                                    o_riscv_cu_funcsel=2'b00;    
+                                    o_riscv_cu_jump       = 1'b0;
+                                    o_riscv_cu_regw       = 1'b1;
+                                    o_riscv_cu_asel       = 1'b1;
+                                    o_riscv_cu_bsel       = 1'b0;
+                                    o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_storesrc   = 2'b00;
+                                    o_riscv_cu_resultsrc  = 2'b01;
+                                    o_riscv_cu_bcond      = 4'b0000;
+                                    o_riscv_cu_memext     = 3'b000;
+                                    o_riscv_cu_immsrc     = 3'b000;
+                                    o_riscv_cu_aluctrl    = 6'b000000;
+                                    o_riscv_cu_mulctrl    = 3'b110;
+                                    o_riscv_cu_divctrl    = 3'b000;
+                                    o_riscv_cu_funcsel    = 2'b00;    
                                   end       
                               end 
                        3'b011:begin // sltu instruction signals
                          if(!i_riscv_cu_funct7_0)
                            begin
-                                o_riscv_cu_jump      = 1'b0;
-                                o_riscv_cu_regw      = 1'b1;
-                                o_riscv_cu_asel      = 1'b1;
-                                o_riscv_cu_bsel      = 1'b0;
-                                o_riscv_cu_memw      = 1'b0;
-                                o_riscv_cu_storesrc  = 2'b00;
-                                o_riscv_cu_resultsrc = 2'b01;
-                                o_riscv_cu_bcond     = 4'b0000;
-                                o_riscv_cu_memext    = 3'b000;
-                                o_riscv_cu_immsrc    = 3'b000;
-                                o_riscv_cu_aluctrl   = 6'b100100;
-                                o_riscv_cu_mulctrl = 3'b000;
-                                o_riscv_cu_divctrl = 3'b000;
-                                o_riscv_cu_funcsel=2'b10;
+                                o_riscv_cu_jump       = 1'b0;
+                                o_riscv_cu_regw       = 1'b1;
+                                o_riscv_cu_asel       = 1'b1;
+                                o_riscv_cu_bsel       = 1'b0;
+                                o_riscv_cu_memw       = 1'b0;
+                                o_riscv_cu_storesrc   = 2'b00;
+                                o_riscv_cu_resultsrc  = 2'b01;
+                                o_riscv_cu_bcond      = 4'b0000;
+                                o_riscv_cu_memext     = 3'b000;
+                                o_riscv_cu_immsrc     = 3'b000;
+                                o_riscv_cu_aluctrl    = 6'b100100;
+                                o_riscv_cu_mulctrl    = 3'b000;
+                                o_riscv_cu_divctrl    = 3'b000;
+                                o_riscv_cu_funcsel    = 2'b10;
                               end
                             else // mulhu
                               begin
-                                    o_riscv_cu_jump      = 1'b0;
-                                    o_riscv_cu_regw      = 1'b1;
-                                    o_riscv_cu_asel      = 1'b1;
-                                    o_riscv_cu_bsel      = 1'b0;
-                                    o_riscv_cu_memw      = 1'b0;
-                                    o_riscv_cu_storesrc  = 2'b00;
-                                    o_riscv_cu_resultsrc = 2'b01;
-                                    o_riscv_cu_bcond     = 4'b0000;
-                                    o_riscv_cu_memext    = 3'b000;
-                                    o_riscv_cu_immsrc    = 3'b000;
-                                    o_riscv_cu_aluctrl   = 6'b000000;
-                                    o_riscv_cu_mulctrl = 3'b111;
-                                    o_riscv_cu_divctrl = 3'b000;
-                                    o_riscv_cu_funcsel=2'b00;
+                                    o_riscv_cu_jump       = 1'b0;
+                                    o_riscv_cu_regw       = 1'b1;
+                                    o_riscv_cu_asel       = 1'b1;
+                                    o_riscv_cu_bsel       = 1'b0;
+                                    o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_storesrc   = 2'b00;
+                                    o_riscv_cu_resultsrc  = 2'b01;
+                                    o_riscv_cu_bcond      = 4'b0000;
+                                    o_riscv_cu_memext     = 3'b000;
+                                    o_riscv_cu_immsrc     = 3'b000;
+                                    o_riscv_cu_aluctrl    = 6'b000000;
+                                    o_riscv_cu_mulctrl    = 3'b111;
+                                    o_riscv_cu_divctrl    = 3'b000;
+                                    o_riscv_cu_funcsel    =2'b00;
                                 end
                               end
                        3'b100:begin // xor instruction signals
@@ -407,54 +407,54 @@ always_comb
                        3'b101:begin
                                 if(!i_riscv_cu_funct7_5)
                                   begin //srlw instruction signals
-                                    o_riscv_cu_jump      = 1'b0;
-                                    o_riscv_cu_regw      = 1'b1;
-                                    o_riscv_cu_asel      = 1'b1;
-                                    o_riscv_cu_bsel      = 1'b0;
-                                    o_riscv_cu_memw      = 1'b0;
-                                    o_riscv_cu_storesrc  = 2'b00;
-                                    o_riscv_cu_resultsrc = 2'b01;
-                                    o_riscv_cu_bcond     = 4'b0000;
-                                    o_riscv_cu_memext    = 3'b000;
-                                    o_riscv_cu_immsrc    = 3'b000;
-                                    o_riscv_cu_aluctrl   = 6'b110110;
-                                    o_riscv_cu_mulctrl = 3'b000;
-                                   o_riscv_cu_divctrl = 3'b000;
-                                   o_riscv_cu_funcsel=2'b10;
+                                    o_riscv_cu_jump       = 1'b0;
+                                    o_riscv_cu_regw       = 1'b1;
+                                    o_riscv_cu_asel       = 1'b1;
+                                    o_riscv_cu_bsel       = 1'b0;
+                                    o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_storesrc   = 2'b00;
+                                    o_riscv_cu_resultsrc  = 2'b01;
+                                    o_riscv_cu_bcond      = 4'b0000;
+                                    o_riscv_cu_memext     = 3'b000;
+                                    o_riscv_cu_immsrc     = 3'b000;
+                                    o_riscv_cu_aluctrl    = 6'b110110;
+                                    o_riscv_cu_mulctrl    = 3'b000;
+                                   o_riscv_cu_divctrl     = 3'b000;
+                                   o_riscv_cu_funcsel     = 2'b10;
                                   end
                                 else  
                                   begin //sraw instruction signals
-                                    o_riscv_cu_jump      = 1'b0;
-                                    o_riscv_cu_regw      = 1'b1;
-                                    o_riscv_cu_asel      = 1'b1;
-                                    o_riscv_cu_bsel      = 1'b0;
-                                    o_riscv_cu_memw      = 1'b0;
-                                    o_riscv_cu_storesrc  = 2'b00;
-                                    o_riscv_cu_resultsrc = 2'b01;
-                                    o_riscv_cu_bcond     = 4'b0000;
-                                    o_riscv_cu_memext    = 3'b000;
-                                    o_riscv_cu_immsrc    = 3'b000;
-                                    o_riscv_cu_aluctrl   = 6'b110111;
-                                    o_riscv_cu_mulctrl = 3'b000;
-                                   o_riscv_cu_divctrl = 3'b000;
-                                   o_riscv_cu_funcsel=2'b10;
+                                    o_riscv_cu_jump       = 1'b0;
+                                    o_riscv_cu_regw       = 1'b1;
+                                    o_riscv_cu_asel       = 1'b1;
+                                    o_riscv_cu_bsel       = 1'b0;
+                                    o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_storesrc   = 2'b00;
+                                    o_riscv_cu_resultsrc  = 2'b01;
+                                    o_riscv_cu_bcond      = 4'b0000;
+                                    o_riscv_cu_memext     = 3'b000;
+                                    o_riscv_cu_immsrc     = 3'b000;
+                                    o_riscv_cu_aluctrl    = 6'b110111;
+                                    o_riscv_cu_mulctrl    = 3'b000;
+                                   o_riscv_cu_divctrl     = 3'b000;
+                                   o_riscv_cu_funcsel     = 2'b10;
                                   end
                                end 
                        default:begin 
-                                 o_riscv_cu_jump      = 1'b0;
-                                 o_riscv_cu_regw      = 1'b1;
-                                 o_riscv_cu_asel      = 1'b1;
-                                 o_riscv_cu_bsel      = 1'b0;
-                                 o_riscv_cu_memw      = 1'b0;
-                                 o_riscv_cu_storesrc  = 2'b00;
-                                 o_riscv_cu_resultsrc = 2'b01;
-                                 o_riscv_cu_bcond     = 4'b0000;
-                                 o_riscv_cu_memext    = 3'b000;
-                                 o_riscv_cu_immsrc    = 3'b000;
-                                 o_riscv_cu_aluctrl   = 6'b100000;  
-                                    o_riscv_cu_mulctrl = 3'b000;
-                                   o_riscv_cu_divctrl = 3'b000;
-                                   o_riscv_cu_funcsel=2'b10;
+                                 o_riscv_cu_jump        = 1'b0;
+                                 o_riscv_cu_regw        = 1'b1;
+                                 o_riscv_cu_asel        = 1'b1;
+                                 o_riscv_cu_bsel        = 1'b0;
+                                 o_riscv_cu_memw        = 1'b0;
+                                 o_riscv_cu_storesrc    = 2'b00;
+                                 o_riscv_cu_resultsrc   = 2'b01;
+                                 o_riscv_cu_bcond       = 4'b0000;
+                                 o_riscv_cu_memext      = 3'b000;
+                                 o_riscv_cu_immsrc      = 3'b000;
+                                 o_riscv_cu_aluctrl     = 6'b100000;  
+                                    o_riscv_cu_mulctrl  = 3'b000;
+                                   o_riscv_cu_divctrl   = 3'b000;
+                                   o_riscv_cu_funcsel   = 2'b10;
                               end                                                                  
                      endcase
                    end        
