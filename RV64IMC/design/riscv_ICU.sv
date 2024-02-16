@@ -8,7 +8,10 @@ input  logic        [2:0]      i_riscv_icu_mulctrl,
 input  logic        [2:0]      i_riscv_icu_divctrl,
 input  logic        [5:0]      i_riscv_icu_aluctrl,
 input  logic        [1:0]      i_riscv_icu_funcsel,
+input  logic                   i_riscv_icu_clk,
+input  logic                   i_riscv_icu_rst,
 output logic signed            o_riscv_branch_taken,
+output logic signed            o_riscv_icu_valid,
 output logic signed [63:0]     o_riscv_icu_result
 );
 
@@ -38,6 +41,9 @@ riscv_multiplier u_mul (
     .i_riscv_mul_rs1data (i_riscv_icu_rs1data),
     .i_riscv_mul_rs2data (i_riscv_icu_rs2data),
     .i_riscv_mul_mulctrl (i_riscv_icu_mulctrl),
+    .i_riscv_mul_clk     (i_riscv_icu_clk),
+    .i_riscv_mul_rst     (i_riscv_icu_rst),
+    .o_riscv_mul_valid   (o_riscv_icu_valid),
     .o_riscv_mul_product (mul_result)
 );
 
