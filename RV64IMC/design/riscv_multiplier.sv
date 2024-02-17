@@ -3,13 +3,14 @@ module riscv_multiplier (
   input                        i_riscv_mul_rst,
   input  logic signed [63:0]   i_riscv_mul_rs1data,
   input  logic signed [63:0]   i_riscv_mul_rs2data,
-  input  logic        [2:0]    i_riscv_mul_mulctrl,
+  input  logic        [3:0]    i_riscv_mul_mulctrl,
   output logic signed [63:0]   o_riscv_mul_product,
   output logic                 o_riscv_mul_valid
   );
 
 
 logic signed [129:0] z,next_z,z_temp;
+//logic signed [64:0] z,next_z,z_temp;
 logic                next_state,pres_state;
 logic         [1:0]  temp,next_temp;                    //{Q0,Q-1}
 logic         [6:0]  count,next_count;                  //log2(multiplier)
@@ -20,24 +21,29 @@ logic signed  [64:0] x,y;
 parameter idle =1'b0;
 parameter start=1'b1;
 
-assign i_riscv_mul_start = i_riscv_mul_mulctrl[2];
+assign i_riscv_mul_start = i_riscv_mul_mulctrl[3];
 
 
 
 //////////////////////////////////multiplicend & multiplier//////////////////
 always_comb
 begin
-    case(i_riscv_mul_mulctrl)
-    3'b110:begin
+    case(i_riscv_mul_mulctrl) 
+    4'b1110:begin                                                //mulhu
            x={1'b0,i_riscv_mul_rs1data[63:0]};                   //multiplicend
            y={1'b0,i_riscv_mul_rs2data[63:0]};                   //multiplier
            end
 
-    3'b111: begin
+    4'b1111: begin                                               //mulhsu
            x={i_riscv_mul_rs1data[63],i_riscv_mul_rs1data[63:0]};
            y={1'b0,i_riscv_mul_rs2data[63:0]};
           end
 
+    4'b1001:                                                     //mulw
+          begin
+           x={   {33{1'b0}},i_riscv_mul_rs1data[31:0]};
+           y={   {33{1'b0}},i_riscv_mul_rs2data[31:0]};
+          end
     default:begin
         x={i_riscv_mul_rs1data[63],i_riscv_mul_rs1data[63:0]};
         y={i_riscv_mul_rs2data[63],i_riscv_mul_rs2data[63:0]};
@@ -45,8 +51,6 @@ begin
     endcase
 
 end
-
-
 
 
 
@@ -71,10 +75,12 @@ begin
         if(next_valid)
         begin
            case(i_riscv_mul_mulctrl)
-           3'b100:o_riscv_mul_product<=next_z[63:0];
-           3'b101:o_riscv_mul_product<=next_z[127:64];
-           3'b110:o_riscv_mul_product<=next_z[127:64];
-           3'b111:o_riscv_mul_product<=next_z[127:64];
+           4'b1100:o_riscv_mul_product<=next_z[63:0];
+           4'b1101:o_riscv_mul_product<=next_z[127:64];
+           4'b1110:o_riscv_mul_product<=next_z[127:64];
+           4'b1111:o_riscv_mul_product<=next_z[127:64];
+           4'b1001:o_riscv_mul_product<= { {32{next_z[31]}} ,next_z[31:0]};
+
            default: o_riscv_mul_product<=0;
            endcase
         end
@@ -113,8 +119,6 @@ begin
             next_z=z_temp>>>1;
             next_valid=(count=='b1000000)?1'b1:1'b0;
             next_state=(count=='b1000000)? idle:pres_state;
-    
-
         end
         
     endcase
