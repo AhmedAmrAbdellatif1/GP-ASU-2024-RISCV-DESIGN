@@ -39,7 +39,7 @@ begin
            y={1'b0,i_riscv_mul_rs2data[63:0]};
           end
 
-    4'b1001:                                                     //mulw
+    4'b1000:                                                     //mulw
           begin
            x={   {33{1'b0}},i_riscv_mul_rs1data[31:0]};
            y={   {33{1'b0}},i_riscv_mul_rs2data[31:0]};
@@ -79,7 +79,7 @@ begin
            4'b1101:o_riscv_mul_product<=next_z[127:64];
            4'b1110:o_riscv_mul_product<=next_z[127:64];
            4'b1111:o_riscv_mul_product<=next_z[127:64];
-           4'b1001:o_riscv_mul_product<= { {32{next_z[31]}} ,next_z[31:0]};
+           4'b1000:o_riscv_mul_product<= { {32{next_z[31]}} ,next_z[31:0]};
 
            default: o_riscv_mul_product<=0;
            endcase
