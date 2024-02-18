@@ -12,7 +12,7 @@ module riscv_hazardunit
      input             i_riscv_hzrdu_pcsrc ,
                        i_riscv_hzrdu_regw_m   ,
                        i_riscv_hzrdu_regw_w  ,
-
+                       i_riscv_hzrdu_icu_valid_e,
     // input op1,op2
    input       [1:0]   i_riscv_hzrdu_resultsrc_e   ,
 

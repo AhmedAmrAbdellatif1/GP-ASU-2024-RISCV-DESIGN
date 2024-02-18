@@ -4,8 +4,8 @@ input  logic signed [63:0]     i_riscv_icu_rs2data,
 input  logic signed [63:0]     i_riscv_icu_alurs1data,
 input  logic signed [63:0]     i_riscv_icu_alurs2data,
 input  logic        [3:0]      i_riscv_icu_bcond,
-input  logic        [2:0]      i_riscv_icu_mulctrl,
-input  logic        [2:0]      i_riscv_icu_divctrl,
+input  logic        [3:0]      i_riscv_icu_mulctrl,
+input  logic        [3:0]      i_riscv_icu_divctrl,
 input  logic        [5:0]      i_riscv_icu_aluctrl,
 input  logic        [1:0]      i_riscv_icu_funcsel,
 input  logic                   i_riscv_icu_clk,
@@ -14,11 +14,13 @@ output logic signed            o_riscv_branch_taken,
 output logic signed            o_riscv_icu_valid,
 output logic signed [63:0]     o_riscv_icu_result
 );
-
+logic riscv_mul_valid;
+logic riscv_div_valid;
 logic signed [63:0]     alu_result;
 logic signed [63:0]     div_result;
 logic signed [63:0]     mul_result;
 
+assign o_riscv_icu_valid = riscv_div_valid || riscv_mul_valid;
 ////////////////////////////////ALU//////////////////////
 riscv_alu u_ALU (
     .i_riscv_alu_ctrl    (i_riscv_icu_aluctrl),
@@ -43,7 +45,7 @@ riscv_multiplier u_mul (
     .i_riscv_mul_mulctrl (i_riscv_icu_mulctrl),
     .i_riscv_mul_clk     (i_riscv_icu_clk),
     .i_riscv_mul_rst     (i_riscv_icu_rst),
-    .o_riscv_mul_valid   (o_riscv_icu_valid),
+    .o_riscv_mul_valid   (riscv_mul_valid),
     .o_riscv_mul_product (mul_result)
 );
 
@@ -54,7 +56,7 @@ riscv_divider u_divider (
     .i_riscv_div_divctrl (i_riscv_icu_divctrl),
     .i_riscv_div_clk     (i_riscv_icu_clk),
     .i_riscv_div_rst     (i_riscv_icu_rst),
-    .o_riscv_div_valid   (o_riscv_icu_valid),
+     .o_riscv_div_valid   (riscv_div_valid),
     .o_riscv_div_result  (div_result)
 );
 

@@ -28,8 +28,8 @@ input logic [width-1:0] i_riscv_estage_imm_m,
   //u_ALU Signals
 
   input  logic  [ 5 : 0 ] i_riscv_estage_aluctrl ,                             
-  input  logic  [ 2 : 0 ] i_riscv_estage_mulctrl , 
-   input  logic [ 2 : 0 ] i_riscv_estage_divctrl , 
+  input  logic  [ 3 : 0 ] i_riscv_estage_mulctrl , 
+   input  logic [ 3 : 0 ] i_riscv_estage_divctrl , 
    input  logic [ 1 : 0 ] i_riscv_estage_funcsel , 
 //Operand2 MUX signal
   input  logic signed [width-1:0] i_riscv_estage_simm ,
@@ -40,8 +40,8 @@ input logic [width-1:0] i_riscv_estage_imm_m,
 //  Signals to E/M FF
   output  logic signed [width-1:0] o_riscv_estage_result ,
   // Branch Comparator  Signals to hazard_unit
-  output logic               o_riscv_estage_branchtaken 
-
+  output  logic               o_riscv_estage_branchtaken ,
+  output  logic               o_riscv_estage_icu_valid
 
 ); 
 
@@ -122,7 +122,7 @@ riscv_ICU u_icu (
   .i_riscv_icu_clk          (i_riscv_estage_clk),
   .i_riscv_icu_rst          (i_riscv_estage_rst),
   .o_riscv_branch_taken     (o_riscv_estage_branchtaken),
-  .o_riscv_icu_valid        ()
+  .o_riscv_icu_valid        (o_riscv_estage_icu_valid),
   .o_riscv_icu_result       (o_riscv_estage_result)
 );
 endmodule
