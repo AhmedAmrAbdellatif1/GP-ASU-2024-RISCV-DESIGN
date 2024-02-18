@@ -1,4 +1,4 @@
-module habhob(
+module riscv_divider(
 input                          i_riscv_div_clk,
 input                          i_riscv_div_rst,
 input  logic          [2:0]    i_riscv_div_divctrl,
@@ -47,8 +47,8 @@ end
 
 always_comb
 begin
+if()	
 case(i_riscv_div_divctrl)
- 
 3'b100 :begin                               ///div
 if (i_riscv_div_rs2data==0)              //division by 0
 	o_riscv_div_result =-1;
@@ -103,7 +103,6 @@ end
 end
 end
 
-
 3'b111:
     begin
 		    if (i_riscv_div_rs2data==0)              //division by 0
@@ -123,6 +122,7 @@ end
     end
 
 default: o_riscv_div_result=0;
+
 endcase
 end
 
