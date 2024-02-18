@@ -46,8 +46,7 @@ end
 
 
 always_comb
-begin
-//if()	
+begin	
 case(i_riscv_div_divctrl)
 3'b100 :begin                               ///div
 if (i_riscv_div_rs2data==0)              //division by 0

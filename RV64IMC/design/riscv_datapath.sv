@@ -250,6 +250,8 @@ module riscv_datapath #(parameter width=64) (
 
   ////execute stage instantiation////
   riscv_estage u_riscv_estage(
+    .i_riscv_estage_clk         (i_riscv_datapath_clk)  ,
+    .i_riscv_estage_rst         (i_riscv_datapath_rst)  ,
     .i_riscv_estage_rs1data     (riscv_rs1data_e)       ,
     .i_riscv_estage_rs2data     (riscv_rs2data_e)       ,
     .i_riscv_estage_fwda        (i_riscv_datapath_fwda) ,
@@ -267,7 +269,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_estage_simm        (riscv_extendedimm_e)   ,
     .i_riscv_estage_bcond       (riscv_b_condition_e)   ,
     .o_riscv_estage_result      (riscv_aluexe_fe)       ,
-    .o_riscv_estage_branchtaken (riscv_branchtaken)
+    .o_riscv_estage_branchtaken (riscv_branchtaken)     ,
   );
 
    ////execute memory pipeline flip flops ////
