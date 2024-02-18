@@ -26,7 +26,9 @@
 
     //------------------------------------>
     input   logic   [31:0]  i_riscv_em_inst,
-    output  logic   [31:0]  o_riscv_em_inst
+    input   logic   [15:0]  i_riscv_em_cinst,
+    output  logic   [31:0]  o_riscv_em_inst,
+    output  logic   [15:0]  o_riscv_em_cinst
     //<-------------------------------------
   );
 
@@ -47,6 +49,7 @@
             o_riscv_em_imm_m        <= 'b0;            
             o_riscv_de_opcode_m     <= 'b0;
             o_riscv_em_inst         <= 'b0;
+            o_riscv_em_cinst        <= 'b0;
           end
         else
           begin
@@ -62,6 +65,7 @@
             o_riscv_em_imm_m        <= i_riscv_em_imm_e;
             o_riscv_de_opcode_m     <= i_riscv_de_opcode_e;
             o_riscv_em_inst         <= i_riscv_em_inst;
+            o_riscv_em_cinst        <= i_riscv_em_cinst;
           end
     end
   endmodule

@@ -49,7 +49,9 @@
 
     //---------------------------->
       input  logic [31:0]  i_riscv_de_inst,
-      output logic [31:0]  o_riscv_de_inst
+      input  logic [15:0]  i_riscv_de_cinst,
+      output logic [31:0]  o_riscv_de_inst,
+      output logic [15:0]  o_riscv_de_cinst
     //<----------------------------
   );
     always_ff @(posedge i_riscv_de_clk or posedge i_riscv_de_rst )
@@ -79,6 +81,7 @@
            o_riscv_de_jump_e        <=  'b0;
            o_riscv_de_opcode_e      <=  'b0;
            o_riscv_de_inst          <=  'b0;
+           o_riscv_de_cinst         <=  'b0;
         end
       else
         begin
@@ -106,6 +109,8 @@
            o_riscv_de_regwrite_e    <=  'b0;
            o_riscv_de_jump_e        <=  'b0;
            o_riscv_de_opcode_e      <=  'b0;
+           o_riscv_de_inst          <=  'b0;
+           o_riscv_de_cinst         <=  'b0;
         end
 
       else
@@ -133,6 +138,7 @@
            o_riscv_de_jump_e        <= i_riscv_de_jump_d;    
            o_riscv_de_opcode_e      <= i_riscv_de_opcode_d;
            o_riscv_de_inst          <= i_riscv_de_inst;
+           o_riscv_de_cinst         <= i_riscv_de_cinst;
         end
       end
     end
