@@ -110,18 +110,19 @@ riscv_mux2 u_Operand_mux_B(
 
   ///////////////////////////////////ICU//////////////////
 riscv_ICU u_icu (
-  .i_riscv_icu_clk          (i_riscv_estage_clk),
-  .i_riscv_icu_rst          (i_riscv_estage_rst),
-  .i_riscv_icu_alurs1data   (o_riscv_OperandmuxA_OperandALUA),
-  .i_riscv_icu_alurs2data   (o_riscv_OperandmuxB_OperandALUB),
   .i_riscv_icu_rs1data      (i_riscv_estage_rs1data),
   .i_riscv_icu_rs2data      (i_riscv_estage_rs2data),
+  .i_riscv_icu_alurs1data   (o_riscv_OperandmuxA_OperandALUA),
+  .i_riscv_icu_alurs2data   (o_riscv_OperandmuxB_OperandALUB),
   .i_riscv_icu_bcond        (i_riscv_estage_bcond),
   .i_riscv_icu_mulctrl      (i_riscv_estage_mulctrl),
   .i_riscv_icu_divctrl      (i_riscv_estage_divctrl),
   .i_riscv_icu_aluctrl      (i_riscv_estage_aluctrl),
   .i_riscv_icu_funcsel      (i_riscv_estage_funcsel),
+  .i_riscv_icu_clk          (i_riscv_estage_clk),
+  .i_riscv_icu_rst          (i_riscv_estage_rst),
   .o_riscv_branch_taken     (o_riscv_estage_branchtaken),
+  .o_riscv_icu_valid        ()
   .o_riscv_icu_result       (o_riscv_estage_result)
 );
 endmodule

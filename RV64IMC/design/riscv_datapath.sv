@@ -269,7 +269,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_estage_simm        (riscv_extendedimm_e)   ,
     .i_riscv_estage_bcond       (riscv_b_condition_e)   ,
     .o_riscv_estage_result      (riscv_aluexe_fe)       ,
-    .o_riscv_estage_branchtaken (riscv_branchtaken)     ,
+    .o_riscv_estage_branchtaken (riscv_branchtaken)     
   );
 
    ////execute memory pipeline flip flops ////
