@@ -178,7 +178,7 @@ module riscv_compressed_decoder (
         case (i_riscv_cdecoder_inst[15:13])
           3'b000: begin
             // c.slli -> slli rd, rd, shamt
-            o_riscv_cdecoder_inst = {7'b0, i_riscv_cdecoder_inst[6:2], i_riscv_cdecoder_inst[11:7], 3'b001, i_riscv_cdecoder_inst[11:7], {OPCODE_OP_IMM}};
+            o_riscv_cdecoder_inst = {6'b0,i_riscv_cdecoder_inst[12],i_riscv_cdecoder_inst[6:2], i_riscv_cdecoder_inst[11:7], 3'b001, i_riscv_cdecoder_inst[11:7], {OPCODE_OP_IMM}};
           end
 
           3'b010: begin
