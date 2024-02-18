@@ -52,7 +52,10 @@ riscv_divider u_divider (
     .i_riscv_div_rs1data (i_riscv_icu_rs1data),
     .i_riscv_div_rs2data (i_riscv_icu_rs2data),
     .i_riscv_div_divctrl (i_riscv_icu_divctrl),
-    .o_riscv_div_result (div_result)
+    .i_riscv_div_clk     (i_riscv_icu_clk),
+    .i_riscv_div_rst     (i_riscv_icu_rst),
+    .o_riscv_div_valid   (o_riscv_icu_valid),
+    .o_riscv_div_result  (div_result)
 );
 
 ////////////////////////////////mux//////////////////////////////
