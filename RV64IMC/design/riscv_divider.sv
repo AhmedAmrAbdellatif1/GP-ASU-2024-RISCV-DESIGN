@@ -108,7 +108,7 @@ if (i_riscv_div_rs2data==0)              //division by 0
 end
 
 4'b1000 :begin                               ///divw
-if (i_riscv_div_rs2data==0)              //division by 0
+if (i_riscv_div_rs2data[31:0]==0)              //division by 0
 	o_riscv_div_result =-1;
 	else if ((rs1_copy==-(2**63))&&(rs2_copy==-1) )        //overflow
 	o_riscv_div_result=rs1_copy ;
@@ -144,7 +144,7 @@ end
 
 4'b1001:                                  //divuw
 begin
-    if (i_riscv_div_rs2data==0)              //division by 0
+    if (i_riscv_div_rs2data[31:0]==0)              //division by 0
 			o_riscv_div_result= (2**32)-1;
 			else  begin
     if(rs2_copy[63])
@@ -181,7 +181,7 @@ end
 
 4'b1010: 
       begin                                 //remw
-	        if (i_riscv_div_rs2data==0)              //division by 0
+	        if (i_riscv_div_rs2data[31:0]==0)              //division by 0
 	        o_riscv_div_result=rs1_copy;
 			else if ((rs1_copy==-(2**63))&&(rs2_copy==-1) )        //overflow
 	        o_riscv_div_result=0 ; 
@@ -220,9 +220,9 @@ end
 
 4'b1011:                                               //remuw
     begin
-		    if (i_riscv_div_rs2data==0)              //division by 0
-	        o_riscv_div_result=i_riscv_div_rs1data;
-
+		    if (i_riscv_div_rs2data[31:0]==0)              //division by 0
+//	        o_riscv_div_result=i_riscv_div_rs1data;
+           	o_riscv_div_result = { {32 {i_riscv_div_rs1data[31]}},i_riscv_div_rs1data[31:0]};
 			else begin
      if(rs2_copy[63])
 			begin  
