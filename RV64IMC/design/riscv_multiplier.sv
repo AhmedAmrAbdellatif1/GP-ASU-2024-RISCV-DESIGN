@@ -54,9 +54,9 @@ end
 
 
 
-always @(posedge i_riscv_mul_clk or negedge i_riscv_mul_rst)
+always @(posedge i_riscv_mul_clk or posedge i_riscv_mul_rst)
 begin
-    if(!i_riscv_mul_rst)
+    if(i_riscv_mul_rst)
     begin
     z<='b0;
     o_riscv_mul_valid<=0;

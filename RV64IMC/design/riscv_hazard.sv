@@ -12,7 +12,6 @@ module riscv_hazardunit
      input              i_riscv_hzrdu_pcsrc ,
                         i_riscv_hzrdu_regw_m   ,
                         i_riscv_hzrdu_regw_w  ,
-                        i_riscv_hzrdu_icu_valid_e,
     // input op1,op2
    input       [1:0]   i_riscv_hzrdu_resultsrc_e   ,
   
@@ -30,16 +29,16 @@ module riscv_hazardunit
   //output reg           o_riscv_hzrdu_fw_dc
 
 /////////////////////////////////multiply &division/////////////////
-input  logic        [3:0]    i_riscv_hzrdu_mulctrl,
-input  logic        [3:0]    i_riscv_hzrdu_divctrl,
-input  logic                 i_riscv_hzrdu_valid,
+input  logic                  i_riscv_hzrdu_mul_en,
+input  logic                  i_riscv_hzrdu_div_en,
+input  logic                  i_riscv_hzrdu_valid,
 output logic                 o_riscv_hzrdu_stallde,
 output logic                 o_riscv_hzrdu_stallem,
 output logic                 o_riscv_hzrdu_stallmw
  );
 
 logic m_stall;
-assign m_stall=(i_riscv_hzrdu_mulctrl[3]||i_riscv_hzrdu_divctrl[3])&!i_riscv_hzrdu_valid;
+assign m_stall=(i_riscv_hzrdu_mul_en || i_riscv_hzrdu_div_en)&!i_riscv_hzrdu_valid;
 
 //Note : needing of mem_Asserted >>not useful i thimk if it is implented as priority mux will not check 2nd condition if 1st is satisfied
 //assign mem_asserted_data_hazard = ( i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_m) && i_riscv_hzrdu_regw_m && i_riscv_hzrdu_rdaddr_m ;

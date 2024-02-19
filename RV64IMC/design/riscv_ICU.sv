@@ -40,8 +40,8 @@ riscv_branch u_Branch(
 
 //////////////////////////////multiplier////////////////////////
 riscv_multiplier u_mul (
-    .i_riscv_mul_rs1data (i_riscv_icu_rs1data),
-    .i_riscv_mul_rs2data (i_riscv_icu_rs2data),
+    .i_riscv_mul_rs1data (i_riscv_icu_alurs1data),
+    .i_riscv_mul_rs2data (i_riscv_icu_alurs2data),
     .i_riscv_mul_mulctrl (i_riscv_icu_mulctrl),
     .i_riscv_mul_clk     (i_riscv_icu_clk),
     .i_riscv_mul_rst     (i_riscv_icu_rst),
@@ -51,8 +51,8 @@ riscv_multiplier u_mul (
 
 ////////////////////////////////divider///////////////////////////
 riscv_divider u_divider (
-    .i_riscv_div_rs1data (i_riscv_icu_rs1data),
-    .i_riscv_div_rs2data (i_riscv_icu_rs2data),
+    .i_riscv_div_rs1data (i_riscv_icu_alurs1data),
+    .i_riscv_div_rs2data (i_riscv_icu_alurs2data),
     .i_riscv_div_divctrl (i_riscv_icu_divctrl),
     .i_riscv_div_clk     (i_riscv_icu_clk),
     .i_riscv_div_rst     (i_riscv_icu_rst),

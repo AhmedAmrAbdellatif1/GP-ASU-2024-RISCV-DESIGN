@@ -44,6 +44,8 @@ module riscv_datapath #(parameter width=64) (
   output logic [4:0]       o_riscv_datapath_rdaddr_e ,   ///input to hazard unit
   output logic [1:0]       o_riscv_datapath_resultsrc_e, ///input to hazard unit
   output logic  [6:0]      o_riscv_datapath_opcode_m,
+  output logic             o_datapath_div_en,   
+  output logic             o_datapath_mul_en,  
   
   /////////////////////memory/////////////
   input  logic [width-1:0] i_riscv_datapath_dm_rdata,      ///output from dm
@@ -56,7 +58,11 @@ module riscv_datapath #(parameter width=64) (
   
   /////////////////////write back ///////////
   output logic             o_riscv_datapath_regw_wb,     ///input to hazard unit   
-  output logic [4:0]       o_riscv_datapath_rdaddr_wb    ///input to hazard unit
+  output logic [4:0]       o_riscv_datapath_rdaddr_wb ,   ///input to hazard unit
+  //////////////////////////////////////////
+  input  logic             i_riscv_datapath_stall_de,
+  input  logic             i_riscv_datapath_stall_em,
+  input  logic             i_riscv_datapath_stall_mw
  );
   
   ////// fetch internal signals ////////
@@ -206,6 +212,7 @@ module riscv_datapath #(parameter width=64) (
 
   ////decode execute pipeline flip flops ////
   riscv_de_ppreg u_riscv_de_ppreg(
+     .i_riscv_de_en              (i_riscv_datapath_stall_de) ,
     .i_riscv_de_clk             (i_riscv_datapath_clk)        ,
     .i_riscv_de_rst             (i_riscv_datapath_rst)        ,
     .i_riscv_de_flush           (i_riscv_datapath_flush_de)   ,
@@ -283,11 +290,14 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_estage_bcond       (riscv_b_condition_e)   ,
     .o_riscv_estage_result      (riscv_aluexe_fe)       ,
     .o_riscv_estage_branchtaken (riscv_branchtaken)     ,
-    .o_riscv_estage_icu_valid   (o_riscv_datapath_icu_valid_e)
+    .o_riscv_estage_icu_valid   (o_riscv_datapath_icu_valid_e),
+    .o_riscv_estage_mul_en(o_datapath_mul_en),
+    .o_riscv_estage_div_en(o_datapath_div_en)
   );
 
    ////execute memory pipeline flip flops ////
   riscv_em_ppreg u_riscv_em_ppreg(
+    .i_riscv_em_en              (i_riscv_datapath_stall_em) ,
     .i_riscv_em_clk             (i_riscv_datapath_clk)            ,
     .i_riscv_em_rst             (i_riscv_datapath_rst)            ,
     .i_riscv_em_memw_e          (riscv_memwrite_e)                ,
@@ -329,6 +339,7 @@ module riscv_datapath #(parameter width=64) (
 
   ////memory write back pipeline flip flops ////
   riscv_mw_ppreg u_riscv_mw_ppreg(
+    .i_riscv_mw_en              (i_riscv_datapath_stall_mw) ,
     .i_riscv_mw_clk             (i_riscv_datapath_clk)      ,
     .i_riscv_mw_rst             (i_riscv_datapath_rst)      ,
     .i_riscv_mw_pcplus4_m       (riscv_pcplus4_m)           ,

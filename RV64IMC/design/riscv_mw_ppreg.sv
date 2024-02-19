@@ -1,6 +1,7 @@
   module riscv_mw_ppreg(
     input   logic         i_riscv_mw_clk, 
     input   logic         i_riscv_mw_rst, 
+    input   logic         i_riscv_mw_en, 
     input   logic [63:0]  i_riscv_mw_pcplus4_m,
     input   logic [63:0]  i_riscv_mw_result_m,
     input   logic [63:0]  i_riscv_mw_uimm_m,
@@ -38,6 +39,20 @@
         end
       else
         begin
+         if (i_riscv_mw_en)
+          begin
+          o_riscv_mw_pcplus4_wb    <= o_riscv_mw_pcplus4_wb;
+          o_riscv_mw_result_wb      <= o_riscv_mw_result_wb;
+          o_riscv_mw_uimm_wb        <= o_riscv_mw_uimm_wb;
+          o_riscv_mw_memload_wb     <= o_riscv_mw_memload_wb;
+          o_riscv_mw_rdaddr_wb      <= o_riscv_mw_rdaddr_wb;
+          o_riscv_mw_resultsrc_wb   <= o_riscv_mw_resultsrc_wb;
+          o_riscv_mw_regw_wb        <= o_riscv_mw_regw_wb;
+          o_riscv_mw_inst           <= o_riscv_mw_inst;
+          o_riscv_mw_cinst          <= o_riscv_mw_cinst;
+          end
+        else
+          begin
           o_riscv_mw_pcplus4_wb   <=  i_riscv_mw_pcplus4_m;
           o_riscv_mw_result_wb    <=  i_riscv_mw_result_m;
           o_riscv_mw_uimm_wb      <=  i_riscv_mw_uimm_m;
@@ -48,5 +63,6 @@
           o_riscv_mw_inst         <=  i_riscv_mw_inst;
           o_riscv_mw_cinst        <=  i_riscv_mw_cinst;
         end
+      end
     end
   endmodule 

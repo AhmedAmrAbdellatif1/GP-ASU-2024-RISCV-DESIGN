@@ -243,9 +243,9 @@ else  o_riscv_div_result=0;
 end
 
 ///////////////////////////////////////////////////////////////////////fsm//////////////////////////
-always @ (posedge i_riscv_div_clk or negedge i_riscv_div_rst)
+always @ (posedge i_riscv_div_clk or posedge i_riscv_div_rst)
 begin
-if(!i_riscv_div_rst)
+if(i_riscv_div_rst)
 begin
   Z          <= 'd0;
   o_riscv_div_valid      <= 'b0;

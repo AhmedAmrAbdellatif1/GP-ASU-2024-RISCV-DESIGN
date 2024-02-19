@@ -41,6 +41,8 @@ input logic [width-1:0] i_riscv_estage_imm_m,
   output  logic signed [width-1:0] o_riscv_estage_result ,
   // Branch Comparator  Signals to hazard_unit
   output  logic               o_riscv_estage_branchtaken ,
+  output  logic               o_riscv_estage_div_en , 
+  output  logic               o_riscv_estage_mul_en , 
   output  logic               o_riscv_estage_icu_valid
 
 ); 
@@ -54,7 +56,8 @@ logic  signed  [width-1:0]  o_riscv_OperandmuxA_OperandALUA ;
 logic  signed [width-1:0]   o_riscv_OperandmuxB_OperandALUB ;
 
 
-
+assign o_riscv_estage_mul_en = i_riscv_estage_mulctrl [3];
+assign o_riscv_estage_div_en = i_riscv_estage_divctrl [3]; 
 
 
 /////////////////////////// ForwardA MUX //////////////////////

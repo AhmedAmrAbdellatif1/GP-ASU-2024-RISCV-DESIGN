@@ -2,6 +2,7 @@
       input  logic          i_riscv_de_clk,
       input  logic          i_riscv_de_rst,
       input  logic          i_riscv_de_flush,
+      input  logic          i_riscv_de_en,
       input  logic  [63:0]  i_riscv_de_pc_d,
       input  logic  [4:0]   i_riscv_de_rs1addr_d,
       input  logic  [63:0]  i_riscv_de_rs1data_d,
@@ -112,6 +113,34 @@
            o_riscv_de_inst          <=  'b0;
            o_riscv_de_cinst         <=  'b0;
         end
+
+else if (i_riscv_de_en)
+begin
+    o_riscv_de_pc_e           <= o_riscv_de_pc_e;
+    o_riscv_de_pcplus4_e     <= o_riscv_de_pcplus4_e;
+    o_riscv_de_rs1addr_e     <= o_riscv_de_rs1addr_e;
+    o_riscv_de_rs1data_e     <= o_riscv_de_rs1data_e;
+    o_riscv_de_rs2data_e     <= o_riscv_de_rs2data_e;
+    o_riscv_de_rs2addr_e     <= o_riscv_de_rs2addr_e;
+    o_riscv_de_rdaddr_e      <= o_riscv_de_rdaddr_e;
+    o_riscv_de_extendedimm_e <= o_riscv_de_extendedimm_e;
+    o_riscv_de_b_condition_e <= o_riscv_de_b_condition_e;
+    o_riscv_de_oprnd2sel_e   <= o_riscv_de_oprnd2sel_e;
+    o_riscv_de_storesrc_e    <= o_riscv_de_storesrc_e;
+    o_riscv_de_alucontrol_e  <= o_riscv_de_alucontrol_e;
+    o_riscv_de_mulctrl_e     <= o_riscv_de_mulctrl_e;
+    o_riscv_de_divctrl_e     <= o_riscv_de_divctrl_e;
+    o_riscv_de_funcsel_e     <= o_riscv_de_funcsel_e;
+    o_riscv_de_oprnd1sel_e   <= o_riscv_de_oprnd1sel_e;
+    o_riscv_de_memwrite_e    <= o_riscv_de_memwrite_e;
+    o_riscv_de_memext_e      <= o_riscv_de_memext_e;
+    o_riscv_de_resultsrc_e   <= o_riscv_de_resultsrc_e;
+    o_riscv_de_regwrite_e    <= o_riscv_de_regwrite_e;
+    o_riscv_de_jump_e        <= o_riscv_de_jump_e;
+    o_riscv_de_opcode_e      <= o_riscv_de_opcode_e;
+    o_riscv_de_inst          <= o_riscv_de_inst;
+    o_riscv_de_cinst         <= o_riscv_de_cinst;
+end
 
       else
         begin
