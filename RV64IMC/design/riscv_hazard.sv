@@ -2,17 +2,17 @@ module riscv_hazardunit
 //Combitional civuit no clk
 //res_Src make 1 bit in document + stall pc make 2bits
  (
-   input       [4:0]   i_riscv_hzrdu_rs1addr_d ,
-                       i_riscv_hzrdu_rs2addr_d ,
-                       i_riscv_hzrdu_rs1addr_e ,
-                       i_riscv_hzrdu_rs2addr_e ,
-                       i_riscv_hzrdu_rdaddr_m  ,
-                       i_riscv_hzrdu_rdaddr_w , 
-      input [6:0] i_riscv_hzrdu_opcode_m,
-     input             i_riscv_hzrdu_pcsrc ,
-                       i_riscv_hzrdu_regw_m   ,
-                       i_riscv_hzrdu_regw_w  ,
-                       i_riscv_hzrdu_icu_valid_e,
+   input       [4:0]    i_riscv_hzrdu_rs1addr_d ,
+                        i_riscv_hzrdu_rs2addr_d ,
+                        i_riscv_hzrdu_rs1addr_e ,
+                        i_riscv_hzrdu_rs2addr_e ,
+                        i_riscv_hzrdu_rdaddr_m  ,
+                        i_riscv_hzrdu_rdaddr_w , 
+      input [6:0]       i_riscv_hzrdu_opcode_m,
+     input              i_riscv_hzrdu_pcsrc ,
+                        i_riscv_hzrdu_regw_m   ,
+                        i_riscv_hzrdu_regw_w  ,
+                        i_riscv_hzrdu_icu_valid_e,
     // input op1,op2
    input       [1:0]   i_riscv_hzrdu_resultsrc_e   ,
   
