@@ -168,7 +168,7 @@ end
 	        o_riscv_div_result=0 ; 
 
 			else begin
-    if (i_riscv_div_rs1data[63]&& !(|Z[127:64]))
+    if (i_riscv_div_rs1data[63])
 	begin
 	o_riscv_div_result = ~Z[127:64]+1;
 	end
@@ -187,7 +187,7 @@ end
 	        o_riscv_div_result=0 ; 
 
 			else begin
-    if (rs1_copy[63]&& !(|Z[127:64]))
+    if (rs1_copy[63])
 	begin
 	o_riscv_div_result = ~ ({ {32 {Z[96]}},Z[96:64]})+1;
 	end
