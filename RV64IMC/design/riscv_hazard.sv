@@ -15,7 +15,7 @@ module riscv_hazardunit
                        i_riscv_hzrdu_icu_valid_e,
     // input op1,op2
    input       [1:0]   i_riscv_hzrdu_resultsrc_e   ,
-
+  
    output logic  [1:0]   o_riscv_hzrdu_fwda  , 
                        o_riscv_hzrdu_fwdb , //Concept behind Forwarding unit
 
@@ -24,13 +24,22 @@ module riscv_hazardunit
                        o_riscv_hzrdu_flushfd ,
                        o_riscv_hzrdu_flushde ,
    //extra Siganls
-    input      [4:0]     i_riscv_hzrdu_rdaddr_e 
+    input      [4:0]     i_riscv_hzrdu_rdaddr_e ,
    // input                i_riscv_hzrdu_memw_m ,
    // input                i_riscv_hzrdu_memw_d 
   //output reg           o_riscv_hzrdu_fw_dc
 
+/////////////////////////////////multiply &division/////////////////
+input  logic        [3:0]    i_riscv_hzrdu_mulctrl,
+input  logic        [3:0]    i_riscv_hzrdu_divctrl,
+input  logic                 i_riscv_hzrdu_valid,
+output logic                 o_riscv_hzrdu_stallde,
+output logic                 o_riscv_hzrdu_stallem,
+output logic                 o_riscv_hzrdu_stallmw
  );
 
+logic m_stall;
+assign m_stall=(i_riscv_hzrdu_mulctrl[3]||i_riscv_hzrdu_divctrl[3])&!i_riscv_hzrdu_valid;
 
 //Note : needing of mem_Asserted >>not useful i thimk if it is implented as priority mux will not check 2nd condition if 1st is satisfied
 //assign mem_asserted_data_hazard = ( i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_m) && i_riscv_hzrdu_regw_m && i_riscv_hzrdu_rdaddr_m ;
@@ -114,7 +123,7 @@ always @(*)
                 i_riscv_hzrdu_resultsrc == 2'b10 ) || 
                 i_riscv_hzrdu_pcsrc  ) //Condition For branch hazard */
          if      ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
-                i_riscv_hzrdu_resultsrc_e == 2'b10 ) ) //Condition For branch hazard 
+                i_riscv_hzrdu_resultsrc_e == 2'b10 ) || m_stall) //Condition For branch hazard 
                   begin
                     o_riscv_hzrdu_stallpc = 1 ; 
                     o_riscv_hzrdu_stallfd = 1 ;  
@@ -196,6 +205,23 @@ assign o_riscv_hzrdu_flushfd =  ( i_riscv_hzrdu_pcsrc )? 1 : 0 ;
 /*assign o_riscv_hzrdu_flushde = (i_riscv_hzrdu_pcsrc)?1:0 ;
 assign o_riscv_hzrdu_stallfd = (i_riscv_hzrdu_pcsrc)?1:0;*/
 
+///////////////////////////////mult/div stalling/////////////////////
+always_comb
+begin
+  if(m_stall)
+  begin
+    o_riscv_hzrdu_stallmw=1;
+    o_riscv_hzrdu_stallem=1;
+    o_riscv_hzrdu_stallde=1;
+  end
+else
+ begin
+    o_riscv_hzrdu_stallmw=0;
+    o_riscv_hzrdu_stallem=0;
+    o_riscv_hzrdu_stallde=0;
+  end
+
+end
 
 
 endmodule
