@@ -1,7 +1,7 @@
 module riscv_divider(
 input                          i_riscv_div_clk,
 input                          i_riscv_div_rst,
-input  logic          [2:0]    i_riscv_div_divctrl,
+input  logic          [3:0]    i_riscv_div_divctrl,
 input  logic  signed  [63:0]   i_riscv_div_rs2data, i_riscv_div_rs1data,
 output logic  signed  [63:0]   o_riscv_div_result,
 output logic                   o_riscv_div_valid
@@ -10,45 +10,87 @@ output logic                   o_riscv_div_valid
 logic signed [127:0] Z,next_Z,Z_temp,Z_temp1;
 logic next_state, pres_state;
 logic [5:0] count,next_count;
-logic next_valid;
+logic valid,next_valid;
 logic start;
 assign start=i_riscv_div_divctrl[2];
 
+logic signed [63:0] rs1_copy,rs2_copy;
 logic signed [63:0] X,Y;
 
 parameter IDLE = 1'b0;
 parameter START = 1'b1;
 
-
+////////////////////////////////////////////operand 1//////////////////////////////
 always_comb
 begin
-     if(!i_riscv_div_divctrl[0]&&i_riscv_div_rs1data[63])
+     if(!i_riscv_div_divctrl[0]&&i_riscv_div_rs1data[63] && i_riscv_div_divctrl[2])             //div,rem and signed numbers
        begin
-             X=~i_riscv_div_rs1data+1;
+		     rs1_copy=i_riscv_div_rs1data;
+			 X=~rs1_copy+1;
        end
+
+	   else if (!i_riscv_div_divctrl[0] && !i_riscv_div_divctrl[2])                           //divw,remw
+	    begin
+            rs1_copy={ {32 {i_riscv_div_rs1data[31]}} ,i_riscv_div_rs1data[31:0]}; 		
+			if(i_riscv_div_rs1data[31])
+		      X=~rs1_copy+1;
+			else
+			  X=rs1_copy;
+	     end
+
+		else if (i_riscv_div_divctrl[0] && !i_riscv_div_divctrl[2])                           //divuw,remuw
+		begin
+			  rs1_copy={ {32 {1'b0}} ,i_riscv_div_rs1data[31:0]}; 
+              X=rs1_copy;
+		end
+		
       else 
         begin
-            X=i_riscv_div_rs1data;
+			rs1_copy=i_riscv_div_rs1data;
+            X=rs1_copy;
             end
 end
 
+////////////////////////////////////////////operand 2////////////////////////////////
 always_comb
 begin
-     if(!i_riscv_div_divctrl[0]&&i_riscv_div_rs2data[63])
+     if(!i_riscv_div_divctrl[0]&&i_riscv_div_rs2data[63] && i_riscv_div_divctrl[2])             //div,rem and signed numbers
        begin
-             Y=~i_riscv_div_rs2data+1;
+		     rs2_copy=i_riscv_div_rs2data;
+             Y=~rs2_copy+1;
        end
-      else 
+
+	   else if (!i_riscv_div_divctrl[0] && !i_riscv_div_divctrl[2])                           //divw,remw
+	    begin
+            rs2_copy={ {32 {i_riscv_div_rs2data[31]}} ,i_riscv_div_rs2data[31:0]};
+			if(i_riscv_div_rs2data[31])
+		      Y=~rs2_copy+1;
+			else
+			  Y=rs2_copy;
+	     end
+
+		else if (i_riscv_div_divctrl[0] && !i_riscv_div_divctrl[2])                           //divuw,remuw
+		begin
+			  rs2_copy={ {32 {1'b0}} ,i_riscv_div_rs2data[31:0]};
+              Y=rs2_copy;
+		end
+
+      else
         begin
-            Y=i_riscv_div_rs2data;
+			rs2_copy=i_riscv_div_rs2data;
+            Y=rs2_copy;
             end
 end
 
 
+////////////////////////////////////////////////////////////output////////////////////////////
 always_comb
-begin	
+begin
+if(valid)
+begin
 case(i_riscv_div_divctrl)
-3'b100 :begin                               ///div
+
+4'b1100 :begin                               ///div
 if (i_riscv_div_rs2data==0)              //division by 0
 	o_riscv_div_result =-1;
 	else if ((i_riscv_div_rs1data==-(2**63))&&(i_riscv_div_rs2data==-1) )        //overflow
@@ -64,8 +106,26 @@ if (i_riscv_div_rs2data==0)              //division by 0
 	end
          end
 end
- 
-3'b101:                                  //divu
+
+4'b1000 :begin                               ///divw
+if (i_riscv_div_rs2data==0)              //division by 0
+	o_riscv_div_result =-1;
+	else if ((rs1_copy==-(2**63))&&(rs2_copy==-1) )        //overflow
+	o_riscv_div_result=rs1_copy ;
+	else begin
+    if (rs1_copy[63]==rs2_copy[63])
+	begin
+	o_riscv_div_result = { {32 {Z[31]}},Z[31:0]};
+	end
+	else 
+	begin
+	o_riscv_div_result = ~({ {32 {Z[31]}},Z[31:0]})+1;
+	end
+         end
+end
+
+
+4'b1101:                                  //divu
 begin
     if (i_riscv_div_rs2data==0)              //division by 0
 			o_riscv_div_result= (2**64)-1;
@@ -82,8 +142,25 @@ begin
 end
 end
 
+4'b1001:                                  //divuw
+begin
+    if (i_riscv_div_rs2data==0)              //division by 0
+			o_riscv_div_result= (2**32)-1;
+			else  begin
+    if(rs2_copy[63])
+		begin  
+		if({1'b0,rs2_copy}>{1'b0,rs1_copy})
+		o_riscv_div_result=0;
+		else 
+		 o_riscv_div_result=1;
+		end
+	else
+   o_riscv_div_result = { {32 {Z[31]}},Z[31:0]};
+end
+end
 
-3'b110: 
+
+4'b1110: 
       begin                                 //rem
 	        if (i_riscv_div_rs2data==0)              //division by 0
 	        o_riscv_div_result=i_riscv_div_rs1data;
@@ -102,7 +179,28 @@ end
 end
 end
 
-3'b111:
+4'b0110: 
+      begin                                 //remw
+	        if (i_riscv_div_rs2data==0)              //division by 0
+	        o_riscv_div_result=rs1_copy;
+			else if ((rs1_copy==-(2**63))&&(rs2_copy==-1) )        //overflow
+	        o_riscv_div_result=0 ; 
+
+			else begin
+    if (rs1_copy[63]&& !(|Z[127:64]))
+	begin
+	o_riscv_div_result = ~ ({ {32 {Z[96:64]}},Z[31:0]})+1;
+	end
+	else 
+	begin
+	o_riscv_div_result = { {32 {Z[96:64]}},Z[31:0]};
+	end
+end
+end
+
+
+
+4'b1111:                                                //remu
     begin
 		    if (i_riscv_div_rs2data==0)              //division by 0
 	        o_riscv_div_result=i_riscv_div_rs1data;
@@ -120,12 +218,31 @@ end
 end
     end
 
-default: o_riscv_div_result=0;
+4'b1011:                                               //remuw
+    begin
+		    if (i_riscv_div_rs2data==0)              //division by 0
+	        o_riscv_div_result=i_riscv_div_rs1data;
 
+			else begin
+     if(rs2_copy[63])
+			begin  
+				if({1'b0,rs2_copy}>{1'b0,rs1_copy})
+		    o_riscv_div_result=rs1_copy;
+			else 
+			o_riscv_div_result={1'b0,rs1_copy}-{1'b0,rs2_copy};
+	        end
+			else 
+		    o_riscv_div_result = { {32 {Z[96:64]}},Z[31:0]};
+end
+    end
+
+default: o_riscv_div_result=0;
 endcase
 end
+else  o_riscv_div_result=0;
+end
 
-
+///////////////////////////////////////////////////////////////////////fsm//////////////////////////
 always @ (posedge i_riscv_div_clk or negedge i_riscv_div_rst)
 begin
 if(!i_riscv_div_rst)
@@ -134,13 +251,15 @@ begin
   o_riscv_div_valid      <= 'b0;
   pres_state <= 'b0;
   count      <= 'd0;
+  valid<=0;
 end
 else 
 begin
   Z          <= next_Z;
-  o_riscv_div_valid      <= next_valid;
+  valid     <= next_valid;
   pres_state <= next_state;
   count      <= next_count;
+  o_riscv_div_valid<=next_valid;
 end
 end
 
@@ -151,7 +270,7 @@ IDLE:
 begin
 next_count = 'b0;
 next_valid = 'b0;
-if(start)
+if(start&&!valid)
 begin
     next_state = START;
     next_Z     = {64'd0,X};

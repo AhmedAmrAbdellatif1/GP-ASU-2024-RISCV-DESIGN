@@ -14,7 +14,7 @@ logic signed [129:0] z,next_z,z_temp;
 logic                next_state,pres_state;
 logic         [1:0]  temp,next_temp;                    //{Q0,Q-1}
 logic         [6:0]  count,next_count;                  //log2(multiplier)
-logic                next_valid;
+logic                next_valid,valid;
 logic                i_riscv_mul_start;
 logic signed  [64:0] x,y;
 
@@ -62,6 +62,7 @@ begin
     o_riscv_mul_valid<=0;
     pres_state<=0;
     temp<=0;
+    valid<=0;
     count<=0;
     o_riscv_mul_product<=0;
     end
@@ -69,6 +70,7 @@ begin
     begin
         z<=next_z;
         o_riscv_mul_valid<=next_valid;
+        valid<=next_valid;
         pres_state<=next_state;
         temp<=next_temp;
         count<=next_count;
@@ -93,7 +95,7 @@ begin
     idle:begin
         next_count='b0;
         next_valid=1'b0;
-        if(i_riscv_mul_start)
+        if(i_riscv_mul_start&&!valid)
         begin
             next_state=start;
             next_temp={y[0],1'b0};                         //initial q_1=0
