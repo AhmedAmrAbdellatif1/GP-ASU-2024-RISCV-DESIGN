@@ -12,7 +12,7 @@ logic next_state, pres_state;
 logic [5:0] count,next_count;
 logic valid,next_valid;
 logic start;
-assign start=i_riscv_div_divctrl[2];
+assign start=i_riscv_div_divctrl[3];
 
 logic signed [63:0] rs1_copy,rs2_copy;
 logic signed [63:0] X,Y;
@@ -179,7 +179,7 @@ end
 end
 end
 
-4'b0110: 
+4'b1010: 
       begin                                 //remw
 	        if (i_riscv_div_rs2data==0)              //division by 0
 	        o_riscv_div_result=rs1_copy;
@@ -189,11 +189,11 @@ end
 			else begin
     if (rs1_copy[63]&& !(|Z[127:64]))
 	begin
-	o_riscv_div_result = ~ ({ {32 {Z[96:64]}},Z[31:0]})+1;
+	o_riscv_div_result = ~ ({ {32 {Z[96]}},Z[96:64]})+1;
 	end
 	else 
 	begin
-	o_riscv_div_result = { {32 {Z[96:64]}},Z[31:0]};
+	o_riscv_div_result = { {32 {Z[96]}},Z[96:64]};
 	end
 end
 end
@@ -232,7 +232,7 @@ end
 			o_riscv_div_result={1'b0,rs1_copy}-{1'b0,rs2_copy};
 	        end
 			else 
-		    o_riscv_div_result = { {32 {Z[96:64]}},Z[31:0]};
+		    o_riscv_div_result = { {32 {Z[96]}},Z[96:64]};
 end
     end
 
