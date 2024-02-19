@@ -1,6 +1,7 @@
   module riscv_em_ppreg(
     input   logic           i_riscv_em_clk,
     input   logic           i_riscv_em_rst,
+    input   logic           i_riscv_em_en,
     input   logic           i_riscv_em_memw_e,
     input   logic           i_riscv_em_regw_e,
     input   logic   [1:0]   i_riscv_em_resultsrc_e,
@@ -26,7 +27,9 @@
 
     //------------------------------------>
     input   logic   [31:0]  i_riscv_em_inst,
-    output  logic   [31:0]  o_riscv_em_inst
+    input   logic   [15:0]  i_riscv_em_cinst,
+    output  logic   [31:0]  o_riscv_em_inst,
+    output  logic   [15:0]  o_riscv_em_cinst
     //<-------------------------------------
   );
 
@@ -47,9 +50,29 @@
             o_riscv_em_imm_m        <= 'b0;            
             o_riscv_de_opcode_m     <= 'b0;
             o_riscv_em_inst         <= 'b0;
+            o_riscv_em_cinst        <= 'b0;
           end
         else
           begin
+
+       if (i_riscv_em_en)
+        begin
+        o_riscv_em_memw_m       <= o_riscv_em_memw_m;
+        o_riscv_em_regw_m       <= o_riscv_em_regw_m;
+        o_riscv_em_resultsrc_m  <= o_riscv_em_resultsrc_m;
+        o_riscv_em_storesrc_m   <= o_riscv_em_storesrc_m;
+        o_riscv_em_memext_m     <= o_riscv_em_memext_m;
+        o_riscv_em_pcplus4_m    <= o_riscv_em_pcplus4_m;
+        o_riscv_em_result_m     <= o_riscv_em_result_m;
+        o_riscv_em_storedata_m  <= o_riscv_em_storedata_m;
+        o_riscv_em_rdaddr_m     <= o_riscv_em_rdaddr_m;
+        o_riscv_em_imm_m        <= o_riscv_em_imm_m;
+        o_riscv_de_opcode_m     <= o_riscv_de_opcode_m;
+        o_riscv_em_inst         <= o_riscv_em_inst;
+        o_riscv_em_cinst        <= o_riscv_em_cinst;
+end
+     else
+       begin
             o_riscv_em_memw_m       <= i_riscv_em_memw_e ; 
             o_riscv_em_regw_m       <= i_riscv_em_regw_e ;
             o_riscv_em_resultsrc_m  <= i_riscv_em_resultsrc_e;
@@ -62,6 +85,8 @@
             o_riscv_em_imm_m        <= i_riscv_em_imm_e;
             o_riscv_de_opcode_m     <= i_riscv_de_opcode_e;
             o_riscv_em_inst         <= i_riscv_em_inst;
-          end
+            o_riscv_em_cinst        <= i_riscv_em_cinst;
+       end
     end
+end
   endmodule

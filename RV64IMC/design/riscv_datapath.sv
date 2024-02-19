@@ -30,19 +30,23 @@ module riscv_datapath #(parameter width=64) (
   input  logic [3:0]       i_riscv_datapath_bcond,    ///output from control unit
   input  logic [2:0]       i_riscv_datapath_memext,   ///output from control unit
   input  logic [5:0]       i_riscv_datapath_aluctrl,  ///output from control unit
-  input  logic [2:0]       i_riscv_datapath_mulctrl,
-  input  logic [2:0]       i_riscv_datapath_divctrl,
+  input  logic [3:0]       i_riscv_datapath_mulctrl,
+  input  logic [3:0]       i_riscv_datapath_divctrl,
   input  logic [1:0]       i_riscv_datapath_funcsel,
   input  logic             i_riscv_datapath_flush_de, ///output from hazard unit
   /////////////////////execute/////////////
   input  logic [1:0]       i_riscv_datapath_fwda,        ///output from hazard unit
   input  logic [1:0]       i_riscv_datapath_fwdb,        ///output from hazard unit 
+  output logic             o_riscv_datapath_icu_valid_e,     ///input to hazard unit   
   output logic             o_riscv_datapath_pcsrc_e,     ///input to hazard unit   
   output logic [4:0]       o_riscv_datapath_rs1addr_e,   ///input to hazard unit
   output logic [4:0]       o_riscv_datapath_rs2addr_e,   ///input to hazard unit
   output logic [4:0]       o_riscv_datapath_rdaddr_e ,   ///input to hazard unit
   output logic [1:0]       o_riscv_datapath_resultsrc_e, ///input to hazard unit
   output logic  [6:0]      o_riscv_datapath_opcode_m,
+  output logic             o_datapath_div_en,   
+  output logic             o_datapath_mul_en,  
+  
   /////////////////////memory/////////////
   input  logic [width-1:0] i_riscv_datapath_dm_rdata,      ///output from dm
   output logic [4:0]       o_riscv_datapath_rdaddr_m ,     ///input to hazard unit
@@ -54,7 +58,11 @@ module riscv_datapath #(parameter width=64) (
   
   /////////////////////write back ///////////
   output logic             o_riscv_datapath_regw_wb,     ///input to hazard unit   
-  output logic [4:0]       o_riscv_datapath_rdaddr_wb    ///input to hazard unit
+  output logic [4:0]       o_riscv_datapath_rdaddr_wb ,   ///input to hazard unit
+  //////////////////////////////////////////
+  input  logic             i_riscv_datapath_stall_de,
+  input  logic             i_riscv_datapath_stall_em,
+  input  logic             i_riscv_datapath_stall_mw
  );
   
   ////// fetch internal signals ////////
@@ -79,6 +87,9 @@ module riscv_datapath #(parameter width=64) (
   //logic                  riscv_rstctrl_d;
   logic [6:0]           riscv_opcode_d;
   logic [6:0]           riscv_opcode_e;
+  //--------------------------------->
+  logic [15:0]          riscv_cinst_d;
+  //<---------------------------------
 
   //////execute internal signals ////////
   logic  [width-1:0]     riscv_pc_e;
@@ -93,8 +104,8 @@ module riscv_datapath #(parameter width=64) (
   logic                  riscv_oprnd2sel_e;
   logic  [1:0]           riscv_storesrc_e;
   logic  [5:0]           riscv_alucontrol_e;
-  logic  [2:0]           riscv_mulctrl_e;
-  logic  [2:0]           riscv_divctrl_e;
+  logic  [3:0]           riscv_mulctrl_e;
+  logic  [3:0]           riscv_divctrl_e;
   logic  [1:0]           riscv_funcsel_e;
   logic                  riscv_oprnd1sel_e;
   logic                  riscv_memwrite_e;
@@ -105,6 +116,7 @@ module riscv_datapath #(parameter width=64) (
   logic                  riscv_branchtaken;
   //--------------------------------->
   logic [31:0]           riscv_inst_e;
+  logic [15:0]           riscv_cinst_e;
   //<---------------------------------
   
   ////// memory internal signals ////////
@@ -118,6 +130,7 @@ module riscv_datapath #(parameter width=64) (
   logic [width-1:0]     riscv_memload_m;
   //--------------------------------->
   logic [31:0]          riscv_inst_m;
+  logic [15:0]          riscv_cinst_m;
   //<---------------------------------
 
   ////// write back ineternal signals///////
@@ -128,6 +141,7 @@ module riscv_datapath #(parameter width=64) (
   logic [1:0]           riscv_resultsrc_wb;
   //--------------------------------->
   logic [31:0]          riscv_inst_wb;
+  logic [15:0]          riscv_cinst_wb;
   //<---------------------------------
 
   /////////
@@ -144,6 +158,7 @@ module riscv_datapath #(parameter width=64) (
   assign o_riscv_datapath_resultsrc_e   = riscv_resultsrc_e   ;  // to hazard unit
   assign o_riscv_datapath_rs1addr_d     = riscv_rs1addr_d     ;  //to hazard unit
   assign o_riscv_datapath_rs2addr_d     = riscv_rs2addr_d     ;  //to hazard unit
+  
   
   ////fetch stage instantiation////
   riscv_fstage u_riscv_fstage(
@@ -166,9 +181,11 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_fd_en              (i_riscv_datapath_stall_fd)   ,
     .i_riscv_fd_pc_f            (o_riscv_datapath_pc)         ,
     .i_riscv_fd_inst_f          (riscv_inst_f)                ,
+    .i_riscv_fd_cinst_f         (i_riscv_datapath_inst[15:0]) ,  //<-------
     .i_riscv_fd_pcplus4_f       (riscv_pcplus4_f)             ,
     .o_riscv_fd_pc_d            (riscv_pc_d)                  ,
     .o_riscv_fd_inst_d          (riscv_inst_d)                ,
+    .o_riscv_fd_cinst_d         (riscv_cinst_d)               , //<-------
     .o_riscv_fd_pcplus4_d       (riscv_pcplus4_d)
   );
 
@@ -195,6 +212,7 @@ module riscv_datapath #(parameter width=64) (
 
   ////decode execute pipeline flip flops ////
   riscv_de_ppreg u_riscv_de_ppreg(
+     .i_riscv_de_en              (i_riscv_datapath_stall_de) ,
     .i_riscv_de_clk             (i_riscv_datapath_clk)        ,
     .i_riscv_de_rst             (i_riscv_datapath_rst)        ,
     .i_riscv_de_flush           (i_riscv_datapath_flush_de)   ,
@@ -244,12 +262,16 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_de_opcode_e        (riscv_opcode_e)              ,
     //---------------------------->
     .i_riscv_de_inst(riscv_inst_d),
-    .o_riscv_de_inst(riscv_inst_e)
+    .i_riscv_de_cinst(riscv_cinst_d),
+    .o_riscv_de_inst(riscv_inst_e),
+    .o_riscv_de_cinst(riscv_cinst_e)
     //<----------------------------
   );
 
   ////execute stage instantiation////
   riscv_estage u_riscv_estage(
+    .i_riscv_estage_clk         (i_riscv_datapath_clk)  ,
+    .i_riscv_estage_rst         (i_riscv_datapath_rst)  ,
     .i_riscv_estage_rs1data     (riscv_rs1data_e)       ,
     .i_riscv_estage_rs2data     (riscv_rs2data_e)       ,
     .i_riscv_estage_fwda        (i_riscv_datapath_fwda) ,
@@ -267,11 +289,15 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_estage_simm        (riscv_extendedimm_e)   ,
     .i_riscv_estage_bcond       (riscv_b_condition_e)   ,
     .o_riscv_estage_result      (riscv_aluexe_fe)       ,
-    .o_riscv_estage_branchtaken (riscv_branchtaken)
+    .o_riscv_estage_branchtaken (riscv_branchtaken)     ,
+    .o_riscv_estage_icu_valid   (o_riscv_datapath_icu_valid_e),
+    .o_riscv_estage_mul_en(o_datapath_mul_en),
+    .o_riscv_estage_div_en(o_datapath_div_en)
   );
 
    ////execute memory pipeline flip flops ////
   riscv_em_ppreg u_riscv_em_ppreg(
+    .i_riscv_em_en              (i_riscv_datapath_stall_em) ,
     .i_riscv_em_clk             (i_riscv_datapath_clk)            ,
     .i_riscv_em_rst             (i_riscv_datapath_rst)            ,
     .i_riscv_em_memw_e          (riscv_memwrite_e)                ,
@@ -298,7 +324,9 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_de_opcode_m        (o_riscv_datapath_opcode_m)       ,
     //---------------------------->
     .i_riscv_em_inst(riscv_inst_e),
-    .o_riscv_em_inst(riscv_inst_m)
+    .i_riscv_em_cinst(riscv_cinst_e),
+    .o_riscv_em_inst(riscv_inst_m),
+    .o_riscv_em_cinst(riscv_cinst_m)
     //<----------------------------
   );
 
@@ -311,6 +339,7 @@ module riscv_datapath #(parameter width=64) (
 
   ////memory write back pipeline flip flops ////
   riscv_mw_ppreg u_riscv_mw_ppreg(
+    .i_riscv_mw_en              (i_riscv_datapath_stall_mw) ,
     .i_riscv_mw_clk             (i_riscv_datapath_clk)      ,
     .i_riscv_mw_rst             (i_riscv_datapath_rst)      ,
     .i_riscv_mw_pcplus4_m       (riscv_pcplus4_m)           ,
@@ -329,17 +358,19 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_mw_regw_wb         (riscv_regw_wb)             ,
     //--------------------------->
     .i_riscv_mw_inst(riscv_inst_m),
-    .o_riscv_mw_inst(riscv_inst_wb)
+    .i_riscv_mw_cinst(riscv_cinst_m),
+    .o_riscv_mw_inst(riscv_inst_wb),
+    .o_riscv_mw_cinst(riscv_cinst_wb)
     //<-----------------------------
   );
 
   ////write back stage instantiation////
   riscv_wbstage u_riscv_wbstage(
-    .i_riscv_wb_resultsrc       (riscv_resultsrc_wb),
-    .i_riscv_wb_pcplus4         (riscv_pcplus4_wb),
-    .i_riscv_wb_result          (riscv_result_wb),
-    .i_riscv_wb_memload         (riscv_memload_wb),
-    .i_riscv_wb_uimm            (riscv_uimm_wb),
+    .i_riscv_wb_resultsrc       (riscv_resultsrc_wb)    ,
+    .i_riscv_wb_pcplus4         (riscv_pcplus4_wb)      ,
+    .i_riscv_wb_result          (riscv_result_wb)       ,
+    .i_riscv_wb_memload         (riscv_memload_wb)      ,
+    .i_riscv_wb_uimm            (riscv_uimm_wb)         ,
     .o_riscv_wb_rddata          (riscv_rddata_wb)
   );
 
@@ -347,10 +378,11 @@ module riscv_datapath #(parameter width=64) (
   ///tracer instantiation///
   // you may comment this in case of no test ->
   riscv_tracer u_riscv_tracer(
-  .i_riscv_clk            (i_riscv_datapath_clk),
-  .i_riscv_rst            (i_riscv_datapath_rst),
-  .i_riscv_trc_inst       (riscv_inst_wb)       ,
-  .i_riscv_trc_rdaddr     (riscv_rdaddr_wb)     ,
+  .i_riscv_clk            (i_riscv_datapath_clk)        ,
+  .i_riscv_rst            (i_riscv_datapath_rst)        ,
+  .i_riscv_trc_inst       (riscv_inst_wb)               ,
+  .i_riscv_trc_cinst      (riscv_cinst_wb)              ,
+  .i_riscv_trc_rdaddr     (riscv_rdaddr_wb)             ,
   .i_riscv_trc_rddata     (riscv_rddata_wb)
   ); // <----------------------------------------
 

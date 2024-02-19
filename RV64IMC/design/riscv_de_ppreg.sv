@@ -2,6 +2,7 @@
       input  logic          i_riscv_de_clk,
       input  logic          i_riscv_de_rst,
       input  logic          i_riscv_de_flush,
+      input  logic          i_riscv_de_en,
       input  logic  [63:0]  i_riscv_de_pc_d,
       input  logic  [4:0]   i_riscv_de_rs1addr_d,
       input  logic  [63:0]  i_riscv_de_rs1data_d,
@@ -13,8 +14,8 @@
       input  logic          i_riscv_de_oprnd2sel_d,
       input  logic  [1:0]   i_riscv_de_storesrc_d,
       input  logic  [5:0]   i_riscv_de_alucontrol_d,
-      input  logic  [2:0]   i_riscv_de_mulctrl_d,
-      input  logic  [2:0]   i_riscv_de_divctrl_d,
+      input  logic  [3:0]   i_riscv_de_mulctrl_d,
+      input  logic  [3:0]   i_riscv_de_divctrl_d,
       input  logic  [1:0]   i_riscv_de_funcsel_d,
       input  logic          i_riscv_de_oprnd1sel_d,
       input  logic          i_riscv_de_memwrite_d,
@@ -36,8 +37,8 @@
       output logic          o_riscv_de_oprnd2sel_e,
       output logic  [1:0]   o_riscv_de_storesrc_e,
       output logic  [5:0]   o_riscv_de_alucontrol_e,
-      output logic  [2:0]   o_riscv_de_mulctrl_e,
-      output logic  [2:0]   o_riscv_de_divctrl_e,
+      output logic  [3:0]   o_riscv_de_mulctrl_e,
+      output logic  [3:0]   o_riscv_de_divctrl_e,
       output logic  [1:0]   o_riscv_de_funcsel_e,
       output logic          o_riscv_de_oprnd1sel_e,
       output logic          o_riscv_de_memwrite_e,
@@ -49,7 +50,9 @@
 
     //---------------------------->
       input  logic [31:0]  i_riscv_de_inst,
-      output logic [31:0]  o_riscv_de_inst
+      input  logic [15:0]  i_riscv_de_cinst,
+      output logic [31:0]  o_riscv_de_inst,
+      output logic [15:0]  o_riscv_de_cinst
     //<----------------------------
   );
     always_ff @(posedge i_riscv_de_clk or posedge i_riscv_de_rst )
@@ -79,6 +82,7 @@
            o_riscv_de_jump_e        <=  'b0;
            o_riscv_de_opcode_e      <=  'b0;
            o_riscv_de_inst          <=  'b0;
+           o_riscv_de_cinst         <=  'b0;
         end
       else
         begin
@@ -106,7 +110,37 @@
            o_riscv_de_regwrite_e    <=  'b0;
            o_riscv_de_jump_e        <=  'b0;
            o_riscv_de_opcode_e      <=  'b0;
+           o_riscv_de_inst          <=  'b0;
+           o_riscv_de_cinst         <=  'b0;
         end
+
+else if (i_riscv_de_en)
+begin
+    o_riscv_de_pc_e           <= o_riscv_de_pc_e;
+    o_riscv_de_pcplus4_e     <= o_riscv_de_pcplus4_e;
+    o_riscv_de_rs1addr_e     <= o_riscv_de_rs1addr_e;
+    o_riscv_de_rs1data_e     <= o_riscv_de_rs1data_e;
+    o_riscv_de_rs2data_e     <= o_riscv_de_rs2data_e;
+    o_riscv_de_rs2addr_e     <= o_riscv_de_rs2addr_e;
+    o_riscv_de_rdaddr_e      <= o_riscv_de_rdaddr_e;
+    o_riscv_de_extendedimm_e <= o_riscv_de_extendedimm_e;
+    o_riscv_de_b_condition_e <= o_riscv_de_b_condition_e;
+    o_riscv_de_oprnd2sel_e   <= o_riscv_de_oprnd2sel_e;
+    o_riscv_de_storesrc_e    <= o_riscv_de_storesrc_e;
+    o_riscv_de_alucontrol_e  <= o_riscv_de_alucontrol_e;
+    o_riscv_de_mulctrl_e     <= o_riscv_de_mulctrl_e;
+    o_riscv_de_divctrl_e     <= o_riscv_de_divctrl_e;
+    o_riscv_de_funcsel_e     <= o_riscv_de_funcsel_e;
+    o_riscv_de_oprnd1sel_e   <= o_riscv_de_oprnd1sel_e;
+    o_riscv_de_memwrite_e    <= o_riscv_de_memwrite_e;
+    o_riscv_de_memext_e      <= o_riscv_de_memext_e;
+    o_riscv_de_resultsrc_e   <= o_riscv_de_resultsrc_e;
+    o_riscv_de_regwrite_e    <= o_riscv_de_regwrite_e;
+    o_riscv_de_jump_e        <= o_riscv_de_jump_e;
+    o_riscv_de_opcode_e      <= o_riscv_de_opcode_e;
+    o_riscv_de_inst          <= o_riscv_de_inst;
+    o_riscv_de_cinst         <= o_riscv_de_cinst;
+end
 
       else
         begin
@@ -133,6 +167,7 @@
            o_riscv_de_jump_e        <= i_riscv_de_jump_d;    
            o_riscv_de_opcode_e      <= i_riscv_de_opcode_d;
            o_riscv_de_inst          <= i_riscv_de_inst;
+           o_riscv_de_cinst         <= i_riscv_de_cinst;
         end
       end
     end

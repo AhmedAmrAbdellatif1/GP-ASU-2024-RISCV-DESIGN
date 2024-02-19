@@ -1,5 +1,6 @@
 module riscv_estage #(parameter width=64)(
-
+input logic             i_riscv_estage_clk,
+input logic             i_riscv_estage_rst,
 input logic [width-1:0] i_riscv_estage_imm_m,
 //Common Signals to Forward_mux_A,B , Branch Compartor
  input  logic signed [width-1:0] i_riscv_estage_rs1data ,
@@ -27,8 +28,8 @@ input logic [width-1:0] i_riscv_estage_imm_m,
   //u_ALU Signals
 
   input  logic  [ 5 : 0 ] i_riscv_estage_aluctrl ,                             
-  input  logic  [ 2 : 0 ] i_riscv_estage_mulctrl , 
-   input  logic [ 2 : 0 ] i_riscv_estage_divctrl , 
+  input  logic  [ 3 : 0 ] i_riscv_estage_mulctrl , 
+   input  logic [ 3 : 0 ] i_riscv_estage_divctrl , 
    input  logic [ 1 : 0 ] i_riscv_estage_funcsel , 
 //Operand2 MUX signal
   input  logic signed [width-1:0] i_riscv_estage_simm ,
@@ -39,8 +40,10 @@ input logic [width-1:0] i_riscv_estage_imm_m,
 //  Signals to E/M FF
   output  logic signed [width-1:0] o_riscv_estage_result ,
   // Branch Comparator  Signals to hazard_unit
-  output logic               o_riscv_estage_branchtaken 
-
+  output  logic               o_riscv_estage_branchtaken ,
+  output  logic               o_riscv_estage_div_en , 
+  output  logic               o_riscv_estage_mul_en , 
+  output  logic               o_riscv_estage_icu_valid
 
 ); 
 
@@ -53,7 +56,8 @@ logic  signed  [width-1:0]  o_riscv_OperandmuxA_OperandALUA ;
 logic  signed [width-1:0]   o_riscv_OperandmuxB_OperandALUB ;
 
 
-
+assign o_riscv_estage_mul_en = i_riscv_estage_mulctrl [3];
+assign o_riscv_estage_div_en = i_riscv_estage_divctrl [3]; 
 
 
 /////////////////////////// ForwardA MUX //////////////////////
@@ -109,16 +113,19 @@ riscv_mux2 u_Operand_mux_B(
 
   ///////////////////////////////////ICU//////////////////
 riscv_ICU u_icu (
-  .i_riscv_icu_alurs1data(o_riscv_OperandmuxA_OperandALUA),
-  .i_riscv_icu_alurs2data (o_riscv_OperandmuxB_OperandALUB),
-  .i_riscv_icu_rs1data(i_riscv_estage_rs1data),
-  .i_riscv_icu_rs2data(i_riscv_estage_rs2data),
-  .i_riscv_icu_bcond   (i_riscv_estage_bcond),
-  .i_riscv_icu_mulctrl (i_riscv_estage_mulctrl),
-  .i_riscv_icu_divctrl (i_riscv_estage_divctrl),
-  .i_riscv_icu_aluctrl (i_riscv_estage_aluctrl),
-  .i_riscv_icu_funcsel (i_riscv_estage_funcsel),
-  .o_riscv_branch_taken(o_riscv_estage_branchtaken),
-  .o_riscv_icu_result  (o_riscv_estage_result)
+  .i_riscv_icu_rs1data      (i_riscv_estage_rs1data),
+  .i_riscv_icu_rs2data      (i_riscv_estage_rs2data),
+  .i_riscv_icu_alurs1data   (o_riscv_OperandmuxA_OperandALUA),
+  .i_riscv_icu_alurs2data   (o_riscv_OperandmuxB_OperandALUB),
+  .i_riscv_icu_bcond        (i_riscv_estage_bcond),
+  .i_riscv_icu_mulctrl      (i_riscv_estage_mulctrl),
+  .i_riscv_icu_divctrl      (i_riscv_estage_divctrl),
+  .i_riscv_icu_aluctrl      (i_riscv_estage_aluctrl),
+  .i_riscv_icu_funcsel      (i_riscv_estage_funcsel),
+  .i_riscv_icu_clk          (i_riscv_estage_clk),
+  .i_riscv_icu_rst          (i_riscv_estage_rst),
+  .o_riscv_branch_taken     (o_riscv_estage_branchtaken),
+  .o_riscv_icu_valid        (o_riscv_estage_icu_valid),
+  .o_riscv_icu_result       (o_riscv_estage_result)
 );
 endmodule
