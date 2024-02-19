@@ -145,7 +145,7 @@ end
 4'b1001:                                  //divuw
 begin
     if (i_riscv_div_rs2data[31:0]==0)              //division by 0
-			o_riscv_div_result= (2**32)-1;
+			o_riscv_div_result= (2**64)-1;
 			else  begin
     if(rs2_copy[63])
 		begin  
