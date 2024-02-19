@@ -99,7 +99,7 @@ begin
         begin
             next_state=start;
             next_temp={y[0],1'b0};                         //initial q_1=0
-            next_z={0,y};
+            next_z={1'b0,y};
         end
         else
         begin
