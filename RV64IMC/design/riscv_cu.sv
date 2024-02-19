@@ -143,7 +143,7 @@ always_comb
                                     o_riscv_cu_memext     = 3'b000;
                                     o_riscv_cu_immsrc     = 3'b000;
                                     o_riscv_cu_aluctrl    = 6'b000000;
-                                    o_riscv_cu_mulctrl    = 4'b1110;
+                                    o_riscv_cu_mulctrl    = 4'b1111;
                                     o_riscv_cu_divctrl    = 4'b0000;
                                     o_riscv_cu_funcsel    = 2'b00;    
                                   end       
@@ -179,7 +179,7 @@ always_comb
                                     o_riscv_cu_memext     = 3'b000;
                                     o_riscv_cu_immsrc     = 3'b000;
                                     o_riscv_cu_aluctrl    = 6'b000000;
-                                    o_riscv_cu_mulctrl    = 4'b1111;
+                                    o_riscv_cu_mulctrl    = 4'b1110;
                                     o_riscv_cu_divctrl    = 4'b0000;
                                     o_riscv_cu_funcsel    = 2'b00;
                                 end
