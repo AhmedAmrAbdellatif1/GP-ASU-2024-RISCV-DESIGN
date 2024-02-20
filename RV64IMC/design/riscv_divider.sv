@@ -224,14 +224,14 @@ end
 //	        o_riscv_div_result=i_riscv_div_rs1data;
            	o_riscv_div_result = { {32 {i_riscv_div_rs1data[31]}},i_riscv_div_rs1data[31:0]};
 			else begin
-     if(rs2_copy[63])
+    if(rs2_copy[31])
 			begin  
 				if({1'b0,rs2_copy}>{1'b0,rs1_copy})
-		    o_riscv_div_result=rs1_copy;
-			else 
-			o_riscv_div_result={1'b0,rs1_copy}-{1'b0,rs2_copy};
-	        end
-			else 
+		    	o_riscv_div_result={ {32 {i_riscv_div_rs1data[31]}},i_riscv_div_rs1data[31:0]};	
+				else 
+					o_riscv_div_result={1'b0,rs1_copy}-{1'b0,rs2_copy};
+	    end
+		else 
 		    o_riscv_div_result = { {32 {Z[96]}},Z[96:64]};
 end
     end

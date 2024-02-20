@@ -22,10 +22,10 @@
         begin
           for (i=0; i<32; i=i+1) 
             begin
-              if(i!=2)
+              if(i!=17)
                 rf[i]<=64'b0;
               else
-                rf[2] <= 'h38;//example last double word in the cache indicating the stack
+                rf[17] <= 'h8001e980;//example last double word in the cache indicating the stack
             end
         end         
       else
