@@ -1,7 +1,8 @@
 module riscv_compressed_decoder (
   input  logic [31:0] i_riscv_cdecoder_inst,
   output logic [31:0] o_riscv_cdecoder_inst,
-  output logic o_riscv_cdecoder_compressed
+  output logic o_riscv_cdecoder_compressed,
+  output logic o_riscv_cdecoder_cillegal_inst
 );
 
   typedef enum logic [6:0] {
@@ -20,6 +21,7 @@ module riscv_compressed_decoder (
   
  always_comb begin
    o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+   o_riscv_cdecoder_cillegal_inst = 1'b0;
      case (i_riscv_cdecoder_inst[1:0])
       // C0
       2'b00: begin
@@ -28,6 +30,7 @@ module riscv_compressed_decoder (
             // c.addi4spn -> addi rd', x2, imm
             o_riscv_cdecoder_inst = {2'b0, i_riscv_cdecoder_inst[10:7], i_riscv_cdecoder_inst[12:11], i_riscv_cdecoder_inst[5],
                        i_riscv_cdecoder_inst[6], 2'b00, 5'h02, 3'b000, 2'b01, i_riscv_cdecoder_inst[4:2], {OPCODE_OP_IMM}};
+                        if (i_riscv_cdecoder_inst[12:5] == 8'b0)  o_riscv_cdecoder_cillegal_inst = 1'b1; 
           end
 
           3'b010: begin
@@ -56,6 +59,7 @@ module riscv_compressed_decoder (
                 
           default: begin
             o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+            o_riscv_cdecoder_cillegal_inst = 1'b0;
           end
         endcase
       end
@@ -80,6 +84,7 @@ module riscv_compressed_decoder (
              // c.addiw -> addiw rd,rd,imm
                  o_riscv_cdecoder_inst = {{6 {i_riscv_cdecoder_inst[12]}}, i_riscv_cdecoder_inst[12], i_riscv_cdecoder_inst[6:2],
                  i_riscv_cdecoder_inst[11:7], 3'b0, i_riscv_cdecoder_inst[11:7], {OPCODE_OP_WORD_IMM}};
+               if (i_riscv_cdecoder_inst[11:7] == 5'h0) o_riscv_cdecoder_cillegal_inst = 1'b1;
           end
           3'b010: begin
             // c.li -> addi rd, x0, nzimm
@@ -90,12 +95,14 @@ module riscv_compressed_decoder (
           3'b011: begin
             // c.lui -> lui rd, imm
             o_riscv_cdecoder_inst = {{15 {i_riscv_cdecoder_inst[12]}}, i_riscv_cdecoder_inst[6:2], i_riscv_cdecoder_inst[11:7], {OPCODE_LUI}};
+            if ({i_riscv_cdecoder_inst[12], i_riscv_cdecoder_inst[6:2]} == 6'b0) o_riscv_cdecoder_cillegal_inst = 1'b1;
 
             if (i_riscv_cdecoder_inst[11:7] == 5'h02) begin
               // c.addi16sp -> addi x2, x2, nzimm
               o_riscv_cdecoder_inst = {{3 {i_riscv_cdecoder_inst[12]}}, i_riscv_cdecoder_inst[4:3], i_riscv_cdecoder_inst[5], i_riscv_cdecoder_inst[2],
                          i_riscv_cdecoder_inst[6], 4'b0, 5'h02, 3'b000, 5'h02, {OPCODE_OP_IMM}};
             end
+             if ({i_riscv_cdecoder_inst[12], i_riscv_cdecoder_inst[6:2]} == 6'b0) o_riscv_cdecoder_cillegal_inst = 1'b1;
           end
 
           3'b100: begin
@@ -106,7 +113,9 @@ module riscv_compressed_decoder (
                 // 01: c.srai -> srai rd, rd, shamt
                 o_riscv_cdecoder_inst = {1'b0, i_riscv_cdecoder_inst[10], 5'b0, i_riscv_cdecoder_inst[6:2], 2'b01, i_riscv_cdecoder_inst[9:7],
                            3'b101, 2'b01, i_riscv_cdecoder_inst[9:7], {OPCODE_OP_IMM}};
+               if ({i_riscv_cdecoder_inst[12], i_riscv_cdecoder_inst[6:2]} == 6'b0) o_riscv_cdecoder_cillegal_inst = 1'b1;
               end
+
 
               2'b10: begin
                 // c.andi -> andi rd, rd, imm
@@ -151,11 +160,13 @@ module riscv_compressed_decoder (
                     end                
           default: begin
             o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+            o_riscv_cdecoder_cillegal_inst = 1'b1;
           end                  
                 endcase
               end
           default: begin
             o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+            o_riscv_cdecoder_cillegal_inst = 1'b1;
           end
             endcase
           end
@@ -169,6 +180,7 @@ module riscv_compressed_decoder (
           end
          default: begin
             o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+            o_riscv_cdecoder_cillegal_inst = 1'b1;
           end
         endcase
       end
@@ -179,12 +191,15 @@ module riscv_compressed_decoder (
           3'b000: begin
             // c.slli -> slli rd, rd, shamt
             o_riscv_cdecoder_inst = {6'b0,i_riscv_cdecoder_inst[12],i_riscv_cdecoder_inst[6:2], i_riscv_cdecoder_inst[11:7], 3'b001, i_riscv_cdecoder_inst[11:7], {OPCODE_OP_IMM}};
+                        if (i_riscv_cdecoder_inst[11:7] == 5'b0)  o_riscv_cdecoder_cillegal_inst = 1'b1; // register not x0
+                        if ({i_riscv_cdecoder_inst[12], i_riscv_cdecoder_inst[6:2]}  == 6'b0)  o_riscv_cdecoder_cillegal_inst = 1'b1; 
           end
 
           3'b010: begin
             // c.lwsp -> lw rd, imm(x2)
             o_riscv_cdecoder_inst = {4'b0, i_riscv_cdecoder_inst[3:2], i_riscv_cdecoder_inst[12], i_riscv_cdecoder_inst[6:4], 2'b00, 5'h02,
                        3'b010, i_riscv_cdecoder_inst[11:7], OPCODE_LOAD};
+                       if (i_riscv_cdecoder_inst[11:7] == 5'b0)  o_riscv_cdecoder_cillegal_inst = 1'b1;
           end
 
           3'b100: begin
@@ -195,15 +210,20 @@ module riscv_compressed_decoder (
               end else begin
                 // c.jr -> jalr x0, rd/rs1, 0
                 o_riscv_cdecoder_inst = {12'b0, i_riscv_cdecoder_inst[11:7], 3'b0, 5'b0, {OPCODE_JALR}};
+                o_riscv_cdecoder_cillegal_inst = (i_riscv_cdecoder_inst[11:7] != '0) ? 1'b0 : 1'b1;
+
               end
             end else begin
               if (i_riscv_cdecoder_inst[6:2] != 5'b0) begin
                 // c.add -> add rd, rd, rs2
                 o_riscv_cdecoder_inst = {7'b0, i_riscv_cdecoder_inst[6:2], i_riscv_cdecoder_inst[11:7], 3'b0, i_riscv_cdecoder_inst[11:7], {OPCODE_OP}};
-           //   end else begin
-             //   if (i_riscv_cdecoder_inst[11:7] == 5'b0) begin
+              end else begin
+              if (i_riscv_cdecoder_inst[11:7] == 5'b0) begin
                   // c.ebreak -> ebreak
-               //   o_riscv_cdecoder_inst = {32'h00_10_00_73};
+                  o_riscv_cdecoder_inst = {32'h00_10_00_73};
+                   if (i_riscv_cdecoder_inst[6:2] != 5'b0)
+                    o_riscv_cdecoder_cillegal_inst = 1'b1;
+
                 end else begin
                   // c.jalr -> jalr x1, rs1, 0
                   o_riscv_cdecoder_inst = {12'b0, i_riscv_cdecoder_inst[11:7], 3'b000, 5'b00001, {OPCODE_JALR}};
@@ -211,6 +231,7 @@ module riscv_compressed_decoder (
               end
             end
           end
+        end
 
           3'b110: begin
             // c.swsp -> sw rs2, imm(x2)
@@ -221,6 +242,7 @@ module riscv_compressed_decoder (
              // c.ldsp -> ld rd, imm(x4)
             o_riscv_cdecoder_inst = {3'b0, i_riscv_cdecoder_inst[4:2], i_riscv_cdecoder_inst[12], i_riscv_cdecoder_inst[6:5], 3'b000, 5'h02,
                        3'b011, i_riscv_cdecoder_inst[11:7], OPCODE_LOAD};
+                        if (i_riscv_cdecoder_inst[11:7] == 5'b0)  o_riscv_cdecoder_cillegal_inst = 1'b1;
           end
           3'b111:begin
             // c.sdsp -> sd rs2, imm(x4)
@@ -229,13 +251,18 @@ module riscv_compressed_decoder (
           end
           default: begin
             o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+            o_riscv_cdecoder_cillegal_inst = 1'b1;
           end
         endcase
       end
           default: begin
             o_riscv_cdecoder_inst  = i_riscv_cdecoder_inst;
+            o_riscv_cdecoder_cillegal_inst = 1'b0;
           end
     endcase
+ /*   if (o_riscv_cdecoder_cillegal_inst && o_riscv_cdecoder_compressed) begin
+            o_riscv_cdecoder_inst = i_riscv_cdecoder_inst;
+        end  */
   end
   
 assign o_riscv_cdecoder_compressed = (i_riscv_cdecoder_inst[1:0] != 2'b11);
