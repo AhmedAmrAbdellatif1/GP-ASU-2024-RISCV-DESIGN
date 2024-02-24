@@ -16,6 +16,7 @@ module dram #(
 
   logic [(AWIDTH+4)-1:0] base_addr;
   logic [7:0] mem [0:MEM_DEPTH-1];
+  logic [1:0] counter;
 
   int i;
 
@@ -28,6 +29,22 @@ module dram #(
 
   // mapping the byte addressable memory into block cache
   assign base_addr = {addr,4'b0000};
+
+  // counter to model latency
+  always_ff @(posedge ck) begin
+    if(wren || rden) begin
+      counter   <= counter + 1'b1;
+      mem_ready <= 1'b0;
+    end
+    else if(counter == 2'b11) begin
+      counter   <= 2'b0;
+      mem_ready <= 1'b1;
+    end
+    else begin
+      counter   <= 2'b0;
+      mem_ready <= 1'b0;
+    end
+  end
 
   // write and read technique
   always_ff @(posedge clk) begin
