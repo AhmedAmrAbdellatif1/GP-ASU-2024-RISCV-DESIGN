@@ -24,7 +24,7 @@ module data_cache #(
 
   // physical address buffering and concatenation
   logic [TAG-1:0]       tag;
-  logic [ADDR-1:0]      addr_buffer;
+  //logic [ADDR-1:0]      addr_buffer;
   logic [INDEX-1:0]     index;
   logic [BYTE_OFF-1:0]  byte_offset;
 
@@ -38,29 +38,31 @@ module data_cache #(
   logic fsm_mem_wren;
   logic fsm_mem_rden;
   logic fsm_stall;
+  logic fsm_tag_sel;//new
 
   //  cache signals
   logic [DATA_WIDTH-1:0]  cache_data_in;
   logic [DATA_WIDTH-1:0]  cache_data_out;
 
   // tag signals
-  logic tag_dirty_out;
-  logic tag_hit_out;
-
+  logic           tag_dirty_out;
+  logic           tag_hit_out;
+  logic [TAG-1:0] tag_old_out;//new
   // memory model signals
   logic                   mem_wren;
   logic                   mem_rden;
   logic                   mem_ready;
+  logic                   mem_tag;
   logic [INDEX+TAG-1:0]   mem_addr;
   logic [DATA_WIDTH-1:0]  mem_data_in;
   logic [DATA_WIDTH-1:0]  mem_data_out;
 
   // internal signals declaration  
-  assign cache_data_in = (fsm_cache_insel)? mem_data_out:cpu_data_in;
+  assign cache_data_in           = (fsm_cache_insel)? mem_data_out:cpu_data_in;
   assign {tag,index,byte_offset} = phys_addr;
-  assign mem_addr = {tag,index};
-  assign cpu_data_out = cache_data_out;
-
+  assign mem_addr                = (fsm_tag_sel)?{tag_old_out,index}:{tag,index};///new
+  assign cpu_data_out            = cache_data_out;
+  
   // physical address latch
   /*always_comb begin
     if(rst)
@@ -84,7 +86,8 @@ module data_cache #(
     .valid_in     (fsm_set_valid)       ,
     .replace_tag  (fsm_replace_tag)     ,
     .hit          (tag_hit_out)         ,
-    .dirty        (tag_dirty_out)       
+    .dirty        (tag_dirty_out)       ,
+    .tag_old      (tag_old_out)//new
   );
 
   ///////////////////////////
@@ -133,6 +136,7 @@ module data_cache #(
   .set_dirty      (fsm_set_dirty)       ,
   .set_valid      (fsm_set_valid)       ,
   .replace_block  (fsm_replace_tag)     ,
-  .stall          (cpu_stall)
+  .stall          (cpu_stall)           ,
+  .tag_sel        (fsm_tag_sel)//new
 );
 endmodule
