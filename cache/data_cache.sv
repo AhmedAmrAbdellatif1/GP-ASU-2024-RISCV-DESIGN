@@ -57,17 +57,17 @@ module data_cache #(
 
   // internal signals declaration  
   assign cache_data_in = (fsm_cache_insel)? mem_data_out:cpu_data_in;
-  assign {tag,index,byte_offset} = addr_buffer;
+  assign {tag,index,byte_offset} = phys_addr;
   assign mem_addr = {tag,index};
   assign cpu_data_out = cache_data_out;
 
-  // physical address latche
-  always_comb begin
+  // physical address latch
+  /*always_comb begin
     if(rst)
       addr_buffer <= 'b0;
     else if(cpu_rden || cpu_wren)
       addr_buffer <= phys_addr;
-  end
+  end*/
 
 
   //****************** Instantiation ******************//
