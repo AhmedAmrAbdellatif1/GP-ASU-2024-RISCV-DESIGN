@@ -135,7 +135,7 @@ module data_cache #(
   .mem_wren       (fsm_mem_wren)        ,
   .set_dirty      (fsm_set_dirty)       ,
   .set_valid      (fsm_set_valid)       ,
-  .replace_block  (fsm_replace_tag)     ,
+  .replace_tag    (fsm_replace_tag)     ,
   .stall          (cpu_stall)           ,
   .tag_sel        (fsm_tag_sel)//new
 );
