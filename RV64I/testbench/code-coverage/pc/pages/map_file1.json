@@ -1,9 +1,0 @@
-var g_data = {'dummy':{null},
-'/riscv_pc_tb/CheckEquality':{h:'141',z:1},
-'/riscv_pc_tb/Reset':{h:'143',z:1},
-'work.riscv_pc':{h:'4',z:1},
-'/riscv_pc_tb/DUT':{h:'144',z:1},
-'/riscv_pc_tb':{h:'5',z:1},
-'work.riscv_pc_tb::CheckEquality':{h:'416',z:1},
-'work.riscv_pc_tb::Reset':{h:'418',z:1},
-'work.riscv_pc_tb':{h:'3',z:1}};
