@@ -31,7 +31,7 @@ module dram #(
   assign base_addr = {addr,4'b0000};
 
   // counter to model latency
-  always_ff @(posedge ck) begin
+  always_ff @(posedge clk) begin
     if(wren || rden) begin
       counter   <= counter + 1'b1;
       mem_ready <= 1'b0;
