@@ -1,92 +1,37 @@
-module riscv_branch
+module riscv_branch (
+  input  logic         [3:0]      i_riscv_branch_cond    , 
+  input  logic signed [ 63:0 ]    i_riscv_branch_rs1data ,   
+  input  logic signed [ 63:0 ]    i_riscv_branch_rs2data , 
+  output logic signed             o_riscv_branch_taken
+  );
 
-    (
-            input  logic         [3:0]      i_riscv_branch_cond    , 
-            input  logic signed [ 63:0 ]    i_riscv_branch_rs1data ,   
-            input  logic signed [ 63:0 ]    i_riscv_branch_rs2data , 
-            output logic signed             o_riscv_branch_taken
-    );
-   
+  logic EQ,LT,LTU;
 
- logic LT,GT,EQ;
-//logic negelect ;
-//logic [2:0] check_condotion ; 
-//assign {negelect,check_condotion} = i_riscv_branch_cond  ;
+  assign EQ  = (i_riscv_branch_rs1data==i_riscv_branch_rs2data)? 1:0;
+  assign LT  = (i_riscv_branch_rs1data<i_riscv_branch_rs2data)? 1:0;
+  assign LTU = ($unsigned(i_riscv_branch_rs1data)<$unsigned(i_riscv_branch_rs2data))? 1:0;
 
-typedef enum logic [2:0] {beq = 0 , bne = 1 , blt=4 , bge = 5 , bltu=6,bgeu=7} States ;
-
-assign EQ = (i_riscv_branch_rs1data==i_riscv_branch_rs2data)? 1:0;  
-  
-always @(*) 
-begin 
-    case (i_riscv_branch_cond[1])
-
-
-        1 : begin
-                 LT = ($unsigned(i_riscv_branch_rs1data) < $unsigned(i_riscv_branch_rs2data)) ? 1:0;
-                //assign GT = ($unsigned(i_riscv_branch_rs1data) > $unsigned(i_riscv_branch_rs2data)) ? 1:0;
-                 GT = (~LT) && (~EQ) ? 1:0;
-            end 
-        0 : begin
-                 LT = (i_riscv_branch_rs1data < i_riscv_branch_rs2data) ? 1:0;
-                //assign GT = (i_riscv_branch_rs1data > i_riscv_branch_rs2data) ? 1:0;
-                 GT = (~LT) && (~EQ) ? 1:0;
-            end
-    endcase
-end
-
-
-
-always @(*) 
-
+  always @(*) 
     begin
-
-        /*if (rst)
-                                               
-            o_riscv_branch_taken=0;
-        else  */
-        
         if (i_riscv_branch_cond[3]) 
-            begin
-       
-                case (i_riscv_branch_cond[2:0])
-                
-                //equlaity , non equality doesnt mean either signed/unsigned 
-                    beq:   o_riscv_branch_taken =  (  EQ )    ? 1 : 0 ;  //beq
-                    bne:   o_riscv_branch_taken =  ( ~EQ )    ? 1 : 0 ;  //bne
-                //signed
-                    blt:   o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //blt  
-                    bge:   o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bge
-                //unsigned
-                    bltu:   o_riscv_branch_taken =  ( LT )     ? 1 : 0 ;  //bltu
-                    bgeu:   o_riscv_branch_taken = (GT || EQ ) ? 1 : 0 ;  //bgeu
-                    default:        o_riscv_branch_taken = 0 ;
-
-                endcase     
-            end    
-
+          begin
+            case (i_riscv_branch_cond[2:0])
+            //equality , non equality doesnt mean either signed/unsigned 
+                3'b000:   o_riscv_branch_taken =  (  EQ )    ? 1 : 0 ;  //beq
+                3'b001:   o_riscv_branch_taken =  ( ~EQ )    ? 1 : 0 ;  //bne
+            //signed
+                3'b100:   o_riscv_branch_taken =  (  LT )    ? 1 : 0 ;  //blt  
+                3'b101:   o_riscv_branch_taken =  ( ~LT )    ? 1 : 0 ;  //bge
+            //unsigned
+                3'b110:   o_riscv_branch_taken =  (  LTU )   ? 1 : 0 ;  //bltu
+                3'b111:   o_riscv_branch_taken =  ( ~LTU )   ? 1 : 0 ;  //bgeu
+                default:  o_riscv_branch_taken = 0 ;
+            endcase     
+          end    
         else 
-                o_riscv_branch_taken=0 ;
-        
-
+          o_riscv_branch_taken=0 ;
     end
-
-    /*always @(*) make that always if input , output is assumed to be unsigned 
-begin 
-    case (i_riscv_branch_cond[1])
-
-        1 : begin
-                assign LT = (i_riscv_branch_rs1data < i_riscv_branch_rs2data) ? 1:0;
-                assign GT = (i_riscv_branch_rs1data > i_riscv_branch_rs2data) ? 1:0;
-            end 
-        0 : begin
-                assign LT = ($signed(i_riscv_branch_rs1data) < $signed(i_riscv_branch_rs2data)) ? 1:0;
-                assign GT = ($signed(i_riscv_branch_rs1data) > $signed(i_riscv_branch_rs2data)) ? 1:0;
-            end
-    endcase
-end*/
-            
-     endmodule
+endmodule
 
 
 
