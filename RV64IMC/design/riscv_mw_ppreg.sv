@@ -19,8 +19,14 @@
     //--------------------------------->
     input   logic [31:0]  i_riscv_mw_inst,
     input   logic [15:0]  i_riscv_mw_cinst,
+    input   logic [63:0]  i_riscv_mw_memaddr,
+    input   logic [63:0]  i_riscv_mw_pc,
+    input   logic [63:0]  i_riscv_mw_rs2data,
     output  logic [31:0]  o_riscv_mw_inst,
-    output  logic [15:0]  o_riscv_mw_cinst
+    output  logic [15:0]  o_riscv_mw_cinst,
+    output  logic [63:0]  o_riscv_mw_memaddr,
+    output  logic [63:0]  o_riscv_mw_pc,
+    output  logic [63:0]  o_riscv_mw_rs2data
     //<---------------------------------
   );  
   always_ff @(posedge i_riscv_mw_clk or posedge i_riscv_mw_rst )
@@ -33,23 +39,30 @@
          o_riscv_mw_memload_wb    <='b0;
          o_riscv_mw_rdaddr_wb     <='b0;
          o_riscv_mw_resultsrc_wb  <='b0;
-         o_riscv_mw_regw_wb       <='b0; 
+         o_riscv_mw_regw_wb       <='b0;
+         //---------------------------->
          o_riscv_mw_inst          <='b0;  
-         o_riscv_mw_cinst         <='b0;  
+         o_riscv_mw_cinst         <='b0;
+         o_riscv_mw_memaddr       <='b0;
+         o_riscv_mw_pc            <='b0;
+         o_riscv_mw_rs2data       <='b0;
+         //<----------------------------
         end
       else
         begin
          if (i_riscv_mw_en)
           begin
-          o_riscv_mw_pcplus4_wb    <= o_riscv_mw_pcplus4_wb;
+          o_riscv_mw_pcplus4_wb     <= o_riscv_mw_pcplus4_wb;
           o_riscv_mw_result_wb      <= o_riscv_mw_result_wb;
           o_riscv_mw_uimm_wb        <= o_riscv_mw_uimm_wb;
           o_riscv_mw_memload_wb     <= o_riscv_mw_memload_wb;
           o_riscv_mw_rdaddr_wb      <= o_riscv_mw_rdaddr_wb;
           o_riscv_mw_resultsrc_wb   <= o_riscv_mw_resultsrc_wb;
           o_riscv_mw_regw_wb        <= o_riscv_mw_regw_wb;
+          //--------------------------------------------->
           o_riscv_mw_inst           <= o_riscv_mw_inst;
           o_riscv_mw_cinst          <= o_riscv_mw_cinst;
+          //<---------------------------------------------
           end
         else
           begin
@@ -60,8 +73,13 @@
           o_riscv_mw_rdaddr_wb    <=  i_riscv_mw_rdaddr_m;
           o_riscv_mw_resultsrc_wb <=  i_riscv_mw_resultsrc_m;
           o_riscv_mw_regw_wb      <=  i_riscv_mw_regw_m;
+          //------------------------------------------->
           o_riscv_mw_inst         <=  i_riscv_mw_inst;
           o_riscv_mw_cinst        <=  i_riscv_mw_cinst;
+          o_riscv_mw_memaddr      <=  i_riscv_mw_memaddr;
+          o_riscv_mw_pc           <=  i_riscv_mw_pc;
+          o_riscv_mw_rs2data      <=  i_riscv_mw_rs2data;
+         //<---------------------------------------------
         end
       end
     end
