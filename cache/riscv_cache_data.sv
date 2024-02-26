@@ -11,10 +11,10 @@ module data_array #(
     input   logic                    rden                    ,
     input   logic [INDEX-1:0]        index                   ,
     input   logic [DWIDTH-1:0]       data_in                 ,
+    output  logic [DWIDTH-1:0]       data_out                ,
     input   logic [3:0]              byte_offset             ,// need instatiation 
     input   logic [1:0]              storesrc                ,//need......
     input   logic                    mem_in                  ,// from finite state machine indicate write block from RAM (cache in sel)
-    output  logic [DWIDTH-1:0]       data_out                
 
   );
 
@@ -46,7 +46,7 @@ module data_array #(
              4'b1100:dcache[index][103:96]  <=strdouble[7:0];
              4'b1101:dcache[index][111:104] <=strdouble[7:0];
              4'b1110:dcache[index][119:112] <=strdouble[7:0];
-             4'b1111:dcache[index][127:120] <=strdouble[7:0];
+             4'b1111:dcache[index][127:120] <=strdouble[7:0]; // momtaz :like:
            endcase
           end
           2'b01:begin// 8 cases for half word access 

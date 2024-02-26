@@ -1,7 +1,7 @@
-module data_cache #(
+module data_cache_top #(
     parameter DATA_WIDTH  = 128                           ,
-    parameter MEM_SIZE    = (2**6)*16                     ,//128*(2**20)       
-    parameter CACHE_SIZE  = 64                            ,//64 * (2**10)   
+    parameter MEM_SIZE    = (2**6)*16                     ,   //128*(2**20)       
+    parameter CACHE_SIZE  = 64                            ,   //64 * (2**10)   
     parameter DATAPBLOCK  = 16                            ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK         ,   //  4096
     parameter ADDR        = $clog2(MEM_SIZE)              ,   //    27 bits
@@ -10,21 +10,21 @@ module data_cache #(
     parameter TAG         = ADDR - BYTE_OFF - INDEX           //    11 bits
   )
   (  
-    input   logic                   clk                     ,
-    input   logic                   rst                     ,      
-    input   logic                   cpu_wren                ,
-    input   logic                   cpu_rden                ,
-    input   logic [ADDR-1:0]        phys_addr               ,
-    input   logic [DATA_WIDTH-1:0]  cpu_data_in             ,
-    output  logic [DATA_WIDTH-1:0]  cpu_data_out            ,
-    output  logic                   cpu_stall               
+    input   logic         clk           ,
+    input   logic         rst           ,
+    input   logic         cpu_wren      ,
+    input   logic         cpu_rden      ,
+    input   logic [1:0]   store_src     ,
+    input   logic [63:0]  phys_addr     ,
+    input   logic [63:0]  cpu_data_in   ,
+    output  logic [63:0]  cpu_data_out  ,
+    output  logic         cpu_stall               
   );
 
   //****************** internal signals declarations ******************//
 
-  // physical address buffering and concatenation
+  // physical address concatenation
   logic [TAG-1:0]       tag;
-  //logic [ADDR-1:0]      addr_buffer;
   logic [INDEX-1:0]     index;
   logic [BYTE_OFF-1:0]  byte_offset;
 
@@ -58,19 +58,10 @@ module data_cache #(
   logic [DATA_WIDTH-1:0]  mem_data_out;
 
   // internal signals declaration  
-  assign cache_data_in           = (fsm_cache_insel)? mem_data_out:cpu_data_in;
+  assign cache_data_in           = (fsm_cache_insel)? mem_data_out:{64'b0,cpu_data_in};
   assign {tag,index,byte_offset} = phys_addr;
   assign mem_addr                = (fsm_tag_sel)?{tag_old_out,index}:{tag,index};///new
-  assign cpu_data_out            = cache_data_out;
-  
-  // physical address latch
-  /*always_comb begin
-    if(rst)
-      addr_buffer <= 'b0;
-    else if(cpu_rden || cpu_wren)
-      addr_buffer <= phys_addr;
-  end*/
-
+  assign cpu_data_out            = (phys_addr[3])?cache_data_out[127:64]:cache_data_out[63:0];
 
   //****************** Instantiation ******************//
   tag_array #(
@@ -101,7 +92,10 @@ module data_cache #(
       .rden       (fsm_cache_rden)       ,
       .index      (index)                ,
       .data_in    (cache_data_in)        ,
-      .data_out   (cache_data_out)                
+      .data_out   (cache_data_out)       ,
+      .byte_offset(byte_offset)          ,
+      .storesrc   (storesrc)             ,
+      .mem_in     (cache_insel)      
   );
 
  //////////////
