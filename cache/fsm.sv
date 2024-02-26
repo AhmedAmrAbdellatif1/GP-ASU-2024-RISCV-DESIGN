@@ -21,7 +21,7 @@ module cache_fsm  (
   // 
  typedef enum {IDLE, COMPARE_TAG, WRITE_BACK, ALLOCATE, CACHE_ACCESS} states;
   
-  logic [2:0] current_state, next_state;
+  states current_state, next_state;
   logic       cpu_rden_reg,cpu_wren_reg;//new
 
   // 
