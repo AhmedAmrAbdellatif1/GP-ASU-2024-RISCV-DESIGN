@@ -40,15 +40,15 @@ riscv_core u_top_core(
 );*/
 
 riscv_data_cache u_data_cache(
-  i_riscv_dcache_clk           ,
-  i_riscv_dcache_rst           ,
-  i_riscv_dcache_cpu_wren      ,
-  i_riscv_dcache_cpu_rden      ,
-  i_riscv_dcache_store_src     ,
-  i_riscv_dcache_phys_addr     ,
-  i_riscv_dcache_cpu_data_in   ,
-  o_riscv_dcache_cpu_data_out  ,
-  o_riscv_dcache_cpu_stall        
+  i_riscv_dcache_clk(i_riscv_clk)                                 ,
+  i_riscv_dcache_rst(i_riscv_rst)                                 ,
+  i_riscv_dcache_cpu_wren(riscv_datapath_memw_m_dm)               ,
+  i_riscv_dcache_cpu_rden()                                       ,
+  i_riscv_dcache_store_src(riscv_datapath_storesrc_m_dm)          ,
+  i_riscv_dcache_phys_addr(riscv_datapath_memodata_addr_dm)       ,
+  i_riscv_dcache_cpu_data_in(riscv_datapath_storedata_m_dm)       ,
+  o_riscv_dcache_cpu_data_out(riscv_datapath_rdata_dm)            ,
+  o_riscv_dcache_cpu_stall()        
 )
 
 riscv_im u_top_im(

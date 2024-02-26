@@ -11,6 +11,7 @@ module riscv_hazardunit (
    input  logic           i_riscv_hzrdu_regw_w        ,
    input  logic   [1:0]   i_riscv_hzrdu_resultsrc_e   ,
    input  logic   [4:0]   i_riscv_hzrdu_rdaddr_e      ,
+   input  logic           i_riscv_dcahe_stall_m       ,     //<--------------
    input  logic           i_riscv_hzrdu_mul_en        , 
    input  logic           i_riscv_hzrdu_div_en        ,
    input  logic           i_riscv_hzrdu_valid         ,
@@ -24,9 +25,10 @@ module riscv_hazardunit (
    output logic           o_riscv_hzrdu_stallem       ,
    output logic           o_riscv_hzrdu_stallmw       );
 
-  logic m_stall;
+  logic m_stall,glob_stall;
 
   assign m_stall=(i_riscv_hzrdu_mul_en || i_riscv_hzrdu_div_en)&!i_riscv_hzrdu_valid;
+  assign glob_stall= (i_riscv_dcahe_stall_m) | m_stall;
 
 always @(*)
   begin 
@@ -105,7 +107,7 @@ assign o_riscv_hzrdu_flushfd =  ( i_riscv_hzrdu_pcsrc )? 1 : 0 ;
 ///////////////////////////////mult/div stalling/////////////////////
 always_comb
   begin
-    if(m_stall)
+    if(glob_stall)
     begin
       o_riscv_hzrdu_stallmw=1;
       o_riscv_hzrdu_stallem=1;
