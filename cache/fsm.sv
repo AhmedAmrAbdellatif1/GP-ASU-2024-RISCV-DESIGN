@@ -100,12 +100,12 @@ module cache_fsm  (
           next_state    = ALLOCATE;
           cache_rden    = 1'b0;
           cache_wren    = 1'b0;//////cache will write when the memory ready come to indicate valid block *********new
-          cache_insel   = 1'b1;
+          cache_insel   = 1'b0;
           mem_rden      = 1'b1;
           mem_wren      = 1'b0;  
           set_dirty     = cpu_wren_reg;
           set_valid     = 1'b1;    
-          replace_tag   = 1'b1;
+          replace_tag   = 1'b0;// 
           stall         = 1'b1;
           tag_sel       = 1'b0;//new
         end
@@ -158,10 +158,10 @@ module cache_fsm  (
           cache_insel   = 1'b1;
           mem_rden      = 1'b0;
           mem_wren      = 1'b0;  
-          set_dirty     = 1'b0;   
-          set_valid     = 1'b0;    
-          replace_tag   = 1'b0;
-          stall         = 1'b0;
+          set_dirty     = cpu_wren_reg;   
+          set_valid     = 1'b1;    
+          replace_tag   = 1'b1;
+          stall         = 1'b1;
           tag_sel       = 1'b0;// don't care
         end
         else begin

@@ -61,6 +61,9 @@ module data_cache_tb();
   #CLK_PERIOD;
   #CLK_PERIOD;
   #CLK_PERIOD;
+  cpu_rden = 'b0 ;
+  #CLK_PERIOD;
+  
   #CLK_PERIOD;
   read_cpu  ('d0);		    //read hit 
 
@@ -114,7 +117,7 @@ begin
   cpu_rden = 'b1;  //read from cache
   #CLK_PERIOD 
   phys_addr = 'b0 ;
-  cpu_rden = 'b0 ; 
+  cpu_rden = 'b1 ; 
 end 
 endtask
 

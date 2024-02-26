@@ -32,7 +32,7 @@ module dram #(
 
   // counter to model latency
   always_ff @(posedge clk) begin
-    if(wren || rden) begin
+    if(wren || rden && !(counter == 2'b11)) begin
       counter   <= counter + 1'b1;
       mem_ready <= 1'b0;
     end
