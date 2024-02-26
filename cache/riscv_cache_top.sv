@@ -10,15 +10,15 @@ module riscv_data_cache #(
     parameter TAG         = ADDR - BYTE_OFF - INDEX           //    11 bits
   )
   (  
-    input   logic         clk           ,
-    input   logic         rst           ,
-    input   logic         cpu_wren      ,
-    input   logic         cpu_rden      ,
-    input   logic [1:0]   store_src     ,
-    input   logic [63:0]  phys_addr     ,
-    input   logic [63:0]  cpu_data_in   ,
-    output  logic [63:0]  cpu_data_out  ,
-    output  logic         cpu_stall               
+    input   logic         i_riscv_dcache_clk           ,
+    input   logic         i_riscv_dcache_rst           ,
+    input   logic         i_riscv_dcache_cpu_wren      ,
+    input   logic         i_riscv_dcache_cpu_rden      ,
+    input   logic [1:0]   i_riscv_dcache_store_src     ,
+    input   logic [63:0]  i_riscv_dcache_phys_addr     ,
+    input   logic [63:0]  i_riscv_dcache_cpu_data_in   ,
+    output  logic [63:0]  o_riscv_dcache_cpu_data_out  ,
+    output  logic         o_riscv_dcache_cpu_stall               
   );
 
   //****************** internal signals declarations ******************//
@@ -58,8 +58,8 @@ module riscv_data_cache #(
   logic [DATA_WIDTH-1:0]  mem_data_out;
 
   // internal signals declaration  
-  assign cache_data_in           = (fsm_cache_insel)? mem_data_out:{64'b0,cpu_data_in};
   assign {tag,index,byte_offset} = phys_addr;
+  assign cache_data_in           = (fsm_cache_insel)? mem_data_out:{64'b0,cpu_data_in};
   assign mem_addr                = (fsm_tag_sel)?{tag_old_out,index}:{tag,index};///new
   assign cpu_data_out            = (phys_addr[3])?cache_data_out[127:64]:cache_data_out[63:0];
 
@@ -69,8 +69,8 @@ module riscv_data_cache #(
     .TAG          (TAG)                 ,
     .CACHE_DEPTH  (CACHE_DEPTH)
   ) u_tag_array (
-    .clk          (clk)                 ,
-    .rst          (rst)                 ,
+    .clk          (i_riscv_dcache_clk)  ,
+    .rst          (i_riscv_dcache_rst)  ,
     .index        (index)               ,
     .tag_in       (tag)                 ,
     .dirty_in     (fsm_set_dirty)       ,
@@ -87,14 +87,14 @@ module riscv_data_cache #(
     .DWIDTH       (DATA_WIDTH),
     .CACHE_DEPTH  (CACHE_DEPTH)
   ) u_data_array (
-      .clk        (clk)                  ,    
-      .wren       (fsm_cache_wren)       ,
-      .rden       (fsm_cache_rden)       ,
-      .index      (index)                ,
-      .data_in    (cache_data_in)        ,
-      .data_out   (cache_data_out)       ,
-      .byte_offset(byte_offset)          ,
-      .storesrc   (storesrc)             ,
+      .clk        (i_riscv_dcache_clk)      ,    
+      .wren       (fsm_cache_wren)          ,
+      .rden       (fsm_cache_rden)          ,
+      .index      (index)                   ,
+      .data_in    (cache_data_in)           ,
+      .data_out   (cache_data_out)          ,
+      .byte_offset(byte_offset)             ,
+      .storesrc   (i_riscv_dcache_storesrc) ,
       .mem_in     (cache_insel)      
   );
 
@@ -104,7 +104,7 @@ module riscv_data_cache #(
     .DWIDTH     (DATA_WIDTH)            ,
     .MEM_DEPTH  (MEM_SIZE)
   ) u_dram (
-    .clk        (clk)                   ,     
+    .clk        (i_riscv_dcache_clk)    ,     
     .wren       (fsm_mem_wren)          ,
     .rden       (fsm_mem_rden)          ,
     .addr       (mem_addr)              ,
@@ -115,22 +115,22 @@ module riscv_data_cache #(
 
   ////////////////////////
   cache_fsm u_cache_fsm  (
-  .clk            (clk)                 ,
-  .rst            (rst)                 ,
-  .cpu_wren       (cpu_wren)            ,
-  .cpu_rden       (cpu_rden)            ,
-  .hit            (tag_hit_out)         ,
-  .dirty          (tag_dirty_out)       ,
-  .mem_ready      (mem_ready)           ,
-  .cache_rden     (fsm_cache_rden)      ,
-  .cache_wren     (fsm_cache_wren)      ,
-  .cache_insel    (fsm_cache_insel)     ,
-  .mem_rden       (fsm_mem_rden)        ,
-  .mem_wren       (fsm_mem_wren)        ,
-  .set_dirty      (fsm_set_dirty)       ,
-  .set_valid      (fsm_set_valid)       ,
-  .replace_tag    (fsm_replace_tag)     ,
-  .stall          (cpu_stall)           ,
+  .clk            (i_riscv_dcache_clk)       ,
+  .rst            (i_riscv_dcache_rst)       ,
+  .cpu_wren       (i_riscv_dcache_cpu_wren)  ,
+  .cpu_rden       (i_riscv_dcache_cpu_rden)  ,
+  .hit            (tag_hit_out)              ,
+  .dirty          (tag_dirty_out)            ,
+  .mem_ready      (mem_ready)                ,
+  .cache_rden     (fsm_cache_rden)           ,
+  .cache_wren     (fsm_cache_wren)           ,
+  .cache_insel    (fsm_cache_insel)          ,
+  .mem_rden       (fsm_mem_rden)             ,
+  .mem_wren       (fsm_mem_wren)             ,
+  .set_dirty      (fsm_set_dirty)            ,
+  .set_valid      (fsm_set_valid)            ,
+  .replace_tag    (fsm_replace_tag)          ,
+  .stall          (o_riscv_dcache_cpu_stall) ,
   .tag_sel        (fsm_tag_sel)//new
 );
 endmodule

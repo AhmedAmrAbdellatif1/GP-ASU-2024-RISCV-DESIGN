@@ -39,7 +39,9 @@ riscv_core u_top_core(
   .o_riscv_dm_rdata(riscv_datapath_rdata_dm)
 );*/
 
-riscv_data_cache u_data_cache()
+riscv_data_cache u_data_cache(
+  
+)
 
 riscv_im u_top_im(
   .i_riscv_im_pc(riscv_datapath_pc_im),
