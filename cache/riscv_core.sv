@@ -1,14 +1,16 @@
 module riscv_core
   (
-     input logic  [31:0]  i_riscv_core_inst,
-     input logic            i_riscv_core_clk , 
-     input logic            i_riscv_core_rst,
-     input logic [63:0]   i_riscv_core_rdata ,
-     output logic [63:0] o_riscv_core_pc,
-     output logic          o_riscv_core_memw_m,
+     input  logic [31:0]  i_riscv_core_inst,
+     input  logic         i_riscv_core_clk , 
+     input  logic         i_riscv_core_rst,
+     input  logic [63:0]  i_riscv_core_rdata ,
+     input  logic         i_riscv_core_stall_m,
+     output logic [63:0]  o_riscv_core_pc,
+     output logic         o_riscv_core_memw_e,
+     output logic         o_riscv_core_memr_e,
      output logic [1:0]   o_riscv_core_storesrc_m,
-     output logic [63:0] o_riscv_core_memodata_addr,
-     output logic [63:0] o_riscv_core_storedata_m
+     output logic [63:0]  o_riscv_core_memodata_addr,
+     output logic [63:0]  o_riscv_core_storedata_m
   ) ;
 
 
@@ -25,6 +27,7 @@ logic       riscv_cu_jump_datapath;     /// from control unit
 logic       riscv_cu_asel_datapath;     /// from control unit
 logic       riscv_cu_bsel_datapath;     /// from control unit
 logic       riscv_cu_memw_datapath;     /// from control unit
+logic       riscv_cu_memr_datapath;     /// from control unit
 logic [1:0] riscv_cu_storesrc_datapath; /// from control unit [1:0]
 logic [1:0] riscv_cu_resultsrc_datapath;/// from control unit  [1:0] 
 logic [3:0] riscv_cu_bcond_datapath;    /// from control unit [3:0] 
@@ -95,6 +98,7 @@ riscv_datapath u_top_datapath(               //#(parameter width=64) (
   .i_riscv_datapath_asel(riscv_cu_asel_datapath),        /// from control unit
   .i_riscv_datapath_bsel(riscv_cu_bsel_datapath),        /// from control unit
   .i_riscv_datapath_memw(riscv_cu_memw_datapath),         /// from control unit
+  .i_riscv_datapath_memr(riscv_cu_memr_datapath),
   .i_riscv_datapath_storesrc(riscv_cu_storesrc_datapath), /// from control unit [1:0]
   .i_riscv_datapath_resultsrc(riscv_cu_resultsrc_datapath),/// from control unit  [1:0] 
   .i_riscv_datapath_bcond(riscv_cu_bcond_datapath),       /// from control unit [3:0] 
@@ -122,8 +126,8 @@ riscv_datapath u_top_datapath(               //#(parameter width=64) (
   .o_riscv_datapath_storesrc_m(o_riscv_core_storesrc_m),   /// to dm [1:0]
   .o_riscv_datapath_memodata_addr(o_riscv_core_memodata_addr),/// to dm [width-1:0]
   .o_riscv_datapath_storedata_m(o_riscv_core_storedata_m),  /// to dm [width-1:0]
-  .o_riscv_datapath_memw_m(o_riscv_core_memw_m),       /// to dm &&&&&&  to hazard unit
-
+  .o_riscv_datapath_memw_e(o_riscv_core_memw_e),       /// to dm &&&&&&  to hazard unit
+  .o_riscv_datapath_memr_e(o_riscv_core_memr_e),
   .o_riscv_datapath_rdaddr_m(riscv_datapath_rdaddr_m_hzrdu),      /// to hazard unit [4:0]
   .o_riscv_datapath_regw_m(riscv_datapath_regw_m_hzrdu),       /// to hazard unit
   
@@ -150,7 +154,8 @@ riscv_cu u_top_cu (
   .o_riscv_cu_regw(riscv_cu_regw_datapath),
   .o_riscv_cu_asel(riscv_cu_asel_datapath),
   .o_riscv_cu_bsel(riscv_cu_bsel_datapath),
-  .o_riscv_cu_memw(riscv_cu_memw_datapath),  
+  .o_riscv_cu_memw(riscv_cu_memw_datapath),
+  .o_riscv_cu_memr(riscv_cu_memr_datapath),  
   .o_riscv_cu_storesrc(riscv_cu_storesrc_datapath),                                   //  [1:0]
   .o_riscv_cu_resultsrc(riscv_cu_resultsrc_datapath),                                     // [1:0] 
   .o_riscv_cu_bcond(riscv_cu_bcond_datapath),//msb for branch enable  [3:0]
@@ -184,8 +189,8 @@ riscv_hazardunit u_top_hzrdu
    
   .i_riscv_hzrdu_rdaddr_m(riscv_datapath_rdaddr_m_hzrdu) , // [4:0]
    // .i_riscv_hzrdu_memw_m(riscv_datapath_memw_m_hzrdu) ,    //>>>>>>>>>>>> added when support load sw forwadding
-  .i_riscv_hzrdu_regw_m(riscv_datapath_regw_m_hzrdu)   ,
-  
+  .i_riscv_hzrdu_regw_m (riscv_datapath_regw_m_hzrdu)   ,
+  .i_riscv_dcahe_stall_m(i_riscv_core_stall_m),
       
    .i_riscv_hzrdu_pcsrc(riscv_datapath_pcsrc_e_hzrdu) ,   //>>>>>>>>>>>>>>>>>??excute >>_e : is missed
 

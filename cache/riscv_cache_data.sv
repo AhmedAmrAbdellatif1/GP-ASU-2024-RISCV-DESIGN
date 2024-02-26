@@ -14,7 +14,7 @@ module data_array #(
     output  logic [DWIDTH-1:0]       data_out                ,
     input   logic [3:0]              byte_offset             ,// need instatiation 
     input   logic [1:0]              storesrc                ,//need......
-    input   logic                    mem_in                  ,// from finite state machine indicate write block from RAM (cache in sel)
+    input   logic                    mem_in                  // from finite state machine indicate write block from RAM (cache in sel)
 
   );
 

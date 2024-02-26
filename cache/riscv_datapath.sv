@@ -25,6 +25,7 @@ module riscv_datapath #(parameter width=64) (
   input  logic             i_riscv_datapath_asel,     ///output from control unit
   input  logic             i_riscv_datapath_bsel,     ///output from control unit
   input  logic             i_riscv_datapath_memw,     ///output from control unit
+  input  logic             i_riscv_datapath_memr,     ///output from control unit        newwwwwwwwwww
   input  logic [1:0]       i_riscv_datapath_storesrc, ///output from control unit
   input  logic [1:0]       i_riscv_datapath_resultsrc,///output from control unit
   input  logic [3:0]       i_riscv_datapath_bcond,    ///output from control unit
@@ -50,7 +51,8 @@ module riscv_datapath #(parameter width=64) (
   /////////////////////memory/////////////
   input  logic [width-1:0] i_riscv_datapath_dm_rdata,      ///output from dm
   output logic [4:0]       o_riscv_datapath_rdaddr_m ,     ///input to hazard unit
-  output logic             o_riscv_datapath_memw_m,       ///input to dm &&&&&& input to hazard unit
+  output logic             o_riscv_datapath_memw_e,       ///input to dm &&&&&& input to hazard unit
+  output logic             o_riscv_datapath_memr_e,      // -------------------->
   output logic [1:0]       o_riscv_datapath_storesrc_m,   ///input to dm
   output logic [width-1:0] o_riscv_datapath_memodata_addr,///input to dm
   output logic [width-1:0] o_riscv_datapath_storedata_m,  ///input to dm
@@ -105,7 +107,8 @@ module riscv_datapath #(parameter width=64) (
   logic  [3:0]           riscv_divctrl_e;
   logic  [1:0]           riscv_funcsel_e;
   logic                  riscv_oprnd1sel_e;
-  logic                  riscv_memwrite_e;
+  //logic                  riscv_memwrite_e;///output
+  //logic                  riscv_memread_e; ///output
   logic  [2:0]           riscv_memext_e;
   logic  [1:0]           riscv_resultsrc_e;
   logic                  riscv_regwrite_e;
@@ -246,6 +249,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_de_funcsel_d       (i_riscv_datapath_funcsel)        ,
     .i_riscv_de_oprnd1sel_d     (i_riscv_datapath_asel)           ,
     .i_riscv_de_memwrite_d      (i_riscv_datapath_memw)           ,
+    .i_riscv_de_memread_d       (i_riscv_datapath_memr)           ,
     .i_riscv_de_memext_d        (i_riscv_datapath_memext)         ,
     .i_riscv_de_resultsrc_d     (i_riscv_datapath_resultsrc)      ,
     .i_riscv_de_regwrite_d      (i_riscv_datapath_regw)           ,
@@ -268,7 +272,8 @@ module riscv_datapath #(parameter width=64) (
     .o_riscv_de_divctrl_e       (riscv_divctrl_e)                 ,
     .o_riscv_de_funcsel_e       (riscv_funcsel_e)                 ,
     .o_riscv_de_oprnd1sel_e     (riscv_oprnd1sel_e)               , 
-    .o_riscv_de_memwrite_e      (riscv_memwrite_e)                ,
+    .o_riscv_de_memwrite_e      (o_riscv_datapath_memw_e)         ,//.o_riscv_de_memwrite_e      (riscv_memwrite_e)
+    .o_riscv_de_memread_e       (o_riscv_datapath_memr_e)         ,///.o_riscv_de_memread_e       (riscv_memread_e)
     .o_riscv_de_memext_e        (riscv_memext_e)                  ,
     .o_riscv_de_resultsrc_e     (riscv_resultsrc_e)               ,
     .o_riscv_de_regwrite_e      (riscv_regwrite_e)                ,
@@ -318,7 +323,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_em_en              (i_riscv_datapath_stall_em)       ,
     .i_riscv_em_clk             (i_riscv_datapath_clk)            ,
     .i_riscv_em_rst             (i_riscv_datapath_rst)            ,
-    .i_riscv_em_memw_e          (riscv_memwrite_e)                ,
+  //.i_riscv_em_memw_e          (riscv_memwrite_e)                ,-------------------->
     .i_riscv_em_regw_e          (riscv_regwrite_e)                ,
     .i_riscv_em_resultsrc_e     (riscv_resultsrc_e)               ,
     .i_riscv_em_storesrc_e      (riscv_storesrc_e)                ,
@@ -329,7 +334,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_em_rdaddr_e        (riscv_rdaddr_e)                  ,
     .i_riscv_em_imm_e           (riscv_extendedimm_e)             ,
     .i_riscv_de_opcode_e        (riscv_opcode_e)                  ,
-    .o_riscv_em_memw_m          (o_riscv_datapath_memw_m)         ,
+  //.o_riscv_em_memw_m        (o_riscv_datapath_memw_m)           ,-------------------->
     .o_riscv_em_regw_m          (riscv_regw_m)                    ,
     .o_riscv_em_resultsrc_m     (riscv_resultsrc_m)               ,
     .o_riscv_em_storesrc_m      (o_riscv_datapath_storesrc_m)     ,

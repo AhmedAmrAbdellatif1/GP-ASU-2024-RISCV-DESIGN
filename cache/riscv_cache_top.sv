@@ -58,10 +58,10 @@ module riscv_data_cache #(
   logic [DATA_WIDTH-1:0]  mem_data_out;
 
   // internal signals declaration  
-  assign {tag,index,byte_offset} = phys_addr;
-  assign cache_data_in           = (fsm_cache_insel)? mem_data_out:{64'b0,cpu_data_in};
+  assign {tag,index,byte_offset} = i_riscv_dcache_phys_addr;
+  assign cache_data_in           = (fsm_cache_insel)? mem_data_out:{64'b0,i_riscv_dcache_cpu_data_in };
   assign mem_addr                = (fsm_tag_sel)?{tag_old_out,index}:{tag,index};///new
-  assign cpu_data_out            = (phys_addr[3])?cache_data_out[127:64]:cache_data_out[63:0];
+  assign cpu_data_out            = (i_riscv_dcache_phys_addr[3])?cache_data_out[127:64]:cache_data_out[63:0];
 
   //****************** Instantiation ******************//
   tag_array #(

@@ -12,7 +12,7 @@
     input   logic           i_riscv_em_clk          ,
     input   logic           i_riscv_em_rst          ,
     input   logic           i_riscv_em_en           ,
-    input   logic           i_riscv_em_memw_e       ,
+    //input   logic           i_riscv_em_memw_e       ,
     input   logic           i_riscv_em_regw_e       ,
     input   logic   [1:0]   i_riscv_em_resultsrc_e  ,
     input   logic   [1:0]   i_riscv_em_storesrc_e   ,
@@ -23,7 +23,7 @@
     input   logic   [4:0]   i_riscv_em_rdaddr_e     ,
     input   logic   [63:0]  i_riscv_em_imm_e        ,
     input   logic   [6:0]   i_riscv_de_opcode_e     ,
-    output  logic           o_riscv_em_memw_m       ,
+    //output  logic           o_riscv_em_memw_m       ,
     output  logic           o_riscv_em_regw_m       ,
     output  logic   [1:0]   o_riscv_em_resultsrc_m  ,
     output  logic   [1:0]   o_riscv_em_storesrc_m   ,
@@ -41,7 +41,7 @@
     begin :em_pff_write_proc
         if (i_riscv_em_rst)
           begin:em_pff_write_proc
-            o_riscv_em_memw_m       <= 'b0;
+          //  o_riscv_em_memw_m       <= 'b0;
             o_riscv_em_regw_m       <= 'b0;
             o_riscv_em_resultsrc_m  <= 'b0;
             o_riscv_em_storesrc_m   <= 'b0;
@@ -65,7 +65,7 @@
 
        if (i_riscv_em_en)
         begin
-        o_riscv_em_memw_m       <= o_riscv_em_memw_m;
+      //  o_riscv_em_memw_m       <= o_riscv_em_memw_m;
         o_riscv_em_regw_m       <= o_riscv_em_regw_m;
         o_riscv_em_resultsrc_m  <= o_riscv_em_resultsrc_m;
         o_riscv_em_storesrc_m   <= o_riscv_em_storesrc_m;
@@ -86,7 +86,7 @@
 end
      else
        begin
-            o_riscv_em_memw_m       <= i_riscv_em_memw_e ; 
+            //o_riscv_em_memw_m       <= i_riscv_em_memw_e ; 
             o_riscv_em_regw_m       <= i_riscv_em_regw_e ;
             o_riscv_em_resultsrc_m  <= i_riscv_em_resultsrc_e;
             o_riscv_em_storesrc_m   <= i_riscv_em_storesrc_e;
