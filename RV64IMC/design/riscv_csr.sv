@@ -434,28 +434,28 @@ always_comb begin : csr_write_process
                                //sxl , uxl are warl so i think not need to have a regitser as they can written by any vlaue
                                //mbe,sbe,ube are warl so i think not need to have a regitser as they can written by any vlaue
                                //tvm are warl so i think not need to have a regitser as they can written by any vlaue
-                         _mie_cs   = csr_wdata[CSR_MSTATUS_MIE_BIT]                             ;
-                        mstatus_mpie_cs   = csr_wdata[CSR_MSTATUS_MPIE_BIT]                             ;
-                        mstatus_sie_cs   = csr_wdata[CSR_MSTATUS_SIE_BIT]                              ;
-                        mstatus_spie_cs   = csr_wdata[CSR_MSTATUS_SPIE_BIT]                             ;
-                        mstatus_mpp_cs   = csr_wdata[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW] ;
-                        mstatus_spp_cs  = csr_wdata[CSR_MSTATUS_SPP] ;
+                         mstatus_mie_ns   = csr_wdata[CSR_MSTATUS_MIE_BIT]                             ;
+                        mstatus_mpie_ns   = csr_wdata[CSR_MSTATUS_MPIE_BIT]                             ;
+                        mstatus_sie_ns  = csr_wdata[CSR_MSTATUS_SIE_BIT]                              ;
+                        mstatus_spie_ns   = csr_wdata[CSR_MSTATUS_SPIE_BIT]                             ;
+                        mstatus_mpp_ns  = csr_wdata[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW] ;
+                        mstatus_spp_ns  = csr_wdata[CSR_MSTATUS_SPP] ;
                            
                            //for memory
-                        mstatus_mprv_cs   =  csr_wdata[CSR_MSTATUS_MPRV_BIT]                            ;
-                        mstatus_mxr_cs   = csr_wdata[CSR_MSTATUS_MXR_BIT]                             ;
-                        mstatus_sum_cs  = csr_wdata[CSR_MSTATUS_SUM_BIT]                                ;
+                        mstatus_mprv_ns   =  csr_wdata[CSR_MSTATUS_MPRV_BIT]                            ;
+                        mstatus_mxr_ns   = csr_wdata[CSR_MSTATUS_MXR_BIT]                             ;
+                        mstatus_sum_ns  = csr_wdata[CSR_MSTATUS_SUM_BIT]                                ;
 
                            //for virtulazation supprot
-                        mstatus_tsr_cs  = csr_wdata[CSR_MSTATUS_TSR_BIT]                             ;
-                        mstatus_tw_cs = csr_wdata[CSR_MSTATUS_TW_BIT]                                ;
-                        //mstatus_tvm_cs = csr_wdata[CSR_MSTATUS_TVM_BIT]                            ;
+                        mstatus_tsr_ns  = csr_wdata[CSR_MSTATUS_TSR_BIT]                             ;
+                        mstatus_tw_ns = csr_wdata[CSR_MSTATUS_TW_BIT]                                ;
+                        //mstatus_tvm_ns = csr_wdata[CSR_MSTATUS_TVM_BIT]                            ;
                             
                                 // this register has side-effects on other registers, flush the pipeline
                         flush_o         = 1'b1;
-                        //mstatus_sbe_cs  = csr_wdata[CSR_MSTATUS_SBE_BIT]                              ;
-                        //mstatus_mbe_cs  =csr_wdata[CSR_MSTATUS_MBE_BIT]                               ;
-                        //mstatus_ube_cs = csr_wdata[CSR_MSTATUS_UBE_BIT]                              ;
+                        //mstatus_sbe_ns  = csr_wdata[CSR_MSTATUS_SBE_BIT]                              ;
+                        //mstatus_mbe_ns  =csr_wdata[CSR_MSTATUS_MBE_BIT]                               ;
+                        //mstatus_ube_ns = csr_wdata[CSR_MSTATUS_UBE_BIT]                              ;
                      end
         
           
@@ -503,12 +503,12 @@ always_comb begin : csr_write_process
                //  MIDELEG
             CSR_MIDELEG:      
              begin
-                   //  mideleg_msi_cs =   csr_wdata[M_SOFT_I]     ;       
-                     mideleg_mti_cs   = csr_wdata[M_TIMER_I]      ;
-                     mideleg_mei_cs   = csr_wdata[M_EXT_I]        ;
-                    //  mideleg_ssi_cs  = csr_wdata[S_SOFT_I]      ;
-                      mideleg_sti_cs  = csr_wdata[S_TIMER_I]       ;
-                      mideleg_sei_cs =  csr_wdata[S_EXT_I]        ;
+                   //  mideleg_msi_ns =   csr_wdata[M_SOFT_I]     ;       
+                     mideleg_mti_ns   = csr_wdata[M_TIMER_I]      ;
+                     mideleg_mei_ns   = csr_wdata[M_EXT_I]        ;
+                    //  mideleg_ssi_ns  = csr_wdata[S_SOFT_I]      ;
+                      mideleg_sti_ns  = csr_wdata[S_TIMER_I]       ;
+                      mideleg_sei_ns =  csr_wdata[S_EXT_I]        ;
 
               end     
   
