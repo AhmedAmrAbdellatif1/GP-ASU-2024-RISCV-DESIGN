@@ -40,7 +40,15 @@ riscv_core u_top_core(
 );*/
 
 riscv_data_cache u_data_cache(
-  
+  i_riscv_dcache_clk           ,
+  i_riscv_dcache_rst           ,
+  i_riscv_dcache_cpu_wren      ,
+  i_riscv_dcache_cpu_rden      ,
+  i_riscv_dcache_store_src     ,
+  i_riscv_dcache_phys_addr     ,
+  i_riscv_dcache_cpu_data_in   ,
+  o_riscv_dcache_cpu_data_out  ,
+  o_riscv_dcache_cpu_stall        
 )
 
 riscv_im u_top_im(
