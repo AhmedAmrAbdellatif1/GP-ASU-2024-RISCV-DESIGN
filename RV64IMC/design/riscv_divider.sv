@@ -16,6 +16,7 @@ assign start=i_riscv_div_divctrl[3];
 
 logic signed [63:0] rs1_copy,rs2_copy;
 logic signed [63:0] X,Y;
+logic signed [31:0] z2c; // <<------------
 
 parameter IDLE = 1'b0;
 parameter START = 1'b1;
@@ -119,7 +120,8 @@ if (i_riscv_div_rs2data[31:0]==0)              //division by 0
 	end
 	else 
 	begin
-	o_riscv_div_result = ~({ {32 {Z[31]}},Z[31:0]})+1;
+		z2c = ~(Z[31:0])+1;  // <<------------
+	o_riscv_div_result = {{32{z2c[31]}},z2c}; // <<------------
 	end
          end
 end
