@@ -1,7 +1,7 @@
-module riscv_zeroextend
+module riscv_zeroextend  #(parameter width=64)
  (
    input  logic  [4:0]  i_riscv_zeroextend_imm ,
-   output logic  [63:0] o_riscv_zeroextend_immextend
+  output logic  [width-1:0] o_riscv_zeroextend_immextend
  ) ;
 
   always @(*) begin 
