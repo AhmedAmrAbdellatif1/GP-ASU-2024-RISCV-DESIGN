@@ -96,6 +96,7 @@ module riscv_datapath #(parameter width=64) (
   logic  [4:0]           riscv_rs1addr_e;
   logic  [width-1:0]     riscv_rs1data_e;
   logic  [width-1:0]     riscv_rs2data_e;
+  logic  [width-1:0]     riscv_store_data;
   logic  [4:0]           riscv_rs2addr_e;
   logic  [4:0]           riscv_rdaddr_e;
   logic  [width-1:0]     riscv_extendedimm_e;
@@ -302,6 +303,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_estage_simm        (riscv_extendedimm_e)             ,
     .i_riscv_estage_bcond       (riscv_b_condition_e)             ,
     .o_riscv_estage_result      (riscv_aluexe_fe)                 ,
+    .o_riscv_estage_store_data  (riscv_store_data)                ,
     .o_riscv_estage_branchtaken (riscv_branchtaken)               ,
     .o_riscv_estage_icu_valid   (o_riscv_datapath_icu_valid_e)    ,
     .o_riscv_estage_mul_en      (o_datapath_mul_en)               ,
@@ -330,7 +332,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_em_memext_e        (riscv_memext_e)                  ,
     .i_riscv_em_pcplus4_e       (riscv_pcplus4_e)                 ,
     .i_riscv_em_result_e        (riscv_aluexe_fe)                 ,
-    .i_riscv_em_storedata_e     (riscv_rs2data_e)                 ,
+    .i_riscv_em_storedata_e     (riscv_store_data)                ,
     .i_riscv_em_rdaddr_e        (riscv_rdaddr_e)                  ,
     .i_riscv_em_imm_e           (riscv_extendedimm_e)             ,
     .i_riscv_de_opcode_e        (riscv_opcode_e)                  ,

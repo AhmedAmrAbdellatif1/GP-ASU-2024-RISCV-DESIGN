@@ -1,49 +1,28 @@
 module riscv_estage #(parameter width=64)(
-input logic             i_riscv_estage_clk,
-input logic             i_riscv_estage_rst,
-input logic [width-1:0] i_riscv_estage_imm_m,
-//Common Signals to Forward_mux_A,B , Branch Compartor
- input  logic signed [width-1:0] i_riscv_estage_rs1data ,
- input  logic signed [width-1:0] i_riscv_estage_rs2data  ,
- //input  logic signed [63:0]      i_riscv_icu_alurs1data,
- //input  logic signed [63:0]      i_riscv_icu_alurs2data,
-  //u_Forward_mux_A Signals
- input  logic  [1:0]      i_riscv_estage_fwda , 
-   
-  //u_Forward_mux_B Signals
-  input  logic   [1:0]      i_riscv_estage_fwdb  ,
-  
-  //u_Forward_mux_A,B Signals
-  input  logic signed [width-1:0] i_riscv_estage_rdata_wb  ,
-                             
-  input  logic signed [width-1:0] i_riscv_estage_rddata_m ,
-                              
-  //u_Forward_mux_ operand A ,B Signals
-  input  logic             i_riscv_estage_oprnd1sel  ,
-   
-
-  input  logic             i_riscv_estage_oprnd2sel  ,
-  
-  input  logic [width-1:0] i_riscv_estage_pc  ,
-  //u_ALU Signals
-
-  input  logic  [ 5 : 0 ] i_riscv_estage_aluctrl ,                             
-  input  logic  [ 3 : 0 ] i_riscv_estage_mulctrl , 
-   input  logic [ 3 : 0 ] i_riscv_estage_divctrl , 
-   input  logic [ 1 : 0 ] i_riscv_estage_funcsel , 
-//Operand2 MUX signal
-  input  logic signed [width-1:0] i_riscv_estage_simm ,
-
-  //u_Branch Comparator Siganls
-   input  logic [ 3:0 ]     i_riscv_estage_bcond  ,
-   
-//  Signals to E/M FF
-  output  logic signed [width-1:0] o_riscv_estage_result ,
-  // Branch Comparator  Signals to hazard_unit
-  output  logic               o_riscv_estage_branchtaken ,
-  output  logic               o_riscv_estage_div_en , 
-  output  logic               o_riscv_estage_mul_en , 
-  output  logic               o_riscv_estage_icu_valid
+  input   logic                     i_riscv_estage_clk            ,
+  input   logic                     i_riscv_estage_rst            ,
+  input   logic [width-1:0]         i_riscv_estage_imm_m          ,
+  input   logic signed [width-1:0]  i_riscv_estage_rs1data        ,   //Common Signals to Forward_mux_A,B
+  input   logic signed [width-1:0]  i_riscv_estage_rs2data        ,   //Common Signals to Forward_mux_A,B
+  input   logic  [1:0]              i_riscv_estage_fwda           ,   //u_Forward_mux_A Signals
+  input   logic   [1:0]             i_riscv_estage_fwdb           ,   //u_Forward_mux_B Signals
+  input   logic signed [width-1:0]  i_riscv_estage_rdata_wb       ,   //u_Forward_mux_A,B Signals                      
+  input   logic signed [width-1:0]  i_riscv_estage_rddata_m       ,   //u_Forward_mux_A,B Signals         
+  input   logic                     i_riscv_estage_oprnd1sel      ,   //u_Forward_mux_ operand A ,B Signals
+  input   logic                     i_riscv_estage_oprnd2sel      ,   //u_Forward_mux_ operand A ,B Signals
+  input   logic [width-1:0]         i_riscv_estage_pc             ,   //u_ALU Signals
+  input   logic  [ 5 : 0 ]          i_riscv_estage_aluctrl        ,   //u_ALU Signals                             
+  input   logic  [ 3 : 0 ]          i_riscv_estage_mulctrl        , 
+  input   logic [ 3 : 0 ]           i_riscv_estage_divctrl        , 
+  input   logic [ 1 : 0 ]           i_riscv_estage_funcsel        , 
+  input   logic signed [width-1:0]  i_riscv_estage_simm           ,   //Operand2 MUX signal
+  input   logic [ 3:0 ]             i_riscv_estage_bcond          ,   //u_Branch Comparator Siganls
+  output  logic signed [width-1:0]  o_riscv_estage_result         ,   //  Signals to E/M FF
+  output  logic signed [width-1:0]  o_riscv_estage_store_data     ,   //  Signals to E/M FF
+  output  logic                     o_riscv_estage_branchtaken    ,   // Branch Comparator  Signals to hazard_unit
+  output  logic                     o_riscv_estage_div_en         ,   // Branch Comparator  Signals to hazard_unit
+  output  logic                     o_riscv_estage_mul_en         ,   // Branch Comparator  Signals to hazard_unit
+  output  logic                     o_riscv_estage_icu_valid      
 
 ); 
 
@@ -56,8 +35,9 @@ logic  signed  [width-1:0]  o_riscv_OperandmuxA_OperandALUA ;
 logic  signed [width-1:0]   o_riscv_OperandmuxB_OperandALUB ;
 
 
-assign o_riscv_estage_mul_en = i_riscv_estage_mulctrl [3];
-assign o_riscv_estage_div_en = i_riscv_estage_divctrl [3]; 
+assign o_riscv_estage_mul_en      = i_riscv_estage_mulctrl [3];
+assign o_riscv_estage_div_en      = i_riscv_estage_divctrl [3]; 
+assign o_riscv_estage_store_data  = o_riscv_FWmuxB_OperandmuxB;
 
 
 /////////////////////////// ForwardA MUX //////////////////////
