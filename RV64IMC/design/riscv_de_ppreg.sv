@@ -27,6 +27,7 @@
       input  logic  [1:0]   i_riscv_de_funcsel_d        , 
       input  logic          i_riscv_de_oprnd1sel_d      ,
       input  logic          i_riscv_de_memwrite_d       ,
+      input  logic          i_riscv_de_memread_d        ,
       input  logic  [2:0]   i_riscv_de_memext_d         ,
       input  logic  [1:0]   i_riscv_de_resultsrc_d      ,
       input  logic          i_riscv_de_regwrite_d       ,    
@@ -50,6 +51,7 @@
       output logic  [1:0]   o_riscv_de_funcsel_e        ,
       output logic          o_riscv_de_oprnd1sel_e      ,   
       output logic          o_riscv_de_memwrite_e       ,
+      output logic          o_riscv_de_memread_e        ,
       output logic  [2:0]   o_riscv_de_memext_e         ,
       output logic  [1:0]   o_riscv_de_resultsrc_e      ,
       output logic          o_riscv_de_regwrite_e       ,
@@ -77,6 +79,7 @@
            o_riscv_de_funcsel_e     <=  'b0;
            o_riscv_de_oprnd1sel_e   <=  'b0;
            o_riscv_de_memwrite_e    <=  'b0;
+           o_riscv_de_memread_e     <=  'b0;
            o_riscv_de_memext_e      <=  'b0;
            o_riscv_de_resultsrc_e   <=  'b0;
            o_riscv_de_regwrite_e    <=  'b0;
@@ -110,6 +113,7 @@
            o_riscv_de_funcsel_e     <=  'b0;
            o_riscv_de_oprnd1sel_e   <=  'b0;
            o_riscv_de_memwrite_e    <=  'b0;
+           o_riscv_de_memread_e     <=  'b0;
            o_riscv_de_memext_e      <=  'b0;
            o_riscv_de_resultsrc_e   <=  'b0;
            o_riscv_de_regwrite_e    <=  'b0;
@@ -125,7 +129,7 @@
 
 else if (i_riscv_de_en)
 begin
-    o_riscv_de_pc_e           <= o_riscv_de_pc_e;
+    o_riscv_de_pc_e          <= o_riscv_de_pc_e;
     o_riscv_de_pcplus4_e     <= o_riscv_de_pcplus4_e;
     o_riscv_de_rs1addr_e     <= o_riscv_de_rs1addr_e;
     o_riscv_de_rs1data_e     <= o_riscv_de_rs1data_e;
@@ -142,6 +146,7 @@ begin
     o_riscv_de_funcsel_e     <= o_riscv_de_funcsel_e;
     o_riscv_de_oprnd1sel_e   <= o_riscv_de_oprnd1sel_e;
     o_riscv_de_memwrite_e    <= o_riscv_de_memwrite_e;
+    o_riscv_de_memread_e     <= o_riscv_de_memread_e;
     o_riscv_de_memext_e      <= o_riscv_de_memext_e;
     o_riscv_de_resultsrc_e   <= o_riscv_de_resultsrc_e;
     o_riscv_de_regwrite_e    <= o_riscv_de_regwrite_e;
@@ -174,6 +179,7 @@ end
            o_riscv_de_funcsel_e     <= i_riscv_de_funcsel_d;
            o_riscv_de_oprnd1sel_e   <= i_riscv_de_oprnd1sel_d;
            o_riscv_de_memwrite_e    <= i_riscv_de_memwrite_d;
+           o_riscv_de_memread_e     <= i_riscv_de_memread_d;
            o_riscv_de_memext_e      <= i_riscv_de_memext_d;
            o_riscv_de_resultsrc_e   <= i_riscv_de_resultsrc_d;
            o_riscv_de_regwrite_e    <= i_riscv_de_regwrite_d;

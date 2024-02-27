@@ -2,7 +2,7 @@ module riscv_im (
   input logic  [63:0] i_riscv_im_pc,
   output logic [31:0] o_riscv_im_inst);
   
-  logic [31:0] RAM [0:13000];
+  logic [31:0] RAM [0:160000];
   logic [63:0] pcplus  ;
   logic [63:0] new_pc_for_test;
 
@@ -10,7 +10,7 @@ module riscv_im (
     $readmemh("riscvtest.txt",RAM);
   end
   
-  assign new_pc_for_test = i_riscv_im_pc -'h80000070;
+  assign new_pc_for_test = i_riscv_im_pc -'h80000062;
   
   always @(*)  begin
     if (new_pc_for_test %4)
