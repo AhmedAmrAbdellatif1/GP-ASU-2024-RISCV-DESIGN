@@ -81,7 +81,7 @@ always @(*)
 always @(*) 
   begin 
     if ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
-            i_riscv_hzrdu_resultsrc_e == 2'b10 ) || m_stall)
+            i_riscv_hzrdu_resultsrc_e == 2'b10 ) || glob_stall)
         begin
           o_riscv_hzrdu_stallpc = 1 ;
           o_riscv_hzrdu_stallfd = 1 ;

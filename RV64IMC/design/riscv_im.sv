@@ -10,7 +10,7 @@ module riscv_im (
     $readmemh("riscvtest.txt",RAM);
   end
   
-  assign new_pc_for_test = i_riscv_im_pc -'h80000062;
+  assign new_pc_for_test = i_riscv_im_pc -'h0;
   
   always @(*)  begin
     if (new_pc_for_test %4)

@@ -364,7 +364,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_mw_cinst           (riscv_cinst_m)                   ,
     .i_riscv_mw_memaddr         (o_riscv_datapath_memodata_addr)  ,
     .i_riscv_mw_pc              (riscv_pc_m)                      ,
-    .i_riscv_mw_rs2data         (o_riscv_datapath_storedata_m)    ,
+    .i_riscv_mw_rs2data         (i_riscv_datapath_dm_rdata)       ,
     .o_riscv_mw_inst            (riscv_inst_wb)                   ,
     .o_riscv_mw_cinst           (riscv_cinst_wb)                  ,
     .o_riscv_mw_memaddr         (riscv_memaddr_wb)                ,

@@ -31,20 +31,17 @@ module cache_fsm  (
     else
       current_state <= next_state;    
   end
+
+  //
    always_ff @(posedge clk or posedge rst) begin
    if(rst)begin
      cpu_rden_reg  <= 1'b0;//new
      cpu_wren_reg  <= 1'b0;//new
    end
-   else if (stall) begin 
-     cpu_rden_reg  <= cpu_rden_reg;//new
-     cpu_wren_reg  <= cpu_wren_reg;//new
-   end
-   else begin
+   else if (!stall) begin 
      cpu_rden_reg  <= cpu_rden;//new
      cpu_wren_reg  <= cpu_wren;//new
    end
-
  end
 
   // 
