@@ -29,10 +29,23 @@ module cache_fsm  (
     if(rst)
       current_state <= IDLE;
     else
-      current_state <= next_state;
-      cpu_rden_reg  <= cpu_rden;//new
-      cpu_wren_reg  <= cpu_wren;//new
+      current_state <= next_state;    
   end
+   always_ff @(posedge clk or posedge rst) begin
+   if(rst)begin
+     cpu_rden_reg  <= 1'b0;//new
+     cpu_wren_reg  <= 1'b0;//new
+   end
+   else if (stall) begin 
+     cpu_rden_reg  <= cpu_rden_reg;//new
+     cpu_wren_reg  <= cpu_wren_reg;//new
+   end
+   else begin
+     cpu_rden_reg  <= cpu_rden;//new
+     cpu_wren_reg  <= cpu_wren;//new
+   end
+
+ end
 
   // 
   always_comb begin
@@ -92,7 +105,7 @@ module cache_fsm  (
           mem_wren      = 1'b1;//can be considered write signal (data , address) valid  
           set_dirty     = cpu_wren_reg;
           set_valid     = 1'b1;    
-          replace_tag   = 1'b1;
+          replace_tag   = 1'b0;///// prevent hit 
           stall         = 1'b1;
           tag_sel       = 1'b1;// tag used is fetched from tag array
         end
@@ -145,7 +158,7 @@ module cache_fsm  (
           mem_wren      = 1'b1;  
           set_dirty     = cpu_wren_reg;   
           set_valid     = 1'b1;    
-          replace_tag   = 1'b1;// could be zero,as it is written before 
+          replace_tag   = 1'b0;// writing dirty and valid only at allocate state
           stall         = 1'b1;
           tag_sel       = 1'b1;
         end
