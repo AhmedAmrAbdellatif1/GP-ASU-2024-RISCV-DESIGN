@@ -378,7 +378,7 @@ module riscv_datapath #(parameter width=64) (
     .i_riscv_mw_pcplus4_m       (riscv_pcplus4_m)                 ,
     .i_riscv_mw_result_m        (riscv_rddata_me)                 ,
     .i_riscv_mw_uimm_m          (riscv_imm_m)                     ,
-    .i_riscv_mw_memload_m       (i_riscv_datapath_dm_rdata)       ,
+    .i_riscv_mw_memload_m       (riscv_memload_m)                 ,
     .i_riscv_mw_rdaddr_m        (riscv_rdaddr_m)                  ,
     .i_riscv_mw_resultsrc_m     (riscv_resultsrc_m)               ,
     .i_riscv_mw_regw_m          (riscv_regw_m)                    ,
