@@ -40,7 +40,7 @@ module riscv_trap_wb (
         end
         
         else begin //normal operation
-             o_riscv_trap_pcsel = 2'b11 ; 
+             o_riscv_trap_pcsel = 2'b00 ; 
              o_riscv_trap_flush = 1'b0 ;
 
     end
