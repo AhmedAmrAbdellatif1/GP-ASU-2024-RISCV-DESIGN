@@ -16,7 +16,7 @@
     .o_riscv_memext_loaded(o_riscv_mstage_memload)
   );
  
-
+endmodule
  /* riscv_csrfile csr_file
 
     (  
@@ -75,4 +75,4 @@
  );
 
     
-endmodule 
+ 
