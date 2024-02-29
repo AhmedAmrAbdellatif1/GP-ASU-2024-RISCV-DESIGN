@@ -23,7 +23,7 @@ module dram #(
   // initialize the memory
   initial begin
     for(i=0;i<MEM_DEPTH;i++)
-      mem[i] <= i;
+      mem[i] <= 'b0;
       //$readmemh("hex_data.txt",mem);
   end
 
