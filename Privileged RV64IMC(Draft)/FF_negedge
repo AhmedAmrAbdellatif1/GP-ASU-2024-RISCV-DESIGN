@@ -1,9 +1,9 @@
 module register (parameter width =64)
 
 (
-  input clk ,rst 
-  input       [width-1:0] csr_in
- output logic [width-1:0] csr_out
+  input clk ,rst  ,
+  input       [width-1:0] csr_in  ,
+ output logic [width-1:0] csr_out  
 
 
 );
