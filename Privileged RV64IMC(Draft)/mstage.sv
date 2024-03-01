@@ -15,7 +15,10 @@
     .i_riscv_memext_data(i_riscv_mstage_dm_rdata),
     .o_riscv_memext_loaded(o_riscv_mstage_memload)
   );
- 
+
+    
+  endmodule
+ /*
  riscv_csrfile csr_file
 
     (  
@@ -71,7 +74,6 @@
      
    // input wire writeback_change_pc, //high if writeback will issue change_pc (which will override this stage)
 
- );
+ );  */
 
-  endmodule
  
