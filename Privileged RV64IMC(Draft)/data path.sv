@@ -449,7 +449,7 @@ logic [2:0] i_riscv_cu_csrop_de;
     //                 i_riscv_de_ecall_u_d(i_riscv_cu_ecallu_de)        ,
     //                 i_riscv_de_ecall_s_d(i_riscv_cu_ecalls_de)  , 
     .i_riscv_de_ecall_m_d      (i_riscv_datapath_ecallm_cu_de)    , 
-    .i_riscv_de_csraddress_d   (i_riscv_datapath_inst[31:20])  ,   // [11:0]
+    .i_riscv_de_csraddress_d   (riscv_inst_d[31:20])  ,   // [11:0]
     .i_riscv_de_illegal_inst_d (i_riscv_datapath_illgalinst_cu_de)  ,
     //Control Signals 
     .i_riscv_de_iscsr_d        (i_riscv_datapath_iscsr_cu_de)  , 
