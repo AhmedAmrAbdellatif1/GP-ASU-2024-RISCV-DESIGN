@@ -14,7 +14,7 @@ begin
   if (rst)
   csr_out <= 'b0 ;
 else 
- csr_out <= csr_in
+ csr_out <= csr_in ;
    
 
 end 
