@@ -576,22 +576,23 @@ logic [2:0] i_riscv_cu_csrop_de;
 
 
      
-    //             o_riscv_em_ecall_u_m(o_riscv_datapath_ecall_u_em_csr)  ,
-    //             o_riscv_em_ecall_s_m(o_riscv_datapath_ecall_s_em_csr)  , 
-    .o_riscv_em_ecall_m_m      (o_riscv_datapath_ecall_m_em_csr)     , 
+    //             o_riscv_em_ecall_u_m(riscv_datapath_ecall_u_em_csr)  ,
+    //             o_riscv_em_ecall_s_m(riscv_datapath_ecall_s_em_csr)  , 
+    .o_riscv_em_ecall_m_m      (riscv_datapath_ecall_m_em_csr)     , 
     .o_riscv_em_csraddress_m   (riscv_datapath_csraddress_em_csr)  ,    //[11:0] 
-    .o_riscv_em_illegal_inst_m (o_riscv_datapath_illegal_inst_em_csr)  ,
+    .o_riscv_em_illegal_inst_m (riscv_datapath_illegal_inst_em_csr)  ,
     //Control Signals 
     .o_riscv_em_iscsr_m      (iscsr_csr_mw)  ,
     .o_riscv_em_csrop_m        (riscv_datapath_csrop_em_csr)  ,    //[2:0]
     //.o_riscv_em_immreg_m()  ,
     .o_riscv_em_addressalu_m   (riscv_datapath_addressalu_em_csr)  ,  //[63:0]
-    .o_riscv_em_inst_addr_misaligned_m(o_riscv_datapath_inst_addr_misaligned_em_csr)    ,
-    .o_riscv_em_load_addr_misaligned_m(o_riscv_datapath_load_addr_misaligned_em_csr)     ,
-    .o_riscv_em_store_addr_misaligned_m(o_riscv_datapath_store_addr_misaligned_em_csr)   ,
+    .o_riscv_em_inst_addr_misaligned_m(riscv_datapath_inst_addr_misaligned_em_csr)    ,
+    .o_riscv_em_load_addr_misaligned_m(riscv_datapath_load_addr_misaligned_em_csr)     ,
+    .o_riscv_em_store_addr_misaligned_m(riscv_datapath_store_addr_misaligned_em_csr)   ,
 
     .o_riscv_em_csrwritedata_m (riscv_datapath_csrwdata_em_csr)     //[width-1:0] 
 
+     
 
   );
 
