@@ -10,7 +10,7 @@ module riscv_core #(parameter MXLEN=64 ,parameter width = 64)
      output logic         o_riscv_core_memr_e,
      output logic [1:0]   o_riscv_core_storesrc_m,
      output logic [63:0]  o_riscv_core_memodata_addr,
-     output logic [63:0]  o_riscv_core_storedata_m
+     output logic [63:0]  o_riscv_core_storedata_m,
 
      //trap 
      //input from top system 
@@ -210,12 +210,12 @@ riscv_datapath u_top_datapath(               //#(parameter width=64) (
  .i_riscv_datapath_ecallu_cu_de(riscv_cu_ecallu_de)        ,
   .i_riscv_datapath_ecalls_cu_de(riscv_cu_ecalls_de)         ,
   .i_riscv_datapath_ecallm_cu_de(riscv_cu_ecallm_de)         ,
-  .i_riscv_datapath_immreg_cu_de(riscv_cu_selrsimm_de)    
-
+  .i_riscv_datapath_immreg_cu_de(riscv_cu_selrsimm_de)   , 
     .i_riscv_core_timerinterupt(i_riscv_core_timerinterupt)  ,
-    .i_riscv_core_externalinterupt(i_riscv_core_externalinterupt)     
-
-
+    .i_riscv_core_externalinterupt(i_riscv_core_externalinterupt)   ,  
+   .o_riscv_datapath_rs1_fd_cu(riscv_datapath_rs1_fd_cu) ,    //[4:0] 
+  .o_riscv_datapath_constimm12_fd_cu(riscv_datapath_constimm12_fd_cu) ,  //[11:0] 
+  .o_riscv_core_privlvl_csr_cu(riscv_core_privlvl_csr_cu)
 );
 
 

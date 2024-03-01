@@ -1,6 +1,4 @@
-module riscv_cu  #(parameter MXLEN = 64 ) 
-    
-  (
+module riscv_cu (
   input  logic [6:0]  i_riscv_cu_opcode, //7-bit input opcode[6:0]
   input  logic [2:0]  i_riscv_cu_funct3, //3-bit input func_3[14:12]  
   input  logic        i_riscv_cu_funct7_5,//1-bit input func_7[30]
@@ -10,6 +8,7 @@ module riscv_cu  #(parameter MXLEN = 64 )
   output logic        o_riscv_cu_asel,
   output logic        o_riscv_cu_bsel,
   output logic        o_riscv_cu_memw,    
+  output logic        o_riscv_cu_memr,    
   output logic [1:0]  o_riscv_cu_storesrc,
   output logic [1:0]  o_riscv_cu_resultsrc,
   output logic [1:0]  o_riscv_cu_funcsel,
@@ -19,8 +18,9 @@ module riscv_cu  #(parameter MXLEN = 64 )
   output logic [3:0]  o_riscv_cu_mulctrl,
   output logic [3:0]  o_riscv_cu_divctrl, 
   output logic [5:0]  o_riscv_cu_aluctrl,
-
- 
+  
+  
+  
   input logic   [1:0] i_riscv_cu_privlvl ,   //come From CSR 
   output logic  [2:0]    o_riscv_cu_csrop ,     // To CSR  //[?] 
    //if we are in S-Mode and Trap SRET (tsr) is set -> trap on illegal instruction
@@ -42,16 +42,13 @@ module riscv_cu  #(parameter MXLEN = 64 )
 
   
  //o_riscv_cu_immsrc
-); 
-
-       
+);
 localparam ENV_CALL_UMODE = 8 ;
 localparam ENV_CALL_SMODE = 9 ;
 localparam ENV_CALL_MMODE = 11 ;  
 localparam ILLEGAL_INSTR  = 2 ;  
 parameter support_u = 0 ;             
 parameter support_s = 0 ;  
-
 
 // parameter support_m = 0 ;   //must be supported so it is not a confg
     logic riscv_cu_detect_ecall ,illegal_instr  ;
@@ -75,6 +72,7 @@ parameter support_s = 0 ;
 
 always_comb
   begin:ctrl_sig_proc
+    o_riscv_cu_iscsr='b0;
     case(i_riscv_cu_opcode)
         7'b0110011:begin
                      case(i_riscv_cu_funct3) 
@@ -86,6 +84,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -98,11 +97,12 @@ always_comb
                                   end
                                 else if (i_riscv_cu_funct7_0) // mul 
                                   begin
-                                    o_riscv_cu_jump       = 1'b0;
-                                    o_riscv_cu_regw       = 1'b1;
-                                    o_riscv_cu_asel       = 1'b1;
-                                    o_riscv_cu_bsel       = 1'b0;
-                                    o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_jump       = 1'b0 ;
+                                    o_riscv_cu_regw       = 1'b1 ;
+                                    o_riscv_cu_asel       = 1'b1 ;
+                                    o_riscv_cu_bsel       = 1'b0 ;
+                                    o_riscv_cu_memw       = 1'b0 ;
+                                    o_riscv_cu_memr       = 1'b0 ;
                                     o_riscv_cu_storesrc   = 2'b00;
                                     o_riscv_cu_resultsrc  = 2'b01;
                                     o_riscv_cu_bcond      = 4'b0000;
@@ -120,6 +120,7 @@ always_comb
                                     o_riscv_cu_asel       = 1'b1;
                                     o_riscv_cu_bsel       = 1'b0;
                                     o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_memr       = 1'b0;
                                     o_riscv_cu_storesrc   = 2'b00;
                                     o_riscv_cu_resultsrc  = 2'b01;
                                     o_riscv_cu_bcond      = 4'b0000;
@@ -139,6 +140,7 @@ always_comb
                                 o_riscv_cu_asel       = 1'b1;
                                 o_riscv_cu_bsel       = 1'b0;
                                 o_riscv_cu_memw       = 1'b0;
+                                o_riscv_cu_memr       = 1'b0;
                                 o_riscv_cu_storesrc   = 2'b00;
                                 o_riscv_cu_resultsrc  = 2'b01;
                                 o_riscv_cu_bcond      = 4'b0000;
@@ -156,6 +158,7 @@ always_comb
                                     o_riscv_cu_asel       = 1'b1;
                                     o_riscv_cu_bsel       = 1'b0;
                                     o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_memr       = 1'b0;
                                     o_riscv_cu_storesrc   = 2'b00;
                                     o_riscv_cu_resultsrc  = 2'b01;
                                     o_riscv_cu_bcond      = 4'b0000;
@@ -175,6 +178,7 @@ always_comb
                                 o_riscv_cu_asel       = 1'b1;
                                 o_riscv_cu_bsel       = 1'b0;
                                 o_riscv_cu_memw       = 1'b0;
+                                o_riscv_cu_memr       = 1'b0;
                                 o_riscv_cu_storesrc   = 2'b00;
                                 o_riscv_cu_resultsrc  = 2'b01;
                                 o_riscv_cu_bcond      = 4'b0000;
@@ -191,6 +195,7 @@ always_comb
                                     o_riscv_cu_asel       = 1'b1;
                                     o_riscv_cu_bsel       = 1'b0;
                                     o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_memr       = 1'b0;
                                     o_riscv_cu_storesrc   = 2'b00;
                                     o_riscv_cu_resultsrc  = 2'b01;
                                     o_riscv_cu_bcond      = 4'b0000;
@@ -210,6 +215,7 @@ always_comb
                                 o_riscv_cu_asel       = 1'b1;
                                 o_riscv_cu_bsel       = 1'b0;
                                 o_riscv_cu_memw       = 1'b0;
+                                o_riscv_cu_memr       = 1'b0;
                                 o_riscv_cu_storesrc   = 2'b00;
                                 o_riscv_cu_resultsrc  = 2'b01;
                                 o_riscv_cu_bcond      = 4'b0000;
@@ -227,6 +233,7 @@ always_comb
                                     o_riscv_cu_asel       = 1'b1;
                                     o_riscv_cu_bsel       = 1'b0;
                                     o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_memr       = 1'b0;
                                     o_riscv_cu_storesrc   = 2'b00;
                                     o_riscv_cu_resultsrc  = 2'b01;
                                     o_riscv_cu_bcond      = 4'b0000;
@@ -246,6 +253,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b0;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -263,6 +271,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -283,6 +292,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -300,6 +310,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -317,6 +328,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -336,6 +348,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b0;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -348,11 +361,12 @@ always_comb
                               end 
                             else   //rem
                               begin
-                                   o_riscv_cu_jump      = 1'b0;
+                                   o_riscv_cu_jump       = 1'b0;
                                     o_riscv_cu_regw      = 1'b1;
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -372,6 +386,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b0;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -389,6 +404,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -412,6 +428,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -429,6 +446,7 @@ always_comb
                                     o_riscv_cu_asel       = 1'b1;
                                     o_riscv_cu_bsel       = 1'b0;
                                     o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_memr       = 1'b0;
                                     o_riscv_cu_storesrc   = 2'b00;
                                     o_riscv_cu_resultsrc  = 2'b01;
                                     o_riscv_cu_bcond      = 4'b0000;
@@ -446,6 +464,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -463,6 +482,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b0;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -480,6 +500,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -498,6 +519,7 @@ always_comb
                                     o_riscv_cu_asel       = 1'b1;
                                     o_riscv_cu_bsel       = 1'b0;
                                     o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_memr       = 1'b0;
                                     o_riscv_cu_storesrc   = 2'b00;
                                     o_riscv_cu_resultsrc  = 2'b01;
                                     o_riscv_cu_bcond      = 4'b0000;
@@ -515,6 +537,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -532,6 +555,7 @@ always_comb
                                     o_riscv_cu_asel       = 1'b1;
                                     o_riscv_cu_bsel       = 1'b0;
                                     o_riscv_cu_memw       = 1'b0;
+                                    o_riscv_cu_memr       = 1'b0;
                                     o_riscv_cu_storesrc   = 2'b00;
                                     o_riscv_cu_resultsrc  = 2'b01;
                                     o_riscv_cu_bcond      = 4'b0000;
@@ -549,6 +573,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -565,6 +590,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b0;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -581,6 +607,7 @@ always_comb
                                  o_riscv_cu_asel        = 1'b1;
                                  o_riscv_cu_bsel        = 1'b0;
                                  o_riscv_cu_memw        = 1'b0;
+                                 o_riscv_cu_memr        = 1'b0;
                                  o_riscv_cu_storesrc    = 2'b00;
                                  o_riscv_cu_resultsrc   = 2'b01;
                                  o_riscv_cu_bcond       = 4'b0000;
@@ -601,6 +628,7 @@ always_comb
                                o_riscv_cu_asel      = 1'b1;
                                o_riscv_cu_bsel      = 1'b1;
                                o_riscv_cu_memw      = 1'b0;
+                               o_riscv_cu_memr      = 1'b0;
                                o_riscv_cu_storesrc  = 2'b00;
                                o_riscv_cu_resultsrc = 2'b01;
                                o_riscv_cu_bcond     = 4'b0000;
@@ -617,6 +645,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b1;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -633,6 +662,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b1;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -649,6 +679,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b1;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -665,6 +696,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b1;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -683,6 +715,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b1;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -700,6 +733,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b1;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -717,6 +751,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b1;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -733,6 +768,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b1;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -753,6 +789,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b1;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -769,6 +806,7 @@ always_comb
                                 o_riscv_cu_asel      = 1'b1;
                                 o_riscv_cu_bsel      = 1'b1;
                                 o_riscv_cu_memw      = 1'b0;
+                                o_riscv_cu_memr      = 1'b0;
                                 o_riscv_cu_storesrc  = 2'b00;
                                 o_riscv_cu_resultsrc = 2'b01;
                                 o_riscv_cu_bcond     = 4'b0000;
@@ -787,6 +825,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b1;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -804,6 +843,7 @@ always_comb
                                     o_riscv_cu_asel      = 1'b1;
                                     o_riscv_cu_bsel      = 1'b1;
                                     o_riscv_cu_memw      = 1'b0;
+                                    o_riscv_cu_memr      = 1'b0;
                                     o_riscv_cu_storesrc  = 2'b00;
                                     o_riscv_cu_resultsrc = 2'b01;
                                     o_riscv_cu_bcond     = 4'b0000;
@@ -821,6 +861,7 @@ always_comb
                                  o_riscv_cu_asel      = 1'b1;
                                  o_riscv_cu_bsel      = 1'b0;
                                  o_riscv_cu_memw      = 1'b0;
+                                 o_riscv_cu_memr      = 1'b0;
                                  o_riscv_cu_storesrc  = 2'b00;
                                  o_riscv_cu_resultsrc = 2'b01;
                                  o_riscv_cu_bcond     = 4'b0000;
@@ -839,6 +880,7 @@ always_comb
                      o_riscv_cu_asel      = 1'b1;
                      o_riscv_cu_bsel      = 1'b1;
                      o_riscv_cu_memw      = 1'b0;
+                     o_riscv_cu_memr      = 1'b1;
                      o_riscv_cu_storesrc  = 2'b00;
                      o_riscv_cu_resultsrc = 2'b10;
                      o_riscv_cu_bcond     = 4'b0000;
@@ -855,6 +897,7 @@ always_comb
                      o_riscv_cu_asel      = 1'b1;
                      o_riscv_cu_bsel      = 1'b1;
                      o_riscv_cu_memw      = 1'b0;
+                     o_riscv_cu_memr      = 1'b0;
                      o_riscv_cu_storesrc  = 2'b00;
                      o_riscv_cu_resultsrc = 2'b00;
                      o_riscv_cu_bcond     = 4'b0000;
@@ -871,6 +914,7 @@ always_comb
                      o_riscv_cu_asel      = 1'b1;//xx
                      o_riscv_cu_bsel      = 1'b1;//xx
                      o_riscv_cu_memw      = 1'b0;
+                     o_riscv_cu_memr      = 1'b0;
                      o_riscv_cu_storesrc  = 2'b00;//xx
                      o_riscv_cu_resultsrc = 2'b11;
                      o_riscv_cu_bcond     = 4'b0000;
@@ -887,6 +931,7 @@ always_comb
                      o_riscv_cu_asel      = 1'b0;
                      o_riscv_cu_bsel      = 1'b1;
                      o_riscv_cu_memw      = 1'b0;
+                     o_riscv_cu_memr      = 1'b0;
                      o_riscv_cu_storesrc  = 2'b00;//xx
                      o_riscv_cu_resultsrc = 2'b01;
                      o_riscv_cu_bcond     = 4'b0000;
@@ -903,6 +948,7 @@ always_comb
                      o_riscv_cu_asel      = 1'b0;
                      o_riscv_cu_bsel      = 1'b1;
                      o_riscv_cu_memw      = 1'b0;
+                     o_riscv_cu_memr      = 1'b0;
                      o_riscv_cu_storesrc  = 2'b00;//xx
                      o_riscv_cu_resultsrc = 2'b00;
                      o_riscv_cu_bcond     = 4'b0000;
@@ -920,6 +966,7 @@ always_comb
                      o_riscv_cu_asel      = 1'b1;
                      o_riscv_cu_bsel      = 1'b1;
                      o_riscv_cu_memw      = 1'b1;
+                     o_riscv_cu_memr      = 1'b0;
                      o_riscv_cu_storesrc  = i_riscv_cu_funct3[1:0];
                      o_riscv_cu_resultsrc = 2'b00;//xx
                      o_riscv_cu_bcond     = 4'b0000;
@@ -936,6 +983,7 @@ always_comb
                      o_riscv_cu_asel       = 1'b0;
                      o_riscv_cu_bsel       = 1'b1;
                      o_riscv_cu_memw       = 1'b0;
+                     o_riscv_cu_memr       = 1'b0;
                      o_riscv_cu_storesrc   = 2'b00;//xx
                      o_riscv_cu_resultsrc  = 2'b00;//xx
                      o_riscv_cu_bcond[2:0] = i_riscv_cu_funct3;
@@ -947,7 +995,7 @@ always_comb
                      o_riscv_cu_divctrl    = 4'b0000;
                      o_riscv_cu_funcsel    = 2'b10;
                    end
-        7'b1110011:begin
+       7'b1110011:begin
                          
                             o_riscv_cu_jump       = 1'b0;   
                             o_riscv_cu_regw       = 1'b0;
@@ -1059,14 +1107,14 @@ always_comb
                                  o_riscv_cu_iscsr = 1 ;
                                  o_riscv_cu_regw =1 ;
                                 //check added note
-                                if (instr.itype.rs1 == 5'b0) o_riscv_cu_csrop = CSR_READ;
+                                if (i_riscv_cu_rs1 == 5'b0) o_riscv_cu_csrop = CSR_READ;
                                 else o_riscv_cu_csrop = CSR_CLEAR;
                                  end
+        endcase
 
-         
 
    
- 
+  end
 
         default:begin 	
                   o_riscv_cu_jump       = 1'b0;
@@ -1085,10 +1133,7 @@ always_comb
                   o_riscv_cu_funcsel    = 2'b10;
                   illegal_instr = 1'b1    ;
                 end
-
-                   
-	  endcase
-  
+  endcase
    /* --------------------- */
   // Exception handling From decode stage
   /* ---------------------  */
@@ -1126,17 +1171,8 @@ else begin
   o_riscv_cu_ecall_u = 0;
   o_riscv_cu_ecall_s = 0;
   o_riscv_cu_ecall_m = 0;
-     end                
-
-  
-
-
-end //of always block
-
-
-
-
-
-  
+     end   
+  end               
 
 endmodule 
+

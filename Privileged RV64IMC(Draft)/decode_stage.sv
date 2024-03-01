@@ -60,8 +60,8 @@ riscv_extend u_riscv_extend(
 
 riscv_zeroextend  u_riscv_zeroextend 
 (
-i_riscv_zeroextend_imm(i_riscv_dstage_inst[19:15]) ,       //from fd register
-o_riscv_zeroextend_immextend(o_riscv_dstage_immzeroextend)   //to de register
+ .i_riscv_zeroextend_imm(i_riscv_dstage_inst[19:15]) ,       //from fd register
+. o_riscv_zeroextend_immextend(o_riscv_dstage_immzeroextend)   //to de register
 
  ) ;
 

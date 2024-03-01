@@ -11,7 +11,7 @@
         input          [2:0]        i_riscv_csr_op ,    //?? also check it
         input        [MXLEN-1:0]  i_riscv_csr_wdata ,
         output logic [MXLEN-1:0]  o_riscv_csr_rdata ,
-        //output logic              o_riscv_csr_sideeffect_flush ,
+        output logic              o_riscv_csr_sideeffect_flush ,
      
          
             // Interrupts
@@ -51,9 +51,9 @@
         //input wire    [`OPCODE_WIDTH-1:0] i_opcode, //opcode types
         //input wire    [31:0] i_y, //y value from ALU (address used in load/store/jump/branch) // to check if its misaligned or not
 
-        output logic [1:0] o_riscv_csr_privlvl  
+        output logic [1:0] o_riscv_csr_privlvl  ,
 
-        //output logic o_riscv_csr_flush
+        output logic o_riscv_csr_flush
      
    // input wire writeback_change_pc, //high if writeback will issue change_pc (which will override this stage)
 
@@ -531,11 +531,11 @@ always_comb begin : csr_write_process
 
        
            // If xPP̸=M, xRET also sets MPRV=0.
-
+/*
         if (mstatus_mpp_cs != PRIV_LVL_M) begin
           mstatus_d.mprv = 1'b0;
         end  
-
+*/
 end 
 
 end
@@ -891,11 +891,11 @@ end
             end
         endcase
         // if we are retiring an exception do not return from exception
-        if (ex_i.valid) begin
+    /*    if (ex_i.valid) begin
             mret = 1'b0;
             sret = 1'b0;
         end
-
+*/
 
     end
     

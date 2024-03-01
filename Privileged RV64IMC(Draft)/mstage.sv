@@ -1,7 +1,7 @@
   module riscv_mstage #(parameter width=64)(
     input  logic [width-1:0] i_riscv_mstage_dm_rdata,
     input  logic [2:0]      i_riscv_mstage_memext,
-    output logic [width-1:0] o_riscv_mstage_memload ,
+    output logic [width-1:0] o_riscv_mstage_memload 
 
      //input logic          i_riscv_core_timerinterupt  ,
      //input logic          i_riscv_core_externalinterupt
@@ -16,8 +16,7 @@
     .o_riscv_memext_loaded(o_riscv_mstage_memload)
   );
  
-endmodule
- /* riscv_csrfile csr_file
+ riscv_csrfile csr_file
 
     (  
         .i_riscv_csr_clk() ,
@@ -74,5 +73,5 @@ endmodule
 
  );
 
-    
+  endmodule
  
