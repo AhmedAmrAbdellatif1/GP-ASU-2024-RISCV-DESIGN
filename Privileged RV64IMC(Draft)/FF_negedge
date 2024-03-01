@@ -1,4 +1,4 @@
-module register (parameter width =64)
+module FF_negedge #(parameter width = 64)
 
 (
   input clk ,rst  ,
@@ -9,7 +9,7 @@ module register (parameter width =64)
 );
 
 
-always @(negedge CLK or posedge rst)
+always @(negedge clk or posedge rst)
 begin
   if (rst)
   csr_out <= 'b0 ;
@@ -20,6 +20,7 @@ else
 end 
 
 endmodule
+
 
 
 
