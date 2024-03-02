@@ -139,7 +139,7 @@ exception_unit u_exception(
 ////////////////////////ImmReg MUX/////////////////////////
 riscv_mux2 u_imm_reg_mux(
 .i_riscv_mux2_sel(i_riscv_estage_imm_reg),  // >> need to be checked  ?? where come from
-.i_riscv_mux2_in0(i_riscv_estage_rs1data),    // >> is as it is signed will make problem
+.i_riscv_mux2_in0(o_riscv_FWmuxA_OperandmuxA),    // >> is as it is signed will make problem
 .i_riscv_mux2_in1(i_riscv_estage_immextended),
 .o_riscv_mux2_out(o_riscv_estage_csrwritedata));
 
