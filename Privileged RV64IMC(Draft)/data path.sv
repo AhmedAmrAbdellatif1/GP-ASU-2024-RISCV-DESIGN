@@ -47,6 +47,8 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
   output logic  [6:0]      o_riscv_datapath_opcode_m,
   output logic             o_datapath_div_en,   
   output logic             o_datapath_mul_en,  
+
+
   
   /////////////////////memory/////////////
   input  logic [width-1:0] i_riscv_datapath_dm_rdata,      ///output from dm
@@ -65,6 +67,15 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
   input  logic             i_riscv_datapath_stall_de,
   input  logic             i_riscv_datapath_stall_em,
   input  logic             i_riscv_datapath_stall_mw ,
+
+
+   //output from hazard unit (input to) trap
+
+   input logic            i_riscv_datapath_muxcsr_sel ,
+
+   output logic           o_riscv_datapath_iscsr_w_trap ,
+  output logic            o_riscv_datapath_iscsr_m_trap,
+   output logic           o_riscv_datapath_iscsr_e_trap,
 
 //traps 
  /* input logic   [1:0] i_riscv_cu_privlvl ,   //come From CSR 
@@ -115,7 +126,11 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
  );
 
 
-  
+assign   o_riscv_datapath_iscsr_w_trap =  iscsr_mw_trap ;
+assign   o_riscv_datapath_iscsr_m_trap =  iscsr_mw_trap ;
+assign   o_riscv_datapath_iscsr_e_trap =  iscsr_de_em ;
+
+
   ////// fetch internal signals ////////
   // logic                 riscv_pcsrc_fe;
   logic [width-1:0]     riscv_aluexe_fe;
@@ -595,13 +610,21 @@ logic [2:0] i_riscv_cu_csrop_de;
 
   );
 
+
+ logic [width-1:0] riscv_datapath_muxout_csr ;
+
   ////memory stage instantiation////
   riscv_mstage uriscv_mstage(
     .i_riscv_mstage_dm_rdata    (i_riscv_datapath_dm_rdata)       ,
     .i_riscv_mstage_memext      (riscv_memext_m)                  ,     
     .o_riscv_mstage_memload     (riscv_memload_m)
 
-    
+     .i_riscv_mstage_mux2_sel(i_riscv_datapath_muxcsr_sel) ,       //From hazard unit
+     .i_riscv_mux2_in0(riscv_datapath_csrwdata_em_csr),   //[width-1:0]
+    .i_riscv_mux2_in1(csrout_csr_mw),   //[width-1:0]
+    .o_riscv_mstage_mux2_out(riscv_datapath_muxout_csr)  //[width-1:0] 
+
+   
   );
 
   ////memory write back pipeline flip flops ////
@@ -673,7 +696,7 @@ logic [2:0] i_riscv_cu_csrop_de;
 );  
 
 
-   
+
  riscv_csrfile u_riscv_csrfile 
 
     (  
@@ -683,7 +706,7 @@ logic [2:0] i_riscv_cu_csrop_de;
         //Come From e/m register
     .i_riscv_csr_address        (riscv_datapath_csraddress_em_csr) ,  //[11:0]
      .i_riscv_csr_op            (riscv_datapath_csrop_em_csr) ,    //[2:0] ?? also check it
-    .i_riscv_csr_wdata          (riscv_datapath_csrwdata_em_csr) ,  //[MXLEN-1:0]
+    .i_riscv_csr_wdata          (riscv_datapath_muxout_csr) ,  //[MXLEN-1:0]
     .o_riscv_csr_rdata          (csrout_mw_trap) ,  //[MXLEN-1:0]
         //.o_riscv_csr_sideeffect_flush() ,
      
