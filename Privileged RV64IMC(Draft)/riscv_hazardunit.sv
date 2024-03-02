@@ -15,6 +15,10 @@ module riscv_hazardunit (
    input  logic           i_riscv_hzrdu_mul_en        , 
    input  logic           i_riscv_hzrdu_div_en        ,
    input  logic           i_riscv_hzrdu_valid         ,
+   input  logic           i_riscv_hzrdu_iscsr_e        ,   // for csr
+   input  logic           i_riscv_hzrdu_iscsr_d       ,   // for csr
+   input  logic           i_riscv_hzrdu_iscsr_w        ,   // for csr
+
    output logic   [1:0]   o_riscv_hzrdu_fwda          , 
    output logic   [1:0]   o_riscv_hzrdu_fwdb          , 
    output logic           o_riscv_hzrdu_stallpc       ,
@@ -65,6 +69,8 @@ always @(*)
 
   else if ( (i_riscv_hzrdu_rs1addr_e == i_riscv_hzrdu_rdaddr_m) && 
             (i_riscv_hzrdu_regw_m) && (i_riscv_hzrdu_rdaddr_m !=0) )
+
+
     begin
       o_riscv_hzrdu_fwda  = 2  ;
     end
@@ -78,10 +84,11 @@ always @(*)
     o_riscv_hzrdu_fwda  = 0 ; 
   end
 
+//add feature if csr instruction detected stall as case of  memory instruction // csr is first in race so need to stall  
 always @(*) 
   begin 
     if ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
-            i_riscv_hzrdu_resultsrc_e == 2'b10 ) || glob_stall)
+           ( i_riscv_hzrdu_resultsrc_e == 2'b10 || ( i_riscv_hzrdu_iscsr_e == 1'b1 &&  ~i_riscv_hzrdu_iscsr_d  )  ) ) || glob_stall)
         begin
           o_riscv_hzrdu_stallpc = 1 ;
           o_riscv_hzrdu_stallfd = 1 ;
@@ -96,7 +103,7 @@ always @(*)
   always @(*)
     begin
       if( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
-          i_riscv_hzrdu_resultsrc_e == 2'b10 ) || i_riscv_hzrdu_pcsrc )
+         ( i_riscv_hzrdu_resultsrc_e == 2'b10 ||  ( i_riscv_hzrdu_iscsr_e == 1'b1 &&  ~i_riscv_hzrdu_iscsr_d )  ) ) || i_riscv_hzrdu_pcsrc )
           o_riscv_hzrdu_flushde = 1 ;
       else
           o_riscv_hzrdu_flushde = 0 ;        
@@ -120,4 +127,15 @@ always_comb
       o_riscv_hzrdu_stallde=0;
     end
   end
+
+
+  always @(*)
+    begin
+      if  ( i_riscv_hzrdu_iscsr_e == 1'b1 &&  i_riscv_hzrdu_iscsr_w == 1'b1 )
+          o_riscv_hzrdu_passwb = 1 ;
+      else
+          o_riscv_hzrdu_passdefault = 0 ;        
+    end
+
+
 endmodule
