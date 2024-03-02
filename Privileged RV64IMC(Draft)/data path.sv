@@ -129,8 +129,8 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
 
 assign   o_riscv_datapath_iscsr_w_trap =  iscsr_mw_trap ;
 assign   o_riscv_datapath_iscsr_m_trap =  iscsr_csr_mw ;
-assign   o_riscv_datapath_iscsr_e_trap =  i_riscv_datapath_iscsr_cu_de ;
-assign   o_riscv_datapath_iscsr_d_trap =   ;
+assign   o_riscv_datapath_iscsr_e_trap =  iscsr_de_em ;
+assign   o_riscv_datapath_iscsr_d_trap = i_riscv_datapath_iscsr_cu_de  ;
 
 
   ////// fetch internal signals ////////
