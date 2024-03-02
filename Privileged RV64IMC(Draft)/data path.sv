@@ -293,9 +293,8 @@ logic [2:0] i_riscv_cu_csrop_de;
 
    //from estage to em
      logic [width-1:0]  csrwritedata_estage_em ; 
-  
-  //From csr to negedge FF
-      logic [MXLEN-1:0] csr_out_FF ;
+
+
 
 
   /////////
@@ -577,7 +576,7 @@ logic [2:0] i_riscv_cu_csrop_de;
 
 
      
-    //             o_riscv_em_ecall_u_m(riscv_datapath_ecall_u_em_csr)  ,
+    //  o_riscv_em_ecall_u_m(riscv_datapath_ecall_u_em_csr)  ,
     //             o_riscv_em_ecall_s_m(riscv_datapath_ecall_s_em_csr)  , 
     .o_riscv_em_ecall_m_m      (riscv_datapath_ecall_m_em_csr)     , 
     .o_riscv_em_csraddress_m   (riscv_datapath_csraddress_em_csr)  ,    //[11:0] 
@@ -593,7 +592,6 @@ logic [2:0] i_riscv_cu_csrop_de;
 
     .o_riscv_em_csrwritedata_m (riscv_datapath_csrwdata_em_csr)     //[width-1:0] 
 
-     
 
   );
 
@@ -641,7 +639,7 @@ logic [2:0] i_riscv_cu_csrop_de;
     .o_riscv_mw_regw_wb         (riscv_regw_wb)                   ,
        //Trap 
     .i_riscv_mw_flush           (riscv_reg_flush)           ,
-    .i_riscv_mw_csrout_m        (csr_out_FF)          ,
+    .i_riscv_mw_csrout_m        (csrout_mw_trap)          ,
     .i_riscv_mw_iscsr_m         (iscsr_csr_mw)           ,
    .i_riscv_mw_gototrap_m       (gototrap_csr_mw)        ,
     .i_riscv_mw_returnfromtrap_m(returnfromtrap_csr_mw)  ,
@@ -652,8 +650,6 @@ logic [2:0] i_riscv_cu_csrop_de;
     .o_riscv_mw_gototrap_wb      (gototrap_mw_trap)        ,
     .o_riscv_mw_returnfromtrap_wb(returnfromtrap_mw_trap)  
   );
-
-
 
   ////write back stage instantiation////
   riscv_wbstage u_riscv_wbstage(
@@ -677,19 +673,7 @@ logic [2:0] i_riscv_cu_csrop_de;
 );  
 
 
-
- FF_negedge FF_64
-
-(
-  .clk(i_riscv_datapath_clk) ,
-  .rst(i_riscv_datapath_rst)  ,
-  .csr_in(csrout_mw_trap)  ,  //[width-1:0] 
-  .csr_out(csr_out_FF)    //[width-1:0]
-
-
-);
-
-
+   
  riscv_csrfile u_riscv_csrfile 
 
     (  
@@ -767,4 +751,3 @@ logic [2:0] i_riscv_cu_csrop_de;
   // <---------------------------------------------------
 
 endmodule
-

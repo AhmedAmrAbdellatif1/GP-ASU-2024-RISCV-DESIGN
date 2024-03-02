@@ -72,7 +72,9 @@ parameter support_s = 0 ;
 
 always_comb
   begin:ctrl_sig_proc
-    o_riscv_cu_iscsr='b0;
+ o_riscv_cu_illgalinst = 'b0;   
+ illegal_instr = 1'b0   ;
+o_riscv_cu_iscsr='b0;
     case(i_riscv_cu_opcode)
         7'b0110011:begin
                      case(i_riscv_cu_funct3) 

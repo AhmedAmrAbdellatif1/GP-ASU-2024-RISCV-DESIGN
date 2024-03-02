@@ -529,7 +529,7 @@ always_comb begin : csr_write_process
             mstatus_mpie_ns = 1'b1;
 
        
-           // If xPP̸=M, xRET also sets MPRV=0.
+           // If xPP?=M, xRET also sets MPRV=0.
 /*
         if (mstatus_mpp_cs != PRIV_LVL_M) begin
           mstatus_d.mprv = 1'b0;
@@ -671,7 +671,7 @@ end
   
 
                  // MSCRATCH (dedicated for use by machine code)       
-            CSR_MSCRATCH : mscratch_ns = csr_wdata;   
+   //         CSR_MSCRATCH : mscratch_ns = csr_wdata;   
 
 
             // MEPC (address of interrupted instruction)
@@ -777,7 +777,7 @@ end
             // mideleg_ssi_cs <=1'b0 ;
 
                 mepc_cs                 <= 64'b0;
-                mscratch_cs             <= 64'b0;
+              //  mscratch_cs             <= 64'b0;
                 mtval_cs                <= 64'b0;
 
     
@@ -827,7 +827,7 @@ end
                 // mideleg_ssi_cs <=mideleg_ssi_ns ;
 
                 mepc_cs                 <= mepc_ns;
-                mscratch_cs             <= mscratch_ns;
+               // mscratch_cs             <= mscratch_ns;
                 mtval_cs                <= mtval_ns;
 
         
@@ -898,10 +898,20 @@ end
             sret = 1'b0;
         end
 */
-
+   
     end
     
-
+ always@(posedge i_riscv_csr_clk or posedge i_riscv_csr_rst )
+ begin
+ if(i_riscv_csr_rst)
+ mscratch_cs <= 0; 
+ else 
+ if (csr_we) 
+ begin
+ if(i_riscv_csr_address == 'h340)
+  mscratch_cs <= csr_wdata ; 
+ end
+ end
 
     
 
