@@ -416,429 +416,10 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
 
    
 
-     /*----------------  */
-    // CSR Write logic
-    /* ---------------- */
-always_comb begin : csr_write_process
 
-                      if(go_to_trap ) begin
-                    /* Volume 2 pg. 21: xPIE holds the value of the interrupt-enable bit active prior to the trap. 
-                    
-                    x IE is set to 0; and xPP is set to y. */
-                     
-
-                     mepc_ns         = i_riscv_csr_pc ;
-                     // When a trap is taken from privilege mode y into privilege mode x,xPIE is set to the value of x IE; ?? check that
-                     mstatus_mpie_ns = mstatus_mie_cs;
-                     mstatus_mie_ns   = 0; //no nested interrupt allowed    // if done in software that will not make problem make it again zero
-
-    
-                
-                   
-                     
-                     mstatus_mpp_ns = 2'b11;  // check
-
-
-                if(i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned) 
-                    mtval_ns = i_riscv_csr_addressALU;
-
-                    /* Volume 2 pg. 38: When a trap is taken into M-mode, mcause is written with a code indicating the event that caused the trap */
-            // Interrupts have priority (external first, then s/w, then timer---[2] sec 3.1.9), then synchronous traps.
-                if(go_to_trap ) begin
-
-                         
-                         priv_lvl_ns = PRIV_LVL_M      ;
-                         
-                    if(external_interrupt_pending_m) begin 
-                        mcause_code_ns = M_EXT_I; 
-                        mcause_int_excep_ns = 1;
-                        // if (mideleg_mei_cs )
-                    end
-                   // else if(software_interrupt_pending) begin
-                     //  mcause_code_ns = MACHINE_SOFTWARE_INTERRUPT; 
-                      //  mcause_int_excep_ns = 1;
-                      //  if (mideleg_msi_cs)
-                    //end
-                    else if(timer_interrupt_pending_m) begin 
-                        mcause_code_ns= M_TIMER_I; 
-                        mcause_int_excep_ns = 1;
-                      // if (mideleg_mti_cs )
-                    end
-                    else if(i_riscv_csr_illegal_inst) begin
-                        mcause_code_ns= ILLEGAL_INSTRUCTION;
-                        mcause_int_excep_ns = 0 ;
-                       // if (medeleg_cs[2] ) 
-
-                    end
-                    else if(i_riscv_csr_inst_addr_misaligned) begin
-                       mcause_code_ns = INSTRUCTION_ADDRESS_MISALIGNED;
-                       mcause_int_excep_ns = 0;
-                      // if (medeleg_cs[0] )
-                    end
-                    else if(i_riscv_csr_ecall_m) begin 
-                       mcause_code_ns = ECALL_M;
-                        mcause_int_excep_ns = 0;
-                        //if (medeleg_cs[11] )
-                      /*  else if(i_riscv_csr_ecall_s) begin 
-                       mcause_code_ns = ECALL_S;
-                        mcause_int_excep_ns = 0;
-                        //if (medeleg_cs[9] )
-                        else if(i_riscv_csr_ecall_u) begin 
-                       mcause_code_ns = ECALL_U;
-                        mcause_int_excep_ns = 0; 
-                        if (medeleg_cs[8] ) */
-                    end
-                   // else if(i_is_ebreak) begin
-                     //   mcause_code_ns= EBREAK;
-                      //  mcause_int_excep_ns = 0;
-                    //end
-                    else if(i_riscv_csr_load_addr_misaligned) begin
-                       mcause_code_ns = LOAD_ADDRESS_MISALIGNED;
-                        mcause_int_excep_ns = 0;
-                         //if (medeleg_cs[4] )
-                    end
-                    else if(i_riscv_csr_store_addr_misaligned) begin
-                        mcause_code_ns = STORE_ADDRESS_MISALIGNED;
-                       mcause_int_excep_ns = 0;
-                        //if (medeleg_cs[6] )
-                    end
-                   
-                     end     //end of above if (go trap)
-
-           
-
-                 
-                // ------------------------------
-        // Return from Environment
-        // ------------------------------
-        // When executing an xRET instruction, supposing xPP holds the value y, xIE is set to xPIE; the privilege
-        // mode is changed to y; xPIE is set to 1; and xPP is set to U
-       if (mret) begin 
-            // return to the previous privilege level and restore all enable flags // like global interupt enable 
-            // get the previous machine interrupt enable flag
-            mstatus_mie_ns   = mstatus_mpie_cs;
-            // restore the previous privilege level
-            priv_lvl_ns     = mstatus_mpp_cs;
-            //xRET sets the pc to the value stored in the xepc register. // // return from exception, IF doesn't care from where we are returning
-            riscv_csr_gotoTrap_ns =1 ;
-
-            // and xPP is set to the least-privileged supported mode (U if U-mode is implemented, else M)
-            //set mpp to user mode
-            mstatus_mpp_ns  = (support_user) ? PRIV_LVL_U : PRIV_LVL_M;
-            //xPIE is set to 1 >> set mpie to 1
-            mstatus_mpie_ns = 1'b1;
-
-       
-           // If xPP?=M, xRET also sets MPRV=0.
-/*
-        if (mstatus_mpp_cs != PRIV_LVL_M) begin
-          mstatus_d.mprv = 1'b0;
-        end  
-*/
-end 
-
-end
-       
-
-       
-       /* if (sret) begin
-            // return from exception, IF doesn't care from where we are returning
-           
-            // return the previous supervisor interrupt enable flag
-            mstatus_sie_ns  = mstatus_spie_cs;
-            // restore the previous privilege level
-            priv_lvl_ns     =  {1'b0, mstatus_spp_ns});
-            // set spp to user mode
-            mstatus_spp_ns  = 1'b0;
-            // set spie to 1
-            mstatus_spie_ns = 1'b1;
-        end */
 
 
       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   else  if (csr_we ) begin    ////csr_enable  //see last always block to know when it is asserted
-    //   mscratch_ns ='b0;
-        unique case (i_riscv_csr_address)
-        // case (i_riscv_csr_address)
-          
-
-
-          /*   registers not to be put in write logic */
-          /* ------mvendorid ,marchid ,  mimpid  ,mhartid , mconfigptr------ */
-
-
-
-            ////MSTATUS (controls hart's current operating state (mie and mpie are the only configurable bits))
-            CSR_MSTATUS : begin
-                               //sxl , uxl are warl so i think not need to have a regitser as they can written by any vlaue
-                               //mbe,sbe,ube are warl so i think not need to have a regitser as they can written by any vlaue
-                               //tvm are warl so i think not need to have a regitser as they can written by any vlaue
-                        mstatus_mie_ns   = csr_wdata[CSR_MSTATUS_MIE_BIT]                             ;
-                        mstatus_mpie_ns   = csr_wdata[CSR_MSTATUS_MPIE_BIT]                             ;
-                        mstatus_sie_ns  = csr_wdata[CSR_MSTATUS_SIE_BIT]                              ;
-                        mstatus_spie_ns   = csr_wdata[CSR_MSTATUS_SPIE_BIT]                             ;
-                        mstatus_mpp_ns   = csr_wdata[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW] ;
-                        mstatus_spp_ns  = csr_wdata[CSR_MSTATUS_SPP] ;
-                           
-                           //for memory
-                        mstatus_mprv_ns   =  csr_wdata[CSR_MSTATUS_MPRV_BIT]                            ;
-                        mstatus_mxr_ns   = csr_wdata[CSR_MSTATUS_MXR_BIT]                             ;
-                        mstatus_sum_ns  = csr_wdata[CSR_MSTATUS_SUM_BIT]                                ;
-
-                           //for virtulazation supprot
-                        mstatus_tsr_ns  = csr_wdata[CSR_MSTATUS_TSR_BIT]                             ;
-                        mstatus_tw_ns = csr_wdata[CSR_MSTATUS_TW_BIT]                                ;
-                        //mstatus_tvm_ns = csr_wdata[CSR_MSTATUS_TVM_BIT]                            ;
-                            
-                                // this register has side-effects on other registers, flush the pipeline
-                        //o_riscv_csr_flush         = 1'b1;  // >> ?? need to be checked
-                        //mstatus_sbe_ns  = csr_wdata[CSR_MSTATUS_SBE_BIT]                              ;
-                        //mstatus_mbe_ns  =csr_wdata[CSR_MSTATUS_MBE_BIT]                               ;
-                        //mstatus_ube_ns = csr_wdata[CSR_MSTATUS_UBE_BIT]                              ;
-                     end
-        
-          
-           
-            
-            CSR_MIE : begin  
-                   
-                   // mie_msie_ns = csr_wdata[M_SOFT_I];     //3
-                    mie_mtie_ns = csr_wdata[M_TIMER_I];     //7
-                    mie_meie_ns = csr_wdata[M_EXT_I];    //11
-                   // mie_ssie_ns = csr_wdata[S_SOFT_I]; 
-                    mie_stie_ns = csr_wdata[S_TIMER_I]; 
-                    mie_seie_ns = csr_wdata[S_EXT_I]; 
-                end  
-                 
-            CSR_MIP : begin
-
-                    // mip_msip_ns = csr_wdata[M_SOFT_I];     //3
-                    mip_mtip_ns = csr_wdata[M_TIMER_I];     //7
-                    mip_meip_ns = csr_wdata[M_EXT_I];    //11
-                    // mip_ssip_ns = csr_wdata[S_SOFT_I]; 
-                    mip_stip_ns = csr_wdata[S_TIMER_I]; 
-                    mip_seip_ns = csr_wdata[S_EXT_I]; 
-                 end     
-                   
- 
-               
-            CSR_MTVEC :      begin 
-                            mtvec_base_ns = csr_wdata[63:2];
-                       // mtvec_mode_ns = i_riscv_csr_wdata[1:0]; 
-                         mtvec_mode_ns = csr_wdata[0] ;
-                         //we are in vector mode, as LSB =1 
-                         if (csr_wdata[0]) begin 
-                            mtvec_base_ns = {csr_wdata[63:8] , 6'b0 };
-                          mtvec_mode_ns = csr_wdata[0] ;
-                            end  
-                         
-                         end
-                   
-            // MEDELEG            
-            CSR_MEDELEG:         medeleg_ns =  csr_wdata[15:0] ;
-               
-
-
-               //  MIDELEG
-            CSR_MIDELEG:      
-             begin
-                   //  mideleg_msi_ns =   csr_wdata[M_SOFT_I]     ;       
-                     mideleg_mti_ns   = csr_wdata[M_TIMER_I]      ;
-                     mideleg_mei_ns   = csr_wdata[M_EXT_I]        ;
-                    //  mideleg_ssi_ns  = csr_wdata[S_SOFT_I]      ;
-                      mideleg_sti_ns  = csr_wdata[S_TIMER_I]       ;
-                      mideleg_sei_ns =  csr_wdata[S_EXT_I]        ;
-
-              end     
-  
-
-                 // MSCRATCH (dedicated for use by machine code)       
-   //         CSR_MSCRATCH : mscratch_ns = csr_wdata;   
-
-
-            // MEPC (address of interrupted instruction)
-                CSR_MEPC : mepc_ns = {csr_wdata[63:1],1'b0};   //check is it 2'b00 or 1'b0 accordng to ialign
-                        // mepc = {csr_wdata[63:2],2'b00};
-
-
-             //MCAUSE (indicates cause of trap(either interrupt or exception))
-            CSR_MCAUSE : 
-             begin
-                      mcause_int_excep_ns = csr_wdata[63];
-                      mcause_code_ns = csr_wdata[3:0];  
-             end 
-
-
-                        //(exception-specific information to assist software in handling trap)
-            CSR_MTVAL  :      mtval_ns = csr_wdata; 
-      //   default :begin 
-        //             mscratch_ns =            mscratch_ns ;
-         //end
-         endcase    
-
-
-     end
-
-    end
-                  
-                 
-               
-
-
-
-     /*----------------  */
-     // sequential process
-    /* ---------------- */
-
-    always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst) begin    // i think it hhould be negedge clk >> it was before posedge i edit it
-        if (i_riscv_csr_rst) begin
-            priv_lvl_cs             <= PRIV_LVL_M;
-
-            // machine mode registers
-              //csr_rdata_int[CSR_MSTATUS_SXL_BIT_HIGH:CSR_MSTATUS_SXL_BIT_LOW] = (support_supervisor) ? 2'b10 : 2'b00 ;
-                //    csr_rdata_int[CSR_MSTATUS_MXL_BIT_HIGH:CSR_MSTATUS_MXL_BIT_LOW] =  (support_user)     ? 2'b10 : 2'b00 ;                             
-
-                mstatus_mie_cs <=1'b0;
-                mstatus_mpie_cs <=1'b0;
-                mstatus_sie_cs <=1'b0;
-                mstatus_spie_cs <=1'b0;
-                mstatus_mpp_cs <=1'b0;
-                mstatus_spp_cs <=1'b0;
-                   
-                   //for memory
-                mstatus_mprv_cs <=1'b0;
-                mstatus_mxr_cs  <=1'b0;
-                mstatus_sum_cs <=1'b0 ;
-
-                   //for virtulazation supprot
-                mstatus_tsr_cs <=1'b0;
-                mstatus_tw_cs <=1'b0;
-                mstatus_tvm_cs <=1'b0;
-                    
-
-                mstatus_sbe_cs <=1'b0;
-                mstatus_mbe_cs <=1'b0 ;
-                mstatus_ube_cs  <=1'b0;
-            
-
-
-           
-    //mie
-                mie_meie_cs <=1'b0 ; 
-                mie_mtie_cs <=1'b0 ;
-                // mie_msie_cs <=1'b0 ;
-                mie_seie_cs <=1'b0 ;
-                mie_stie_cs <=1'b0 ;
-                // mie_ssie_cs<=1'b0 ;
-
-                //mip
-                mip_meip_cs <=1'b0 ;
-                mip_mtip_cs <=1'b0 ;
-                // mip_msip_cs <=1'b0 ;
-                mip_seip_cs <=1'b0 ;
-                mip_stip_cs <=1'b0 ;
-               //  mip_ssip_cs <=1'b0 ;
-  
-
-  //mtvec
-                mtvec_base_cs <= 0 ;  // it is 62 bits
-                mtvec_mode_cs <= 2'b0 ;
-                // set to boot address + direct mode + 4 byte offset which is the initial trap
-                   // mtvec_rst_load_q       <= 1'b1;
-                   // mtvec_cs                <= '0;
-
-        //medeleg 
-                 
-                medeleg_cs <= 0 ;  // it is 16 bit
-                //mideleg
-                mideleg_mei_cs <=1'b0 ;
-                mideleg_mti_cs <=1'b0 ;
-            // mideleg_msi_cs<=1'b0 ;
-                mideleg_sei_cs <=1'b0 ;
-                mideleg_sti_cs <=1'b0 ; 
-            // mideleg_ssi_cs <=1'b0 ;
-
-                mepc_cs                 <= 64'b0;
-              //  mscratch_cs             <= 64'b0;
-                mtval_cs                <= 64'b0;
-
-    
-                mcause_code_cs               <= 4'b0000;
-                mcause_int_excep_cs          <= 1'b0 ;
-
-                 o_riscv_csr_gotoTrap_cs        <= 0   ;
-                o_riscv_csr_returnfromTrap_cs   <= 0 ;
-
-              end  
-   
-         else begin
-
-                priv_lvl_cs <= priv_lvl_ns ;
-                mie_meie_cs <= mie_meie_ns ; 
-                mie_mtie_cs <=mie_mtie_ns ;
-              // mie_msie_cs <=mie_msie_ns ;
-                mie_seie_cs <=mie_seie_ns ;
-                mie_stie_cs <=mie_stie_ns ;
-            // mie_ssie_cs<=mie_ssie_ns ;
-
-            //mip
-                mip_meip_cs <=mip_meip_ns ;
-                mip_mtip_cs <=mip_mtip_ns ;
-            // mip_msip_cs <=mip_msip_ns ;
-                mip_seip_cs <=mip_seip_ns;
-                mip_stip_cs <=mip_stip_ns ;
-           //  mip_ssip_cs <=mip_ssip_ns ;
-      
-
-      //mtvec
-                mtvec_base_cs <= mtvec_base_ns ;  // it is 62 bits
-                mtvec_mode_cs <= mtvec_mode_ns ;
-            // set to boot address + direct mode + 4 byte offset which is the initial trap
-               // mtvec_rst_load_q       <= 1'b1;
-               // mtvec_cs                <= '0;
-
-            //medeleg 
-                     
-                medeleg_cs <= medeleg_ns ;  // it is 16 bit
-               //mideleg
-                mideleg_mei_cs <=mideleg_mei_ns ;
-                mideleg_mti_cs <=mideleg_mti_ns ;
-                // mideleg_msi_cs<=mideleg_msi_ns ;
-                mideleg_sei_cs <=mideleg_sei_ns ;
-                mideleg_sti_cs <=mideleg_sti_ns ; 
-                // mideleg_ssi_cs <=mideleg_ssi_ns ;
-
-                mepc_cs                 <= mepc_ns;
-               // mscratch_cs             <= mscratch_ns;
-                mtval_cs                <= mtval_ns;
-
-        
-                mcause_code_cs               <= mcause_code_ns;
-                mcause_int_excep_cs          <= mcause_int_excep_ns;
-                o_riscv_csr_gotoTrap_cs        <=  riscv_csr_gotoTrap_ns   ;
-                o_riscv_csr_returnfromTrap_cs   <= riscv_csr_returnfromTrap_ns ;
-       
-        end
-
-    end
 
 
 
@@ -901,17 +482,352 @@ end
    
     end
     
- always@(posedge i_riscv_csr_clk or posedge i_riscv_csr_rst )
+ 
+     /*----------------  */
+     // sequential process
+    /* ---------------- */
+     /*----------------  */
+    // CSR Write logic
+    /* ---------------- */
+
+    always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst) begin    // i think it hhould be negedge clk >> it was before posedge i edit it
+    
  begin
- if(i_riscv_csr_rst)
- mscratch_cs <= 0; 
- else 
- if (csr_we) 
- begin
- if(i_riscv_csr_address == 'h340)
-  mscratch_cs <= csr_wdata ; 
- end
- end
+
+      if (i_riscv_csr_rst) begin
+
+                priv_lvl_cs       <= PRIV_LVL_M;                            
+
+                mstatus_mie_cs    <=1'b0;
+                mstatus_mpie_cs   <=1'b0;
+                mstatus_sie_cs    <=1'b0;
+                mstatus_spie_cs   <=1'b0;
+                mstatus_mpp_cs    <=1'b0;
+                mstatus_spp_cs    <=1'b0;
+                   
+                   //for memory
+                mstatus_mprv_cs   <=1'b0;
+                mstatus_mxr_cs    <=1'b0;
+                mstatus_sum_cs    <=1'b0 ;
+
+                   //for virtulazation supprot
+                mstatus_tsr_cs    <=1'b0;
+                mstatus_tw_cs     <=1'b0;
+                mstatus_tvm_cs    <=1'b0;
+                    
+
+                mstatus_sbe_cs    <=1'b0;
+                mstatus_mbe_cs    <=1'b0 ;
+                mstatus_ube_cs    <=1'b0;
+            
+
+
+           
+    //mie
+                mie_meie_cs       <=1'b0 ; 
+                mie_mtie_cs       <=1'b0 ;
+                // mie_msie_cs    <=1'b0 ;
+                mie_seie_cs       <=1'b0 ;
+                mie_stie_cs       <=1'b0 ;
+                // mie_ssie_cs    <=1'b0 ;
+
+                //mip
+                mip_meip_cs       <=1'b0 ;
+                mip_mtip_cs       <=1'b0 ;
+                // mip_msip_cs    <=1'b0 ;
+                mip_seip_cs       <=1'b0 ;
+                mip_stip_cs       <=1'b0 ;
+               //  mip_ssip_cs    <=1'b0 ;
+  
+
+  //mtvec
+                mtvec_base_cs     <= 'b0 ;  // it is 62 bits
+                mtvec_mode_cs     <= 2'b0 ;
+                // set to boot address + direct mode + 4 byte offset which is the initial trap
+                   // mtvec_rst_load_q       <= 1'b1;
+                   // mtvec_cs                <= '0;
+
+        //medeleg 
+                 
+                medeleg_cs        <= 'b0 ;  // it is 16 bit
+                //mideleg
+                mideleg_mei_cs    <=1'b0 ;
+                mideleg_mti_cs    <=1'b0 ;
+            // mideleg_msi_cs     <=1'b0 ;
+                mideleg_sei_cs    <=1'b0 ;
+                mideleg_sti_cs    <=1'b0 ; 
+            // mideleg_ssi_cs     <=1'b0 ;
+
+                mepc_cs           <= 64'b0;
+                mscratch_cs     <= 64'b0;
+                mtval_cs          <= 64'b0;
+
+    
+                mcause_code_cs    <= 4'b0000;
+                mcause_int_excep_cs             <= 1'b0 ;
+
+                 o_riscv_csr_gotoTrap_cs        <= 0   ;
+                o_riscv_csr_returnfromTrap_cs   <= 0 ;
+
+           end     
+
+   else 
+          
+                    
+
+                     
+                if(i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned) 
+                    mtval_cs <= i_riscv_csr_addressALU;
+
+                    /* Volume 2 pg. 38: When a trap is taken into M-mode, mcause is written with a code indicating the event that caused the trap */
+            // Interrupts have priority (external first, then s/w, then timer---[2] sec 3.1.9), then synchronous traps.
+            ///* Volume 2 pg. 21: xPIE holds the value of the interrupt-enable bit active prior to the trap. 
+                    
+                   // x IE is set to 0; and xPP is set to y. */
+                     
+                if(go_to_trap ) begin
+
+                         
+                    priv_lvl_cs <= PRIV_LVL_M      ;
+                    mepc_cs         <= i_riscv_csr_pc ;
+                     // When a trap is taken from privilege mode y into privilege mode x,xPIE is set to the value of x IE; ?? check that
+                    mstatus_mpie_cs <= mstatus_mie_cs;
+                    mstatus_mie_cs   <= 0; //no nested interrupt allowed    // if done in software that will not make problem make it again zero
+                    riscv_csr_gotoTrap_cs <=1 ;
+                     mstatus_mpp_cs <= 2'b11;  // check
+
+
+                         
+                    if(external_interrupt_pending_m) begin 
+                        mcause_code_cs <= M_EXT_I; 
+                        mcause_int_excep_cs <= 1;
+                        // if (mideleg_mei_cs )
+                    end
+                   // else if(software_interrupt_pending) begin
+                     //  mcause_code_cs <= MACHINE_SOFTWARE_INTERRUPT; 
+                      //  mcause_int_excep_cs <= 1;
+                      //  if (mideleg_msi_cs)
+                    //end
+                    else if(timer_interrupt_pending_m) begin 
+                        mcause_code_cs<= M_TIMER_I; 
+                        mcause_int_excep_cs <= 1;
+                      // if (mideleg_mti_cs )
+                    end
+                    else if(i_riscv_csr_illegal_inst) begin
+                        mcause_code_cs<= ILLEGAL_INSTRUCTION;
+                        mcause_int_excep_cs <= 0 ;
+                       // if (medeleg_cs[2] ) 
+
+                    end
+                    else if(i_riscv_csr_inst_addr_misaligned) begin
+                       mcause_code_cs <= INSTRUCTION_ADDRESS_MISALIGNED;
+                       mcause_int_excep_cs <= 0;
+                      // if (medeleg_cs[0] )
+                    end
+                    else if(i_riscv_csr_ecall_m) begin 
+                       mcause_code_cs <= ECALL_M;
+                        mcause_int_excep_cs <= 0;
+                        //if (medeleg_cs[11] )
+                      /*  else if(i_riscv_csr_ecall_s) begin 
+                       mcause_code_cs <= ECALL_S;
+                        mcause_int_excep_cs <= 0;
+                        //if (medeleg_cs[9] )
+                        else if(i_riscv_csr_ecall_u) begin 
+                       mcause_code_cs <= ECALL_U;
+                        mcause_int_excep_cs <= 0; 
+                        if (medeleg_cs[8] ) */
+                    end
+                   // else if(i_is_ebreak) begin
+                     //   mcause_code_cs<= EBREAK;
+                      //  mcause_int_excep_cs <= 0;
+                    //end
+                    else if(i_riscv_csr_load_addr_misaligned) begin
+                       mcause_code_cs <= LOAD_ADDRESS_MISALIGNED;
+                        mcause_int_excep_cs <= 0;
+                         //if (medeleg_cs[4] )
+                    end
+                    else if(i_riscv_csr_store_addr_misaligned) begin
+                        mcause_code_cs <= STORE_ADDRESS_MISALIGNED;
+                       mcause_int_excep_cs <= 0;
+                        //if (medeleg_cs[6] )
+                    end
+                   
+                     end     //end of above if (go trap)
+
+           
+
+                 
+                // ------------------------------
+        // Return from Environment
+        // ------------------------------
+        // When executing an xRET instruction, supposing xPP holds the value y, xIE is set to xPIE; the privilege
+        // mode is changed to y; xPIE is set to 1; and xPP is set to U
+       if (mret) begin 
+            // return to the previous privilege level and restore all enable flags // like global interupt enable 
+            // get the previous machine interrupt enable flag
+            mstatus_mie_cs   <= mstatus_mpie_cs;
+            // restore the previous privilege level
+            priv_lvl_cs     <= mstatus_mpp_cs;
+            //xRET sets the pc to the value stored in the xepc register. // // return from exception, IF doesn't care from where we are returning
+            o_riscv_csr_returnfromTrap_cs <=1 ;
+
+            // and xPP is set to the least-privileged supported mode (U if U-mode is implemented, else M)
+            //set mpp to user mode
+            mstatus_mpp_cs  <= (support_user) ? PRIV_LVL_U : PRIV_LVL_M;
+            //xPIE is set to 1 >> set mpie to 1
+            mstatus_mpie_cs <= 1'b1;
+
+       
+           // If xPP?=M, xRET also sets MPRV=0.
+/*
+        if (mstatus_mpp_cs != PRIV_LVL_M) begin
+          mstatus_d.mprv <= 1'b0;
+        end  
+*/
+end 
+
+end
+       
+
+       
+       /* if (sret) begin
+            // return from exception, IF doesn't care from where we are returning
+           
+            // return the previous supervisor interrupt enable flag
+            mstatus_sie_cs  <= mstatus_spie_cs;
+            // restore the previous privilege level
+            priv_lvl_cs     <=  {1'b0, mstatus_spp_ns});
+            // set spp to user mode
+            mstatus_spp_cs  <= 1'b0;
+            // set spie to 1
+            mstatus_spie_cs <= 1'b1;
+        end */
+
+
+      else if (csr_we)  begin        ////csr_enable  //see last always block to know when it is asserted
+
+             unique case (i_riscv_csr_address)
+            // case (i_riscv_csr_address)
+          
+
+
+          /*   registers not to be put in write logic */
+          /* ------mvendorid ,marchid ,  mimpid  ,mhartid , mconfigptr------ */
+
+
+
+            ////MSTATUS (controls hart's current operating state (mie and mpie are the only configurable bits))
+            CSR_MSTATUS : begin
+                               //sxl , uxl are warl so i think not need to have a regitser as they can written by any vlaue
+                               //mbe,sbe,ube are warl so i think not need to have a regitser as they can written by any vlaue
+                               //tvm are warl so i think not need to have a regitser as they can written by any vlaue
+                        mstatus_mie_cs   <= csr_wdata[CSR_MSTATUS_MIE_BIT]                             ;
+                        mstatus_mpie_cs   <= csr_wdata[CSR_MSTATUS_MPIE_BIT]                             ;
+                        mstatus_sie_cs  <= csr_wdata[CSR_MSTATUS_SIE_BIT]                              ;
+                        mstatus_spie_cs   <= csr_wdata[CSR_MSTATUS_SPIE_BIT]                             ;
+                        mstatus_mpp_cs   <= csr_wdata[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW] ;
+                        mstatus_spp_cs  <= csr_wdata[CSR_MSTATUS_SPP] ;
+                           
+                           //for memory
+                        mstatus_mprv_cs   <=  csr_wdata[CSR_MSTATUS_MPRV_BIT]                            ;
+                        mstatus_mxr_cs   <= csr_wdata[CSR_MSTATUS_MXR_BIT]                             ;
+                        mstatus_sum_cs  <= csr_wdata[CSR_MSTATUS_SUM_BIT]                                ;
+
+                           //for virtulazation supprot
+                        mstatus_tsr_cs  <= csr_wdata[CSR_MSTATUS_TSR_BIT]                             ;
+                        mstatus_tw_cs <= csr_wdata[CSR_MSTATUS_TW_BIT]                                ;
+                        //mstatus_tvm_cs <= csr_wdata[CSR_MSTATUS_TVM_BIT]                            ;
+                            
+                                // this register has side-effects on other registers, flush the pipeline
+                        //o_riscv_csr_flush         <= 1'b1;  // >> ?? need to be checked
+                        //mstatus_sbe_cs  <= csr_wdata[CSR_MSTATUS_SBE_BIT]                              ;
+                        //mstatus_mbe_cs  <=csr_wdata[CSR_MSTATUS_MBE_BIT]                               ;
+                        //mstatus_ube_cs <= csr_wdata[CSR_MSTATUS_UBE_BIT]                              ;
+                     end
+        
+          
+           
+            
+            CSR_MIE : begin  
+                   
+                   // mie_msie_cs <= csr_wdata[M_SOFT_I];     //3
+                    mie_mtie_cs <= csr_wdata[M_TIMER_I];     //7
+                    mie_meie_cs <= csr_wdata[M_EXT_I];    //11
+                   // mie_ssie_cs <= csr_wdata[S_SOFT_I]; 
+                    mie_stie_cs <= csr_wdata[S_TIMER_I]; 
+                    mie_seie_cs <= csr_wdata[S_EXT_I]; 
+                end  
+                 
+            CSR_MIP : begin
+
+                    // mip_msip_cs <= csr_wdata[M_SOFT_I];     //3
+                    mip_mtip_cs <= csr_wdata[M_TIMER_I];     //7
+                    mip_meip_cs <= csr_wdata[M_EXT_I];    //11
+                    // mip_ssip_cs <= csr_wdata[S_SOFT_I]; 
+                    mip_stip_cs <= csr_wdata[S_TIMER_I]; 
+                    mip_seip_cs <= csr_wdata[S_EXT_I]; 
+                 end     
+                   
+ 
+               
+            CSR_MTVEC :      begin 
+                            mtvec_base_cs <= csr_wdata[63:2];
+                       // mtvec_mode_cs <= i_riscv_csr_wdata[1:0]; 
+                         mtvec_mode_cs <= csr_wdata[0] ;
+                         //we are in vector mode, as LSB <=1 
+                         if (csr_wdata[0]) begin 
+                            mtvec_base_cs <= {csr_wdata[63:8] , 6'b0 };
+                          mtvec_mode_cs <= csr_wdata[0] ;
+                            end  
+                         
+                         end
+                   
+            // MEDELEG            
+            CSR_MEDELEG:         medeleg_cs <=  csr_wdata[15:0] ;
+               
+
+
+               //  MIDELEG
+            CSR_MIDELEG:      
+             begin
+                   //  mideleg_msi_cs <=   csr_wdata[M_SOFT_I]     ;       
+                     mideleg_mti_cs   <= csr_wdata[M_TIMER_I]      ;
+                     mideleg_mei_cs   <= csr_wdata[M_EXT_I]        ;
+                    //  mideleg_ssi_cs  <= csr_wdata[S_SOFT_I]      ;
+                      mideleg_sti_cs  <= csr_wdata[S_TIMER_I]       ;
+                      mideleg_sei_cs <=  csr_wdata[S_EXT_I]        ;
+
+              end     
+  
+
+                 // MSCRATCH (dedicated for use by machine code)       
+   //         CSR_MSCRATCH : mscratch_cs <= csr_wdata;   
+
+
+            // MEPC (address of interrupted instruction)
+                CSR_MEPC : mepc_cs <= {csr_wdata[63:1],1'b0};   //check is it 2'b00 or 1'b0 accordng to ialign
+                        // mepc <= {csr_wdata[63:2],2'b00};
+
+
+             //MCAUSE (indicates cause of trap(either interrupt or exception))
+            CSR_MCAUSE : 
+             begin
+                      mcause_int_excep_cs <= csr_wdata[63];
+                      mcause_code_cs <= csr_wdata[3:0];  
+             end 
+
+
+                        //(exception-specific information to assist software in handling trap)
+            CSR_MTVAL  :      mtval_cs <= csr_wdata; 
+      //   default :begin 
+        //             mscratch_cs =            mscratch_ns ;
+         //end
+         endcase 
+
+     end // of if (csr_we)
+
+
+end // of always block
 
     
 
