@@ -48,10 +48,10 @@ localparam ENV_CALL_SMODE = 9 ;
 localparam ENV_CALL_MMODE = 11 ;  
 localparam ILLEGAL_INSTR  = 2 ;  
 parameter support_u = 0 ;             
-parameter support_s = 0 ;  
+parameter support_s = 0 ;
 
 // parameter support_m = 0 ;   //must be supported so it is not a confg
-    logic riscv_cu_detect_ecall ,illegal_instr  ;
+    logic riscv_cu_detect_ecall  ;
 
 
     //CSR operation type
@@ -72,9 +72,15 @@ parameter support_s = 0 ;
 
 always_comb
   begin:ctrl_sig_proc
+  //CSR intialize
+ o_riscv_cu_ecall_m
  o_riscv_cu_illgalinst = 'b0;   
- illegal_instr = 1'b0   ;
-o_riscv_cu_iscsr='b0;
+ o_riscv_cu_iscsr='b0;
+ o_riscv_cu_ecall_m = 'b0;
+ o_riscv_cu_ecall_s = 'b0;
+ o_riscv_cu_ecall_u = 'b0;
+ o_riscv_cu_csrop = 'b0;
+////////////////////////////////
     case(i_riscv_cu_opcode)
         7'b0110011:begin
                      case(i_riscv_cu_funct3) 
@@ -616,9 +622,10 @@ o_riscv_cu_iscsr='b0;
                                  o_riscv_cu_memext      = 3'b000;
                                  o_riscv_cu_immsrc      = 3'b000;
                                  o_riscv_cu_aluctrl     = 6'b100000;  
-                                    o_riscv_cu_mulctrl  = 4'b000;
-                                   o_riscv_cu_divctrl   = 4'b000;
-                                   o_riscv_cu_funcsel   = 2'b10;
+                                 o_riscv_cu_mulctrl  = 4'b000;
+                                 o_riscv_cu_divctrl   = 4'b000;
+                                 o_riscv_cu_funcsel   = 2'b10;
+                                 o_riscv_cu_illgalinst = 1'b1 ;
                               end                                                                  
                      endcase
                    end        
@@ -873,6 +880,7 @@ o_riscv_cu_iscsr='b0;
                                  o_riscv_cu_mulctrl   = 4'b0000;
                                  o_riscv_cu_divctrl   = 4'b0000;
                                  o_riscv_cu_funcsel   = 2'b10;
+                                 o_riscv_cu_illgalinst = 1'b1;
                               end                                                   
                      endcase
                    end            
@@ -997,6 +1005,24 @@ o_riscv_cu_iscsr='b0;
                      o_riscv_cu_divctrl    = 4'b0000;
                      o_riscv_cu_funcsel    = 2'b10;
                    end
+        7'b0000000:begin
+                  o_riscv_cu_jump       = 1'b0;
+                  o_riscv_cu_regw       = 1'b0;
+                  o_riscv_cu_asel       = 1'b0;
+                  o_riscv_cu_bsel       = 1'b0;
+                  o_riscv_cu_memw       = 1'b0;
+                  o_riscv_cu_memr       = 1'b0;
+                  o_riscv_cu_storesrc   = 2'b00;//xx
+                  o_riscv_cu_resultsrc  = 2'b00;//xx
+                  o_riscv_cu_bcond      = 4'b0000;
+                  o_riscv_cu_memext     = 3'b000;//xx
+                  o_riscv_cu_immsrc     = 3'b000;
+                  o_riscv_cu_aluctrl    = 6'b000000;
+                  o_riscv_cu_mulctrl    = 4'b0000;
+                  o_riscv_cu_divctrl    = 4'b0000;
+                  o_riscv_cu_funcsel    = 2'b10;
+                  o_riscv_cu_illgalinst = 1'b1    ;
+                end            
        7'b1110011:begin
                          
                             o_riscv_cu_jump       = 1'b0;   
@@ -1041,7 +1067,7 @@ o_riscv_cu_iscsr='b0;
                                 // check privilege level, MRET can only be executed in M mode
                                 // otherwise  raise an illegal instruction
                                 if ( ( i_riscv_cu_privlvl == PRIV_LVL_S) || (i_riscv_cu_privlvl == PRIV_LVL_U) ) 
-                                  illegal_instr = 1'b1;
+                                   o_riscv_cu_illgalinst = 1'b1;
                               end
                  
                           endcase
@@ -1133,22 +1159,22 @@ o_riscv_cu_iscsr='b0;
                   o_riscv_cu_mulctrl    = 4'b0000;
                   o_riscv_cu_divctrl    = 4'b0000;
                   o_riscv_cu_funcsel    = 2'b10;
-                  illegal_instr = 1'b1    ;
+                  o_riscv_cu_illgalinst = 1'b1 ;
                 end
   endcase
    /* --------------------- */
   // Exception handling From decode stage
   /* ---------------------  */
 //if (illegal_instr || is_illegal_i) 
-if (illegal_instr )    // is_illegal_i if csr access fault ?? make may cahnged
+/*if (illegal_instr )    // is_illegal_i if csr access fault ?? make may cahnged
        o_riscv_cu_illgalinst = 1;
         // o_riscv_cu_ex_cause = ILLEGAL_INSTR;
  else
         o_riscv_cu_illgalinst = 0;
-   
+     */    
 if (riscv_cu_detect_ecall)  begin
    case (i_riscv_cu_privlvl)
-                  
+            
                   PRIV_LVL_U :   begin
                                   if (support_u)                        //if support u-mode
                                      o_riscv_cu_ecall_u = 1;
