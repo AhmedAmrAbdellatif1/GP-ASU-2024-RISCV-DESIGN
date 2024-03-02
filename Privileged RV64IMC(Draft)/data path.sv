@@ -127,10 +127,7 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
  );
 
 
-assign   o_riscv_datapath_iscsr_w_trap =  iscsr_mw_trap ;
-assign   o_riscv_datapath_iscsr_m_trap =  iscsr_csr_mw ;
-assign   o_riscv_datapath_iscsr_e_trap =  iscsr_de_em ;
-assign   o_riscv_datapath_iscsr_d_trap = i_riscv_datapath_iscsr_cu_de  ;
+
 
 
   ////// fetch internal signals ////////
@@ -315,8 +312,7 @@ logic [2:0] i_riscv_cu_csrop_de;
 
 
   /////////
-  //assign riscv_rstctrl_f              = i_riscv_datapath_flush_fd | i_riscv_datapath_rst;
-  //assign riscv_rstctrl_d              = i_riscv_datapath_flush_de | i_riscv_datapath_rst;
+
   assign o_riscv_datapath_opcode        = riscv_opcode_d          ;
   assign o_riscv_datapath_pcsrc_e       = riscv_jump_e | riscv_branchtaken;
   assign o_riscv_datapath_rdaddr_m      = riscv_rdaddr_m          ;  // to hazard unit 
@@ -327,7 +323,16 @@ logic [2:0] i_riscv_cu_csrop_de;
   assign o_riscv_datapath_regw_wb       = riscv_regw_wb           ;  // to hazard unit
   assign o_riscv_datapath_resultsrc_e   = riscv_resultsrc_e       ;  // to hazard unit
   assign o_riscv_datapath_rs1addr_d     = riscv_rs1addr_d         ;  //to hazard unit
-  assign o_riscv_datapath_rs2addr_d     = riscv_rs2addr_d         ;  //to hazard unit
+  assign o_riscv_datapath_rs2addr_d     = riscv_rs2addr_d         ;  //to hazard unit 
+
+  //for trap 
+
+    assign riscv_rstctrl_f              = i_riscv_datapath_flush_fd | i_riscv_datapath_rst;
+    assign riscv_rstctrl_d              = i_riscv_datapath_flush_de | i_riscv_datapath_rst;
+    assign   o_riscv_datapath_iscsr_w_trap =  iscsr_mw_trap ;
+   assign   o_riscv_datapath_iscsr_m_trap =  iscsr_csr_mw ;
+   assign   o_riscv_datapath_iscsr_e_trap =  iscsr_de_em ;
+  assign   o_riscv_datapath_iscsr_d_trap = i_riscv_datapath_iscsr_cu_de  ;
   
   
   ////fetch stage instantiation////
@@ -359,7 +364,7 @@ logic [2:0] i_riscv_cu_csrop_de;
     //<------------------------------------------------------------
     .i_riscv_fd_clk             (i_riscv_datapath_clk)            ,
     .i_riscv_fd_rst             (i_riscv_datapath_rst)            ,
-    .i_riscv_fd_flush           (i_riscv_datapath_flush_fd)       ,
+    .i_riscv_fd_flush           (riscv_rstctrl_f)       ,
     .i_riscv_fd_en              (i_riscv_datapath_stall_fd)       ,
     .i_riscv_fd_pc_f            (o_riscv_datapath_pc)             ,
     .i_riscv_fd_inst_f          (riscv_inst_f)                    ,
@@ -411,7 +416,7 @@ logic [2:0] i_riscv_cu_csrop_de;
     .i_riscv_de_en              (i_riscv_datapath_stall_de)       ,
     .i_riscv_de_clk             (i_riscv_datapath_clk)            ,
     .i_riscv_de_rst             (i_riscv_datapath_rst)            ,
-    .i_riscv_de_flush           (i_riscv_datapath_flush_de)       ,
+    .i_riscv_de_flush           (riscv_rstctrl_d)       ,
     .i_riscv_de_pc_d            (riscv_pc_d)                      ,
     .i_riscv_de_rs1addr_d       (riscv_rs1addr_d)                 ,
     .i_riscv_de_rs1data_d       (riscv_rs1data_d)                 ,
