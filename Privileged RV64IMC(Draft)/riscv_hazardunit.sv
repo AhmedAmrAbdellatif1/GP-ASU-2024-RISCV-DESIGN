@@ -19,7 +19,7 @@ module riscv_hazardunit (
    input  logic           i_riscv_hzrdu_iscsr_d       ,   // for csr
    input  logic           i_riscv_hzrdu_iscsr_w        ,   // for csr
    input logic            i_riscv_hzrdu_iscsr_m       ,
-   input  logic            o_riscv_hzrdu_passwb        ,
+   output logic           o_riscv_hzrdu_passwb        ,
    output logic   [1:0]   o_riscv_hzrdu_fwda          , 
    output logic   [1:0]   o_riscv_hzrdu_fwdb          , 
    output logic           o_riscv_hzrdu_stallpc       ,
