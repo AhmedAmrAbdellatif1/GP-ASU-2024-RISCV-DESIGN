@@ -624,7 +624,7 @@ logic [2:0] i_riscv_cu_csrop_de;
   riscv_mstage uriscv_mstage(
     .i_riscv_mstage_dm_rdata    (i_riscv_datapath_dm_rdata)       ,
     .i_riscv_mstage_memext      (riscv_memext_m)                  ,     
-    .o_riscv_mstage_memload     (riscv_memload_m)
+    .o_riscv_mstage_memload     (riscv_memload_m),
 
      .i_riscv_mstage_mux2_sel(i_riscv_datapath_muxcsr_sel) ,       //From hazard unit
      .i_riscv_mux2_in0(riscv_datapath_csrwdata_em_csr),   //[width-1:0]

@@ -73,7 +73,6 @@ parameter support_s = 0 ;
 always_comb
   begin:ctrl_sig_proc
   //CSR intialize
- o_riscv_cu_ecall_m
  o_riscv_cu_illgalinst = 'b0;   
  o_riscv_cu_iscsr='b0;
  o_riscv_cu_ecall_m = 'b0;
