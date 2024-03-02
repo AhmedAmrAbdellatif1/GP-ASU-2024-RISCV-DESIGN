@@ -1,13 +1,22 @@
+
+
+
   module riscv_mstage #(parameter width=64)(
     input  logic [width-1:0] i_riscv_mstage_dm_rdata,
     input  logic [2:0]      i_riscv_mstage_memext,
-    output logic [width-1:0] o_riscv_mstage_memload 
+    output logic [width-1:0] o_riscv_mstage_memload ,
 
      //input logic          i_riscv_core_timerinterupt  ,
      //input logic          i_riscv_core_externalinterupt
 
     //trap 
   //  input  logic             i_riscv_csr_
+    
+    input  logic  i_riscv_mstage_mux2_sel ,
+    input  logic [width-1:0]  i_riscv_mux2_in0,   //[width-1:0]
+    input  logic [width-1:0]  i_riscv_mux2_in1,
+    output logic [width-1:0]  o_riscv_mstage_mux2_out
+
 
  );
   riscv_memext u_riscv_memext(
@@ -15,7 +24,14 @@
     .i_riscv_memext_data(i_riscv_mstage_dm_rdata),
     .o_riscv_memext_loaded(o_riscv_mstage_memload)
   );
-
+riscv_mux2  u_riscv_mux2 
+  (
+    .i_riscv_mux2_sel(i_riscv_mstage_mux2_sel),
+  .i_riscv_mux2_in0(i_riscv_mux2_in0),   //[width-1:0]
+   .i_riscv_mux2_in1(i_riscv_mux2_in1),   //[width-1:0]
+    .o_riscv_mux2_out(o_riscv_mstage_mux2_out)    //[width-1:0] 
+ 
+  );
     
   endmodule
  /*
