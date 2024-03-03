@@ -1,4 +1,4 @@
-module data_array #(
+module riscv_dcache_data #(
     parameter INDEX       = 12,
     parameter DWIDTH      = 128,
     parameter CACHE_DEPTH = 4096,

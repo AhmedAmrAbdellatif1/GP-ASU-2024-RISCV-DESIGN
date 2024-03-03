@@ -82,11 +82,11 @@ module riscv_data_cache #(
   assign o_riscv_dcache_cpu_data_out  = cache_data_out[63:0];
 
   //****************** Instantiation ******************//
-  tag_array #(
+  riscv_dcache_tag #(
     .IDX          (INDEX)                       ,
     .TAG          (TAG)                         ,
     .CACHE_DEPTH  (CACHE_DEPTH)     
-  ) u_tag_array (     
+  ) u_riscv_dcache_tag (     
     .clk              (i_riscv_dcache_clk)        ,
     .rst              (i_riscv_dcache_rst)        ,
     .index            (index)                     ,
@@ -102,11 +102,11 @@ module riscv_data_cache #(
   );
 
   ///////////////////////////
-  data_array #(
+  riscv_dcache_data #(
     .INDEX        (INDEX),
     .DWIDTH       (DATA_WIDTH),
     .CACHE_DEPTH  (CACHE_DEPTH)
-  ) u_data_array (
+  ) u_riscv_dcache_data (
       .clk        (i_riscv_dcache_clk)          ,    
       .wren       (fsm_cache_wren)              ,
       .rden       (fsm_cache_rden)              ,
@@ -136,7 +136,7 @@ module riscv_data_cache #(
   );
 
   ////////////////////////
-  cache_fsm u_cache_fsm  (
+  riscv_dcache_fsm u_riscv_dcache_fsm  (
   .clk              (i_riscv_dcache_clk)          ,
   .rst              (i_riscv_dcache_rst)          ,
   .cpu_wren         (i_riscv_dcache_cpu_wren)     ,

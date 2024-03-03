@@ -1,4 +1,4 @@
-module tag_array #( 
+module riscv_dcache_tag #( 
     parameter IDX         = 12          ,
     parameter TAG         = 9           ,
     parameter CACHE_DEPTH = 4096        

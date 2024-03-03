@@ -1,4 +1,4 @@
-module cache_fsm  (
+module riscv_dcache_fsm  (
   input   logic clk               ,
   input   logic rst               ,
   input   logic cpu_wren          ,
