@@ -109,6 +109,7 @@ logic [2:0] riscv_cu_immsrc_datapath ; /// from control unit [2:0]
 
   logic [width-1:0] riscv_datapath_addressalu_em_csr  ;
   logic [width-1:0] riscv_datapath_csrwdata_em_csr   ;
+  logic [4:0] riscv_hzrdu_rs1addr_m   ;
   //logic             riscv_datapath_iscsr_em_csr   ;
   
 
@@ -177,7 +178,7 @@ riscv_datapath u_top_datapath(               //#(parameter width=64) (
   .o_riscv_datapath_memr_e(o_riscv_core_memr_e),
   .o_riscv_datapath_rdaddr_m(riscv_datapath_rdaddr_m_hzrdu),      /// to hazard unit [4:0]
   .o_riscv_datapath_regw_m(riscv_datapath_regw_m_hzrdu),       /// to hazard unit
-  
+  .o_riscv_datapath_rs1addr_m(riscv_hzrdu_rs1addr_m),
   /////////////////////write back ///////////
   .o_riscv_datapath_regw_wb(riscv_datapath_regw_wb_hzrdu),     /// to hazard unit   
   .o_riscv_datapath_rdaddr_wb(riscv_datapath_rdaddr_wb_hzrdu) ,   /// to hazard unit [4:0] 
@@ -325,12 +326,12 @@ riscv_hazardunit u_top_hzrdu
   .o_riscv_hzrdu_stallde(riscv_datapath_stall_de_hzrdu),
 
 
-   .i_riscv_hzrdu_iscsr_e(muxcsr_sel_hzrd_datapath)        ,   // for csr
+   .i_riscv_hzrdu_iscsr_e(iscsr_e_hzrd_datapath)        ,   // for csr
    .i_riscv_hzrdu_iscsr_d(iscsr_d_hzrd_datapath)       ,   // for csr
    .i_riscv_hzrdu_iscsr_w(iscsr_w_hzrd_datapath)        ,   // for csr
    .i_riscv_hzrdu_iscsr_m(iscsr_m_hzrd_datapath)       ,
-   .o_riscv_hzrdu_passwb(muxcsr_sel_hzrd_datapath)        
-
+   .o_riscv_hzrdu_passwb(muxcsr_sel_hzrd_datapath)     ,   
+   .i_riscv_hzrdu_rs1addr_m(riscv_hzrdu_rs1addr_m)
   
   );
 

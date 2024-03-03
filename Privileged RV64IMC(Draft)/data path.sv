@@ -120,9 +120,9 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
      //trap 
      //input from top system 
      input logic          i_riscv_core_timerinterupt  ,
-     input logic          i_riscv_core_externalinterupt
+     input logic          i_riscv_core_externalinterupt,
    
-  
+   output [4:0] o_riscv_datapath_rs1addr_m
 
  );
 
@@ -595,7 +595,8 @@ logic [2:0] i_riscv_cu_csrop_de;
     .i_riscv_em_csrwritedata_e         (csrwritedata_estage_em)  , //[width-1:0]
 
 
-
+    .i_riscv_em_rs1addr_e(o_riscv_datapath_rs1addr_e),
+    .o_riscv_em_rs1addr_m(o_riscv_datapath_rs1addr_m),
 
      
     //  o_riscv_em_ecall_u_m(riscv_datapath_ecall_u_em_csr)  ,

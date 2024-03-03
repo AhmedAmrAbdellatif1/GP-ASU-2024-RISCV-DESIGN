@@ -56,22 +56,23 @@
 
     
      
-    //output             o_riscv_em_ecall_u_m  ,
-    //output             o_riscv_em_ecall_s_m  , 
-    output   logic         o_riscv_em_ecall_m_m    , 
-    output   logic [11:0]  o_riscv_em_csraddress_m ,
-    output   logic         o_riscv_em_illegal_inst_m ,
+    //output                  o_riscv_em_ecall_u_m  ,
+    //output                  o_riscv_em_ecall_s_m  , 
+    output   logic            o_riscv_em_ecall_m_m    , 
+    output   logic [11:0]     o_riscv_em_csraddress_m ,
+    output   logic            o_riscv_em_illegal_inst_m ,
     //Control Signals 
-    output   logic         o_riscv_em_iscsr_m ,
-    output   logic [2:0]  o_riscv_em_csrop_m ,
-    //output   logic          o_riscv_em_immreg_m ,
-    output   logic  [63:0]   o_riscv_em_addressalu_m ,
-     output   logic              o_riscv_em_inst_addr_misaligned_m   ,
-    output   logic             o_riscv_em_load_addr_misaligned_m    ,
-    output   logic             o_riscv_em_store_addr_misaligned_m   ,
-    output logic [width-1:0]  o_riscv_em_csrwritedata_m    
-
-    
+    output   logic              o_riscv_em_iscsr_m ,
+    output   logic [2:0]        o_riscv_em_csrop_m ,
+    //output   logic            o_riscv_em_immreg_m ,
+    output   logic  [63:0]      o_riscv_em_addressalu_m ,
+     output   logic             o_riscv_em_inst_addr_misaligned_m   ,
+    output   logic              o_riscv_em_load_addr_misaligned_m    ,
+    output   logic              o_riscv_em_store_addr_misaligned_m   ,
+    output   logic [width-1:0]  o_riscv_em_csrwritedata_m    ,
+    // for CSR HAZARD
+    input    logic [4:0]  i_riscv_em_rs1addr_e,
+    output   logic [4:0]  o_riscv_em_rs1addr_m
 
 
   );
@@ -110,7 +111,7 @@
             o_riscv_em_store_addr_misaligned_m  <= 'b0;  
             o_riscv_em_csrwritedata_m           <= 'b0;  
 
-
+            o_riscv_em_rs1addr_m <= 'b0;
 
 
             //---------------------------->
@@ -155,7 +156,7 @@
             o_riscv_em_load_addr_misaligned_m    <= 'b0;
             o_riscv_em_store_addr_misaligned_m  <= 'b0;  
 
-
+            o_riscv_em_rs1addr_m <= 'b0;
         //---------------------------------------->
             `ifdef TEST
             o_riscv_em_inst         <= 'b0;
@@ -200,7 +201,7 @@
             o_riscv_em_store_addr_misaligned_m  <= o_riscv_em_store_addr_misaligned_m;  
              o_riscv_em_csrwritedata_m           <= o_riscv_em_csrwritedata_m; 
 
-
+             o_riscv_em_rs1addr_m <= o_riscv_em_rs1addr_m;
         //---------------------------------------->
         `ifdef TEST
         o_riscv_em_inst         <= o_riscv_em_inst;
@@ -241,7 +242,7 @@ end
             o_riscv_em_load_addr_misaligned_m    <= i_riscv_em_load_addr_misaligned_e;
             o_riscv_em_store_addr_misaligned_m  <= i_riscv_em_store_addr_misaligned_e ; 
             o_riscv_em_csrwritedata_m     <=   i_riscv_em_csrwritedata_e ;
-
+            o_riscv_em_rs1addr_m          <=   i_riscv_em_rs1addr_e;
             //----------------------------------------->
             `ifdef TEST
             o_riscv_em_inst         <= i_riscv_em_inst;

@@ -19,6 +19,7 @@ module riscv_hazardunit (
    input  logic           i_riscv_hzrdu_iscsr_d       ,   // for csr
    input  logic           i_riscv_hzrdu_iscsr_w        ,   // for csr
    input logic            i_riscv_hzrdu_iscsr_m       ,
+   input logic    [4:0]   i_riscv_hzrdu_rs1addr_m     ,  // for csr hazard
    output logic           o_riscv_hzrdu_passwb        ,
    output logic   [1:0]   o_riscv_hzrdu_fwda          , 
    output logic   [1:0]   o_riscv_hzrdu_fwdb          , 
@@ -88,7 +89,7 @@ always @(*)
 //add feature if csr instruction detected stall as case of  memory instruction // csr is first in race so need to stall  
 always @(*) 
   begin 
-    if ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
+    if ( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e || ( (i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e)&& !i_riscv_hzrdu_iscsr_d )) && 
            ( i_riscv_hzrdu_resultsrc_e == 2'b10 || ( i_riscv_hzrdu_iscsr_e == 1'b1 &&  ~i_riscv_hzrdu_iscsr_d  )  ) ) || glob_stall)
         begin
           o_riscv_hzrdu_stallpc = 1 ;
@@ -132,7 +133,7 @@ always_comb
 
   always @(*)
     begin
-      if  ( i_riscv_hzrdu_iscsr_m == 1'b1 &&  i_riscv_hzrdu_iscsr_w == 1'b1 )
+      if  ( i_riscv_hzrdu_iscsr_m == 1'b1 &&  i_riscv_hzrdu_iscsr_w == 1'b1 && (i_riscv_hzrdu_rdaddr_w == i_riscv_hzrdu_rs1addr_m))
           o_riscv_hzrdu_passwb = 1 ;
       else
           o_riscv_hzrdu_passwb = 0 ;        

@@ -469,8 +469,8 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
             end
      
             default: begin
-                csr_we   = 1'b1;
-               // csr_read = 1'b0;
+                csr_we   = 1'b0;
+               csr_read = 1'b0;
             end
         endcase
         // if we are retiring an exception do not return from exception
@@ -593,7 +593,7 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
                      // When a trap is taken from privilege mode y into privilege mode x,xPIE is set to the value of x IE; ?? check that
                     mstatus_mpie_cs <= mstatus_mie_cs;
                     mstatus_mie_cs   <= 0; //no nested interrupt allowed    // if done in software that will not make problem make it again zero
-                    riscv_csr_gotoTrap_cs <=1 ;
+                    o_riscv_csr_gotoTrap_cs <=1 ;
                      mstatus_mpp_cs <= 2'b11;  // check
 
 
@@ -686,7 +686,7 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
 */
 end 
 
-end
+//end
        
 
        
@@ -801,7 +801,7 @@ end
   
 
                  // MSCRATCH (dedicated for use by machine code)       
-   //         CSR_MSCRATCH : mscratch_cs <= csr_wdata;   
+             CSR_MSCRATCH : mscratch_cs <= csr_wdata;   
 
 
             // MEPC (address of interrupted instruction)
@@ -830,7 +830,7 @@ end
 end // of always block
 
     
-
+end
 
 
      

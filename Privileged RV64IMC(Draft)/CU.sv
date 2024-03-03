@@ -79,6 +79,7 @@ always_comb
  o_riscv_cu_ecall_s = 'b0;
  o_riscv_cu_ecall_u = 'b0;
  o_riscv_cu_csrop = 'b0;
+ o_riscv_cu_sel_rs_imm = 'b0;
 ////////////////////////////////
     case(i_riscv_cu_opcode)
         7'b0110011:begin
@@ -1020,7 +1021,7 @@ always_comb
                   o_riscv_cu_mulctrl    = 4'b0000;
                   o_riscv_cu_divctrl    = 4'b0000;
                   o_riscv_cu_funcsel    = 2'b10;
-                  o_riscv_cu_illgalinst = 1'b1    ;
+                  o_riscv_cu_illgalinst = 1'b0    ;
                 end            
        7'b1110011:begin
                          
