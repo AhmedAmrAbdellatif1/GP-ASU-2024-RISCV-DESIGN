@@ -5,7 +5,6 @@ module dram #(
   )
   (
     input   logic                   clk                     ,
-    //input   logic                   rst                     ,      
     input   logic                   wren                    ,
     input   logic                   rden                    ,
     input   logic [AWIDTH-1:0]      addr                    ,
