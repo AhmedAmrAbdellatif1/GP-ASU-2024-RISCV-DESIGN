@@ -95,14 +95,14 @@ always @(*)
 
   always @(*)
     begin
-      if( ( (i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
-          i_riscv_hzrdu_resultsrc_e == 2'b10 ) || i_riscv_hzrdu_pcsrc )
+      if( ( ((i_riscv_hzrdu_rs1addr_d == i_riscv_hzrdu_rdaddr_e ||  i_riscv_hzrdu_rs2addr_d == i_riscv_hzrdu_rdaddr_e  ) && 
+          i_riscv_hzrdu_resultsrc_e == 2'b10 ) || i_riscv_hzrdu_pcsrc) && !glob_stall )
           o_riscv_hzrdu_flushde = 1 ;
       else
           o_riscv_hzrdu_flushde = 0 ;        
     end
 
-assign o_riscv_hzrdu_flushfd =  ( i_riscv_hzrdu_pcsrc )? 1 : 0 ;
+assign o_riscv_hzrdu_flushfd =  ( (i_riscv_hzrdu_pcsrc) && !glob_stall )? 1 : 0 ;
 
 ///////////////////////////////mult/div stalling/////////////////////
 always_comb

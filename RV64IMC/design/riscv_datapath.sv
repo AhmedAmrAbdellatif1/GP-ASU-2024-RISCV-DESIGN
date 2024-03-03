@@ -352,7 +352,8 @@ module riscv_datapath #(parameter width=64) (
   ////memory stage instantiation////
   riscv_mstage uriscv_mstage(
     .i_riscv_mstage_dm_rdata    (i_riscv_datapath_dm_rdata)       ,
-    .i_riscv_mstage_memext      (riscv_memext_m)                  ,     
+    .i_riscv_mstage_memext      (riscv_memext_m)                  ,
+    .i_riscv_mstage_addr        (riscv_rddata_me)                 , //<========== TAKE CARE
     .o_riscv_mstage_memload     (riscv_memload_m)
   );
 
@@ -413,7 +414,7 @@ module riscv_datapath #(parameter width=64) (
   .i_riscv_trc_rdaddr     (riscv_rdaddr_wb)             ,
   .i_riscv_trc_memaddr    (riscv_memaddr_wb)            ,
   .i_riscv_trc_pc         (riscv_pc_wb)                 ,
-  .i_riscv_trc_rs2data    (riscv_rs2data_wb)            ,
+  .i_riscv_trc_store      (riscv_rs2data_wb)            ,
   .i_riscv_trc_rddata     (riscv_rddata_wb)
   ); 
   `endif

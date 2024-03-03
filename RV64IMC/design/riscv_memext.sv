@@ -58,12 +58,12 @@ module riscv_memext(
   3'b010:    
     case(byte_offset[2]) // lw
       1'b0: o_riscv_memext_loaded={{32{i_riscv_memext_data[31]}},i_riscv_memext_data[31:0]} ;
-      1:b1: o_riscv_memext_loaded={{32{i_riscv_memext_data[63]}},i_riscv_memext_data[63:32]} ;
+      1'b1: o_riscv_memext_loaded={{32{i_riscv_memext_data[63]}},i_riscv_memext_data[63:32]} ;
     endcase
   3'b110:                   
     case(byte_offset[2]) // lwu
       1'b0: o_riscv_memext_loaded={{32{1'b0}},i_riscv_memext_data[31:0]} ;
-      1:b1: o_riscv_memext_loaded={{32{1'b0}},i_riscv_memext_data[63:32]} ;
+      1'b1: o_riscv_memext_loaded={{32{1'b0}},i_riscv_memext_data[63:32]} ;
     endcase
   //load double word
   3'b011: o_riscv_memext_loaded=i_riscv_memext_data;

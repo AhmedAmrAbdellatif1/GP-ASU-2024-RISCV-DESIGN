@@ -13,7 +13,7 @@ module tag_array #(
     input   logic           replace_tag ,
     output  logic           hit         ,
     output  logic           dirty       ,
-    output  logic [TAG-1:0] tag_old//new
+    output  logic [TAG-1:0] tag_old
   );
 
   logic [TAG-1:0] tag_buffer   [0:CACHE_DEPTH-1];
