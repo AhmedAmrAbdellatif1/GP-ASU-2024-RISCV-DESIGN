@@ -5,6 +5,7 @@ input i_riscv_rst
 
 ////////////////////////signals from datapath to IM/////////////////////////
 logic [63:0] riscv_datapath_pc_im;
+logic        riscv_datapath_stall_m_im;
 ////////////////////////signals from im to datapath/////////////////////////
 logic [31:0] riscv_im_inst_datapath;
 
@@ -26,7 +27,8 @@ riscv_core u_top_core(
      .i_riscv_core_clk              (i_riscv_clk)                       ,
      .i_riscv_core_rst              (i_riscv_rst)                       ,
      .i_riscv_core_rdata            (riscv_datapath_rdata_dm)           ,
-     .i_riscv_core_stall_m          (riscv_datapath_stall_m_dm)         ,
+     .i_riscv_core_stall_dm         (riscv_datapath_stall_m_dm)         ,
+     .i_riscv_core_stall_im         (riscv_datapath_stall_m_im)         ,
      .i_riscv_core_timerinterupt    ()                                  ,
      .i_riscv_core_externalinterupt ()                                  , 
      .o_riscv_core_pc               (riscv_datapath_pc_im)              ,
@@ -59,9 +61,15 @@ riscv_data_cache u_data_cache(
   .o_riscv_dcache_cpu_data_out    (riscv_datapath_rdata_dm)           ,
   .o_riscv_dcache_cpu_stall       (riscv_datapath_stall_m_dm)        
 );
-
-riscv_im u_top_im(
+riscv_instructions_cache u_data_cache(
+  .i_riscv_icache_clk             (i_riscv_clk)                      ,
+  .i_riscv_icache_rst             (i_riscv_rst)                      ,
+  .i_riscv_icache_phys_addr       (riscv_datapath_pc_im)             ,  
+  .o_riscv_icache_cpu_instr_out   (riscv_im_inst_datapath)           ,  
+  .o_riscv_icache_cpu_stall       (riscv_datapath_stall_m_im)  
+);
+/*riscv_im u_top_im(
   .i_riscv_im_pc      (riscv_datapath_pc_im)    ,
   .o_riscv_im_inst    (riscv_im_inst_datapath)
-);
+);*/
 endmodule
