@@ -153,7 +153,7 @@ module riscv_dcache_fsm  (
         if(mem_ready) begin
           next_state    = ALLOCATE;
           cache_rden    = 1'b0;
-          cache_wren    = 1'b0;
+          cache_wren    = 1'b0;    //<--- changed due to error in manipulating misalignment dirty changes
           cache_insel   = 1'b1;
           addr_insel    = 1'b0;
           mem_rden      = 1'b1;
@@ -202,9 +202,9 @@ module riscv_dcache_fsm  (
           addr_insel    = 1'b0;
           mem_rden      = 1'b0;
           mem_wren      = 1'b0;  
-          set_dirty     = 1'b0;   
-          set_valid     = 1'b0;    
-          replace_tag   = 1'b0;
+          set_dirty     = cpu_wren_reg;     //<--- changed due to error in manipulating misalignment dirty changes   
+          set_valid     = 1'b1;             //<--- changed due to error in manipulating misalignment dirty changes    
+          replace_tag   = 1'b1;             //<--- changed due to error in manipulating misalignment dirty changes
           stall         = 1'b1;
           tag_sel       = 1'b0;
         end
@@ -275,7 +275,7 @@ module riscv_dcache_fsm  (
         if(mem_ready) begin
           next_state    = ALLOCATE_MISALGN;
           cache_rden    = 1'b0;
-          cache_wren    = 1'b0;
+          cache_wren    = 1'b0;    //<--- changed due to error in manipulating misalignment dirty changes
           cache_insel   = 1'b1;
           addr_insel    = 1'b1;
           mem_rden      = 1'b1;
@@ -338,9 +338,9 @@ module riscv_dcache_fsm  (
          addr_insel    = 1'b0;
          mem_rden      = 1'b0;
          mem_wren      = 1'b0;  
-         set_dirty     = cpu_wren_reg;   
-         set_valid     = 1'b1;    
-         replace_tag   = 1'b1;
+         set_dirty     = 1'b0;    //<--- changed due to error in manipulating misalignment dirty changes
+         set_valid     = 1'b0;    //<--- changed due to error in manipulating misalignment dirty changes    
+         replace_tag   = 1'b0;    //<--- changed due to error in manipulating misalignment dirty changes
          stall         = 1'b0;
          tag_sel       = 1'b0;
          if(cpu_rden || cpu_wren)
