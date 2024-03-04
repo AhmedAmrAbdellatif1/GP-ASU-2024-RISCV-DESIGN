@@ -7,7 +7,7 @@ input  logic  [1:0]       i_riscv_exception_store_sel,
 output logic              o_riscv_exception_store_addr_misaligned,
 output logic              o_riscv_exception_load_addr_misaligned,
 output logic              o_riscv_exception_inst_addr_misaligned
-);
+);/*
 typedef enum logic [6:0] {
     OPCODE_LOAD     = 7'h03,
     OPCODE_OP_IMM   = 7'h13,
@@ -111,7 +111,6 @@ typedef enum logic [6:0] {
 
         end
     endcase
-  end
-        
-
+  end 
+*/
 endmodule

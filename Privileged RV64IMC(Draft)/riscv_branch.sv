@@ -5,31 +5,35 @@ module riscv_branch (
   output logic signed             o_riscv_branch_taken
   );
 
-  logic EQ,LT,LTU;
+  localparam  BEQ  = 3'b000,
+              BNE  = 3'b001,
+              BLT  = 3'b100,
+              BGE  = 3'b101,
+              BLTU = 3'b110,
+              BGEU = 3'b111;
 
-  assign EQ  = (i_riscv_branch_rs1data==i_riscv_branch_rs2data)? 1:0;
-  assign LT  = (i_riscv_branch_rs1data<i_riscv_branch_rs2data)? 1:0;
-  assign LTU = ($unsigned(i_riscv_branch_rs1data)<$unsigned(i_riscv_branch_rs2data))? 1:0;
+  // Comparator Flags            
+  logic   EQ,LT,LTU;
+  assign  EQ  = (i_riscv_branch_rs1data==i_riscv_branch_rs2data)? 1:0;
+  assign  LT  = (i_riscv_branch_rs1data<i_riscv_branch_rs2data)? 1:0;
+  assign  LTU = ($unsigned(i_riscv_branch_rs1data)<$unsigned(i_riscv_branch_rs2data))? 1:0;
 
   always @(*) 
     begin
-        if (i_riscv_branch_cond[3]) 
-          begin
-            case (i_riscv_branch_cond[2:0])
-            //equality , non equality doesnt mean either signed/unsigned 
-                3'b000:   o_riscv_branch_taken =  (  EQ )    ? 1 : 0 ;  //beq
-                3'b001:   o_riscv_branch_taken =  ( ~EQ )    ? 1 : 0 ;  //bne
-            //signed
-                3'b100:   o_riscv_branch_taken =  (  LT )    ? 1 : 0 ;  //blt  
-                3'b101:   o_riscv_branch_taken =  ( ~LT )    ? 1 : 0 ;  //bge
-            //unsigned
-                3'b110:   o_riscv_branch_taken =  (  LTU )   ? 1 : 0 ;  //bltu
-                3'b111:   o_riscv_branch_taken =  ( ~LTU )   ? 1 : 0 ;  //bgeu
-                default:  o_riscv_branch_taken = 0 ;
-            endcase     
-          end    
-        else 
-          o_riscv_branch_taken=0 ;
+      if (i_riscv_branch_cond[3]) // if branch comparator is enabled
+        begin
+          case (i_riscv_branch_cond[2:0])
+            BEQ:      o_riscv_branch_taken =  (  EQ )    ? 1 : 0 ;
+            BNE:      o_riscv_branch_taken =  ( ~EQ )    ? 1 : 0 ;
+            BLT:      o_riscv_branch_taken =  (  LT )    ? 1 : 0 ;
+            BGE:      o_riscv_branch_taken =  ( ~LT )    ? 1 : 0 ;
+            BLTU:     o_riscv_branch_taken =  (  LTU )   ? 1 : 0 ;
+            BGEU:     o_riscv_branch_taken =  ( ~LTU )   ? 1 : 0 ;
+            default:  o_riscv_branch_taken = 0 ;
+          endcase     
+        end    
+      else // if branch comparator is disabled -> outputs zeros
+        o_riscv_branch_taken=0 ;
     end
 endmodule
 

@@ -21,6 +21,5 @@ module riscv_im (
   
   assign pcplus = new_pc_for_test + 64'b10;
   
-//assign o_riscv_im_inst=RAM[i_riscv_im_pc[63:2]];  //pc=0,4,8,12 ...> ram=0,1,2,3 [word aligned] 
 endmodule
 

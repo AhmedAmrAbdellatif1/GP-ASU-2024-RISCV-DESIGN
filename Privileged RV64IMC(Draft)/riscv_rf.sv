@@ -25,7 +25,7 @@
               if(i!=21)
                 rf[i]<=64'b0;
               else
-                rf[21] <= 'h0800b6980;
+                rf[21] <= 'h800b6980;
             end
         end         
       else

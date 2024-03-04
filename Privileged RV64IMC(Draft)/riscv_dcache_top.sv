@@ -163,9 +163,9 @@ module riscv_data_cache #(
   .tag_sel          (fsm_tag_sel)
 );
 
-cache_misalign #( //<-------------MISALIGNMENT
+riscv_dcache_misalign #( //<-------------MISALIGNMENT
   .OFFSET(BYTE_OFF)
-) u_cache_misalign (
+) u_riscv_dcache_misalign (
   .wren           (fsm_cpu_wren_reg)            ,
   .stall          (o_riscv_dcache_cpu_stall)    ,
   .rden           (fsm_cpu_rden_reg)            ,
