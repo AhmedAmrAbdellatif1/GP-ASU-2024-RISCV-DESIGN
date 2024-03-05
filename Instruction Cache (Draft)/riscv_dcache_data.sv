@@ -119,96 +119,92 @@ module riscv_dcache_data #(
   end
   ///  ************************************  combinational load  ************************************ ///
   always_comb begin
-      if(rden && !wren) begin
-        if(mem_out) begin
-          data_out = dcache[index];
-        end
-        else begin
-          case(loadsrc)
-            2'b00:begin // lb/lbu
-              case (byte_offset)
-                4'b0000:data_out = dcache[index][7:0]     ;
-                4'b0001:data_out = dcache[index][15:8]    ;
-                4'b0010:data_out = dcache[index][23:16]   ;
-                4'b0011:data_out = dcache[index][31:24]   ;
-                4'b0100:data_out = dcache[index][39:32]   ;
-                4'b0101:data_out = dcache[index][47:40]   ;
-                4'b0110:data_out = dcache[index][55:48]   ;
-                4'b0111:data_out = dcache[index][63:56]   ;
-                4'b1000:data_out = dcache[index][71:64]   ;
-                4'b1001:data_out = dcache[index][79:72]   ;
-                4'b1010:data_out = dcache[index][87:80]   ;
-                4'b1011:data_out = dcache[index][95:88]   ;
-                4'b1100:data_out = dcache[index][103:96]  ;
-                4'b1101:data_out = dcache[index][111:104] ;
-                4'b1110:data_out = dcache[index][119:112] ;
-                4'b1111:data_out = dcache[index][127:120] ;
-              endcase
-            end
-            2'b01:begin // lh/lhu
-              case (byte_offset)
-                4'b0000:data_out = dcache[index][15:0]    ;
-                4'b0001:data_out = dcache[index][23:8]    ;
-                4'b0010:data_out = dcache[index][31:16]   ;
-                4'b0011:data_out = dcache[index][39:24]   ;
-                4'b0100:data_out = dcache[index][47:32]   ;
-                4'b0101:data_out = dcache[index][55:40]   ;
-                4'b0110:data_out = dcache[index][63:48]   ;
-                4'b0111:data_out = dcache[index][71:56]   ;
-                4'b1000:data_out = dcache[index][79:64]   ;
-                4'b1001:data_out = dcache[index][87:72]   ;
-                4'b1010:data_out = dcache[index][95:80]   ;
-                4'b1011:data_out = dcache[index][103:88]  ;
-                4'b1100:data_out = dcache[index][111:96]  ;
-                4'b1101:data_out = dcache[index][119:104] ;
-                4'b1110:data_out = dcache[index][127:112] ;
-                4'b1111:data_out = {dcache[index+1'b1][8:0],dcache[index][127:120]}; //<--- Sectioning
-              endcase
-            end
-            2'b10:begin // lw/lwu
-              case (byte_offset)
-                4'b0000:data_out = dcache[index][31:0]    ;
-                4'b0001:data_out = dcache[index][39:8]    ;
-                4'b0010:data_out = dcache[index][47:16]   ;
-                4'b0011:data_out = dcache[index][55:24]   ;
-                4'b0100:data_out = dcache[index][63:32]   ;
-                4'b0101:data_out = dcache[index][71:40]   ;
-                4'b0110:data_out = dcache[index][79:48]   ;
-                4'b0111:data_out = dcache[index][87:56]   ;
-                4'b1000:data_out = dcache[index][95:64]   ;
-                4'b1001:data_out = dcache[index][103:72]  ;
-                4'b1010:data_out = dcache[index][111:80]  ;
-                4'b1011:data_out = dcache[index][119:88]  ;
-                4'b1100:data_out = dcache[index][127:96]  ;
-                4'b1101:data_out = {dcache[index+1'b1][7:0],dcache[index][127:104]}  ; //<--- Sectioning
-                4'b1110:data_out = {dcache[index+1'b1][15:0],dcache[index][127:112]} ; //<--- Sectioning
-                4'b1111:data_out = {dcache[index+1'b1][23:0],dcache[index][127:120]} ; //<--- Sectioning
-              endcase
-            end      
-            2'b11:begin //ld
-              case (byte_offset)
-                4'b0000:data_out = dcache[index][63:0]     ;
-                4'b0001:data_out = dcache[index][71:8]     ;
-                4'b0010:data_out = dcache[index][79:16]    ;
-                4'b0011:data_out = dcache[index][87:24]    ;
-                4'b0100:data_out = dcache[index][95:32]    ;
-                4'b0101:data_out = dcache[index][103:40]   ;
-                4'b0110:data_out = dcache[index][111:48]   ;
-                4'b0111:data_out = dcache[index][119:56]   ;
-                4'b1000:data_out = dcache[index][127:64]   ;
-                4'b1001:data_out = {dcache[index+1'b1][7:0],dcache[index][127:72]}   ; //<--- Sectioning
-                4'b1010:data_out = {dcache[index+1'b1][15:0],dcache[index][127:80]}  ; //<--- Sectioning
-                4'b1011:data_out = {dcache[index+1'b1][23:0],dcache[index][127:88]}  ; //<--- Sectioning 
-                4'b1100:data_out = {dcache[index+1'b1][31:0],dcache[index][127:96]}  ; //<--- Sectioning
-                4'b1101:data_out = {dcache[index+1'b1][39:0],dcache[index][127:104]} ; //<--- Sectioning
-                4'b1110:data_out = {dcache[index+1'b1][47:0],dcache[index][127:112]} ; //<--- Sectioning
-                4'b1111:data_out = {dcache[index+1'b1][55:0],dcache[index][127:120]} ; //<--- Sectioning
-              endcase
-            end                
+    if(mem_out) begin
+      data_out = dcache[index];
+    end
+    else begin
+      case(loadsrc)
+        2'b00:begin // lb/lbu
+          case (byte_offset)
+            4'b0000:data_out = dcache[index][7:0]     ;
+            4'b0001:data_out = dcache[index][15:8]    ;
+            4'b0010:data_out = dcache[index][23:16]   ;
+            4'b0011:data_out = dcache[index][31:24]   ;
+            4'b0100:data_out = dcache[index][39:32]   ;
+            4'b0101:data_out = dcache[index][47:40]   ;
+            4'b0110:data_out = dcache[index][55:48]   ;
+            4'b0111:data_out = dcache[index][63:56]   ;
+            4'b1000:data_out = dcache[index][71:64]   ;
+            4'b1001:data_out = dcache[index][79:72]   ;
+            4'b1010:data_out = dcache[index][87:80]   ;
+            4'b1011:data_out = dcache[index][95:88]   ;
+            4'b1100:data_out = dcache[index][103:96]  ;
+            4'b1101:data_out = dcache[index][111:104] ;
+            4'b1110:data_out = dcache[index][119:112] ;
+            4'b1111:data_out = dcache[index][127:120] ;
           endcase
         end
+        2'b01:begin // lh/lhu
+          case (byte_offset)
+            4'b0000:data_out = dcache[index][15:0]    ;
+            4'b0001:data_out = dcache[index][23:8]    ;
+            4'b0010:data_out = dcache[index][31:16]   ;
+            4'b0011:data_out = dcache[index][39:24]   ;
+            4'b0100:data_out = dcache[index][47:32]   ;
+            4'b0101:data_out = dcache[index][55:40]   ;
+            4'b0110:data_out = dcache[index][63:48]   ;
+            4'b0111:data_out = dcache[index][71:56]   ;
+            4'b1000:data_out = dcache[index][79:64]   ;
+            4'b1001:data_out = dcache[index][87:72]   ;
+            4'b1010:data_out = dcache[index][95:80]   ;
+            4'b1011:data_out = dcache[index][103:88]  ;
+            4'b1100:data_out = dcache[index][111:96]  ;
+            4'b1101:data_out = dcache[index][119:104] ;
+            4'b1110:data_out = dcache[index][127:112] ;
+            4'b1111:data_out = {dcache[index+1'b1][8:0],dcache[index][127:120]}; //<--- Sectioning
+          endcase
+        end
+        2'b10:begin // lw/lwu
+          case (byte_offset)
+            4'b0000:data_out = dcache[index][31:0]    ;
+            4'b0001:data_out = dcache[index][39:8]    ;
+            4'b0010:data_out = dcache[index][47:16]   ;
+            4'b0011:data_out = dcache[index][55:24]   ;
+            4'b0100:data_out = dcache[index][63:32]   ;
+            4'b0101:data_out = dcache[index][71:40]   ;
+            4'b0110:data_out = dcache[index][79:48]   ;
+            4'b0111:data_out = dcache[index][87:56]   ;
+            4'b1000:data_out = dcache[index][95:64]   ;
+            4'b1001:data_out = dcache[index][103:72]  ;
+            4'b1010:data_out = dcache[index][111:80]  ;
+            4'b1011:data_out = dcache[index][119:88]  ;
+            4'b1100:data_out = dcache[index][127:96]  ;
+            4'b1101:data_out = {dcache[index+1'b1][7:0],dcache[index][127:104]}  ; //<--- Sectioning
+            4'b1110:data_out = {dcache[index+1'b1][15:0],dcache[index][127:112]} ; //<--- Sectioning
+            4'b1111:data_out = {dcache[index+1'b1][23:0],dcache[index][127:120]} ; //<--- Sectioning
+          endcase
+        end      
+        2'b11:begin //ld
+          case (byte_offset)
+            4'b0000:data_out = dcache[index][63:0]     ;
+            4'b0001:data_out = dcache[index][71:8]     ;
+            4'b0010:data_out = dcache[index][79:16]    ;
+            4'b0011:data_out = dcache[index][87:24]    ;
+            4'b0100:data_out = dcache[index][95:32]    ;
+            4'b0101:data_out = dcache[index][103:40]   ;
+            4'b0110:data_out = dcache[index][111:48]   ;
+            4'b0111:data_out = dcache[index][119:56]   ;
+            4'b1000:data_out = dcache[index][127:64]   ;
+            4'b1001:data_out = {dcache[index+1'b1][7:0],dcache[index][127:72]}   ; //<--- Sectioning
+            4'b1010:data_out = {dcache[index+1'b1][15:0],dcache[index][127:80]}  ; //<--- Sectioning
+            4'b1011:data_out = {dcache[index+1'b1][23:0],dcache[index][127:88]}  ; //<--- Sectioning 
+            4'b1100:data_out = {dcache[index+1'b1][31:0],dcache[index][127:96]}  ; //<--- Sectioning
+            4'b1101:data_out = {dcache[index+1'b1][39:0],dcache[index][127:104]} ; //<--- Sectioning
+            4'b1110:data_out = {dcache[index+1'b1][47:0],dcache[index][127:112]} ; //<--- Sectioning
+            4'b1111:data_out = {dcache[index+1'b1][55:0],dcache[index][127:120]} ; //<--- Sectioning
+          endcase
+        end                
+      endcase
     end
-    else
-      data_out = 'b0; // in case of no reading
-  end
+end
 endmodule
