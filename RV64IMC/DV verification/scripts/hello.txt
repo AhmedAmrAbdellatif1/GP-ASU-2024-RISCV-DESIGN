@@ -1,0 +1,11 @@
+===============================================================
+                  riscv_rand_instr_test                  
+---------------------------------------------------------------
+ +Testing RV64IMC
+ +Arithmetic instruction test
+ +load/store instructions
+ +No unaligned loads/stores
+ +branch/jump instructions are included
+ +loops are included
+ +Running 304,083 instruction
+---------------------------------------------------------------
