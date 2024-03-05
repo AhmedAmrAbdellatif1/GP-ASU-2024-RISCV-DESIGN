@@ -218,8 +218,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
   assign o_riscv_datapath_rs2addr_d     = riscv_rs2addr_d         ;  //to hazard unit
   //assign o_riscv_datapath_loadsrc_m     = riscv_memext_m[1:0]     ;  // to data memory
 
-  assign riscv_rstctrl_f                = i_riscv_datapath_flush_fd | i_riscv_datapath_rst | riscv_reg_flush;
-  assign riscv_rstctrl_d                = i_riscv_datapath_flush_de | i_riscv_datapath_rst | riscv_reg_flush;
+  assign riscv_rstctrl_f                = i_riscv_datapath_flush_fd | i_riscv_datapath_rst;
+  assign riscv_rstctrl_d                = i_riscv_datapath_flush_de | i_riscv_datapath_rst;
   assign o_riscv_datapath_iscsr_w_trap  = iscsr_mw_trap                 ;
   assign o_riscv_datapath_iscsr_m_trap  = iscsr_csr_mw                  ; 
   assign o_riscv_datapath_iscsr_e_trap  = iscsr_de_em                   ;
@@ -462,6 +462,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   riscv_mstage u_riscv_mstage(
     .i_riscv_mstage_dm_rdata    (i_riscv_datapath_dm_rdata)         ,
     .i_riscv_mstage_memext      (riscv_memext_m)                    ,
+    .i_riscv_mstage_addr        (riscv_rddata_me)		    ,
     .i_riscv_mstage_mux2_sel    (i_riscv_datapath_muxcsr_sel)       , //<---
     .i_riscv_mux2_in0           (csrwdata_em_csr)                   , //<---
     .i_riscv_mux2_in1           (csrout_csr_mw)                     , //<--- 
@@ -541,7 +542,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .i_riscv_csr_ecall_u                (ecall_u_em_csr)                 ,
   .i_riscv_csr_ecall_s                (ecall_s_em_csr)                 ,
   .i_riscv_csr_ecall_m                (m_em_csr)                       ,
-  .i_riscv_csr_illegal_inst           (illegal_inst_em_csr)            , //illegal_inst_em_csr
+  .i_riscv_csr_illegal_inst           ()                               , //illegal_inst_em_csr
   .i_riscv_csr_inst_addr_misaligned   (inst_addr_misaligned_em_csr)    , 
   .i_riscv_csr_load_addr_misaligned   (load_addr_misaligned_em_csr)    ,   
   .i_riscv_csr_store_addr_misaligned  (store_addr_misaligned_em_csr)   ,

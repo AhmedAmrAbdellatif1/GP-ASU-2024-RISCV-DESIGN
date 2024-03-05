@@ -119,18 +119,6 @@ module riscv_dcache_fsm  (
           stall         = 1'b1;
           tag_sel       = 1'b0;//new
         end
-        /*else begin
-          next_state    = COMPARE_TAG;
-          cache_rden    = 1'b0;
-          cache_wren    = 1'b0;
-          cache_insel   = 1'b0;
-          mem_rden      = 1'b0;
-          mem_wren      = 1'b0;  
-          set_dirty     = 1'b0;   
-          set_valid     = 1'b0;    
-          replace_tag   = 1'b0;
-          stall         = 1'b0;
-        end*/
       end
       WRITE_BACK: begin
         if(mem_ready) begin
@@ -198,8 +186,8 @@ module riscv_dcache_fsm  (
          set_valid     = 1'b0;    
          replace_tag   = 1'b0;
          stall         = 1'b0;
-         tag_sel       = 1'b0;//don't care;
-         if(cpu_rden || cpu_wren)//both of those signals are from the following instructions
+         tag_sel       = 1'b0;
+         if(cpu_rden || cpu_wren)
           next_state    = COMPARE_TAG ;
           else 
           next_state    = IDLE;

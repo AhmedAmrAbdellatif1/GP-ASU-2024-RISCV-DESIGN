@@ -1,6 +1,6 @@
 module riscv_top (
-input i_riscv_clk,
-input i_riscv_rst
+  input i_riscv_clk,
+  input i_riscv_rst
 );
 
 ////////////////////////signals from datapath to IM/////////////////////////

@@ -1,7 +1,6 @@
 module riscv_top (
-input i_riscv_clk,
-input i_riscv_rst,
-input i_riscv_core_externalinterupt
+  input i_riscv_clk,
+  input i_riscv_rst
 );
 
 ////////////////////////signals from datapath to IM/////////////////////////
@@ -29,7 +28,7 @@ riscv_core u_top_core(
      .i_riscv_core_rdata            (riscv_datapath_rdata_dm)           ,
      .i_riscv_core_stall_m          (riscv_datapath_stall_m_dm)         ,
      .i_riscv_core_timerinterupt    ()                                  ,
-     .i_riscv_core_externalinterupt (i_riscv_core_externalinterupt)     , 
+     .i_riscv_core_externalinterupt ()                                  , 
      .o_riscv_core_pc               (riscv_datapath_pc_im)              ,
      .o_riscv_core_memw_e           (riscv_datapath_memw_e_dm)          ,
      .o_riscv_core_memr_e           (riscv_datapath_memr_e_dm)          ,

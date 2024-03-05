@@ -462,6 +462,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   riscv_mstage u_riscv_mstage(
     .i_riscv_mstage_dm_rdata    (i_riscv_datapath_dm_rdata)         ,
     .i_riscv_mstage_memext      (riscv_memext_m)                    ,
+    .i_riscv_mstage_addr        (riscv_rddata_me)		    ,
     .i_riscv_mstage_mux2_sel    (i_riscv_datapath_muxcsr_sel)       , //<---
     .i_riscv_mux2_in0           (csrwdata_em_csr)                   , //<---
     .i_riscv_mux2_in1           (csrout_csr_mw)                     , //<--- 
