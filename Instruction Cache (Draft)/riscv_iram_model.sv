@@ -5,8 +5,6 @@ module idram #(
   )
   (
     input   logic                   clk                     ,
-    //input   logic                   rst                     ,      
-    //input   logic                   wren                    ,
     input   logic                   rden                    ,
     input   logic [AWIDTH-1:0]      addr                    ,
     input   logic [DWIDTH-1:0]      data_in                 ,

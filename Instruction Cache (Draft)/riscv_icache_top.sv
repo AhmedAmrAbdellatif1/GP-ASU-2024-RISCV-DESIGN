@@ -5,10 +5,9 @@
 
 module riscv_instructions_cache #(
     parameter DATA_WIDTH  = 128                           ,
-    parameter MEM_SIZE    = (2**6)*16                     ,   //128*(2**20)       
-    parameter CACHE_SIZE  = 64                            ,   //64 * (2**10)   
+    parameter MEM_SIZE    = 70352                         ,   //128*(2**20)       
+    parameter CACHE_SIZE  = 4*(2**10)                     ,   //64 * (2**10)   
     parameter DATAPBLOCK  = 16                            ,
-    parameter IWIDTH      = 32,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK         ,   //  4096
     parameter ADDR        = $clog2(MEM_SIZE)              ,   //    27 bits
     parameter BYTE_OFF    = $clog2(DATAPBLOCK)            ,   //     4 bits
@@ -18,9 +17,8 @@ module riscv_instructions_cache #(
   (  
     input   logic                 i_riscv_icache_clk           ,
     input   logic                 i_riscv_icache_rst           ,
-    //input   logic                 i_riscv_icache_cpu_rden      ,
     input   logic [63:0]          i_riscv_icache_phys_addr     ,
-    output  logic [(IWIDTH-1):0]  o_riscv_icache_cpu_instr_out ,//output  logic [63:0]  o_riscv_icache_cpu_data_out //output connected to ff
+    output  logic [31:0]          o_riscv_icache_cpu_instr_out ,//output  logic [63:0]  o_riscv_icache_cpu_data_out //output connected to ff
     output  logic                 o_riscv_icache_cpu_stall               
   );
 

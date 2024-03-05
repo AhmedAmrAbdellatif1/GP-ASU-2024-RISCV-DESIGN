@@ -37,7 +37,7 @@ module riscv_hazardunit (
 
 /************************ Flags ************************/
   assign m_stall    = (i_riscv_hzrdu_mul_en || i_riscv_hzrdu_div_en)  & (!i_riscv_hzrdu_valid);
-  assign glob_stall = (i_riscv_dcahe_stall_m) | m_stall |(i_riscv_icahe_stall_m);
+  assign glob_stall = ((i_riscv_dcahe_stall_m) || (m_stall) || (i_riscv_icahe_stall_m));
 
 /************************ Forward Mux A ************************/
   always @(*)
