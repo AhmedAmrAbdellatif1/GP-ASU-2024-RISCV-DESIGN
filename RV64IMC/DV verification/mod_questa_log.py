@@ -27,6 +27,6 @@ def extract_and_save(log_file_path, output_file_path="../questa.log"):
         output_file.write(extracted_code)
 
 if __name__ == "__main__":
-    log_file_path = r"../questa.txt"  # Replace with your actual log file path
+    log_file_path = r"/questa.txt"  # Replace with your actual log file path
     extract_and_save(log_file_path)
     print(f"{formatted_date}    (5) Modify questa log to match spike's")

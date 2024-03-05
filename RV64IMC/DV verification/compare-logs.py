@@ -26,7 +26,7 @@ def compare_logs(spike_log_path, rtl_log_path):
         print(f"\033[31mFailed: {error_count} differences found.\033[0m\n")
 
 # Example usage:
-spike_log_path = "../spike.log"
-rtl_log_path = "../questa.log"
+spike_log_path = "/spike.log"
+rtl_log_path = "/questa.log"
 compare_logs(spike_log_path, rtl_log_path)
 
