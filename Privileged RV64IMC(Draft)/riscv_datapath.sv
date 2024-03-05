@@ -50,7 +50,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   output logic              o_riscv_datapath_memw_e            ,
   output logic              o_riscv_datapath_memr_e            ,
   output logic [1:0]        o_riscv_datapath_storesrc_m        ,
-  output logic [1:0]        o_riscv_datapath_loadsrc_m         ,
+  //output logic [1:0]        o_riscv_datapath_loadsrc_m         ,
   output logic [63:0]       o_riscv_datapath_memodata_addr     ,
   output logic [63:0]       o_riscv_datapath_storedata_m       ,
   output logic              o_riscv_datapath_regw_m            ,  
@@ -216,7 +216,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   assign o_riscv_datapath_resultsrc_e   = riscv_resultsrc_e       ;  // to hazard unit
   assign o_riscv_datapath_rs1addr_d     = riscv_rs1addr_d         ;  //to hazard unit
   assign o_riscv_datapath_rs2addr_d     = riscv_rs2addr_d         ;  //to hazard unit
-  assign o_riscv_datapath_loadsrc_m     = riscv_memext_m[1:0]     ;  // to data memory
+  //assign o_riscv_datapath_loadsrc_m     = riscv_memext_m[1:0]     ;  // to data memory
 
   assign riscv_rstctrl_f                = i_riscv_datapath_flush_fd | i_riscv_datapath_rst;
   assign riscv_rstctrl_d                = i_riscv_datapath_flush_de | i_riscv_datapath_rst;

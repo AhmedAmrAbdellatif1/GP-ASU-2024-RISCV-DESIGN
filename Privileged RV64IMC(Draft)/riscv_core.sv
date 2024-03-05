@@ -10,7 +10,7 @@ module riscv_core #(parameter MXLEN=64) (
     output logic         o_riscv_core_memw_e           ,
     output logic         o_riscv_core_memr_e           ,
     output logic [1:0]   o_riscv_core_storesrc_m       ,
-    output logic [1:0]   o_riscv_core_loadsrc_m        ,
+    //output logic [1:0]   o_riscv_core_loadsrc_m        ,
     output logic [63:0]  o_riscv_core_memodata_addr    ,
     output logic [63:0]  o_riscv_core_storedata_m
   ) ;
@@ -154,7 +154,7 @@ module riscv_core #(parameter MXLEN=64) (
   /************************* Memory Stage Signals *************************/
     .i_riscv_datapath_dm_rdata          (i_riscv_core_rdata)              ,    
     .o_riscv_datapath_storesrc_m        (o_riscv_core_storesrc_m)         ,   
-    .o_riscv_datapath_loadsrc_m         (o_riscv_core_loadsrc_m)          ,
+    //.o_riscv_datapath_loadsrc_m         (o_riscv_core_loadsrc_m)          ,
     .o_riscv_datapath_memodata_addr     (o_riscv_core_memodata_addr)      ,
     .o_riscv_datapath_storedata_m       (o_riscv_core_storedata_m)        , 
     .o_riscv_datapath_memw_e            (o_riscv_core_memw_e)             ,     
