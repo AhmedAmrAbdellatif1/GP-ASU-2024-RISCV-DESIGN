@@ -62,6 +62,7 @@ always_comb
   o_riscv_cu_ecall_u    = 'b0;
   o_riscv_cu_csrop      = 'b0;
   o_riscv_cu_sel_rs_imm = 'b0;
+  riscv_cu_detect_ecall = 'b0;
 ////////////////////////////////
     case(i_riscv_cu_opcode)
         7'b0110011:begin
@@ -1028,28 +1029,33 @@ always_comb
 
             case(i_riscv_cu_funct3) // differentiate between ecall,mret,sret(000) and CSR instructions otherthan 000
                        3'b000: begin
-                        
+                        riscv_cu_detect_ecall = 1'b0;
                         // decode the immiediate field
                             case (i_riscv_cu_cosntimm12) 
                                 // ECALL -> inject exception
                                 12'b0: begin riscv_cu_detect_ecall = 1'b1;
-
+                                o_riscv_cu_illgalinst = 1'b0;
+                                o_riscv_cu_csrop = 'b000;
                                     /*   case (i_riscv_cu_privlvl)
                                   PRIV_LVL_S :  o_riscv_cu_cause = ENV_CALL_SMODE;
                                 
                                   PRIV_LVL_U : o_riscv_cu_cause = ENV_CALL_UMODE;
-                                
+                                 
                                   PRIV_LVL_M  :  o_riscv_cu_cause = ENV_CALL_MMODE; */
                                  end 
                              
                               // MRET
                               12'b11_0000_0010: begin
                                   o_riscv_cu_csrop = MRET;
+                                  riscv_cu_detect_ecall = 1'b0;
                                   //o_riscv_cu_mret = 1'b1;
                                   // check privilege level, MRET can only be executed in M mode
                                   // otherwise  raise an illegal instruction
                                 if ( ( i_riscv_cu_privlvl == PRIV_LVL_S) || (i_riscv_cu_privlvl == PRIV_LVL_U) ) 
                                    o_riscv_cu_illgalinst = 1'b1;
+                              end
+                              default begin
+                               riscv_cu_detect_ecall = 1'b0;
                               end
                           endcase
                      end

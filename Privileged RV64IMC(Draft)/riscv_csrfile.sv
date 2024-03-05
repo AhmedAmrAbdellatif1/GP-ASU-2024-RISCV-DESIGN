@@ -259,9 +259,9 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
      //   assign software_interrupt_pending_m = mstatus_mie_cs && mie_msie_cs && mip_msip_cs;  //machine_interrupt_enable + machine_software_interrupt_enable + machine_software_interrupt_pending must all be high
           assign timer_interrupt_pending_m = mstatus_mie_cs && mie_mtie_cs && mip_mtip_cs; //machine_interrupt_enable + machine_timer_interrupt_enable + machine_timer_interrupt_pending must all be high
              
-           assign  is_interrupt = external_interrupt_pending_m  || timer_interrupt_pending_m  ; // || software_interrupt_pending_m ;
-            assign is_exception = (i_riscv_csr_illegal_inst || i_riscv_csr_ecall_u ||i_riscv_csr_ecall_s || i_riscv_csr_ecall_m  || i_riscv_csr_inst_addr_misaligned  || i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned) ;
-            assign is_trap = is_interrupt || is_exception;
+           assign  is_interrupt = external_interrupt_pending_m  | timer_interrupt_pending_m  ; // || software_interrupt_pending_m ;
+            assign is_exception = (i_riscv_csr_illegal_inst | i_riscv_csr_ecall_u |i_riscv_csr_ecall_s | i_riscv_csr_ecall_m  | i_riscv_csr_inst_addr_misaligned  | i_riscv_csr_load_addr_misaligned | i_riscv_csr_store_addr_misaligned) ;
+            assign is_trap = is_interrupt | is_exception;
             assign go_to_trap = is_trap; //a trap is taken, save i_pc, and go to trap address
             // assign return_from_trap = i_is_mret; // return from trap, go back to saved i_pc
 
@@ -443,7 +443,7 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
     /* ---------------- */
 
     always_comb begin : csr_op_logic
-
+        
         csr_wdata = i_riscv_csr_wdata;
         csr_we    = 1'b1;
         csr_read  = 1'b1;
@@ -492,8 +492,7 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
 
     always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst) begin    // i think it hhould be negedge clk >> it was before posedge i edit it
     
- begin
-
+ //begin
       if (i_riscv_csr_rst) begin
 
                 priv_lvl_cs       <= PRIV_LVL_M;                            
@@ -541,8 +540,8 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
   
 
   //mtvec
-                mtvec_base_cs     <= 'b0 ;  // it is 62 bits
-                mtvec_mode_cs     <= 2'b0 ;
+                mtvec_base_cs     <= 'b000;  // it is 62 bits
+                mtvec_mode_cs     <= 2'b00 ;
                 // set to boot address + direct mode + 4 byte offset which is the initial trap
                    // mtvec_rst_load_q       <= 1'b1;
                    // mtvec_cs                <= '0;
@@ -584,17 +583,17 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
             ///* Volume 2 pg. 21: xPIE holds the value of the interrupt-enable bit active prior to the trap. 
                     
                    // x IE is set to 0; and xPP is set to y. */
-                     
+                o_riscv_csr_gotoTrap_cs <=0 ;
                 if(go_to_trap ) begin
 
-                         
+                  
                     priv_lvl_cs <= PRIV_LVL_M      ;
                     mepc_cs         <= i_riscv_csr_pc ;
                      // When a trap is taken from privilege mode y into privilege mode x,xPIE is set to the value of x IE; ?? check that
                     mstatus_mpie_cs <= mstatus_mie_cs;
                     mstatus_mie_cs   <= 0; //no nested interrupt allowed    // if done in software that will not make problem make it again zero
                     o_riscv_csr_gotoTrap_cs <=1 ;
-                     mstatus_mpp_cs <= 2'b11;  // check
+                    mstatus_mpp_cs <= 2'b11;  // check
 
 
                          
@@ -655,9 +654,9 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
                      end     //end of above if (go trap)
 
            
-
-                 
-                // ------------------------------
+               
+                
+        // ------------------------------
         // Return from Environment
         // ------------------------------
         // When executing an xRET instruction, supposing xPP holds the value y, xIE is set to xPIE; the privilege
@@ -670,12 +669,17 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
             priv_lvl_cs     <= mstatus_mpp_cs;
             //xRET sets the pc to the value stored in the xepc register. // // return from exception, IF doesn't care from where we are returning
             o_riscv_csr_returnfromTrap_cs <=1 ;
-
+            mstatus_mpie_cs <= 1'b1;  
             // and xPP is set to the least-privileged supported mode (U if U-mode is implemented, else M)
             //set mpp to user mode
-            mstatus_mpp_cs  <= (support_user) ? PRIV_LVL_U : PRIV_LVL_M;
+            if(support_user)
+             mstatus_mpp_cs <= PRIV_LVL_U ;
+            else
+            mstatus_mpp_cs <= PRIV_LVL_M ;
+
+           // mstatus_mpp_cs  <= (support_user) ? PRIV_LVL_U : PRIV_LVL_M;
             //xPIE is set to 1 >> set mpie to 1
-            mstatus_mpie_cs <= 1'b1;
+            
 
        
            // If xPP?=M, xRET also sets MPRV=0.
@@ -685,6 +689,7 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
         end  
 */
 end 
+          
 
 //end
        
@@ -825,12 +830,12 @@ end
          endcase 
 
      end // of if (csr_we)
-
+     else   o_riscv_csr_returnfromTrap_cs <=0 ;
 
 end // of always block
 
     
-end
+//end
 
 
      

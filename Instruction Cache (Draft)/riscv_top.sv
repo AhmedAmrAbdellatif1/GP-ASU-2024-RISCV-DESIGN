@@ -61,7 +61,7 @@ riscv_data_cache u_data_cache(
   .o_riscv_dcache_cpu_data_out    (riscv_datapath_rdata_dm)           ,
   .o_riscv_dcache_cpu_stall       (riscv_datapath_stall_m_dm)        
 );
-riscv_instructions_cache u_data_cache(
+riscv_instructions_cache u_inst_cache(
   .i_riscv_icache_clk             (i_riscv_clk)                      ,
   .i_riscv_icache_rst             (i_riscv_rst)                      ,
   .i_riscv_icache_phys_addr       (riscv_datapath_pc_im)             ,  
