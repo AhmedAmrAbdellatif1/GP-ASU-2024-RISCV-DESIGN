@@ -26,5 +26,4 @@ do sim.do
 2. VSCode
 3. Python extension for Visual Studio Code
 
-[^longnote]: 1. Run [import.tcl](https://github.com/AhmedAmrAbdellatif1/GP-RV64IMAC/blob/main/RV64IMC/DV%20verification/Core%20Verification/import.tcl) and copy the design file names from the VSCode's terminal
-2. Modify [sim.do](https://github.com/AhmedAmrAbdellatif1/GP-RV64IMAC/blob/main/RV64IMC/DV%20verification/Core%20Verification/sim.do) line 3 with the new design files
+[^longnote]: Run [import.tcl](https://github.com/AhmedAmrAbdellatif1/GP-RV64IMAC/blob/main/RV64IMC/DV%20verification/Core%20Verification/import.tcl) and copy the design file names from the VSCode's terminal then modify [sim.do](https://github.com/AhmedAmrAbdellatif1/GP-RV64IMAC/blob/main/RV64IMC/DV%20verification/Core%20Verification/sim.do) line 3 with the new design files
