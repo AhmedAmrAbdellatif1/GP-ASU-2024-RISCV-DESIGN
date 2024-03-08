@@ -238,18 +238,18 @@
     // Internal Signals
     /* ---------------- */
 
-     logic              external_interrupt_pending_m ;
-     logic              timer_interrupt_pending_m ;
-     logic              is_interrupt ; 
-     logic              is_exception ;
-     logic              is_trap ; 
-     logic              go_to_trap ;
-     
-
-       logic [MXLEN-1:0]  csr_wdata ;
-       logic [MXLEN-1:0]  csr_rdata_int ;
-       logic                mret      ;
-       logic                sret      ;
+       logic               external_interrupt_pending_m ;
+       logic               timer_interrupt_pending_m ;
+       logic               is_interrupt ; 
+       logic               is_exception ;
+       logic               is_trap ; 
+       logic               go_to_trap ;
+       logic               illegal_csr_priv ,illegal_csr_write , illegal_read_csr ;
+       logic               illegal_csr , csr_we_int;
+       logic [MXLEN-1:0]   csr_wdata ;
+       logic [MXLEN-1:0]   csr_rdata_int ;
+       logic               mret      ;
+       logic               sret      ;
        logic               csr_we    ;
        logic               csr_read  ;
       
@@ -260,17 +260,32 @@
     assign o_riscv_csr_trap_address     = {mtvec_base_cs , mtvec_mode_cs };
  // assign csr_mtval_o = mtval_cs;
 
-    assign external_interrupt_pending_m =  mstatus_mie_cs && mie_meie_cs && (mip_meip_cs); //machine_interrupt_enable + machine_external_interrupt_enable + machine_external_interrupt_pending must all be high
+    assign external_interrupt_pending_m =  (mstatus_mie_cs && mie_meie_cs && (mip_meip_cs))? 1:0; //machine_interrupt_enable + machine_external_interrupt_enable + machine_external_interrupt_pending must all be high
 //  assign software_interrupt_pending_m = mstatus_mie_cs && mie_msie_cs && mip_msip_cs;  //machine_interrupt_enable + machine_software_interrupt_enable + machine_software_interrupt_pending must all be high
-    assign timer_interrupt_pending_m    = mstatus_mie_cs && mie_mtie_cs && mip_mtip_cs; //machine_interrupt_enable + machine_timer_interrupt_enable + machine_timer_interrupt_pending must all be high
+    assign timer_interrupt_pending_m    = (mstatus_mie_cs && mie_mtie_cs && mip_mtip_cs)? 1:0; //machine_interrupt_enable + machine_timer_interrupt_enable + machine_timer_interrupt_pending must all be high
              
-    assign is_interrupt                = external_interrupt_pending_m  | timer_interrupt_pending_m  ; // || software_interrupt_pending_m ;
-    assign is_exception                 = (i_riscv_csr_illegal_inst | i_riscv_csr_ecall_u |i_riscv_csr_ecall_s | i_riscv_csr_ecall_m  | i_riscv_csr_inst_addr_misaligned  | i_riscv_csr_load_addr_misaligned | i_riscv_csr_store_addr_misaligned) ;
-    assign is_trap                      = is_interrupt | is_exception;
-    assign go_to_trap                   = is_trap; //a trap is taken, save i_pc, and go to trap address
-        // assign return_from_trap = i_is_mret; // return from trap, go back to saved i_pc
+    assign is_interrupt                 = (external_interrupt_pending_m  || timer_interrupt_pending_m) ? 1:0  ; // || software_interrupt_pending_m ;
+   // assign is_exception                 = ((i_riscv_csr_illegal_inst | i_riscv_csr_ecall_u |i_riscv_csr_ecall_s | i_riscv_csr_ecall_m  | i_riscv_csr_inst_addr_misaligned  | i_riscv_csr_load_addr_misaligned | i_riscv_csr_store_addr_misaligned) )? 1:0 ;
+    assign is_trap                      = (is_interrupt || is_exception)? 1:0;
+    assign go_to_trap                   =  is_trap ; //a trap is taken, save i_pc, and go to trap address
+    assign o_riscv_csr_gotoTrap_cs      =  go_to_trap ;
+    assign illegal_total  =  illegal_csr | i_riscv_csr_illegal_inst ;
+    /*Attempts to access a non-existent CSR raise an illegal instruction exception. 
+    >> done by making default case of read always
+    Attempts to access a
+    CSR without appropriate privilege level or to write a read-only register also raise illegal instruction
+    exceptions */
+    assign illegal_csr_priv   = (i_riscv_csr_address[9:8] > priv_lvl_cs);    // ex : 3 >2 gives one why as current priv = s and need to access m register 
+                                                               //  and that is not applicable
+                                                               // 3 > 3 gives zero why as current priv = m and need to access m register 
+                                                               //  and that is  applicable
+    assign illegal_csr_write  = (i_riscv_csr_address[11:10] == 2'b11) && csr_we ;    // csr_addr[11:10] == 2'b11 means it is readonly operation
+                                                                        //  csr_we = 1 when operation  = CSR_WRITE ,  CSR_SET , CSR_CLEAR
+    assign illegal_csr = (illegal_read_csr | illegal_csr_write | illegal_csr_priv ) ;
+    assign csr_we_int  = csr_we &  ~illegal_csr;
+         // assign return_from_trap = i_is_mret; // return from trap, go back to saved i_pc
 
- //assign illegal_csr_priv   = (csr_addr[9:8] > {priv_lvl_cs});
+    //assign illegal_csr_priv   = (csr_addr[9:8] > {priv_lvl_cs});
 
 
     /*----------------  */
@@ -601,7 +616,7 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
                 
                 
                 //mtvec
-                mtvec_base_cs                  <= 'b000;  // it is 62 bits
+                mtvec_base_cs                  <= 'b1000;  // it is 62 bits
                 mtvec_mode_cs                  <= 2'b00 ;
                 // set to boot address + direct mode + 4 byte offset which is the initial trap
                    // mtvec_rst_load_q         <= 1'b1;
@@ -721,9 +736,9 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
 
    end   /*---of always block*/
 
+/*
 
-
-/*------gotoTrap register-----*/        
+//------gotoTrap register-----        
 always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst) 
    begin    
       if (i_riscv_csr_rst) 
@@ -741,21 +756,23 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
 
    end   
 
+*/
+always_comb begin
+if(i_riscv_csr_illegal_inst | i_riscv_csr_ecall_u |i_riscv_csr_ecall_s | i_riscv_csr_ecall_m  | i_riscv_csr_inst_addr_misaligned  | i_riscv_csr_load_addr_misaligned | i_riscv_csr_store_addr_misaligned)
+ is_exception = 1'b1 ;
+else
+ is_exception = 1'b0 ;
+end
 
 /*------returnfromTrap register-----*/        
-always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst) 
+always @(*) 
    begin    
-      if (i_riscv_csr_rst) 
-
-                o_riscv_csr_returnfromTrap_cs  <= 0 ;
-    
-
-    else if (mret) 
+    if (mret) 
             
-            o_riscv_csr_returnfromTrap_cs <=1 ;
+            o_riscv_csr_returnfromTrap_cs =1 ;
            
 
-    else   o_riscv_csr_returnfromTrap_cs <=0 ;  //to go low not to save its previous value when asserted make problem         
+    else   o_riscv_csr_returnfromTrap_cs =0 ;  //to go low not to save its previous value when asserted make problem         
 
    end   /*---of always block*/
 
