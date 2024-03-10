@@ -5,7 +5,7 @@
 
 module riscv_instructions_cache #(
     parameter DATA_WIDTH  = 128                           ,
-    parameter MEM_SIZE    = 70352                         ,   //128*(2**20)       
+    parameter MEM_SIZE    = 16*(2**20)                    ,   //128*(2**20)       
     parameter CACHE_SIZE  = 4*(2**10)                     ,   //64 * (2**10)   
     parameter DATAPBLOCK  = 16                            ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK         ,   //  4096

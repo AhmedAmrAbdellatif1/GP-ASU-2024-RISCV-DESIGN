@@ -1,6 +1,6 @@
 module riscv_data_cache #(
     parameter DATA_WIDTH  = 128                           ,
-    parameter CACHE_SIZE  = 4*(2**10)                     ,   //64 * (2**10)   
+    parameter CACHE_SIZE  = 2*(2**10)                     ,   //64 * (2**10)   
     parameter MEM_SIZE    = (CACHE_SIZE)*32               ,   //128*(2**20)       
     parameter DATAPBLOCK  = 16                            ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK         ,   //  4096
@@ -100,7 +100,7 @@ module riscv_data_cache #(
   );
 
  //////////////
- dram #(
+ /*dram #(
     .AWIDTH     (INDEX+TAG)             ,
     .DWIDTH     (DATA_WIDTH)            ,
     .MEM_DEPTH  (MEM_SIZE)
@@ -112,7 +112,7 @@ module riscv_data_cache #(
     .data_in    (cache_data_out)        ,
     .data_out   (mem_data_out)          ,
     .mem_ready  (mem_ready)
-  );
+  );*/
 
   ////////////////////////
   riscv_dcache_fsm u_dcache_fsm  (

@@ -1,7 +1,7 @@
 module idram #(
     parameter AWIDTH  = 23,
     parameter DWIDTH  = 128,
-    parameter MEM_DEPTH = 128 * (2**20)
+    parameter MEM_DEPTH = 1216330
   )
   (
     input   logic                   clk                     ,
@@ -20,8 +20,7 @@ module idram #(
 
   // initialize the memory
   initial begin
-    for(i=0;i<MEM_DEPTH;i++)
-     $readmemh("icache-test.txt",mem);
+     $readmemh("test.txt",mem);
   end
 
   // mapping the byte addressable memory into block cache

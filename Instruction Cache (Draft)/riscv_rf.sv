@@ -22,10 +22,10 @@
         begin
           for (i=0; i<32; i=i+1) 
             begin
-              if(i!=8)
+              if(i!=21)
                 rf[i]<=64'b0;
               else
-                rf[8] <= 'h80034980;
+                rf[21] <= 'h800b6980;
             end
         end         
       else
