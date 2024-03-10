@@ -5,14 +5,13 @@ module riscv_dcache_data #(
     parameter BYTE_OFFSET = 4
   )
   (
-    input   logic                    clk                     ,
-    //input   logic                    rst                     ,      
+    input   logic                    clk                     ,     
     input   logic                    wren                    ,
     input   logic                    rden                    ,
     input   logic [INDEX-1:0]        index                   ,
-    input   logic [3:0]              byte_offset             ,// need instatiation 
-    input   logic [1:0]              storesrc                ,//need......
-    input   logic                    mem_in                  ,// from finite state machine indicate write block from RAM (cache in sel)
+    input   logic [3:0]              byte_offset             , 
+    input   logic [1:0]              storesrc                ,
+    input   logic                    mem_in                  ,
     input   logic [DWIDTH-1:0]       data_in                 ,
     output  logic [DWIDTH-1:0]       data_out                
 
@@ -26,7 +25,7 @@ module riscv_dcache_data #(
   always_ff @(negedge clk) begin
     if(wren && !rden) begin
       if(mem_in)
-        dcache[index] <= data_in;//for total block at cache miss
+        dcache[index] <= data_in;
       else begin
         case(storesrc)
           2'b00:begin/// 16 case for each byte 
@@ -46,7 +45,7 @@ module riscv_dcache_data #(
              4'b1100:dcache[index][103:96]  <=strdouble[7:0];
              4'b1101:dcache[index][111:104] <=strdouble[7:0];
              4'b1110:dcache[index][119:112] <=strdouble[7:0];
-             4'b1111:dcache[index][127:120] <=strdouble[7:0]; // momtaz :like:
+             4'b1111:dcache[index][127:120] <=strdouble[7:0]; 
            endcase
           end
           2'b01:begin// 8 cases for half word access 

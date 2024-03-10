@@ -39,7 +39,7 @@ module riscv_data_cache #(
   logic fsm_mem_wren;
   logic fsm_mem_rden;
   logic fsm_stall;
-  logic fsm_tag_sel;//new
+  logic fsm_tag_sel;
 
   //  cache signals
   logic [DATA_WIDTH-1:0]  cache_data_in;
@@ -48,7 +48,7 @@ module riscv_data_cache #(
   // tag signals
   logic           tag_dirty_out;
   logic           tag_hit_out;
-  logic [TAG-1:0] tag_old_out;//new
+  logic [TAG-1:0] tag_old_out;
   // memory model signals
   logic                   mem_wren;
   logic                   mem_rden;
@@ -60,7 +60,7 @@ module riscv_data_cache #(
 
   // internal signals declaration  
   assign {tag,index,byte_offset}      = i_riscv_dcache_phys_addr;
-  assign mem_addr                     = (fsm_tag_sel)?{tag_old_out,index}:{tag,index};///new
+  assign mem_addr                     = (fsm_tag_sel)?{tag_old_out,index}:{tag,index};
   assign cache_data_in                = (fsm_cache_insel)? mem_data_out:{64'b0,i_riscv_dcache_cpu_data_in };
   assign o_riscv_dcache_cpu_data_out  = (i_riscv_dcache_phys_addr[3])?cache_data_out[127:64]:cache_data_out[63:0];
 
@@ -79,7 +79,7 @@ module riscv_data_cache #(
     .replace_tag  (fsm_replace_tag)     ,
     .hit          (tag_hit_out)         ,
     .dirty        (tag_dirty_out)       ,
-    .tag_old      (tag_old_out)//new
+    .tag_old      (tag_old_out)
   );
 
   ///////////////////////////
@@ -132,6 +132,6 @@ module riscv_data_cache #(
   .set_valid      (fsm_set_valid)            ,
   .replace_tag    (fsm_replace_tag)          ,
   .stall          (o_riscv_dcache_cpu_stall) ,
-  .tag_sel        (fsm_tag_sel)//new
+  .tag_sel        (fsm_tag_sel)
 );
 endmodule

@@ -11,33 +11,32 @@ module instructions_array #(
     parameter BYTE_OFFSET = 4
   )
   (
-    input   logic                    clk                     ,
-    //input   logic                    rst                     ,      
+    input   logic                    clk                     ,     
     input   logic                    wren                    ,// input from ram
     input   logic                    rden                    ,// for cpu out
     input   logic [INDEX-1:0]        index                   ,
     input   logic [INDEX-1:0]        index_missallign        ,// index of the following block (used for missalignment)
     input   logic                    index_sel               , // used to identify the written block from ram to cache is the addressed one or the one after it for alignment
-    //input   logic [3:0]              byte_offset             , instruction select from top module
     input   logic [DWIDTH-1:0]       data_in                 ,
     output  logic [DWIDTH-1:0]       data_out                ,//total block and word selection done in top module 
     output  logic [DWIDTH-1:0]       data_out_align           // the block of the following index (used for missalignment)  
   );
 
   logic [DWIDTH-1:0] icache [0:CACHE_DEPTH-1];
-  //logic [(DWIDTH/2)-1:0] strdouble;
-
-  //assign strdouble = data_in[(DWIDTH/2)-1:0];
 
   always_ff @(negedge clk) begin
-    if(wren && !index_sel) begin//index_sel=0: the block is written at the real index
+    if(wren && !index_sel) begin
+      //index_sel=0: the block is written at the real index
       icache[index] <= data_in; //for total block at cache miss
+    
     end
-    else if(wren && index_sel) begin//index_sel=1: the block is written at the following index
+    else if(wren && index_sel) begin
+    //index_sel=1: the block is written at the following index
       icache[index_missallign] <= data_in;
+    
     end
   end
-  
+  // instruction read output
   assign data_out      = icache[index];
   assign data_out_align=icache[index_missallign];
   

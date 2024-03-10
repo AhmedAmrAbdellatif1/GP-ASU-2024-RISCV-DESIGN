@@ -35,6 +35,6 @@ module riscv_dcache_tag #(
 
   assign dirty   = dirty_buffer[index];
   assign hit     = (valid_buffer[index]) && ((tag_buffer[index]) == tag_in);
-  assign tag_old = tag_buffer[index];//new
+  assign tag_old = tag_buffer[index];
 
 endmodule
