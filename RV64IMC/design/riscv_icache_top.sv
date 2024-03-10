@@ -18,7 +18,7 @@ module riscv_instructions_cache #(
     input   logic                 i_riscv_icache_clk           ,
     input   logic                 i_riscv_icache_rst           ,
     input   logic [63:0]          i_riscv_icache_phys_addr     ,
-    output  logic [31:0]          o_riscv_icache_cpu_instr_out ,//output  logic [63:0]  o_riscv_icache_cpu_data_out //output connected to ff
+    output  logic [31:0]          o_riscv_icache_cpu_instr_out ,//output connected to ff
     output  logic                 o_riscv_icache_cpu_stall               
   );
 
@@ -48,9 +48,7 @@ module riscv_instructions_cache #(
   logic [TAG-1:0]   tag_missalign;
   logic [INDEX-1:0] index_missallign;
   logic             tag_hit_out;
-  logic             tag_missalign_out;
- // logic [63:0]      addr_missalign;  
-  //logic [TAG-1:0] tag_old_out;//new
+  logic             tag_missalign_out;  
   // memory model signals
   logic                   mem_wren;
   logic                   mem_rden;
@@ -66,10 +64,6 @@ module riscv_instructions_cache #(
   assign cache_data_in                    = mem_data_out ;
   assign {tag_missalign,index_missallign} = {tag,index} +1'b1;//input to the other modules to handle the missalignment
   assign mem_addr                         = (fsm_addr_sel)?{tag_missalign,index_missallign}:{tag,index};// for block address selection
-//next one is replaced by the case statement .
-//assign o_riscv_icache_cpu_data_out  = (i_riscv_icache_phys_addr[3])?cache_data_out[127:64]:cache_data_out[63:0];
-//assign addr_missalign = {{tag_missalign,index_missallign},4'b0000};
-//assign mem_addr = (fsm_tag_sel)?{tag_old_out,index}:{tag,index};/// need before for write back 
   always@(*)begin
    case(byte_offset)// the whole block is fetched from instruction array of the indexed and the following index for missalignment 
    // the odd addresses are just in case 
@@ -106,7 +100,6 @@ module riscv_instructions_cache #(
     .index_missallign (index_missallign)        ,
     .index            (index)                   ,
     .tag_in           (tag)                     ,
-    //.stall            (o_riscv_icache_cpu_stall),
     .valid_in         (fsm_set_valid)           ,
     .replace_tag      (fsm_replace_tag)         ,
     .hit              (tag_hit_out)             ,
@@ -126,7 +119,6 @@ module riscv_instructions_cache #(
       .rden            (fsm_cache_rden)      ,
       .index           (index)               ,
       .data_in         (cache_data_in)       ,
-      //.byte_offset(byte_offset)
       .index_missallign(index_missallign)    ,  
       .index_sel       (fsm_addr_sel)        ,
       .data_out        (cache_data_out)      ,
@@ -141,7 +133,6 @@ module riscv_instructions_cache #(
     .MEM_DEPTH  (MEM_SIZE)
   ) u_dram (
     .clk        (i_riscv_icache_clk)    ,     
-    //.wren       (0)                     ,
     .rden       (fsm_mem_rden)          ,
     .addr       (mem_addr)              ,
     .data_in    (cache_data_out)        ,
