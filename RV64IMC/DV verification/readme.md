@@ -1,7 +1,7 @@
 # How to test the connections:
 1. Copy [Core Verification folder](https://github.com/AhmedAmrAbdellatif1/GP-RV64IMAC/tree/main/RV64IMC/DV%20verification/Core%20Verification) into your pc.
 2. Update the design files in this folder to test it (If you've added a new design file that wasn't included follow these steps[^longnote])
-3. Open Questa/ModelSim
+3. Open QuestaSim (it gives an error in ModelSim --> You've do to create your own project, add design files then follow the steps)
 4. Click on: File --> Open --> Filter the `Project Files (*.mpf)` and select `golden-reference-test.mpf`
 <p align="left">
   <img src="https://github.com/AhmedAmrAbdellatif1/GP-RV64IMAC/assets/140100601/5e292c00-e1e1-421b-9d3f-769bd8053047" width=600 alt="Block Interface">
