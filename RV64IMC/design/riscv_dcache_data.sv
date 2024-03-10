@@ -22,12 +22,6 @@ module riscv_dcache_data #(
   logic [(DWIDTH/2)-1:0] strdouble;
 
   assign strdouble = data_in[(DWIDTH/2)-1:0];
-  
-  int i;
-  initial begin
-    for(i=0; i<CACHE_DEPTH; i++)
-      dcache[i] = 'b0;
-  end
 
   always_ff @(negedge clk) begin
     if(wren && !rden) begin
