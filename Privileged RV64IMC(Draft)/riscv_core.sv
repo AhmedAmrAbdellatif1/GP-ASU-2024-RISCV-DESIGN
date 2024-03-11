@@ -37,7 +37,7 @@ module riscv_core #(parameter MXLEN=64) (
   logic [3:0] riscv_cu_divctrl_datapath   ;
   logic [1:0] riscv_cu_funcsel_datapath   ;
   logic [2:0] riscv_cu_immsrc_datapath    ;
-    
+  logic       riscv_cu_instret_datapath   ;
 
  /////////////  Signals datapath >< haazard unit /////////////
   logic [1:0] riscv_datapath_fwda_hzrdu         ;        
@@ -139,6 +139,7 @@ module riscv_core #(parameter MXLEN=64) (
     .i_riscv_datapath_funcsel           (riscv_cu_funcsel_datapath)       , 
     .i_riscv_datapath_flush_de          (riscv_datapath_flush_de_hzrdu)   , 
     .i_riscv_datapath_stall_de          (riscv_datapath_stall_de_hzrdu)   ,
+    .i_riscv_datapath_instret           (riscv_cu_instret_datapath)       ,
   /************************* Execute Stage Signals *************************/
     .i_riscv_datapath_fwda              (riscv_datapath_fwda_hzrdu)       ,        
     .i_riscv_datapath_fwdb              (riscv_datapath_fwdb_hzrdu)       ,       
@@ -221,7 +222,8 @@ riscv_cu u_top_cu (
   .o_riscv_cu_iscsr         (riscv_cu_iscsr_de)                           ,
   .o_riscv_cu_ecall_u       (riscv_cu_ecallu_de)                          ,
   .o_riscv_cu_ecall_s       (riscv_cu_ecalls_de)                          ,
-  .o_riscv_cu_ecall_m       (riscv_cu_ecallm_de)  
+  .o_riscv_cu_ecall_m       (riscv_cu_ecallm_de)                          ,
+  .o_riscv_cu_instret       (riscv_cu_instret_datapath)
 );
 
 riscv_hazardunit u_top_hzrdu (  

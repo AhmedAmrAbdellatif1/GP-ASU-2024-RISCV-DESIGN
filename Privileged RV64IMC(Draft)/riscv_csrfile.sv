@@ -1,5 +1,4 @@
-
- module riscv_csrfile 
+module riscv_csrfile 
 
     # ( parameter MXLEN              = 64   ,
         parameter support_supervisor = 0    ,
@@ -11,9 +10,8 @@
         input          [2:0]      i_riscv_csr_op ,    
         input        [MXLEN-1:0]  i_riscv_csr_wdata ,
         output logic [MXLEN-1:0]  o_riscv_csr_rdata ,
-        output logic              o_riscv_csr_sideeffect_flush ,
-     
-         
+        output logic              o_riscv_csr_sideeffect_flush,
+
             // Interrupts
         input logic               i_riscv_csr_external_int, //interrupt from external source
         //input wire i_riscv_csr_software_interrupt, //interrupt from software (inter-processor interrupt)
@@ -29,7 +27,7 @@
         input logic               i_riscv_csr_load_addr_misaligned , 
         input logic               i_riscv_csr_store_addr_misaligned , 
 
-     
+        input logic               i_riscv_csr_instret ,
 
         output logic [MXLEN-1:0]  o_riscv_csr_return_address, //mepc CSR  (address to retrun after excuting trap) to continue excuting normal instruction
         output logic [MXLEN-1:0]  o_riscv_csr_trap_address,   //mtvec CSR
@@ -73,7 +71,11 @@
                CSR_MEDELEG   = 12'h302,
                CSR_MIDELEG   = 12'h303,
             // CSR_MCOUNTEREN= 12'h306 ;
-               CSR_MCONFIGPTR= 12'hF15 ;
+               CSR_MCONFIGPTR= 12'hF15 ,
+            // CSR COUNTERS
+               CSR_MINSTRET       = 12'hB02,
+               CSR_MCYCLE         = 12'hB00,
+               CSR_MCOUNTINHIBIT  = 12'h320;
 
            //CSR operation type
     localparam CSR_WRITE     = 3'b001 ,
@@ -235,6 +237,13 @@
     //logic         mideleg_ssi_cs , mideleg_ssi_ns; //Supervisor software interrupt delegation
   
     /*----------------  */
+    //      Counters
+    /* ---------------- */    //>>need to be checked 
+    logic [2:0]         mcountinhibit;
+    logic [MXLEN-1:0]   mcounter [3];
+    logic [2:0]         mcounter_we;
+    logic [2:0]         mcounter_incr;
+    /*----------------  */
     // Internal Signals
     /* ---------------- */
 
@@ -252,6 +261,7 @@
        logic               sret      ;
        logic               csr_we    ;
        logic               csr_read  ;
+
       
   
 /*----------- directly output some registers-------------*/
@@ -261,7 +271,7 @@
  // assign csr_mtval_o = mtval_cs;
 
     assign external_interrupt_pending_m =  (mstatus_mie_cs && mie_meie_cs && (mip_meip_cs))? 1:0; //machine_interrupt_enable + machine_external_interrupt_enable + machine_external_interrupt_pending must all be high
-//  assign software_interrupt_pending_m = mstatus_mie_cs && mie_msie_cs && mip_msip_cs;  //machine_interrupt_enable + machine_software_interrupt_enable + machine_software_interrupt_pending must all be high
+ //  assign software_interrupt_pending_m = mstatus_mie_cs && mie_msie_cs && mip_msip_cs;  //machine_interrupt_enable + machine_software_interrupt_enable + machine_software_interrupt_pending must all be high
     assign timer_interrupt_pending_m    = (mstatus_mie_cs && mie_mtie_cs && mip_mtip_cs)? 1:0; //machine_interrupt_enable + machine_timer_interrupt_enable + machine_timer_interrupt_pending must all be high
              
     assign is_interrupt                 = (external_interrupt_pending_m  || timer_interrupt_pending_m) ? 1:0  ; // || software_interrupt_pending_m ;
@@ -286,7 +296,10 @@
          // assign return_from_trap = i_is_mret; // return from trap, go back to saved i_pc
 
     //assign illegal_csr_priv   = (csr_addr[9:8] > {priv_lvl_cs});
-
+    
+    assign mcounter_incr[0] = 1'b1; //MCYCLE
+    assign mcounter_incr[1] = 1'b0; // reserved
+    assign mcounter_incr[2] = i_riscv_csr_instret; //MINSTRET
 
     /*----------------  */
     // CSR Read logic
@@ -428,7 +441,11 @@
                  /* ---------------- */
 
                 CSR_MCONFIGPTR :    csr_rdata_int =        64'b0;  // not implemented >> in spec say that it must be implemnetd ?? i think its means if not implemnted must this address return value
-                 
+               
+                CSR_MCOUNTINHIBIT:  csr_rdata_int [2:0] =   mcountinhibit ; 
+                CSR_MCYCLE:         csr_rdata_int       =   mcounter[0];
+                CSR_MINSTRET:       csr_rdata_int       =   mcounter[2];
+
                 //CSR_MCONFIGPTR: csr_rdata_int = CSR_MCONFIGPTR_VALUE;
             endcase
 
@@ -616,7 +633,7 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
                 
                 
                 //mtvec
-                mtvec_base_cs                  <= 'b1000;  // it is 62 bits
+                mtvec_base_cs                  <= 'hFFFFF;  // it is 62 bits
                 mtvec_mode_cs                  <= 2'b00 ;
                 // set to boot address + direct mode + 4 byte offset which is the initial trap
                    // mtvec_rst_load_q         <= 1'b1;
@@ -883,8 +900,33 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
     end    /*---of always block---*/ 
 
 
- 
+ /*------mcountinhibit register-----*/ 
 
+always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst) 
+   begin    
+      if (i_riscv_csr_rst) 
+      
+               mcountinhibit  <= 3'b0;     
+
+      else if (csr_we && i_riscv_csr_address == CSR_MCOUNTINHIBIT)                    
+               mcountinhibit    <= csr_wdata[2:0];    
+
+   end   /*---of always block*/
+
+ /*------MCYCLE-----*/ 
+ always @(*) 
+   begin    
+      mcounter_we[0] <= 1'b0;     
+   if (csr_we && i_riscv_csr_address == CSR_MCYCLE)                    
+      mcounter_we[0] <= 1'b1;   
+   end
+    /*------MINSTRET-----*/ 
+ always @(*) 
+   begin    
+      mcounter_we[2] <= 1'b0;    
+   if (csr_we && i_riscv_csr_address == CSR_MINSTRET)                    
+      mcounter_we[2] <= 1'b1;   
+   end
  
      /*----------------  */
     // CSR OP Select Logic
@@ -929,6 +971,25 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
 */
    
     end
+// mcycle counter
+ riscv_counter mcycle_counter(
+  .clk(i_riscv_csr_clk),
+  .rst(i_riscv_csr_rst),
+  .write_en(mcounter_we[0]),
+  .incr_en(mcounter_incr[0] && !mcountinhibit[0]),
+  .i_value(csr_wdata),
+  .o_value(mcounter[0])
+ );
+
+//minstret counter 
+ riscv_counter minstret_counter(
+  .clk(i_riscv_csr_clk),
+  .rst(i_riscv_csr_rst),
+  .write_en(mcounter_we[2]),
+  .incr_en(mcounter_incr[2] && !mcountinhibit[2]),
+  .i_value(csr_wdata),
+  .o_value(mcounter[2])
+ );
 
 
 

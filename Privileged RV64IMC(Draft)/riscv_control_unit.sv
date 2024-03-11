@@ -27,7 +27,9 @@ module riscv_cu (
   output logic        o_riscv_cu_iscsr        , //<--- Privilege
   output logic        o_riscv_cu_ecall_u      , //<--- Privilege
   output logic        o_riscv_cu_ecall_s      , //<--- Privilege
-  output logic        o_riscv_cu_ecall_m        //<--- Privilege
+  output logic        o_riscv_cu_ecall_m      , //<--- Privilege
+  output logic        o_riscv_cu_instret        //<--- Privilege
+
 );
 
   localparam  ENV_CALL_UMODE  = 8     ,
@@ -63,6 +65,7 @@ always_comb
   o_riscv_cu_csrop      = 'b0;
   o_riscv_cu_sel_rs_imm = 'b0;
   riscv_cu_detect_ecall = 'b0;
+  o_riscv_cu_instret    = 'b1;
 ////////////////////////////////
     case(i_riscv_cu_opcode)
         7'b0110011:begin
@@ -610,6 +613,7 @@ always_comb
                                  o_riscv_cu_divctrl     = 4'b000;
                                  o_riscv_cu_funcsel     = 2'b10;
                                  o_riscv_cu_illgalinst  = 1'b1 ;
+                                 o_riscv_cu_instret     = 1'b0;
                               end                                                                  
                      endcase
                    end        
@@ -865,6 +869,7 @@ always_comb
                                  o_riscv_cu_divctrl   = 4'b0000;
                                  o_riscv_cu_funcsel   = 2'b10;
                                  o_riscv_cu_illgalinst = 1'b1;
+                                 o_riscv_cu_instret     = 1'b0;
                               end                                                   
                      endcase
                    end            
@@ -1005,7 +1010,9 @@ always_comb
                   o_riscv_cu_mulctrl    = 4'b0000;
                   o_riscv_cu_divctrl    = 4'b0000;
                   o_riscv_cu_funcsel    = 2'b10;
-                  o_riscv_cu_illgalinst = 1'b0    ;
+                  o_riscv_cu_illgalinst = 1'b0 ;
+                  o_riscv_cu_instret    = 1'b0;
+                  
                 end            
        7'b1110011:begin
                          
@@ -1036,6 +1043,7 @@ always_comb
                                 12'b0: begin riscv_cu_detect_ecall = 1'b1;
                                 o_riscv_cu_illgalinst = 1'b0;
                                 o_riscv_cu_csrop = 'b000;
+                                o_riscv_cu_instret     = 1'b0;
                                     /*   case (i_riscv_cu_privlvl)
                                   PRIV_LVL_S :  o_riscv_cu_cause = ENV_CALL_SMODE;
                                 
@@ -1056,6 +1064,7 @@ always_comb
                               end
                               default begin
                                riscv_cu_detect_ecall = 1'b0;
+                               o_riscv_cu_instret     = 1'b0;
                               end
                           endcase
                      end
@@ -1146,6 +1155,7 @@ always_comb
                   o_riscv_cu_divctrl    = 4'b0000;
                   o_riscv_cu_funcsel    = 2'b10;
                   o_riscv_cu_illgalinst = 1'b1 ;
+                  o_riscv_cu_instret     = 1'b0;
                 end
   endcase
    /* --------------------- */
