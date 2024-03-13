@@ -1,37 +1,30 @@
 module riscv_dcache_fsm  (
-  input   logic clk           ,
-  input   logic rst           ,
-  input   logic cpu_wren      ,
-  input   logic cpu_rden      ,
-  input   logic hit           ,
-  input   logic dirty         ,
-  input   logic mem_ready     ,
-  input   logic glob_stall    ,
-  output  logic cache_rden    ,
-  output  logic cache_wren    ,
-  output  logic cache_insel   ,
-  output  logic mem_rden      ,
-  output  logic mem_wren      ,
-  output  logic set_dirty     ,
-  output  logic set_valid     ,
-  output  logic replace_tag   ,
-  output  logic dcache_stall  ,
-  output  logic tag_sel 
+  input   logic clk           ,   //  positive edge clock signal
+  input   logic rst           ,   //  positive edge reset signal
+  input   logic cpu_wren      ,   //  CPU write enable signal
+  input   logic cpu_rden      ,   //  CPU read enable signal
+  input   logic hit           ,   //  Tag hit flag
+  input   logic dirty         ,   //  Dirty flag
+  input   logic mem_ready     ,   //  RAM ready flag
+  input   logic glob_stall    ,   //  Global Stall flag
+  output  logic cache_rden    ,   //  Cache read enable signal
+  output  logic cache_wren    ,   //  Cache write enable signal
+  output  logic cache_insel   ,   //  Cache input selection between DRAM or CPU
+  output  logic mem_wren      ,   //  DRAM write enable
+  output  logic mem_rden      ,   //  DRAM read enable
+  output  logic set_dirty     ,   //  Replace dirty bit signal
+  output  logic set_valid     ,   //  Replace valid bit signal
+  output  logic replace_tag   ,   //  Replace tag enable signal
+  output  logic dcache_stall  ,   //  Stall signal when miss
+  output  logic tag_sel           //  Decide the DRAM input tag
 );
 
-  // 
+  // FSM states
  typedef enum {IDLE, COMPARE_TAG, WRITE_BACK, ALLOCATE, CACHE_ACCESS} states;
-  
   states current_state, next_state;
-  logic       cpu_rden_reg,cpu_wren_reg;
 
-  // 
-  always_ff @(posedge clk or posedge rst) begin
-    if(rst)
-      current_state <= IDLE;
-    else
-      current_state <= next_state;    
-  end
+  // Registering CPU read and write enable
+  logic       cpu_rden_reg,cpu_wren_reg;
 
   //
    always_ff @(posedge clk or posedge rst) begin
@@ -45,9 +38,20 @@ module riscv_dcache_fsm  (
    end
  end
 
-  // 
+ /********************************************* FSM *********************************************/
+
+   // Current state sequential block
+  always_ff @(posedge clk or posedge rst) begin
+    if(rst)
+      current_state <= IDLE;
+    else
+      current_state <= next_state;    
+  end
+
+  // Next State & Output combinational block
   always_comb begin
     case (current_state)
+      /*********/
       IDLE: begin
         if(cpu_rden || cpu_wren) begin
           next_state    = COMPARE_TAG;
@@ -76,6 +80,7 @@ module riscv_dcache_fsm  (
           tag_sel       = 1'b0;
         end
       end
+      /****************/
       COMPARE_TAG: begin
         if(hit) begin
           cache_rden    = cpu_rden_reg;
@@ -88,7 +93,6 @@ module riscv_dcache_fsm  (
           replace_tag   = cpu_wren_reg;
           dcache_stall  = 1'b0;
           tag_sel       = 1'b0;
-          // 2 load/store instruction 
           if(cpu_rden || cpu_wren) 
           next_state    = COMPARE_TAG ;
           else 
@@ -121,6 +125,7 @@ module riscv_dcache_fsm  (
           tag_sel       = 1'b0;
         end
       end
+      /***************/
       WRITE_BACK: begin
         if(mem_ready) begin
           next_state    = ALLOCATE;
@@ -149,6 +154,7 @@ module riscv_dcache_fsm  (
           tag_sel       = 1'b1;
         end
       end
+      /*************/
       ALLOCATE: begin
         if(mem_ready) begin
           next_state    = CACHE_ACCESS;
@@ -177,6 +183,7 @@ module riscv_dcache_fsm  (
           tag_sel       = 1'b0;
         end
       end
+      /****************/
       CACHE_ACCESS:begin
          cache_rden    = cpu_rden_reg;
          cache_wren    = cpu_wren_reg;
@@ -205,7 +212,6 @@ module riscv_dcache_fsm  (
         replace_tag   = 1'b0;
         dcache_stall  = 1'b1;
         tag_sel       = 1'b0;
-      
       end
       
     endcase

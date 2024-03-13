@@ -18,7 +18,7 @@ module riscv_instructions_cache #(
     input   logic                 i_riscv_icache_clk           ,
     input   logic                 i_riscv_icache_rst           ,
     input   logic [63:0]          i_riscv_icache_phys_addr     ,
-    output  logic [31:0]          o_riscv_icache_cpu_instr_out ,//output connected to ff
+    output  logic [31:0]          o_riscv_icache_cpu_instr_out ,
     output  logic                 o_riscv_icache_cpu_stall               
   );
 
@@ -48,7 +48,8 @@ module riscv_instructions_cache #(
   logic [TAG-1:0]   tag_missalign;
   logic [INDEX-1:0] index_missallign;
   logic             tag_hit_out;
-  logic             tag_missalign_out;  
+  logic             tag_missalign_out;
+
   // memory model signals
   logic                   mem_wren;
   logic                   mem_rden;
@@ -64,7 +65,8 @@ module riscv_instructions_cache #(
   assign cache_data_in                    = mem_data_out ;
   assign {tag_missalign,index_missallign} = {tag,index} +1'b1;//input to the other modules to handle the missalignment
   assign mem_addr                         = (fsm_addr_sel)?{tag_missalign,index_missallign}:{tag,index};// for block address selection
-  always@(*)begin
+
+  always_comb begin
    case(byte_offset)// the whole block is fetched from instruction array of the indexed and the following index for missalignment 
    // the odd addresses are just in case 
      4'b0000:o_riscv_icache_cpu_instr_out  =  cache_data_out[31:0];
@@ -95,7 +97,6 @@ module riscv_instructions_cache #(
     .ADDR         (ADDR)
   ) u_tag_array_i (
     .clk              (i_riscv_icache_clk)      ,
-    .rst              (i_riscv_icache_rst)      ,
     .tag_missalign    (tag_missalign)           ,
     .index_missallign (index_missallign)        ,
     .index            (index)                   ,
@@ -109,11 +110,11 @@ module riscv_instructions_cache #(
   );
 
   ///////////////////////////
-  instructions_array #(
+  riscv_icache_inst #(
     .INDEX        (INDEX),
     .DWIDTH       (DATA_WIDTH),
     .CACHE_DEPTH  (CACHE_DEPTH)
-  ) u_instructions_array (
+  ) u_icache_inst (
       .clk             (i_riscv_icache_clk)  ,    
       .wren            (fsm_cache_wren)      ,
       .rden            (fsm_cache_rden)      ,

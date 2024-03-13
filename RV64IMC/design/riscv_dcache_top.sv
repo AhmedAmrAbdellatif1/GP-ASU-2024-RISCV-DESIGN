@@ -72,7 +72,6 @@ module riscv_data_cache #(
     .CACHE_DEPTH  (CACHE_DEPTH)
   ) u_dcache_tag (
     .clk          (i_riscv_dcache_clk)  ,
-    .rst          (i_riscv_dcache_rst)  ,
     .index        (index)               ,
     .tag_in       (tag)                 ,
     .dirty_in     (fsm_set_dirty)       ,
@@ -80,7 +79,7 @@ module riscv_data_cache #(
     .replace_tag  (fsm_replace_tag)     ,
     .hit          (tag_hit_out)         ,
     .dirty        (tag_dirty_out)       ,
-    .tag_old      (tag_old_out)//new
+    .tag_old      (tag_old_out)
   );
 
   ///////////////////////////
@@ -134,6 +133,6 @@ module riscv_data_cache #(
   .replace_tag    (fsm_replace_tag)          ,
   .dcache_stall   (o_riscv_dcache_cpu_stall) ,
   .glob_stall     (i_riscv_dcache_globstall) ,
-  .tag_sel        (fsm_tag_sel)//new
+  .tag_sel        (fsm_tag_sel)
 );
 endmodule

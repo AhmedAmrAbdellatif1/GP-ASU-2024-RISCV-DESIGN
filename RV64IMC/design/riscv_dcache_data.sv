@@ -1,3 +1,4 @@
+(* ram_style = "block" *)
 module riscv_dcache_data #(
     parameter INDEX       = 12,
     parameter DWIDTH      = 128,
@@ -5,85 +6,258 @@ module riscv_dcache_data #(
     parameter BYTE_OFFSET = 4
   )
   (
-    input   logic                    clk                     ,
-    //input   logic                    rst                     ,      
-    input   logic                    wren                    ,
-    input   logic                    rden                    ,
-    input   logic [INDEX-1:0]        index                   ,
-    input   logic [3:0]              byte_offset             ,// need instatiation 
-    input   logic [1:0]              storesrc                ,//need......
-    input   logic                    mem_in                  ,// from finite state machine indicate write block from RAM (cache in sel)
-    input   logic [DWIDTH-1:0]       data_in                 ,
-    output  logic [DWIDTH-1:0]       data_out                
-
+    input   logic                    clk          , //  negative edge clock signal
+    input   logic                    wren         , //  cache write enable
+    input   logic                    rden         , //  cache read enable
+    input   logic [INDEX-1:0]        index        , //  input index
+    input   logic [3:0]              byte_offset  , //  input byte offset to determine the storing position
+    input   logic [1:0]              storesrc     , //  input storesrc to determine the type of store
+    input   logic                    mem_in       , //  input signal to decide the data coming from CPU or DRAM
+    input   logic [DWIDTH-1:0]       data_in      , //  input data bus
+    output  logic [DWIDTH-1:0]       data_out       //  output data bus
   );
 
-  logic [DWIDTH-1:0] dcache [0:CACHE_DEPTH-1];
-  logic [(DWIDTH/2)-1:0] strdouble;
+  // for loop variable
+  integer i;
 
-  assign strdouble = data_in[(DWIDTH/2)-1:0];
+  // input data buffer
+  logic [63:0] data_buffer;
 
+  // distribute the input data along the buffer to assure correct storing
+  assign data_buffer = (storesrc == 2'b00)? {8{data_in[7:0]}} : 
+                       (storesrc == 2'b01)? {4{data_in[15:0]}}:
+                       (storesrc == 2'b10)? {2{data_in[31:0]}}:
+                       (storesrc == 2'b11)? data_in[63:0]     : 'b0;
+
+  // accessing byte flags declaration
+  logic byte0_flag,   byte1_flag,   byte2_flag,   byte3_flag,
+        byte4_flag,   byte5_flag,   byte6_flag,   byte7_flag,
+        byte8_flag,   byte9_flag,   byte10_flag,  byte11_flag,
+        byte12_flag,  byte13_flag,  byte14_flag,  byte15_flag;
+
+  // output data retrieving
+  logic [7:0] byte0_out,  byte1_out,  byte2_out,  byte3_out,
+              byte4_out,  byte5_out,  byte6_out,  byte7_out,
+              byte8_out,  byte9_out,  byte10_out, byte11_out,
+              byte12_out, byte13_out, byte14_out, byte15_out;
+
+  // Block RAM of 16 bytes per block
+  logic [7:0] byte0  [0:CACHE_DEPTH-1];
+  logic [7:0] byte1  [0:CACHE_DEPTH-1];
+  logic [7:0] byte2  [0:CACHE_DEPTH-1];
+  logic [7:0] byte3  [0:CACHE_DEPTH-1];
+  logic [7:0] byte4  [0:CACHE_DEPTH-1];
+  logic [7:0] byte5  [0:CACHE_DEPTH-1];
+  logic [7:0] byte6  [0:CACHE_DEPTH-1];
+  logic [7:0] byte7  [0:CACHE_DEPTH-1];
+  logic [7:0] byte8  [0:CACHE_DEPTH-1];
+  logic [7:0] byte9  [0:CACHE_DEPTH-1];
+  logic [7:0] byte10 [0:CACHE_DEPTH-1];
+  logic [7:0] byte11 [0:CACHE_DEPTH-1];
+  logic [7:0] byte12 [0:CACHE_DEPTH-1];
+  logic [7:0] byte13 [0:CACHE_DEPTH-1];
+  logic [7:0] byte14 [0:CACHE_DEPTH-1];
+  logic [7:0] byte15 [0:CACHE_DEPTH-1];
+
+  // initialize the cache with zeroes
+  initial begin
+    for(i=0; i<CACHE_DEPTH; i++) begin
+      byte0 [i] = 'b0;
+      byte1 [i] = 'b0;
+      byte2 [i] = 'b0;
+      byte3 [i] = 'b0;
+      byte4 [i] = 'b0;
+      byte5 [i] = 'b0;
+      byte6 [i] = 'b0;
+      byte7 [i] = 'b0;
+      byte8 [i] = 'b0;
+      byte9 [i] = 'b0;
+      byte10[i] = 'b0;
+      byte11[i] = 'b0;
+      byte12[i] = 'b0;
+      byte13[i] = 'b0;
+      byte14[i] = 'b0;
+      byte15[i] = 'b0;  
+    end
+  end
+
+  // negative edge synchronous write
   always_ff @(negedge clk) begin
     if(wren && !rden) begin
-      if(mem_in)
-        dcache[index] <= data_in;//for total block at cache miss
-      else begin
-        case(storesrc)
-          2'b00:begin/// 16 case for each byte 
-           case (byte_offset)
-             4'b0000:dcache[index][7:0]     <=strdouble[7:0];
-             4'b0001:dcache[index][15:8]    <=strdouble[7:0];
-             4'b0010:dcache[index][23:16]   <=strdouble[7:0];
-             4'b0011:dcache[index][31:24]   <=strdouble[7:0];
-             4'b0100:dcache[index][39:32]   <=strdouble[7:0];
-             4'b0101:dcache[index][47:40]   <=strdouble[7:0];
-             4'b0110:dcache[index][55:48]   <=strdouble[7:0];
-             4'b0111:dcache[index][63:56]   <=strdouble[7:0];
-             4'b1000:dcache[index][71:64]   <=strdouble[7:0];
-             4'b1001:dcache[index][79:72]   <=strdouble[7:0];
-             4'b1010:dcache[index][87:80]   <=strdouble[7:0];
-             4'b1011:dcache[index][95:88]   <=strdouble[7:0];
-             4'b1100:dcache[index][103:96]  <=strdouble[7:0];
-             4'b1101:dcache[index][111:104] <=strdouble[7:0];
-             4'b1110:dcache[index][119:112] <=strdouble[7:0];
-             4'b1111:dcache[index][127:120] <=strdouble[7:0]; // momtaz :like:
-           endcase
-          end
-          2'b01:begin// 8 cases for half word access 
-           case (byte_offset[3:1])  
-             3'b000:dcache[index][15:0]    <=strdouble[15:0];
-             3'b001:dcache[index][31:16]   <=strdouble[15:0];
-             3'b010:dcache[index][47:32]   <=strdouble[15:0];
-             3'b011:dcache[index][63:48]   <=strdouble[15:0];
-             3'b100:dcache[index][79:64]   <=strdouble[15:0];
-             3'b101:dcache[index][95:80]   <=strdouble[15:0];
-             3'b110:dcache[index][111:96]  <=strdouble[15:0];
-             3'b111:dcache[index][127:112] <=strdouble[15:0];
-          endcase
-          end
-          2'b10:begin// 4 cases for word access
-          case (byte_offset[3:2])  
-            2'b00:dcache[index][31:0]   <=strdouble[31:0];
-            2'b01:dcache[index][63:32]  <=strdouble[31:0];
-            2'b10:dcache[index][95:64]  <=strdouble[31:0];
-            2'b11:dcache[index][127:96] <=strdouble[31:0];
-          endcase
-          end      
-          2'b11:begin// 2 cases for double word access
-          case (byte_offset[3])  
-            1'b0:dcache[index][63:0]   <=strdouble[63:0];
-            1'b1:dcache[index][127:64] <=strdouble[63:0];
-          endcase
-          end                
-        
-        endcase
-
-      
+      if(mem_in) begin
+        byte0[index]  <= data_in[7:0];
+        byte1[index]  <= data_in[15:8];
+        byte2[index]  <= data_in[23:16];
+        byte3[index]  <= data_in[31:24];
+        byte4[index]  <= data_in[39:32];
+        byte5[index]  <= data_in[47:40];
+        byte6[index]  <= data_in[55:48];
+        byte7[index]  <= data_in[63:56];
+        byte8[index]  <= data_in[71:64];
+        byte9[index]  <= data_in[79:72];
+        byte10[index] <= data_in[87:80];
+        byte11[index] <= data_in[95:88];
+        byte12[index] <= data_in[103:96];
+        byte13[index] <= data_in[111:104];
+        byte14[index] <= data_in[119:112];
+        byte15[index] <= data_in[127:120];
       end
-
+      else
+        if(byte0_flag)
+          byte0[index]  <= data_buffer[7:0];
+        if(byte1_flag)                  
+          byte1[index]  <= data_buffer[15:8];
+        if(byte2_flag)                  
+          byte2[index]  <= data_buffer[23:16];
+        if(byte3_flag)                  
+          byte3[index]  <= data_buffer[31:24];
+        if(byte4_flag)                  
+          byte4[index]  <= data_buffer[39:32];
+        if(byte5_flag)                  
+          byte5[index]  <= data_buffer[47:40];
+        if(byte6_flag)                   
+          byte6[index]  <= data_buffer[55:48];
+        if(byte7_flag)                  
+          byte7[index]  <= data_buffer[63:56];
+        if(byte8_flag)                  
+          byte8[index]  <= data_buffer[7:0];
+        if(byte9_flag)                  
+          byte9[index]  <= data_buffer[15:8];
+        if(byte10_flag)                  
+          byte10[index] <= data_buffer[23:16];
+        if(byte11_flag)                  
+          byte11[index] <= data_buffer[31:24];
+        if(byte12_flag)                  
+          byte12[index] <= data_buffer[39:32];
+        if(byte13_flag)                  
+          byte13[index] <= data_buffer[47:40];
+        if(byte14_flag)                  
+          byte14[index] <= data_buffer[55:48];
+        if(byte15_flag)                  
+          byte15[index] <= data_buffer[63:56];
     end
   end
   
-  assign data_out = dcache[index];
+  // negative edge synchronous read
+  always_ff @(negedge clk) begin
+    byte0_out   <= byte0[index];
+    byte1_out   <= byte1[index];
+    byte2_out   <= byte2[index];
+    byte3_out   <= byte3[index];
+    byte4_out   <= byte4[index];
+    byte5_out   <= byte5[index];
+    byte6_out   <= byte6[index];
+    byte7_out   <= byte7[index];
+    byte8_out   <= byte8[index];
+    byte9_out   <= byte9[index];
+    byte10_out  <= byte10[index];
+    byte11_out  <= byte11[index];
+    byte12_out  <= byte12[index];
+    byte13_out  <= byte13[index];
+    byte14_out  <= byte14[index];
+    byte15_out  <= byte15[index];
+  end
+
+  // output data
+  assign data_out = { byte15_out, byte14_out, byte13_out, byte12_out,
+                      byte11_out, byte10_out, byte9_out,  byte8_out,
+                      byte7_out,  byte6_out,  byte5_out,  byte4_out,
+                      byte3_out,  byte2_out,  byte1_out,  byte0_out };
+
+  // bytes enable flags
+  assign byte0_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b0000))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b000))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b00))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b0))   ) && (wren && !mem_in));
+
+          
+  assign byte1_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b0001))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b000))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b00))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b0))   ) && (wren && !mem_in));
+
+          
+  assign byte2_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b0010))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b001))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b00))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b0))   ) && (wren && !mem_in));
+
+          
+  assign byte3_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b0011))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b001))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b00))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b0))   ) && (wren && !mem_in));
+
+          
+  assign byte4_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b0100))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b010))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b01))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b0))   ) && (wren && !mem_in));
+
+          
+  assign byte5_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b0101))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b010))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b01))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b0))   ) && (wren && !mem_in));
+
+          
+  assign byte6_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b0110))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b011))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b01))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b0))   ) && (wren && !mem_in));
+
+          
+  assign byte7_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b0111))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b011))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b01))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b0))   ) && (wren && !mem_in));
+
+          
+  assign byte8_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b1000))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b100))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b10))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b1))   ) && (wren && !mem_in));
+
+          
+  assign byte9_flag  = (( ((storesrc == 2'b00) && (byte_offset      == 4'b1001))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b100))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b10))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b1))   ) && (wren && !mem_in));
+
+          
+  assign byte10_flag = (( ((storesrc == 2'b00) && (byte_offset      == 4'b1010))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b101))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b10))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b1))   ) && (wren && !mem_in));
+
+          
+  assign byte11_flag = (( ((storesrc == 2'b00) && (byte_offset      == 4'b1011))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b101))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b10))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b1))   ) && (wren && !mem_in));
+
+          
+  assign byte12_flag = (( ((storesrc == 2'b00) && (byte_offset      == 4'b1100))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b110))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b11))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b1))   ) && (wren && !mem_in));
+
+          
+  assign byte13_flag = (( ((storesrc == 2'b00) && (byte_offset      == 4'b1101))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b110))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b11))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b1))   ) && (wren && !mem_in));
+
+          
+  assign byte14_flag = (( ((storesrc == 2'b00) && (byte_offset      == 4'b1110))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b111))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b11))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b1))   ) && (wren && !mem_in));
+
+          
+  assign byte15_flag = (( ((storesrc == 2'b00) && (byte_offset      == 4'b1111))  ||
+                          ((storesrc == 2'b01) && (byte_offset[3:1] == 3'b111))   ||
+                          ((storesrc == 2'b10) && (byte_offset[3:2] == 2'b11))    ||
+                          ((storesrc == 2'b11) && (byte_offset[3]   == 1'b1))   ) && (wren && !mem_in));
 
 endmodule
