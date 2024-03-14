@@ -12,6 +12,7 @@ module riscv_hazardunit (
   input  logic   [1:0]   i_riscv_hzrdu_resultsrc_e   ,
   input  logic   [4:0]   i_riscv_hzrdu_rdaddr_e      ,
   input  logic           i_riscv_dcahe_stall_m       ,
+  input  logic           i_riscv_icahe_stall_m       ,
   input  logic           i_riscv_hzrdu_mul_en        , 
   input  logic           i_riscv_hzrdu_div_en        ,
   input  logic           i_riscv_hzrdu_valid         ,
@@ -29,14 +30,16 @@ module riscv_hazardunit (
   output logic           o_riscv_hzrdu_flushde       ,
   output logic           o_riscv_hzrdu_stallde       ,
   output logic           o_riscv_hzrdu_stallem       ,
-  output logic           o_riscv_hzrdu_stallmw       
+  output logic           o_riscv_hzrdu_stallmw       ,
+  output logic           o_riscv_hzrdu_globstall
   );
 
   logic m_stall,glob_stall;
 
 /************************ Flags ************************/
   assign m_stall    = (i_riscv_hzrdu_mul_en || i_riscv_hzrdu_div_en)  & (!i_riscv_hzrdu_valid);
-  assign glob_stall = (i_riscv_dcahe_stall_m) | m_stall;
+  assign glob_stall = ((i_riscv_dcahe_stall_m) || (m_stall) || (i_riscv_icahe_stall_m));
+  assign o_riscv_hzrdu_globstall = glob_stall;
 
 /************************ Forward Mux A ************************/
   always @(*)

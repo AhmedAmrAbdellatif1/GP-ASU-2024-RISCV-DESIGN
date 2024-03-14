@@ -1,30 +1,46 @@
 module riscv_dcache_fsm  (
-  input   logic clk           ,
-  input   logic rst           ,
-  input   logic cpu_wren      ,
-  input   logic cpu_rden      ,
-  input   logic hit           ,
-  input   logic dirty         ,
-  input   logic mem_ready     ,
-  output  logic cache_rden    ,
-  output  logic cache_wren    ,
-  output  logic cache_insel   ,
-  output  logic mem_rden      ,
-  output  logic mem_wren      ,
-  output  logic set_dirty     ,
-  output  logic set_valid     ,
-  output  logic replace_tag   ,
-  output  logic stall         ,
-  output  logic tag_sel //new
+  input   logic clk           ,   //  positive edge clock signal
+  input   logic rst           ,   //  positive edge reset signal
+  input   logic cpu_wren      ,   //  CPU write enable signal
+  input   logic cpu_rden      ,   //  CPU read enable signal
+  input   logic hit           ,   //  Tag hit flag
+  input   logic dirty         ,   //  Dirty flag
+  input   logic mem_ready     ,   //  RAM ready flag
+  input   logic glob_stall    ,   //  Global Stall flag
+  output  logic cache_rden    ,   //  Cache read enable signal
+  output  logic cache_wren    ,   //  Cache write enable signal
+  output  logic cache_insel   ,   //  Cache input selection between DRAM or CPU
+  output  logic mem_wren      ,   //  DRAM write enable
+  output  logic mem_rden      ,   //  DRAM read enable
+  output  logic set_dirty     ,   //  Replace dirty bit signal
+  output  logic set_valid     ,   //  Replace valid bit signal
+  output  logic replace_tag   ,   //  Replace tag enable signal
+  output  logic dcache_stall  ,   //  Stall signal when miss
+  output  logic tag_sel           //  Decide the DRAM input tag
 );
 
-  // 
+  // FSM states
  typedef enum {IDLE, COMPARE_TAG, WRITE_BACK, ALLOCATE, CACHE_ACCESS} states;
-  
   states current_state, next_state;
-  logic       cpu_rden_reg,cpu_wren_reg;//new
 
-  // 
+  // Registering CPU read and write enable
+  logic       cpu_rden_reg,cpu_wren_reg;
+
+  //
+   always_ff @(posedge clk or posedge rst) begin
+   if(rst)begin
+     cpu_rden_reg  <= 1'b0;
+     cpu_wren_reg  <= 1'b0;
+   end
+   else if (!glob_stall) begin 
+     cpu_rden_reg  <= cpu_rden;
+     cpu_wren_reg  <= cpu_wren;
+   end
+ end
+
+ /********************************************* FSM *********************************************/
+
+   // Current state sequential block
   always_ff @(posedge clk or posedge rst) begin
     if(rst)
       current_state <= IDLE;
@@ -32,21 +48,10 @@ module riscv_dcache_fsm  (
       current_state <= next_state;    
   end
 
-  //
-   always_ff @(posedge clk or posedge rst) begin
-   if(rst)begin
-     cpu_rden_reg  <= 1'b0;//new
-     cpu_wren_reg  <= 1'b0;//new
-   end
-   else if (!stall) begin 
-     cpu_rden_reg  <= cpu_rden;//new
-     cpu_wren_reg  <= cpu_wren;//new
-   end
- end
-
-  // 
+  // Next State & Output combinational block
   always_comb begin
     case (current_state)
+      /*********/
       IDLE: begin
         if(cpu_rden || cpu_wren) begin
           next_state    = COMPARE_TAG;
@@ -58,8 +63,8 @@ module riscv_dcache_fsm  (
           set_dirty     = 1'b0;   
           set_valid     = 1'b0;    
           replace_tag   = 1'b0;
-          stall         = 1'b0;
-          tag_sel       = 1'b0; /// tag used is the input tag physical address 
+          dcache_stall  = 1'b0;
+          tag_sel       = 1'b0;
         end
         else begin
           next_state    = IDLE;
@@ -71,10 +76,11 @@ module riscv_dcache_fsm  (
           set_dirty     = 1'b0;   
           set_valid     = 1'b0;    
           replace_tag   = 1'b0;
-          stall         = 1'b0;
-          tag_sel       = 1'b0;//new
+          dcache_stall  = 1'b0;
+          tag_sel       = 1'b0;
         end
       end
+      /****************/
       COMPARE_TAG: begin
         if(hit) begin
           cache_rden    = cpu_rden_reg;
@@ -85,41 +91,41 @@ module riscv_dcache_fsm  (
           set_dirty     = 1'b1;   
           set_valid     = 1'b1;    
           replace_tag   = cpu_wren_reg;
-          stall         = 1'b0;
-          tag_sel       = 1'b0;//new
-          // 2 load/store instruction 
-          if(cpu_rden || cpu_wren)//both of those signals are from the following instructions 
+          dcache_stall  = 1'b0;
+          tag_sel       = 1'b0;
+          if(cpu_rden || cpu_wren) 
           next_state    = COMPARE_TAG ;
           else 
           next_state    = IDLE;
         end
         else if(dirty) begin
-          next_state    = WRITE_BACK;//here for axi bus we need write memory ready signal to be checked first (data, address)
+          next_state    = WRITE_BACK;
           cache_rden    = 1'b1;
           cache_wren    = 1'b0;
           cache_insel   = 1'b0;
           mem_rden      = 1'b0;
-          mem_wren      = 1'b1;//can be considered write signal (data , address) valid  
+          mem_wren      = 1'b1;
           set_dirty     = cpu_wren_reg;
           set_valid     = 1'b1;    
-          replace_tag   = 1'b0;///// prevent hit 
-          stall         = 1'b1;
-          tag_sel       = 1'b1;// tag used is fetched from tag array
+          replace_tag   = 1'b0;
+          dcache_stall  = 1'b1;
+          tag_sel       = 1'b1;
         end
         else begin
           next_state    = ALLOCATE;
           cache_rden    = 1'b0;
-          cache_wren    = 1'b0;//////cache will write when the memory ready come to indicate valid block *********new
+          cache_wren    = 1'b0;
           cache_insel   = 1'b0;
           mem_rden      = 1'b1;
           mem_wren      = 1'b0;  
           set_dirty     = cpu_wren_reg;
           set_valid     = 1'b1;    
-          replace_tag   = 1'b0;// 
-          stall         = 1'b1;
-          tag_sel       = 1'b0;//new
+          replace_tag   = 1'b0;
+          dcache_stall  = 1'b1;
+          tag_sel       = 1'b0;
         end
       end
+      /***************/
       WRITE_BACK: begin
         if(mem_ready) begin
           next_state    = ALLOCATE;
@@ -131,7 +137,7 @@ module riscv_dcache_fsm  (
           set_dirty     = 1'b0;   
           set_valid     = 1'b0;    
           replace_tag   = 1'b0;
-          stall         = 1'b1;
+          dcache_stall  = 1'b1;
           tag_sel       = 1'b0;
         end
         else begin
@@ -143,13 +149,14 @@ module riscv_dcache_fsm  (
           mem_wren      = 1'b1;  
           set_dirty     = cpu_wren_reg;   
           set_valid     = 1'b1;    
-          replace_tag   = 1'b0;// writing dirty and valid only at allocate state
-          stall         = 1'b1;
+          replace_tag   = 1'b0;
+          dcache_stall  = 1'b1;
           tag_sel       = 1'b1;
         end
       end
+      /*************/
       ALLOCATE: begin
-        if(mem_ready) begin//not memory ready it means read from memory done (read valid)
+        if(mem_ready) begin
           next_state    = CACHE_ACCESS;
           cache_rden    = 1'b0;
           cache_wren    = 1'b1;
@@ -159,8 +166,8 @@ module riscv_dcache_fsm  (
           set_dirty     = cpu_wren_reg;   
           set_valid     = 1'b1;    
           replace_tag   = 1'b1;
-          stall         = 1'b1;
-          tag_sel       = 1'b0;// don't care
+          dcache_stall  = 1'b1;
+          tag_sel       = 1'b0;
         end
         else begin
           next_state    = ALLOCATE;
@@ -172,10 +179,11 @@ module riscv_dcache_fsm  (
           set_dirty     = 1'b0;   
           set_valid     = 1'b0;    
           replace_tag   = 1'b0;
-          stall         = 1'b1;
+          dcache_stall  = 1'b1;
           tag_sel       = 1'b0;
         end
       end
+      /****************/
       CACHE_ACCESS:begin
          cache_rden    = cpu_rden_reg;
          cache_wren    = cpu_wren_reg;
@@ -185,7 +193,7 @@ module riscv_dcache_fsm  (
          set_dirty     = 1'b0;   
          set_valid     = 1'b0;    
          replace_tag   = 1'b0;
-         stall         = 1'b0;
+         dcache_stall  = 1'b0;
          tag_sel       = 1'b0;
          if(cpu_rden || cpu_wren)
           next_state    = COMPARE_TAG ;
@@ -202,9 +210,8 @@ module riscv_dcache_fsm  (
         set_dirty     = 1'b0;   
         set_valid     = 1'b0;    
         replace_tag   = 1'b0;
-        stall         = 1'b1;
+        dcache_stall  = 1'b1;
         tag_sel       = 1'b0;
-      
       end
       
     endcase

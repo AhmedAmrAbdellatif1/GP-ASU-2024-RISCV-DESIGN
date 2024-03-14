@@ -174,7 +174,8 @@ module riscv_compressed_decoder (
               2'b01: begin  // 01: c.srai -> srai rd, rd, shamt
                 o_riscv_cdecoder_inst = { 1'b0,
                                           i_riscv_cdecoder_inst[10]   ,
-                                          5'b0                        ,
+                                          4'b0                        ,
+                                          i_riscv_cdecoder_inst[12]   ,
                                           i_riscv_cdecoder_inst[6:2]  ,
                                           2'b01                       ,
                                           i_riscv_cdecoder_inst[9:7]  ,

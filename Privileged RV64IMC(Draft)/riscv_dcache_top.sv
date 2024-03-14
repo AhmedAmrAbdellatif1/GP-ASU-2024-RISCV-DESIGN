@@ -1,7 +1,7 @@
 module riscv_data_cache #(
     parameter DATA_WIDTH  = 128                           ,
     parameter CACHE_SIZE  = 4*(2**10)                     ,   //64 * (2**10)   
-    parameter MEM_SIZE    = (CACHE_SIZE)*32               ,   //128*(2**20)       
+    parameter MEM_SIZE    = (CACHE_SIZE)*128              ,   //128*(2**20)       
     parameter DATAPBLOCK  = 16                            ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK         ,   //  4096
     parameter ADDR        = $clog2(MEM_SIZE)              ,   //    27 bits
@@ -12,6 +12,7 @@ module riscv_data_cache #(
   (  
     input   logic         i_riscv_dcache_clk           ,
     input   logic         i_riscv_dcache_rst           ,
+    input   logic         i_riscv_dcache_globstall     ,
     input   logic         i_riscv_dcache_cpu_wren      ,
     input   logic         i_riscv_dcache_cpu_rden      ,
     input   logic [1:0]   i_riscv_dcache_store_src     ,
@@ -71,7 +72,6 @@ module riscv_data_cache #(
     .CACHE_DEPTH  (CACHE_DEPTH)
   ) u_dcache_tag (
     .clk          (i_riscv_dcache_clk)  ,
-    .rst          (i_riscv_dcache_rst)  ,
     .index        (index)               ,
     .tag_in       (tag)                 ,
     .dirty_in     (fsm_set_dirty)       ,
@@ -79,7 +79,7 @@ module riscv_data_cache #(
     .replace_tag  (fsm_replace_tag)     ,
     .hit          (tag_hit_out)         ,
     .dirty        (tag_dirty_out)       ,
-    .tag_old      (tag_old_out)//new
+    .tag_old      (tag_old_out)
   );
 
   ///////////////////////////
@@ -131,7 +131,8 @@ module riscv_data_cache #(
   .set_dirty      (fsm_set_dirty)            ,
   .set_valid      (fsm_set_valid)            ,
   .replace_tag    (fsm_replace_tag)          ,
-  .stall          (o_riscv_dcache_cpu_stall) ,
-  .tag_sel        (fsm_tag_sel)//new
+  .dcache_stall   (o_riscv_dcache_cpu_stall) ,
+  .glob_stall     (i_riscv_dcache_globstall) ,
+  .tag_sel        (fsm_tag_sel)
 );
 endmodule

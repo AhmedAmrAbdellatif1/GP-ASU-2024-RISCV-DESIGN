@@ -229,7 +229,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   assign o_riscv_datapath_iscsr_m_trap  = iscsr_csr_mw                  ; 
   assign o_riscv_datapath_iscsr_e_trap  = iscsr_de_em                   ;
   assign o_riscv_datapath_iscsr_d_trap  = i_riscv_datapath_iscsr_cu_de  ;
-  assign illegal_inst_d = i_riscv_datapath_illgalinst_cu_de | riscv_cillegal_inst_d ;
+  assign illegal_inst_d                 = i_riscv_datapath_illgalinst_cu_de | riscv_cillegal_inst_d ;
 
   /************************* ************** *************************/
   /************************* Instantiations *************************/
@@ -270,7 +270,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_fd_inst_d          (riscv_inst_d)                    ,
     .o_riscv_fd_pcplus4_d       (riscv_pcplus4_d)                 ,
     .o_riscv_fd_rs1_d           (o_riscv_datapath_rs1_fd_cu)      , //<---
-    .o_riscv_fd_cillegal_inst_d   (riscv_cillegal_inst_d)           , //<---
+    .o_riscv_fd_cillegal_inst_d (riscv_cillegal_inst_d)           , //<---
     .o_riscv_fd_constimm12_d    (o_riscv_datapath_constimm12_fd_cu) //<--- 
   );
 

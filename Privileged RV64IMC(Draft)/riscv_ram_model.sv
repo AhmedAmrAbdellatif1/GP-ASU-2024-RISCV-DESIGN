@@ -23,7 +23,6 @@ int i;
 initial begin
   for(i=0;i<MEM_DEPTH;i++)
     mem[i] <= 'b0;
-    //$readmemh("hex_data.txt",mem);
 end
 
 // mapping the byte addressable memory into block cache
