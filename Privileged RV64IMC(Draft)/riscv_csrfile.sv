@@ -482,7 +482,8 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
                 mstatus_spie_cs                <=1'b0;
                 mstatus_mpp_cs                 <=1'b0;
                 mstatus_spp_cs                 <=1'b0;
-                   
+                mstatus_sxl_cs                 <=2'b0;
+                mstatus_uxl_cs                 <=2'b0;
                    //for memory
                 mstatus_mprv_cs                <=1'b0;
                 mstatus_mxr_cs                 <=1'b0;

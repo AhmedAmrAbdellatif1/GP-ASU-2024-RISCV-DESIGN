@@ -16,7 +16,7 @@ module  riscv_dstage (
   output  logic [2:0]   o_riscv_dstage_funct3         ,
  // output  logic         o_riscv_dstage_func7_0        ,    
  // output  logic         o_riscv_dstage_func7_5        ,
-  output  logic [6:0]   o_riscv_datapath_func7        ,
+  output  logic [6:0]   o_riscv_dstage_func7        ,
   output  logic [63:0]  o_riscv_dstage_immzeroextend    //<---
 ); 
 
