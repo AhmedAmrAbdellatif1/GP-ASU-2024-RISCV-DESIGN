@@ -9,16 +9,16 @@ output logic              o_riscv_exception_load_addr_misaligned,
 output logic              o_riscv_exception_inst_addr_misaligned
 );
 typedef enum logic [6:0] {
-    OPCODE_LOAD     = 7'h03,
-    OPCODE_OP_IMM   = 7'h13,
-    OPCODE_STORE    = 7'h23,
-    OPCODE_OP       = 7'h33,
-    OPCODE_LUI      = 7'h37,
-    OPCODE_BRANCH   = 7'h63,
-    OPCODE_JALR     = 7'h67,
-    OPCODE_JAL      = 7'h6f,
-    OPCODE_OP_WORD =7'h3b,
-    OPCODE_OP_WORD_IMM= 7'h1b
+    OPCODE_LOAD        = 7'h03,
+    OPCODE_OP_IMM      = 7'h13,
+    OPCODE_STORE       = 7'h23,
+    OPCODE_OP          = 7'h33,
+    OPCODE_LUI         = 7'h37,
+    OPCODE_BRANCH      = 7'h63,
+    OPCODE_JALR        = 7'h67,
+    OPCODE_JAL         = 7'h6f,
+    OPCODE_OP_WORD     = 7'h3b,
+    OPCODE_OP_WORD_IMM = 7'h1b
   }opcode;
   
   always_comb begin  
@@ -36,9 +36,11 @@ typedef enum logic [6:0] {
      end
     
      OPCODE_BRANCH:begin
-     if((i_riscv_exception_icu_result[1:0] != 'b00 || i_riscv_exception_icu_result[1:0] != 'b10) && i_riscv_exception_branch_taken)
+    if(i_riscv_exception_icu_result[1:0] == 'b00 || i_riscv_exception_icu_result[1:0] == 'b10 )
+      o_riscv_exception_inst_addr_misaligned = 'b0;
+    else if(i_riscv_exception_branch_taken)
       o_riscv_exception_inst_addr_misaligned = 'b1;
-      else
+    else
       o_riscv_exception_inst_addr_misaligned = 'b0;
      end
 
