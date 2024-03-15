@@ -3,26 +3,26 @@ module riscv_core #(parameter MXLEN=64) (
     input  logic         i_riscv_core_rst              ,
     input  logic [31:0]  i_riscv_core_inst             ,
     input  logic [63:0]  i_riscv_core_rdata            ,
-    input  logic         i_riscv_core_stall_dm         ,
-    input  logic         i_riscv_core_stall_im         ,
+    input  logic         i_riscv_core_stall_m          ,
     input  logic         i_riscv_core_timerinterupt    ,
-    input  logic         i_riscv_core_externalinterupt ,
-    output logic         o_riscv_core_globstall        ,
+    input  logic         i_riscv_core_externalinterupt ,   
     output logic [63:0]  o_riscv_core_pc               ,
     output logic         o_riscv_core_memw_e           ,
     output logic         o_riscv_core_memr_e           ,
     output logic [1:0]   o_riscv_core_storesrc_m       ,
+    //output logic [1:0]   o_riscv_core_loadsrc_m        ,
     output logic [63:0]  o_riscv_core_memodata_addr    ,
     output logic [63:0]  o_riscv_core_storedata_m
   ) ;
 
-/************************ Datapath to CU ************************/
+  ///////////// Signal From DataPath to CU ////////////////
   logic [6:0] riscv_datapath_opcode_cu    ;
   logic [2:0] riscv_datapath_func3_cu     ;
   logic       riscv_datapath_func7_5_cu   ;
   logic       riscv_datapath_func7_0_cu   ;
+  logic [6:0] riscv_datapath_func7        ;
 
-/************************ CU to Datapath ************************/
+  ///////////// Signal From CU to datapath ////////////////
   logic       riscv_cu_regw_datapath      ;   
   logic       riscv_cu_jump_datapath      ;     
   logic       riscv_cu_asel_datapath      ;    
@@ -40,7 +40,7 @@ module riscv_core #(parameter MXLEN=64) (
   logic [2:0] riscv_cu_immsrc_datapath    ;
   logic       riscv_cu_instret_datapath   ;
 
-/************************ Datapath & Hazard Unit ************************/
+ /////////////  Signals datapath >< haazard unit /////////////
   logic [1:0] riscv_datapath_fwda_hzrdu         ;        
   logic [1:0] riscv_datapath_fwdb_hzrdu         ;        
   logic       riscv_datapath_pcsrc_e_hzrdu      ;     
@@ -55,11 +55,11 @@ module riscv_core #(parameter MXLEN=64) (
   logic [4:0] riscv_datapath_rdaddr_m_hzrdu     ;   
   logic       riscv_datapath_regw_m_hzrdu       ;      
   
-/************************ Writeback Stage Signals ************************/
+  ///////////// WB Stage Signals /////////////
   logic       riscv_datapath_regw_wb_hzrdu      ; 
   logic [4:0] riscv_datapath_rdaddr_wb_hzrdu    ;  
 
-/************************ Hazard Stage Signals ************************/
+  ///////////// Hazard Unit Signals /////////////
   logic       riscv_datapath_stall_pc_hzrdu     ; 
   logic       riscv_datapath_flush_fd_hzrdu     ;     
   logic       riscv_datapath_stall_fd_hzrdu     ;
@@ -70,7 +70,8 @@ module riscv_core #(parameter MXLEN=64) (
   logic [4:0] riscv_datapath_rs1addr_d_hzrdu    ;
   logic [4:0] riscv_datapath_rs2addr_d_hzrdu    ;
 
- /************************ Trap Signals ************************/
+  ///////////// Trap Signals /////////////
+  // From cu to de
   logic         riscv_cu_ecallu_de                            ;
   logic         riscv_cu_ecalls_de                            ;
   logic         riscv_cu_ecallm_de                            ;
@@ -94,7 +95,7 @@ module riscv_core #(parameter MXLEN=64) (
   logic [63:0]  riscv_datapath_csrwdata_em_csr                ;
   logic [4:0]   riscv_hzrdu_rs1addr_m                         ;
                        
-/************************ CSR Signals ************************/
+  ///////////// CSR Signals /////////////
   logic         muxcsr_sel_hzrd_datapath  ;
   logic         iscsr_w_hzrd_datapath     ;
   logic         iscsr_e_hzrd_datapath     ;
@@ -118,8 +119,9 @@ module riscv_core #(parameter MXLEN=64) (
     .i_riscv_datapath_immsrc            (riscv_cu_immsrc_datapath)        ,     
     .o_riscv_datapath_opcode            (riscv_datapath_opcode_cu)        ,     
     .o_riscv_datapath_func3             (riscv_datapath_func3_cu)         ,        
-    .o_riscv_datapath_func7_5           (riscv_datapath_func7_5_cu)       ,  
-    .o_riscv_datapath_func7_0           (riscv_datapath_func7_0_cu)       ,   
+    //.o_riscv_datapath_func7_5           (riscv_datapath_func7_5_cu)       ,  
+    //.o_riscv_datapath_func7_0           (riscv_datapath_func7_0_cu)       ,   
+    .o_riscv_datapath_func7             (riscv_datapath_func7)            ,
     .o_riscv_datapath_rs1addr_d         (riscv_datapath_rs1addr_d_hzrdu)  ,
     .o_riscv_datapath_rs2addr_d         (riscv_datapath_rs2addr_d_hzrdu)  , 
   /************************* Decode PP Register Signals *************************/
@@ -195,8 +197,9 @@ riscv_cu u_top_cu (
 /************************* DP -> CU Signals *************************/  
   .i_riscv_cu_opcode        (riscv_datapath_opcode_cu)                    ,
   .i_riscv_cu_funct3        (riscv_datapath_func3_cu)                     , 
-  .i_riscv_cu_funct7_5      (riscv_datapath_func7_5_cu)                   ,  
-  .i_riscv_cu_funct7_0      (riscv_datapath_func7_0_cu)                   , 
+ // .i_riscv_cu_funct7_5      (riscv_datapath_func7_5_cu)                   ,  
+ // .i_riscv_cu_funct7_0      (riscv_datapath_func7_0_cu)                   , 
+  .i_riscv_cu_funct7        (riscv_datapath_func7)                        ,
   .i_riscv_cu_privlvl       (riscv_core_privlvl_csr_cu)                   ,    
   .i_riscv_cu_rs1           (riscv_datapath_rs1_fd_cu)                    ,     
   .i_riscv_cu_cosntimm12    (riscv_datapath_constimm12_fd_cu)             ,
@@ -238,8 +241,7 @@ riscv_hazardunit u_top_hzrdu (
   .o_riscv_hzrdu_fwdb       (riscv_datapath_fwdb_hzrdu)                   ,  
   .i_riscv_hzrdu_rdaddr_m   (riscv_datapath_rdaddr_m_hzrdu)               ,
   .i_riscv_hzrdu_regw_m     (riscv_datapath_regw_m_hzrdu)                 ,
-  .i_riscv_dcahe_stall_m    (i_riscv_core_stall_dm)                       ,   
-  .i_riscv_icahe_stall_m    (i_riscv_core_stall_im)                       ,   
+  .i_riscv_dcahe_stall_m    (i_riscv_core_stall_m)                        ,   
   .i_riscv_hzrdu_pcsrc      (riscv_datapath_pcsrc_e_hzrdu)                ,   
   .i_riscv_hzrdu_rdaddr_w   (riscv_datapath_rdaddr_wb_hzrdu)              , 
   .i_riscv_hzrdu_regw_w     (riscv_datapath_regw_wb_hzrdu)                ,
@@ -253,7 +255,6 @@ riscv_hazardunit u_top_hzrdu (
   .o_riscv_hzrdu_stallmw    (riscv_datapath_stall_mw_hzrdu)               ,
   .o_riscv_hzrdu_stallem    (riscv_datapath_stall_em_hzrdu)               ,
   .o_riscv_hzrdu_stallde    (riscv_datapath_stall_de_hzrdu)               ,
-  .o_riscv_hzrdu_globstall  (o_riscv_core_globstall)                      ,
   .i_riscv_hzrdu_iscsr_e    (iscsr_e_hzrd_datapath)                       ,   
   .i_riscv_hzrdu_iscsr_d    (iscsr_d_hzrd_datapath)                       ,  
   .i_riscv_hzrdu_iscsr_w    (iscsr_w_hzrd_datapath)                       ,   
@@ -261,5 +262,4 @@ riscv_hazardunit u_top_hzrdu (
   .o_riscv_hzrdu_passwb     (muxcsr_sel_hzrd_datapath)                    ,   
   .i_riscv_hzrdu_rs1addr_m  (riscv_hzrdu_rs1addr_m)
   );
-
 endmodule

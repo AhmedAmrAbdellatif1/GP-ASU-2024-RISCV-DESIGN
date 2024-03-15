@@ -12,8 +12,9 @@ module riscv_datapath #(parameter MXLEN = 64) (
   input  logic [2:0]        i_riscv_datapath_immsrc            , 
   output logic [6:0]        o_riscv_datapath_opcode            , 
   output logic [2:0]        o_riscv_datapath_func3             , 
-  output logic              o_riscv_datapath_func7_5           ,
-  output logic              o_riscv_datapath_func7_0           , 
+ // output logic              o_riscv_datapath_func7_5           ,
+ // output logic              o_riscv_datapath_func7_0           , 
+  output logic [6:0]        o_riscv_datapath_func7             ,
   output logic [4:0]        o_riscv_datapath_rs1addr_d         , 
   output logic [4:0]        o_riscv_datapath_rs2addr_d         ,
 /************************* Decoder PP Register Signals *************************/ 
@@ -229,7 +230,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   assign o_riscv_datapath_iscsr_m_trap  = iscsr_csr_mw                  ; 
   assign o_riscv_datapath_iscsr_e_trap  = iscsr_de_em                   ;
   assign o_riscv_datapath_iscsr_d_trap  = i_riscv_datapath_iscsr_cu_de  ;
-  assign illegal_inst_d                 = i_riscv_datapath_illgalinst_cu_de | riscv_cillegal_inst_d ;
+  assign illegal_inst_d = i_riscv_datapath_illgalinst_cu_de | riscv_cillegal_inst_d ;
 
   /************************* ************** *************************/
   /************************* Instantiations *************************/
@@ -270,7 +271,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_fd_inst_d          (riscv_inst_d)                    ,
     .o_riscv_fd_pcplus4_d       (riscv_pcplus4_d)                 ,
     .o_riscv_fd_rs1_d           (o_riscv_datapath_rs1_fd_cu)      , //<---
-    .o_riscv_fd_cillegal_inst_d (riscv_cillegal_inst_d)           , //<---
+    .o_riscv_fd_cillegal_inst_d   (riscv_cillegal_inst_d)           , //<---
     .o_riscv_fd_constimm12_d    (o_riscv_datapath_constimm12_fd_cu) //<--- 
   );
 
@@ -290,8 +291,9 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_dstage_simm        (riscv_simm_d)                    ,
     .o_riscv_dstage_opcode      (riscv_opcode_d)                  ,
     .o_riscv_dstage_funct3      (o_riscv_datapath_func3)          ,
-    .o_riscv_dstage_func7_5     (o_riscv_datapath_func7_5)        ,
-    .o_riscv_dstage_func7_0     (o_riscv_datapath_func7_0)        ,
+    //.o_riscv_dstage_func7_5     (o_riscv_datapath_func7_5)        ,
+    //.o_riscv_dstage_func7_0     (o_riscv_datapath_func7_0)        ,
+    .o_riscv_dstage_func7        (o_riscv_datapath_func7)         ,
     .o_riscv_dstage_immzeroextend(immzeroextend_dstage_de)         //<---         
 
   );

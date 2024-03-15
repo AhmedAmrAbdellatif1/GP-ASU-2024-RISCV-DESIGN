@@ -14,14 +14,16 @@ module  riscv_dstage (
   output  logic [63:0]  o_riscv_dstage_simm           ,
   output  logic [6:0]   o_riscv_dstage_opcode         ,
   output  logic [2:0]   o_riscv_dstage_funct3         ,
-  output  logic         o_riscv_dstage_func7_0        ,    
-  output  logic         o_riscv_dstage_func7_5        ,
+ // output  logic         o_riscv_dstage_func7_0        ,    
+ // output  logic         o_riscv_dstage_func7_5        ,
+  output  logic [6:0]   o_riscv_datapath_func7        ,
   output  logic [63:0]  o_riscv_dstage_immzeroextend    //<---
 ); 
 
 
-  assign o_riscv_dstage_func7_0 = i_riscv_dstage_inst[25];
-  assign o_riscv_dstage_func7_5 = i_riscv_dstage_inst[30];
+ // assign o_riscv_dstage_func7_0 = i_riscv_dstage_inst[25];
+ // assign o_riscv_dstage_func7_5 = i_riscv_dstage_inst[30];
+  assign o_riscv_dstage_func7   = i_riscv_dstage_inst[31:25];
   assign o_riscv_dstage_opcode  = i_riscv_dstage_inst[6:0];
   assign o_riscv_dstage_rs1addr = i_riscv_dstage_inst[19:15];
   assign o_riscv_dstage_rs2addr = i_riscv_dstage_inst[24:20];
