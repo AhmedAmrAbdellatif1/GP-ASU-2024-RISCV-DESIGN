@@ -1,9 +1,10 @@
 module riscv_csrfile 
 
     # ( parameter MXLEN              = 64   ,
-        parameter support_supervisor = 0    ,
-        parameter support_user       = 0      )
+        parameter support_supervisor = 1    ,
+        parameter support_user       = 1      )
     (  
+        input  logic              i_riscv_csr_globstall,
         input                     i_riscv_csr_clk ,
         input                     i_riscv_csr_rst ,
         input          [11:0]     i_riscv_csr_address , 
@@ -48,8 +49,7 @@ module riscv_csrfile
    // input wire writeback_change_pc, //high if writeback will issue change_pc (which will override this stage)
 
  );
-    
-
+   
      
                   //CSR addresses
                //machine info
@@ -314,7 +314,7 @@ module riscv_csrfile
 
 
     if (csr_read) begin    //see last always block to know when it is asserted
-         unique case (i_riscv_csr_address)
+         case (i_riscv_csr_address)
                 // case (i_riscv_csr_address)
 
               // mvendorid: encoding of manufacturer/provider
@@ -482,8 +482,8 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
                 mstatus_spie_cs                <=1'b0;
                 mstatus_mpp_cs                 <=1'b0;
                 mstatus_spp_cs                 <=1'b0;
-                mstatus_sxl_cs                 <=2'b0;
-                mstatus_uxl_cs                 <=2'b0;
+                mstatus_sxl_cs                 <=2'b10;
+                mstatus_uxl_cs                 <=2'b10;
                    //for memory
                 mstatus_mprv_cs                <=1'b0;
                 mstatus_mxr_cs                 <=1'b0;
@@ -711,7 +711,7 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
             mepc_cs                        <= 64'b0;
      
       else if(go_to_trap ) 
-            mepc_cs         <= i_riscv_csr_pc ; 
+            mepc_cs         <= i_riscv_csr_pc-'d4 ; 
 
        else if (csr_we && i_riscv_csr_address == CSR_MEPC ) 
 
@@ -936,7 +936,7 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
     always_comb begin : csr_op_logic
         
         csr_wdata = i_riscv_csr_wdata;
-        csr_we    = 1'b1;
+        csr_we    = (!i_riscv_csr_globstall)? 1'b1:1'b0;
         csr_read  = 1'b1;
         mret      = 1'b0;
         sret      = 1'b0;
