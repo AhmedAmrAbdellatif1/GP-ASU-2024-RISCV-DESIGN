@@ -1398,6 +1398,7 @@ always_comb
                               default begin
                                riscv_cu_detect_ecall = 1'b0;
                                o_riscv_cu_instret     = 1'b0;
+                               o_riscv_cu_illgalinst = 1'b1;
                               end
                           endcase
                      end
@@ -1521,7 +1522,8 @@ if (riscv_cu_detect_ecall)  begin
                   PRIV_LVL_M  : begin            
                                  o_riscv_cu_ecall_m = 1;
                                   // o_riscv_cu_ex_cause = ENV_CALL_MMODE;   // always supported 
-                                end        
+                                end    
+                      
  endcase  
 end
 else begin 
