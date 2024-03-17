@@ -253,7 +253,7 @@ module riscv_csrfile
        logic               is_exception ;
        logic               is_trap ; 
        logic               go_to_trap ;
-       logic               illegal_csr_priv ,illegal_csr_write , illegal_read_csr ;
+       logic               illegal_csr_priv ,illegal_csr_write , illegal_read_csr,illegal_csr_address ;
        logic               illegal_csr , csr_we_int;
        logic [MXLEN-1:0]   csr_wdata ;
        logic [MXLEN-1:0]   csr_rdata_int ;
@@ -291,7 +291,7 @@ module riscv_csrfile
                                                                //  and that is  applicable
     assign illegal_csr_write  = (i_riscv_csr_address[11:10] == 2'b11) && csr_we ;    // csr_addr[11:10] == 2'b11 means it is readonly operation
                                                                         //  csr_we = 1 when operation  = CSR_WRITE ,  CSR_SET , CSR_CLEAR
-    assign illegal_csr = (illegal_read_csr | illegal_csr_write | illegal_csr_priv ) ;
+    assign illegal_csr = (illegal_read_csr | illegal_csr_write | illegal_csr_priv | illegal_csr_address) ;
     assign csr_we_int  = csr_we &  ~illegal_csr;
          // assign return_from_trap = i_is_mret; // return from trap, go back to saved i_pc
 
@@ -309,6 +309,7 @@ module riscv_csrfile
         // a read access exception can only occur if we attempt to read a CSR which does not exist
         //read_access_exception = 1'b0;
         csr_rdata_int = 64'b0;
+        illegal_csr_address = 1'b0;
         //perf_addr_o = csr_addr.address[4:0];;
 
 
@@ -445,7 +446,12 @@ module riscv_csrfile
                 CSR_MCOUNTINHIBIT:  csr_rdata_int [2:0] =   mcountinhibit ; 
                 CSR_MCYCLE:         csr_rdata_int       =   mcounter[0];
                 CSR_MINSTRET:       csr_rdata_int       =   mcounter[2];
-
+                
+                default:begin
+                                     illegal_csr_address = 1'b1;
+                                     csr_rdata_int       = 64'b0;
+                        
+                        end           
                 //CSR_MCONFIGPTR: csr_rdata_int = CSR_MCONFIGPTR_VALUE;
             endcase
 
@@ -776,7 +782,7 @@ always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
 
 */
 always_comb begin
-if(i_riscv_csr_illegal_inst | i_riscv_csr_ecall_u |i_riscv_csr_ecall_s | i_riscv_csr_ecall_m  | i_riscv_csr_inst_addr_misaligned  | i_riscv_csr_load_addr_misaligned | i_riscv_csr_store_addr_misaligned)
+if(illegal_total | i_riscv_csr_ecall_u |i_riscv_csr_ecall_s | i_riscv_csr_ecall_m  | i_riscv_csr_inst_addr_misaligned  | i_riscv_csr_load_addr_misaligned | i_riscv_csr_store_addr_misaligned)
  is_exception = 1'b1 ;
 else
  is_exception = 1'b0 ;
