@@ -8,6 +8,7 @@ module riscv_wbstage (
    input    logic          i_riscv_wb_iscsr           , //<--- Trap
    input    logic          i_riscv_wb_gototrap        , //<--- Trap
    input    logic          i_riscv_wb_returnfromtrap  , //<--- Trap
+   input    logic          i_riscv_wb_icache_stall    ,
    output   logic [1:0]    o_riscv_wb_pcsel           , //<--- Trap
    output   logic          o_riscv_wb_flush           , //<--- Trap
    output   logic [63:0]   o_riscv_wb_rddata            //modified position
@@ -26,7 +27,8 @@ riscv_mux4 u_result_mux (
 
 riscv_trap_wb trap_wb (
   .i_riscv_trap_gototrap        (i_riscv_wb_gototrap)         ,                  
-  .i_riscv_trap_returnfromtrap  (i_riscv_wb_returnfromtrap)   ,  
+  .i_riscv_trap_returnfromtrap  (i_riscv_wb_returnfromtrap)   ,
+  .i_riscv_trap_icache_stall    (i_riscv_wb_icache_stall)     ,
   .o_riscv_trap_flush           (o_riscv_wb_flush)            ,                    
   .o_riscv_trap_pcsel           (o_riscv_wb_pcsel)                       
 );

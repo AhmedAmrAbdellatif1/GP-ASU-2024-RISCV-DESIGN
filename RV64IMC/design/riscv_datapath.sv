@@ -12,8 +12,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   input  logic [2:0]        i_riscv_datapath_immsrc            , 
   output logic [6:0]        o_riscv_datapath_opcode            , 
   output logic [2:0]        o_riscv_datapath_func3             , 
-  output logic              o_riscv_datapath_func7_5           ,
-  output logic              o_riscv_datapath_func7_0           , 
+  output logic [6:0]        o_riscv_datapath_func7             ,
   output logic [4:0]        o_riscv_datapath_rs1addr_d         , 
   output logic [4:0]        o_riscv_datapath_rs2addr_d         ,
 /************************* Decoder PP Register Signals *************************/ 
@@ -32,6 +31,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   input  logic [3:0]        i_riscv_datapath_divctrl           ,
   input  logic [1:0]        i_riscv_datapath_funcsel           ,  
   input  logic              i_riscv_datapath_flush_de          ,
+  input  logic              i_riscv_datapath_instret           ,
 /************************* Execute Stage Signals *************************/ 
   input  logic [1:0]        i_riscv_datapath_fwda              ,  
   input  logic [1:0]        i_riscv_datapath_fwdb              ,   
@@ -50,12 +50,12 @@ module riscv_datapath #(parameter MXLEN = 64) (
   output logic              o_riscv_datapath_memw_e            ,
   output logic              o_riscv_datapath_memr_e            ,
   output logic [1:0]        o_riscv_datapath_storesrc_m        ,
-  //output logic [1:0]        o_riscv_datapath_loadsrc_m         ,
   output logic [63:0]       o_riscv_datapath_memodata_addr     ,
   output logic [63:0]       o_riscv_datapath_storedata_m       ,
   output logic              o_riscv_datapath_regw_m            ,  
   
-/************************* WB Stage Signals *************************/ 
+/************************* WB Stage Signals *************************/
+  input  logic              i_riscv_datapath_icache_stall_wb   ,
   output logic              o_riscv_datapath_regw_wb           ,    
   output logic [4:0]        o_riscv_datapath_rdaddr_wb         ,  
 /************************* Stall Signals *************************/ 
@@ -63,7 +63,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
   input  logic              i_riscv_datapath_stall_em          ,
   input  logic              i_riscv_datapath_stall_mw          ,
 /************************* CSR Signals *************************/ 
-  input logic               i_riscv_datapath_muxcsr_sel        ,
+  input  logic              i_riscv_datapath_muxcsr_sel        ,
+  input  logic              i_riscv_datapath_globstall         ,
   output logic              o_riscv_datapath_iscsr_w_trap      ,
   output logic              o_riscv_datapath_iscsr_m_trap      ,
   output logic              o_riscv_datapath_iscsr_e_trap      ,
@@ -102,6 +103,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic  [4:0]   riscv_rs1addr_d     ;
   logic  [4:0]   riscv_rs2addr_d     ;
   logic  [6:0]   riscv_opcode_d      ;
+ 
 /************************* Execute Stage Signals *************************/
   logic  [6:0]   riscv_opcode_e      ;
   logic  [63:0]  riscv_pc_e          ;
@@ -126,6 +128,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic          riscv_regwrite_e    ;
   logic          riscv_jump_e        ;
   logic          riscv_branchtaken   ;
+  logic          riscv_instret_e     ;
 /************************* Memory Stage Signals *************************/
   logic  [63:0]  riscv_rddata_me     ;
   logic          riscv_regw_m        ;
@@ -135,13 +138,16 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic  [4:0]   riscv_rdaddr_m      ;
   logic  [63:0]  riscv_imm_m         ;
   logic  [63:0]  riscv_memload_m     ;
+  logic          riscv_instret_m     ;
+  logic          datapath_memw_e     ;
+  logic          datapath_memr_e     ;
 /************************* WB Stage Signals *************************/      
   logic  [63:0]  riscv_pcplus4_wb    ;
   logic  [63:0]  riscv_result_wb     ;
   logic  [63:0]  riscv_uimm_wb       ;
   logic  [63:0]  riscv_memload_wb    ;
   logic  [1:0]   riscv_resultsrc_wb  ; 
-
+  logic          riscv_instret_wb    ;
 /************************* Tracer Signals *************************/
   //--------------------------------->
   `ifdef TEST
@@ -201,6 +207,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic               load_addr_misaligned_estage_em   ;    
   logic               store_addr_misaligned_estage_em  ;
   logic               inst_addr_misaligned_estage_em   ;
+  logic               riscv_cillegal_inst_d            ;
   logic [63:0]        muxout_csr                       ;          
   
   ////////////////////////////////////////////////////////////////////////////////////
@@ -216,15 +223,17 @@ module riscv_datapath #(parameter MXLEN = 64) (
   assign o_riscv_datapath_resultsrc_e   = riscv_resultsrc_e       ;  // to hazard unit
   assign o_riscv_datapath_rs1addr_d     = riscv_rs1addr_d         ;  //to hazard unit
   assign o_riscv_datapath_rs2addr_d     = riscv_rs2addr_d         ;  //to hazard unit
-  //assign o_riscv_datapath_loadsrc_m     = riscv_memext_m[1:0]     ;  // to data memory
 
-  assign riscv_rstctrl_f                = i_riscv_datapath_flush_fd | i_riscv_datapath_rst;
-  assign riscv_rstctrl_d                = i_riscv_datapath_flush_de | i_riscv_datapath_rst;
+  assign o_riscv_datapath_memw_e = datapath_memw_e && !gototrap_csr_mw && !returnfromtrap_csr_mw; // data cache write enable
+  assign o_riscv_datapath_memr_e = datapath_memr_e && !gototrap_csr_mw && !returnfromtrap_csr_mw; // data cache read enable
+
+  assign riscv_rstctrl_f                = i_riscv_datapath_flush_fd | i_riscv_datapath_rst | riscv_reg_flush;
+  assign riscv_rstctrl_d                = i_riscv_datapath_flush_de | i_riscv_datapath_rst | riscv_reg_flush;
   assign o_riscv_datapath_iscsr_w_trap  = iscsr_mw_trap                 ;
   assign o_riscv_datapath_iscsr_m_trap  = iscsr_csr_mw                  ; 
   assign o_riscv_datapath_iscsr_e_trap  = iscsr_de_em                   ;
   assign o_riscv_datapath_iscsr_d_trap  = i_riscv_datapath_iscsr_cu_de  ;
-  
+  assign illegal_inst_d = i_riscv_datapath_illgalinst_cu_de | riscv_cillegal_inst_d ;
 
   /************************* ************** *************************/
   /************************* Instantiations *************************/
@@ -238,11 +247,12 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_fstage_inst      (i_riscv_datapath_inst)             ,
     .i_riscv_fstage_pcsrc     (o_riscv_datapath_pcsrc_e)          ,
     .i_riscv_fstage_pcsel     (pcsel_trap_fetchpc)                , //<--- 
-    .i_riscv_fstage_mtval     (mtvec_csr_pctrap)                  , //<---       
+    .i_riscv_fstage_mtvec     (mtvec_csr_pctrap)                  , //<---       
     .i_riscv_fstage_mepc      (mepc_csr_pctrap)                   , //<--- 
     .o_riscv_fstage_pc        (o_riscv_datapath_pc)               ,
     .o_riscv_fstage_pcplus4   (riscv_pcplus4_f)                   ,
-    .o_riscv_fstage_inst      (riscv_inst_f)                      
+    .o_riscv_fstage_inst      (riscv_inst_f)                      ,
+    .o_riscv_fstage_cillegal_inst (riscv_cillegal_inst)                    
   );
 
   riscv_fd_ppreg u_riscv_fd_ppreg(
@@ -259,10 +269,12 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_fd_pc_f            (o_riscv_datapath_pc)             ,
     .i_riscv_fd_inst_f          (riscv_inst_f)                    ,
     .i_riscv_fd_pcplus4_f       (riscv_pcplus4_f)                 ,
+    .i_riscv_fd_cillegal_inst_f (riscv_cillegal_inst)             , //<---
     .o_riscv_fd_pc_d            (riscv_pc_d)                      ,
     .o_riscv_fd_inst_d          (riscv_inst_d)                    ,
     .o_riscv_fd_pcplus4_d       (riscv_pcplus4_d)                 ,
-    .o_riscv_fd_rs1_d           (o_riscv_datapath_rs1_fd_cu)      , //<--- 
+    .o_riscv_fd_rs1_d           (o_riscv_datapath_rs1_fd_cu)      , //<---
+    .o_riscv_fd_cillegal_inst_d (riscv_cillegal_inst_d)           , //<---
     .o_riscv_fd_constimm12_d    (o_riscv_datapath_constimm12_fd_cu) //<--- 
   );
 
@@ -282,8 +294,9 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_dstage_simm        (riscv_simm_d)                    ,
     .o_riscv_dstage_opcode      (riscv_opcode_d)                  ,
     .o_riscv_dstage_funct3      (o_riscv_datapath_func3)          ,
-    .o_riscv_dstage_func7_5     (o_riscv_datapath_func7_5)        ,
-    .o_riscv_dstage_func7_0     (o_riscv_datapath_func7_0)        ,
+    //.o_riscv_dstage_func7_5     (o_riscv_datapath_func7_5)        ,
+    //.o_riscv_dstage_func7_0     (o_riscv_datapath_func7_0)        ,
+    .o_riscv_dstage_func7        (o_riscv_datapath_func7)         ,
     .o_riscv_dstage_immzeroextend(immzeroextend_dstage_de)         //<---         
 
   );
@@ -326,11 +339,13 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_de_opcode_d        (riscv_opcode_d)                      ,
     .i_riscv_de_ecall_m_d       (i_riscv_datapath_ecallm_cu_de)       , //<---  
     .i_riscv_de_csraddress_d    (riscv_inst_d[31:20])                 , //<---   
-    .i_riscv_de_illegal_inst_d  (i_riscv_datapath_illgalinst_cu_de)   , //<---
+    .i_riscv_de_illegal_inst_d  (illegal_inst_d)                      , //<---
     .i_riscv_de_iscsr_d         (i_riscv_datapath_iscsr_cu_de)        , //<--- 
     .i_riscv_de_csrop_d         (i_riscv_datapath_csrop_cu_de)        , //<---   
     .i_riscv_de_immreg_d        (i_riscv_datapath_immreg_cu_de)       , //<---
     .i_riscv_de_immzeroextend_d (immzeroextend_dstage_de)             , //<---  
+    .i_riscv_de_instret_d       (i_riscv_datapath_instret)            , //<--- 
+    .o_riscv_de_instret_e       (riscv_instret_e )                    , //<--- 
     .o_riscv_de_ecall_m_e       (ecallm_de_em)                        , //<--- 
     .o_riscv_de_csraddress_e    (csraddress_de_em)                    , //<---         
     .o_riscv_de_illegal_inst_e  (illegal_inst_de_em)                  , //<---
@@ -354,14 +369,15 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_de_divctrl_e       (riscv_divctrl_e)                     ,
     .o_riscv_de_funcsel_e       (riscv_funcsel_e)                     ,
     .o_riscv_de_oprnd1sel_e     (riscv_oprnd1sel_e)                   , 
-    .o_riscv_de_memwrite_e      (o_riscv_datapath_memw_e)             ,
-    .o_riscv_de_memread_e       (o_riscv_datapath_memr_e)             ,
+    .o_riscv_de_memwrite_e      (datapath_memw_e)                     ,
+    .o_riscv_de_memread_e       (datapath_memr_e)                     ,
     .o_riscv_de_memext_e        (riscv_memext_e)                      ,
     .o_riscv_de_resultsrc_e     (riscv_resultsrc_e)                   ,
     .o_riscv_de_regwrite_e      (riscv_regwrite_e)                    ,
     .o_riscv_de_jump_e          (riscv_jump_e)                        ,
     .o_riscv_de_opcode_e        (riscv_opcode_e)                      
   );
+
 
   riscv_estage u_riscv_estage(
     .i_riscv_estage_clk                   (i_riscv_datapath_clk)             ,
@@ -435,6 +451,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_em_store_addr_misaligned_e (store_addr_misaligned_estage_em)  , //<--- 
     .i_riscv_em_csrwritedata_e          (csrwritedata_estage_em)           , //<---
     .i_riscv_em_rs1addr_e               (o_riscv_datapath_rs1addr_e)       , //<---
+    .i_riscv_em_instret_e               (riscv_instret_e)                  , //<--- 
+    .o_riscv_em_instret_m               (riscv_instret_m)                  , //<--- 
     .o_riscv_em_rs1addr_m               (o_riscv_datapath_rs1addr_m)       , //<---     
     .o_riscv_em_ecall_m_m               (m_em_csr)                         , //<--- 
     .o_riscv_em_csraddress_m            (csraddress_em_csr)                , //<---  
@@ -462,7 +480,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   riscv_mstage u_riscv_mstage(
     .i_riscv_mstage_dm_rdata    (i_riscv_datapath_dm_rdata)         ,
     .i_riscv_mstage_memext      (riscv_memext_m)                    ,
-    .i_riscv_mstage_addr        (riscv_rddata_me)		                ,
+    .i_riscv_mstage_addr        (riscv_rddata_me)		    ,
     .i_riscv_mstage_mux2_sel    (i_riscv_datapath_muxcsr_sel)       , //<---
     .i_riscv_mux2_in0           (csrwdata_em_csr)                   , //<---
     .i_riscv_mux2_in1           (csrout_csr_mw)                     , //<--- 
@@ -501,6 +519,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_mw_iscsr_m           (iscsr_csr_mw)                  , //<---
     .i_riscv_mw_returnfromtrap_m  (returnfromtrap_csr_mw)         , //<---
     .i_riscv_mw_gototrap_m        (gototrap_csr_mw)               , //<---
+    .i_riscv_mw_instret_m         (riscv_instret_m)               , //<--- 
+    .o_riscv_mw_instret_wb        (riscv_instret_wb)              , //<--- 
     .o_riscv_mw_pcplus4_wb        (riscv_pcplus4_wb)              ,
     .o_riscv_mw_result_wb         (riscv_result_wb)               ,
     .o_riscv_mw_uimm_wb           (riscv_uimm_wb)                 ,
@@ -516,18 +536,19 @@ module riscv_datapath #(parameter MXLEN = 64) (
 
 ////////////////////////////////
   riscv_wbstage u_riscv_wbstage(
-    .i_riscv_wb_resultsrc       (riscv_resultsrc_wb)        , 
-    .i_riscv_wb_pcplus4         (riscv_pcplus4_wb)          ,
-    .i_riscv_wb_result          (riscv_result_wb)           ,
-    .i_riscv_wb_memload         (riscv_memload_wb)          ,
-    .i_riscv_wb_uimm            (riscv_uimm_wb)             ,
-    .i_riscv_wb_csrout          (csrout_csr_mw)             , //<---    
-    .i_riscv_wb_iscsr           (iscsr_mw_trap)             , //<---
-    .i_riscv_wb_gototrap        (gototrap_mw_trap)          , //<---
-    .i_riscv_wb_returnfromtrap  (returnfromtrap_mw_trap)    , //<---
-    .o_riscv_wb_rddata          (riscv_rddata_wb)           ,
-    .o_riscv_wb_pcsel           (pcsel_trap_fetchpc)        , //<---
-    .o_riscv_wb_flush           (riscv_reg_flush)             //<---
+    .i_riscv_wb_resultsrc       (riscv_resultsrc_wb)                , 
+    .i_riscv_wb_pcplus4         (riscv_pcplus4_wb)                  ,
+    .i_riscv_wb_result          (riscv_result_wb)                   ,
+    .i_riscv_wb_memload         (riscv_memload_wb)                  ,
+    .i_riscv_wb_uimm            (riscv_uimm_wb)                     ,
+    .i_riscv_wb_csrout          (csrout_csr_mw)                     ,    
+    .i_riscv_wb_iscsr           (iscsr_mw_trap)                     , 
+    .i_riscv_wb_gototrap        (gototrap_mw_trap)                  , 
+    .i_riscv_wb_returnfromtrap  (returnfromtrap_mw_trap)            , 
+    .i_riscv_wb_icache_stall    (i_riscv_datapath_icache_stall_wb)  ,
+    .o_riscv_wb_rddata          (riscv_rddata_wb)                   ,
+    .o_riscv_wb_pcsel           (pcsel_trap_fetchpc)                , 
+    .o_riscv_wb_flush           (riscv_reg_flush)            
 ); 
 
 ////////////////////////////////
@@ -542,12 +563,14 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .i_riscv_csr_ecall_u                (ecall_u_em_csr)                 ,
   .i_riscv_csr_ecall_s                (ecall_s_em_csr)                 ,
   .i_riscv_csr_ecall_m                (m_em_csr)                       ,
-  .i_riscv_csr_illegal_inst           ()                               , //illegal_inst_em_csr
+  .i_riscv_csr_illegal_inst           (illegal_inst_em_csr)            , //illegal_inst_em_csr
   .i_riscv_csr_inst_addr_misaligned   (inst_addr_misaligned_em_csr)    , 
-  .i_riscv_csr_load_addr_misaligned   (load_addr_misaligned_em_csr)    ,   
-  .i_riscv_csr_store_addr_misaligned  (store_addr_misaligned_em_csr)   ,
+  .i_riscv_csr_load_addr_misaligned   ( )    ,   
+  .i_riscv_csr_store_addr_misaligned  ( )   ,
   .i_riscv_csr_pc                     (riscv_pcplus4_m)                ,
-  .i_riscv_csr_addressALU             (addressalu_em_csr)              , 
+  .i_riscv_csr_instret                (riscv_instret_wb)               ,
+  .i_riscv_csr_addressALU             (riscv_rddata_me)                ,
+  .i_riscv_csr_globstall              (i_riscv_datapath_globstall)     ,
   .o_riscv_csr_return_address         (mepc_csr_pctrap)                ,
   .o_riscv_csr_trap_address           (mtvec_csr_pctrap)               , 
   .o_riscv_csr_gotoTrap_cs            (gototrap_csr_mw)                ,

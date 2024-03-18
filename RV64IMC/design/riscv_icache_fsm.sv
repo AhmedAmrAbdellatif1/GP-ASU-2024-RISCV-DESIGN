@@ -71,6 +71,18 @@ module icache_fsm  (
           replace_tag       = 1'b0;
           stall             = 1'b1;          
         end
+        else begin
+          next_state        = NORMAL_OP;
+          cache_rden        = 1'b0;
+          cache_wren        = 1'b0;
+          mem_rden          = 1'b0;    
+          addr_sel          = 1'b0;
+          set_valid_align   = 1'b0;    
+          replace_tag_align = 1'b0;
+          set_valid         = 1'b0;
+          replace_tag       = 1'b0;
+          stall             = 1'b0;
+        end
       end
       ALLOCATE_1: begin
         if(mem_ready) begin//not memory ready it means read from memory done (read valid)

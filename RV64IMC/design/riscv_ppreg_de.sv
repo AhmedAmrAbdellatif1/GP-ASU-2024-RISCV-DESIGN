@@ -41,6 +41,8 @@
     input   logic [2:0]   i_riscv_de_csrop_d          , //<--- CSR
     input   logic         i_riscv_de_immreg_d         , //<--- CSR
     input   logic [63:0]  i_riscv_de_immzeroextend_d  , //<--- CSR
+    input   logic         i_riscv_de_instret_d        ,
+    output  logic         o_riscv_de_instret_e        ,
     output  logic [63:0]  o_riscv_de_pc_e             ,
     output  logic [63:0]  o_riscv_de_pcplus4_e        ,
     output  logic [4:0]   o_riscv_de_rs1addr_e        ,
@@ -107,6 +109,7 @@
           o_riscv_de_csrop_e         <=  'b0;
           o_riscv_de_immreg_e        <=  'b0;
           o_riscv_de_immzeroextend_e <=  'b0;
+          o_riscv_de_instret_e       <=  'b0;
         //<------------------------------>
         `ifdef TEST
           o_riscv_de_inst          <=  'b0;
@@ -148,6 +151,7 @@
           o_riscv_de_csrop_e         <=  'b0;
           o_riscv_de_immreg_e        <=  'b0;
           o_riscv_de_immzeroextend_e <=  'b0;
+          o_riscv_de_instret_e       <=  'b0;
         //<------------------------------>
         `ifdef TEST
           o_riscv_de_inst            <=  'b0;
@@ -187,6 +191,7 @@
           o_riscv_de_csrop_e         <=  i_riscv_de_csrop_d;
           o_riscv_de_immreg_e        <=  i_riscv_de_immreg_d;
           o_riscv_de_immzeroextend_e <=  i_riscv_de_immzeroextend_d ;
+          o_riscv_de_instret_e       <=  i_riscv_de_instret_d;
         //<-------------------------------------------
           `ifdef TEST
           o_riscv_de_inst          <= i_riscv_de_inst;
