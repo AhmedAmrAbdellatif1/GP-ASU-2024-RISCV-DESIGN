@@ -16,6 +16,7 @@ module riscv_data_cache #(
     input   logic         i_riscv_dcache_cpu_wren      ,
     input   logic         i_riscv_dcache_cpu_rden      ,
     input   logic [1:0]   i_riscv_dcache_store_src     ,
+    input   logic [5:0]   i_riscv_dcache_amo_unit_en   ,  //new //amo
     input   logic [63:0]  i_riscv_dcache_phys_addr     ,
     input   logic [63:0]  i_riscv_dcache_cpu_data_in   ,
     output  logic [63:0]  o_riscv_dcache_cpu_data_out  ,
@@ -23,6 +24,9 @@ module riscv_data_cache #(
   );
 
   //****************** internal signals declarations ******************//
+
+  // amo buffer 
+  logic [63:0]          cache_data_out_buffer ;
 
   // physical address concatenation
   logic [TAG-1:0]       tag;
@@ -40,7 +44,9 @@ module riscv_data_cache #(
   logic fsm_mem_wren;
   logic fsm_mem_rden;
   logic fsm_stall;
-  logic fsm_tag_sel;//new
+  logic fsm_tag_sel; 
+  logic fsm_amo_buffer_en; //new //amo
+  logic fsm_amo_unit_en;  //new //amo
 
   //  cache signals
   logic [DATA_WIDTH-1:0]  cache_data_in;
@@ -49,7 +55,7 @@ module riscv_data_cache #(
   // tag signals
   logic           tag_dirty_out;
   logic           tag_hit_out;
-  logic [TAG-1:0] tag_old_out;//new
+  logic [TAG-1:0] tag_old_out;
   // memory model signals
   logic                   mem_wren;
   logic                   mem_rden;
@@ -59,11 +65,32 @@ module riscv_data_cache #(
   logic [DATA_WIDTH-1:0]  mem_data_in;
   logic [DATA_WIDTH-1:0]  mem_data_out;
 
+  // amo unit 
+  logic [63:0]            amo_result;
+
   // internal signals declaration  
   assign {tag,index,byte_offset}      = i_riscv_dcache_phys_addr;
-  assign mem_addr                     = (fsm_tag_sel)?{tag_old_out,index}:{tag,index};///new
-  assign cache_data_in                = (fsm_cache_insel)? mem_data_out:{64'b0,i_riscv_dcache_cpu_data_in };
+  assign mem_addr                     = (fsm_tag_sel)?{tag_old_out,index}:{tag,index};
+  //assign cache_data_in                = (fsm_cache_insel)? mem_data_out:{64'b0,i_riscv_dcache_cpu_data_in };
   assign o_riscv_dcache_cpu_data_out  = (i_riscv_dcache_phys_addr[3])?cache_data_out[127:64]:cache_data_out[63:0];
+
+  //****************** cache data out buffering ******************//
+  always_ff @(posedge i_riscv_dcache_clk or posedge i_riscv_dcache_rst) begin 
+    if (i_riscv_dcache_rst)
+     cache_data_out_buffer <= 'b0 ;
+    else if (fsm_amo_buffer_en)
+      cache_data_out_buffer <= cache_data_out[63:0] ;
+  end
+
+  //****************** cache data in sel ******************//
+  always_comb
+  begin
+    case(fsm_cache_insel)
+    2'b00 : cache_data_in = {64'b0,i_riscv_dcache_cpu_data_in } ;
+    2'b01 : cache_data_in = mem_data_out ;
+    2'b10 : cache_data_in = {64'b0,amo_result };
+    endcase 
+  end
 
   //****************** Instantiation ******************//
   riscv_dcache_tag #(
@@ -135,4 +162,15 @@ module riscv_data_cache #(
   .glob_stall     (i_riscv_dcache_globstall) ,
   .tag_sel        (fsm_tag_sel)
 );
+
+
+////////////////////////
+riscv_amo_unit u_riscv_amo_unit  (
+  .i_riscv_amo_ctrl     (i_riscv_dcache_amo_unit_en),  
+  .i_riscv_amo_rs1data  (cache_data_out_buffer),
+  .i_riscv_amo_rs2data  (i_riscv_dcache_cpu_data_in),
+  .i_riscv_amo_enable   (fsm_amo_unit_en),
+  .o_riscv_amo_result   (amo_result)
+);
+
 endmodule
