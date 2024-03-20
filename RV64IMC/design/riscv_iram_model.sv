@@ -1,7 +1,7 @@
 module idram #(
     parameter AWIDTH  = 23,
     parameter DWIDTH  = 128,
-    parameter MEM_DEPTH = 969096
+    parameter MEM_DEPTH = 16*1024*4*(2**10)
   )
   (
     input   logic                   clk                     ,
