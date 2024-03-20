@@ -117,9 +117,7 @@
           `endif
           //<------------------------------
       end
-    else
-      begin
-    if(i_riscv_de_flush)
+    else if(i_riscv_de_flush)
       begin
           o_riscv_de_pc_e            <=  'b0;
           o_riscv_de_pcplus4_e       <=  'b0;
@@ -157,7 +155,7 @@
           o_riscv_de_inst            <=  'b0;
           o_riscv_de_cinst           <=  'b0;
           `endif
-          //<------------------------------
+        //<------------------------------
       end
     else if (!i_riscv_de_en)
       begin
@@ -192,13 +190,12 @@
           o_riscv_de_immreg_e        <=  i_riscv_de_immreg_d;
           o_riscv_de_immzeroextend_e <=  i_riscv_de_immzeroextend_d ;
           o_riscv_de_instret_e       <=  i_riscv_de_instret_d;
-        //<-------------------------------------------
+          //<-------------------------------------------
           `ifdef TEST
-          o_riscv_de_inst          <= i_riscv_de_inst;
-          o_riscv_de_cinst         <= i_riscv_de_cinst;
+            o_riscv_de_inst          <= i_riscv_de_inst;
+            o_riscv_de_cinst         <= i_riscv_de_cinst;
           `endif
           //<------------------------------------------
       end
     end
-  end
 endmodule

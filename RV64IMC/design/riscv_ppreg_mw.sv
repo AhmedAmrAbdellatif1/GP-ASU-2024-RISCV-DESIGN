@@ -47,31 +47,29 @@
     begin:mw_pff_write_proc
       if(i_riscv_mw_rst)
         begin
-         o_riscv_mw_pcplus4_wb        <='b0;
-         o_riscv_mw_result_wb         <='b0;
-         o_riscv_mw_uimm_wb           <='b0;
-         o_riscv_mw_memload_wb        <='b0;
-         o_riscv_mw_rdaddr_wb         <='b0;
-         o_riscv_mw_resultsrc_wb      <='b0;
-         o_riscv_mw_regw_wb           <='b0;
-         o_riscv_mw_csrout_wb         <='b0;
-         o_riscv_mw_iscsr_wb          <='b0;
-         o_riscv_mw_gototrap_wb       <='b0;
-         o_riscv_mw_returnfromtrap_wb <='b0;
-         o_riscv_mw_instret_wb        <='b0;
-         //---------------------------->
-         `ifdef TEST
-         o_riscv_mw_inst              <='b0;  
-         o_riscv_mw_cinst             <='b0;
-         o_riscv_mw_memaddr           <='b0;
-         o_riscv_mw_pc                <='b0;
-         o_riscv_mw_rs2data           <='b0;
-         `endif
-         //<----------------------------
+          o_riscv_mw_pcplus4_wb        <='b0;
+          o_riscv_mw_result_wb         <='b0;
+          o_riscv_mw_uimm_wb           <='b0;
+          o_riscv_mw_memload_wb        <='b0;
+          o_riscv_mw_rdaddr_wb         <='b0;
+          o_riscv_mw_resultsrc_wb      <='b0;
+          o_riscv_mw_regw_wb           <='b0;
+          o_riscv_mw_csrout_wb         <='b0;
+          o_riscv_mw_iscsr_wb          <='b0;
+          o_riscv_mw_gototrap_wb       <='b0;
+          o_riscv_mw_returnfromtrap_wb <='b0;
+          o_riscv_mw_instret_wb        <='b0;
+          //---------------------------->
+          `ifdef TEST
+          o_riscv_mw_inst              <='b0;  
+          o_riscv_mw_cinst             <='b0;
+          o_riscv_mw_memaddr           <='b0;
+          o_riscv_mw_pc                <='b0;
+          o_riscv_mw_rs2data           <='b0;
+          `endif
+          //<----------------------------
         end
-      else
-        begin
-         if (i_riscv_mw_flush) begin
+      else if (i_riscv_mw_flush) begin
           o_riscv_mw_pcplus4_wb         <='b0;
           o_riscv_mw_result_wb          <='b0;
           o_riscv_mw_uimm_wb            <='b0;
@@ -84,18 +82,17 @@
           o_riscv_mw_gototrap_wb        <='b0;
           o_riscv_mw_returnfromtrap_wb  <='b0;
           o_riscv_mw_instret_wb         <='b0;
-         //---------------------------->
-         `ifdef TEST
+          //---------------------------->
+          `ifdef TEST
           o_riscv_mw_inst               <='b0;  
           o_riscv_mw_cinst              <='b0;
           o_riscv_mw_memaddr            <='b0;
           o_riscv_mw_pc                 <='b0;
           o_riscv_mw_rs2data            <='b0;
-         `endif
-         //<----------------------------
-         end
-          else if (!i_riscv_mw_en)
-          begin
+          `endif
+          //<----------------------------
+        end
+        else if (!i_riscv_mw_en) begin
           o_riscv_mw_pcplus4_wb         <=  i_riscv_mw_pcplus4_m;
           o_riscv_mw_result_wb          <=  i_riscv_mw_result_m;
           o_riscv_mw_uimm_wb            <=  i_riscv_mw_uimm_m;
@@ -120,7 +117,5 @@
         end
         else
          o_riscv_mw_instret_wb        <='b0;
-         
       end
-    end
 endmodule

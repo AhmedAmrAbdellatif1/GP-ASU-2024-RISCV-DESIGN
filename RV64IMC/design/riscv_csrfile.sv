@@ -675,8 +675,8 @@ module riscv_csrfile #(
 
         mepc_cs <= 64'b0;
 
-      else if(go_to_trap )
-        mepc_cs <= i_riscv_csr_pc-'d4 ;
+      else if(go_to_trap && !i_riscv_csr_globstall)
+        mepc_cs <= i_riscv_csr_pc ;
 
       else if (csr_we && i_riscv_csr_address == CSR_MEPC )
 

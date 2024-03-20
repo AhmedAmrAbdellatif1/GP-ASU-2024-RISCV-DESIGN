@@ -208,7 +208,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic               store_addr_misaligned_estage_em  ;
   logic               inst_addr_misaligned_estage_em   ;
   logic               riscv_cillegal_inst_d            ;
-  logic [63:0]        muxout_csr                       ;          
+  logic [63:0]        muxout_csr                       ;
   
   ////////////////////////////////////////////////////////////////////////////////////
 
@@ -221,14 +221,16 @@ module riscv_datapath #(parameter MXLEN = 64) (
   assign o_riscv_datapath_regw_m        = riscv_regw_m            ;  // to hazard unit
   assign o_riscv_datapath_regw_wb       = riscv_regw_wb           ;  // to hazard unit
   assign o_riscv_datapath_resultsrc_e   = riscv_resultsrc_e       ;  // to hazard unit
-  assign o_riscv_datapath_rs1addr_d     = riscv_rs1addr_d         ;  //to hazard unit
-  assign o_riscv_datapath_rs2addr_d     = riscv_rs2addr_d         ;  //to hazard unit
+  assign o_riscv_datapath_rs1addr_d     = riscv_rs1addr_d         ;  // to hazard unit
+  assign o_riscv_datapath_rs2addr_d     = riscv_rs2addr_d         ;  // to hazard unit
 
   assign o_riscv_datapath_memw_e = datapath_memw_e && !gototrap_csr_mw && !returnfromtrap_csr_mw; // data cache write enable
   assign o_riscv_datapath_memr_e = datapath_memr_e && !gototrap_csr_mw && !returnfromtrap_csr_mw; // data cache read enable
 
-  assign riscv_rstctrl_f                = i_riscv_datapath_flush_fd | i_riscv_datapath_rst | riscv_reg_flush;
-  assign riscv_rstctrl_d                = i_riscv_datapath_flush_de | i_riscv_datapath_rst | riscv_reg_flush;
+  assign riscv_rstctrl_f  = i_riscv_datapath_flush_fd | i_riscv_datapath_rst | riscv_reg_flush;
+  assign riscv_rstctrl_d  = i_riscv_datapath_flush_de | i_riscv_datapath_rst | riscv_reg_flush | gototrap_csr_mw | returnfromtrap_csr_mw;
+
+
   assign o_riscv_datapath_iscsr_w_trap  = iscsr_mw_trap                 ;
   assign o_riscv_datapath_iscsr_m_trap  = iscsr_csr_mw                  ; 
   assign o_riscv_datapath_iscsr_e_trap  = iscsr_de_em                   ;
@@ -480,7 +482,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   riscv_mstage u_riscv_mstage(
     .i_riscv_mstage_dm_rdata    (i_riscv_datapath_dm_rdata)         ,
     .i_riscv_mstage_memext      (riscv_memext_m)                    ,
-    .i_riscv_mstage_addr        (riscv_rddata_me)		    ,
+    .i_riscv_mstage_addr        (riscv_rddata_me)		                ,
     .i_riscv_mstage_mux2_sel    (i_riscv_datapath_muxcsr_sel)       , //<---
     .i_riscv_mux2_in0           (csrwdata_em_csr)                   , //<---
     .i_riscv_mux2_in1           (csrout_csr_mw)                     , //<--- 
@@ -504,6 +506,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_mw_rs2data         (riscv_rs2data_wb)                ,
     `endif
     //<------------------------------------------------------------
+    .i_riscv_mw_regw_m            (riscv_regw_m && !gototrap_csr_mw && !returnfromtrap_csr_mw), //<---
     .i_riscv_mw_en                (i_riscv_datapath_stall_mw)     ,
     .i_riscv_mw_clk               (i_riscv_datapath_clk)          ,
     .i_riscv_mw_rst               (i_riscv_datapath_rst)          ,
@@ -513,7 +516,6 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_mw_memload_m         (riscv_memload_m)               , //<--- ?
     .i_riscv_mw_rdaddr_m          (riscv_rdaddr_m)                ,
     .i_riscv_mw_resultsrc_m       (riscv_resultsrc_m)             ,
-    .i_riscv_mw_regw_m            (riscv_regw_m)                  , //<---
     .i_riscv_mw_flush             (riscv_reg_flush)               , //<---
     .i_riscv_mw_csrout_m          (csrout_mw_trap)                , //<---
     .i_riscv_mw_iscsr_m           (iscsr_csr_mw)                  , //<---
@@ -567,7 +569,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .i_riscv_csr_inst_addr_misaligned   (inst_addr_misaligned_em_csr)    , 
   .i_riscv_csr_load_addr_misaligned   ( )    ,   
   .i_riscv_csr_store_addr_misaligned  ( )   ,
-  .i_riscv_csr_pc                     (riscv_pcplus4_m)                ,
+  .i_riscv_csr_pc                     (riscv_pc_m)                     ,
   .i_riscv_csr_instret                (riscv_instret_wb)               ,
   .i_riscv_csr_addressALU             (riscv_rddata_me)                ,
   .i_riscv_csr_globstall              (i_riscv_datapath_globstall)     ,
