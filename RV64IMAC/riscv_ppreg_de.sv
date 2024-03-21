@@ -34,9 +34,6 @@
     input   logic         i_riscv_de_jump_d           ,
     input   logic [63:0]  i_riscv_de_pcplus4_d        ,
     input   logic [6:0]   i_riscv_de_opcode_d         ,
-    input   logic [1:0]   i_riscv_de_lr_d             , ////////
-    input   logic [1:0]   i_riscv_de_sc_d             ,
-    input   logic         i_riscv_de_is_atomic_d      ,
     input   logic         i_riscv_de_ecall_m_d        , //<--- trap
     input   logic [11:0]  i_riscv_de_csraddress_d     , //<--- trap
     input   logic         i_riscv_de_illegal_inst_d   , //<--- trap
@@ -69,9 +66,6 @@
     output  logic         o_riscv_de_regwrite_e       ,
     output  logic         o_riscv_de_jump_e           ,
     output  logic [6:0]   o_riscv_de_opcode_e         ,
-    output  logic [1:0]   o_riscv_de_lr_e             , ////////
-    output  logic [1:0]   o_riscv_de_sc_e             ,
-    output  logic         o_riscv_de_is_atomic_e      ,
     output  logic         o_riscv_de_ecall_m_e        , //<--- CSR 
     output  logic [11:0]  o_riscv_de_csraddress_e     , //<--- CSR
     output  logic         o_riscv_de_illegal_inst_e   , //<--- CSR
@@ -116,9 +110,6 @@
           o_riscv_de_immreg_e        <=  'b0;
           o_riscv_de_immzeroextend_e <=  'b0;
           o_riscv_de_instret_e       <=  'b0;
-          o_riscv_de_is_atomic_e     <=  'b0;
-          o_riscv_de_sc_e            <=  'b0;
-          o_riscv_de_lr_e            <=  'b0;
         //<------------------------------>
         `ifdef TEST
           o_riscv_de_inst          <=  'b0;
@@ -126,9 +117,7 @@
           `endif
           //<------------------------------
       end
-    else
-      begin
-    if(i_riscv_de_flush)
+    else if(i_riscv_de_flush)
       begin
           o_riscv_de_pc_e            <=  'b0;
           o_riscv_de_pcplus4_e       <=  'b0;
@@ -161,15 +150,12 @@
           o_riscv_de_immreg_e        <=  'b0;
           o_riscv_de_immzeroextend_e <=  'b0;
           o_riscv_de_instret_e       <=  'b0;
-          o_riscv_de_is_atomic_e     <=  'b0;
-          o_riscv_de_sc_e            <=  'b0;
-          o_riscv_de_lr_e            <=  'b0;
         //<------------------------------>
         `ifdef TEST
           o_riscv_de_inst            <=  'b0;
           o_riscv_de_cinst           <=  'b0;
           `endif
-          //<------------------------------
+        //<------------------------------
       end
     else if (!i_riscv_de_en)
       begin
@@ -204,16 +190,12 @@
           o_riscv_de_immreg_e        <=  i_riscv_de_immreg_d;
           o_riscv_de_immzeroextend_e <=  i_riscv_de_immzeroextend_d ;
           o_riscv_de_instret_e       <=  i_riscv_de_instret_d;
-          o_riscv_de_is_atomic_e     <=  i_riscv_de_is_atomic_d;
-          o_riscv_de_sc_e            <=  i_riscv_de_sc_d;
-          o_riscv_de_lr_e            <=  i_riscv_de_lr_d;
-        //<-------------------------------------------
+          //<-------------------------------------------
           `ifdef TEST
-          o_riscv_de_inst          <= i_riscv_de_inst;
-          o_riscv_de_cinst         <= i_riscv_de_cinst;
+            o_riscv_de_inst          <= i_riscv_de_inst;
+            o_riscv_de_cinst         <= i_riscv_de_cinst;
           `endif
           //<------------------------------------------
       end
     end
-  end
 endmodule

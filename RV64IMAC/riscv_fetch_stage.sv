@@ -44,7 +44,7 @@ module riscv_fstage (
   );
 /************************ PC Adder Mux ************************/
   riscv_mux2 u_pcmuxadder(
-    .i_riscv_mux2_sel (riscv_fstage_addermuxsel)  ,
+    .i_riscv_mux2_sel (riscv_fstage_addermuxsel && !o_riscv_fstage_cillegal_inst)  ,
     .i_riscv_mux2_in0 (64'd4)                     ,
     .i_riscv_mux2_in1 (64'd2)                     ,
     .o_riscv_mux2_out (riscv_pcadder1_operand)

@@ -22,12 +22,6 @@ module riscv_estage(
   input   logic         [2:0]   i_riscv_estage_memext                 ,   //<--- TRAPS AND CSR
   input   logic         [6:0]   i_riscv_stage_opcode                  ,   //<--- TRAPS AND CSR
   input   logic         [1:0]   i_riscv_estage_storesrc               ,   //<--- TRAPS AND CSR   
-  input   logic         [1:0]   i_riscv_estage_lr                     ,   //Atomic 
-  input   logic         [1:0]   i_riscv_estage_sc                     ,
-  input   logic                 i_riscv_estage_is_atomic              ,
-  input   logic                 i_riscv_estage_memwrite               ,
-  output  logic                 o_riscv_estage_memwrite               ,
-  output  logic                 o_riscv_estage_sc_rdvalue             ,
   output  logic signed  [63:0]  o_riscv_estage_result                 ,   //  Signals to E/M FF
   output  logic signed  [63:0]  o_riscv_estage_store_data             ,   //  Signals to E/M FF
   output  logic                 o_riscv_estage_branchtaken            ,   //  Branch Comparator Signals to hazard_unit
@@ -48,8 +42,6 @@ module riscv_estage(
 //u_OperandA,B muxes  Connected to ALU  Signals
   logic signed  [63:0]  o_riscv_OperandmuxA_OperandALUA ;
   logic signed  [63:0]  o_riscv_OperandmuxB_OperandALUB ;
-// Atomic
-  logic         [63:0]  riscv_estage_result             ;
 
   assign o_riscv_estage_mul_en      = i_riscv_estage_mulctrl [3];
   assign o_riscv_estage_div_en      = i_riscv_estage_divctrl [3]; 
@@ -107,29 +99,8 @@ riscv_icu u_icu (
   .i_riscv_icu_rst          (i_riscv_estage_rst)              ,
   .o_riscv_branch_taken     (o_riscv_estage_branchtaken)      ,
   .o_riscv_icu_valid        (o_riscv_estage_icu_valid)        ,
-  .o_riscv_icu_result       (riscv_estage_result)
+  .o_riscv_icu_result       (o_riscv_estage_result)
 );
-
-/************************ Atomic MUX ************************/
-riscv_mux2 u_atomic_mux(
-  .i_riscv_mux2_sel(i_riscv_estage_is_atomic),
-  .i_riscv_mux2_in0(riscv_estage_result),
-  .i_riscv_mux2_in1(o_riscv_FWmuxA_OperandmuxA),
-  .o_riscv_mux2_out(o_riscv_estage_result)
-);
-
-/************************ LR/SC Unit ************************/
-riscv_lrsc  riscv_lrsc_inst(
-    .i_riscv_lrsc_clk          (i_riscv_estage_clk),
-    .i_riscv_lrsc_rst          (i_riscv_estage_rst),
-    .i_riscv_lrsc_address      (o_riscv_estage_result),
-    .i_riscv_lrsc_LR           (i_riscv_estage_lr),
-    .i_riscv_lrsc_SC           (i_riscv_estage_sc),
-    .i_riscv_lrsc_memwrite     (i_riscv_estage_memwrite),
-    .o_riscv_lrsc_memwrite_o   (o_riscv_estage_memwrite),
-    .o_riscv_lrsc_sc_rdvalue   (o_riscv_estage_sc_rdvalue)
-  );
-
 
 /************************ Exception Unit ************************/
 exception_unit u_exception(

@@ -93,7 +93,7 @@ module riscv_compressed_decoder (
                 
           default: begin
             o_riscv_cdecoder_inst = i_riscv_cdecoder_inst;
-            o_riscv_cdecoder_cillegal_inst = 1'b0;
+            o_riscv_cdecoder_cillegal_inst = 1'b1;
           end
 
         endcase

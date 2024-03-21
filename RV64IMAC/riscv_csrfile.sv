@@ -4,6 +4,7 @@ module riscv_csrfile #(
   parameter support_user       = 1
 ) (
   input  logic             i_riscv_csr_globstall            ,
+  input  logic             i_riscv_csr_flush                ,
   input                    i_riscv_csr_clk                  ,
   input                    i_riscv_csr_rst                  ,
   input        [     11:0] i_riscv_csr_address              ,
@@ -78,14 +79,12 @@ module riscv_csrfile #(
   localparam PRIV_LVL_M = 2'b11;
 
   //interupts
-//  localparam  S_SOFT_I     =  1  ;
-//  localparam  M_SOFT_I     =  3  ;
   localparam S_TIMER_I = 5 ;
   localparam M_TIMER_I = 7 ;
   localparam S_EXT_I   = 9 ;
   localparam M_EXT_I   = 11;
 
-//exceptions
+  //exceptions
   localparam INSTRUCTION_ADDRESS_MISALIGNED = 0  ,
     ILLEGAL_INSTRUCTION            = 2  ,
     LOAD_ADDRESS_MISALIGNED        = 4  ,
@@ -305,7 +304,7 @@ module riscv_csrfile #(
   assign is_interrupt = (external_interrupt_pending_m  || timer_interrupt_pending_m) ? 1:0  ; // || software_interrupt_pending_m ;
   // assign is_exception                 = ((i_riscv_csr_illegal_inst | i_riscv_csr_ecall_u |i_riscv_csr_ecall_s | i_riscv_csr_ecall_m  | i_riscv_csr_inst_addr_misaligned  | i_riscv_csr_load_addr_misaligned | i_riscv_csr_store_addr_misaligned) )? 1:0 ;
   assign is_trap                 = (is_interrupt || is_exception)? 1:0;
-  assign go_to_trap              = is_trap ; //a trap is taken, save i_pc, and go to trap address
+  assign go_to_trap              = is_trap && !i_riscv_csr_flush ; //a trap is taken, save i_pc, and go to trap address
   assign o_riscv_csr_gotoTrap_cs = go_to_trap ;
   assign illegal_total           = illegal_csr | i_riscv_csr_illegal_inst ;
   /*Attempts to access a non-existent CSR raise an illegal instruction exception.
@@ -675,10 +674,10 @@ module riscv_csrfile #(
 
         mepc_cs <= 64'b0;
 
-      else if(go_to_trap )
-        mepc_cs <= i_riscv_csr_pc-'d4 ;
+      else if(go_to_trap && !i_riscv_csr_globstall)
+        mepc_cs <= i_riscv_csr_pc ;
 
-      else if (csr_we && i_riscv_csr_address == CSR_MEPC )
+      else if (csr_we && i_riscv_csr_address == CSR_MEPC && !i_riscv_csr_globstall)
 
         mepc_cs <= {csr_wdata[63:1],1'b0};
 
