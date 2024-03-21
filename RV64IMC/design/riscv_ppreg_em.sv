@@ -3,12 +3,11 @@
     `ifdef TEST
     input   logic [31:0]  i_riscv_em_inst                     ,
     input   logic [15:0]  i_riscv_em_cinst                    ,
-    input   logic [63:0]  i_riscv_em_pc                       ,
     output  logic [31:0]  o_riscv_em_inst                     ,
     output  logic [15:0]  o_riscv_em_cinst                    ,
-    output  logic [63:0]  o_riscv_em_pc                       ,
     `endif
     //<----------------------------------------------
+    input   logic [63:0]  i_riscv_em_pc                       ,
     input   logic         i_riscv_em_clk                      ,
     input   logic         i_riscv_em_rst                      ,
     input   logic         i_riscv_em_en                       ,
@@ -35,6 +34,7 @@
     input   logic [63:0]  i_riscv_em_csrwritedata_e           , //<--- csr
     input   logic [4:0]   i_riscv_em_rs1addr_e                , //<--- csr
     input   logic         i_riscv_em_instret_e                ,
+    output  logic [63:0]  o_riscv_em_pc                       ,
     output  logic         o_riscv_em_instret_m                , 
     output  logic         o_riscv_em_regw_m                   ,
     output  logic [1:0]   o_riscv_em_resultsrc_m              ,
@@ -86,11 +86,11 @@
             o_riscv_em_load_addr_misaligned_m   <= 'b0;
             o_riscv_em_store_addr_misaligned_m  <= 'b0;  
             o_riscv_em_instret_m                <= 'b0;
+            o_riscv_em_pc                       <= 'b0;
             //---------------------------->
             `ifdef TEST
             o_riscv_em_inst                     <= 'b0;
             o_riscv_em_cinst                    <= 'b0;
-            o_riscv_em_pc                       <= 'b0;
             `endif
             //<----------------------------
           end
@@ -118,11 +118,11 @@
             o_riscv_em_store_addr_misaligned_m  <= 'b0;  
             o_riscv_em_rs1addr_m                <= 'b0;
             o_riscv_em_instret_m                <= 'b0;
+            o_riscv_em_pc                       <= 'b0;
             //---------------------------------------->
             `ifdef TEST
             o_riscv_em_inst                     <= 'b0;
             o_riscv_em_cinst                    <= 'b0;
-            o_riscv_em_pc                       <= 'b0;
             `endif
             //<----------------------------------------
           end
@@ -150,11 +150,11 @@
             o_riscv_em_csrwritedata_m           <= i_riscv_em_csrwritedata_e ;
             o_riscv_em_rs1addr_m                <= i_riscv_em_rs1addr_e;
             o_riscv_em_instret_m                <= i_riscv_em_instret_e;
+            o_riscv_em_pc                       <= i_riscv_em_pc;
             //----------------------------------------->
             `ifdef TEST
             o_riscv_em_inst                     <= i_riscv_em_inst;
             o_riscv_em_cinst                    <= i_riscv_em_cinst;
-            o_riscv_em_pc                       <= i_riscv_em_pc;
             `endif
             //<-----------------------------------------
           end

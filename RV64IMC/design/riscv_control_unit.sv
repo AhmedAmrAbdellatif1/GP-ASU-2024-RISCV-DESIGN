@@ -260,6 +260,7 @@ module riscv_cu (
               o_riscv_cu_regw       = 1'b0;
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_memw       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
@@ -319,6 +320,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr      = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -370,6 +372,26 @@ module riscv_cu (
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b00;
             end
+            else
+            begin
+              o_riscv_cu_jump       = 1'b0;
+              o_riscv_cu_regw       = 1'b0;
+              o_riscv_cu_asel       = 1'b1;
+              o_riscv_cu_bsel       = 1'b1;
+              o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
+              o_riscv_cu_storesrc   = 2'b00;//xx
+              o_riscv_cu_resultsrc  = 2'b00;//xx
+              o_riscv_cu_bcond      = 4'b0000;
+              o_riscv_cu_memext     = 3'b000;//xx
+              o_riscv_cu_immsrc     = 3'b000;
+              o_riscv_cu_aluctrl    = 6'b100000;
+              o_riscv_cu_mulctrl    = 4'b0000;
+              o_riscv_cu_divctrl    = 4'b0000;
+              o_riscv_cu_funcsel    = 2'b10;
+              o_riscv_cu_illgalinst = 1'b1 ;
+              o_riscv_cu_instret    = 1'b0;
+            end
           end
           SLTU :
           begin // sltu instruction signals
@@ -416,6 +438,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -474,6 +497,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -551,6 +575,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -609,6 +634,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -667,6 +693,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -750,6 +777,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -791,6 +819,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -832,6 +861,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -908,6 +938,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -948,6 +979,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -989,6 +1021,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -1074,6 +1107,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -1187,6 +1221,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -1307,6 +1342,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -1366,6 +1402,7 @@ module riscv_cu (
               o_riscv_cu_asel       = 1'b1;
               o_riscv_cu_bsel       = 1'b1;
               o_riscv_cu_memw       = 1'b0;
+              o_riscv_cu_memr       = 1'b0;
               o_riscv_cu_storesrc   = 2'b00;//xx
               o_riscv_cu_resultsrc  = 2'b00;//xx
               o_riscv_cu_bcond      = 4'b0000;
@@ -1695,6 +1732,7 @@ module riscv_cu (
         o_riscv_cu_asel       = 1'b0;  //x
         o_riscv_cu_bsel       = 1'b0;  //x
         o_riscv_cu_memw       = 1'b0;
+        o_riscv_cu_memr       = 1'b0;
         o_riscv_cu_storesrc   = 2'b00;  //xx
         o_riscv_cu_resultsrc  = 2'b00;  //xx
         o_riscv_cu_bcond      = 4'b0000;
@@ -1836,6 +1874,7 @@ module riscv_cu (
         o_riscv_cu_asel       = 1'b1;
         o_riscv_cu_bsel       = 1'b1;
         o_riscv_cu_memw       = 1'b0;
+        o_riscv_cu_memr       = 1'b0;
         o_riscv_cu_storesrc   = 2'b00;//xx
         o_riscv_cu_resultsrc  = 2'b00;//xx
         o_riscv_cu_bcond      = 4'b0000;
@@ -1875,8 +1914,9 @@ module riscv_cu (
           o_riscv_cu_ecall_m = 1;
           // o_riscv_cu_ex_cause = ENV_CALL_MMODE;   // always supported
         end
-        
-        default: begin
+
+        default:
+        begin
           o_riscv_cu_ecall_u = 0;
           o_riscv_cu_ecall_s = 0;
           o_riscv_cu_ecall_m = 0;

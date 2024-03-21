@@ -63,8 +63,8 @@
           `ifdef TEST
           o_riscv_mw_inst              <='b0;  
           o_riscv_mw_cinst             <='b0;
-          o_riscv_mw_memaddr           <='b0;
           o_riscv_mw_pc                <='b0;
+          o_riscv_mw_memaddr           <='b0;
           o_riscv_mw_rs2data           <='b0;
           `endif
           //<----------------------------
@@ -86,8 +86,8 @@
           `ifdef TEST
           o_riscv_mw_inst               <='b0;  
           o_riscv_mw_cinst              <='b0;
-          o_riscv_mw_memaddr            <='b0;
           o_riscv_mw_pc                 <='b0;
+          o_riscv_mw_memaddr            <='b0;
           o_riscv_mw_rs2data            <='b0;
           `endif
           //<----------------------------
@@ -109,8 +109,8 @@
           `ifdef TEST
           o_riscv_mw_inst               <=  i_riscv_mw_inst;
           o_riscv_mw_cinst              <=  i_riscv_mw_cinst;
-          o_riscv_mw_memaddr            <=  i_riscv_mw_memaddr;
           o_riscv_mw_pc                 <=  i_riscv_mw_pc;
+          o_riscv_mw_memaddr            <=  i_riscv_mw_memaddr;
           o_riscv_mw_rs2data            <=  i_riscv_mw_rs2data;
           `endif
          //<---------------------------------------------
