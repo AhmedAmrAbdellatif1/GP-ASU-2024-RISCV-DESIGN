@@ -60,18 +60,18 @@ riscv_data_cache u_data_cache(
 
 //----------------------------------------------->
 
-riscv_im u_top_im(
+/*riscv_im u_top_im(
   .i_riscv_im_pc            (riscv_datapath_pc_im-'h80000062)   , 
   .o_riscv_im_inst          (riscv_im_inst_datapath)            ,
   .o_riscv_icache_cpu_stall (riscv_datapath_stall_m_im)
-);
+);*/
 
-/*riscv_instructions_cache u_inst_cache(
+riscv_instructions_cache u_inst_cache(
   .i_riscv_icache_clk             (i_riscv_clk)                      ,
   .i_riscv_icache_rst             (i_riscv_rst)                      ,
   .i_riscv_icache_phys_addr       ((riscv_datapath_pc_im-'h80000000)),  
   .o_riscv_icache_cpu_instr_out   (riscv_im_inst_datapath)           ,  
   .o_riscv_icache_cpu_stall       (riscv_datapath_stall_m_im)  
-);*/
+);
 
 endmodule
