@@ -18,6 +18,7 @@
     input   logic [63:0]  i_riscv_em_pcplus4_e                ,
     input   logic [63:0]  i_riscv_em_result_e                 ,
     input   logic [63:0]  i_riscv_em_storedata_e              ,
+    input   logic [63:0]  i_riscv_em_dcache_addr              ,
     input   logic [4:0]   i_riscv_em_rdaddr_e                 ,
     input   logic [63:0]  i_riscv_em_imm_e                    ,
     input   logic [6:0]   i_riscv_de_opcode_e                 ,
@@ -36,6 +37,7 @@
     input   logic         i_riscv_em_instret_e                ,
     input   logic [63:0]  i_riscv_em_rddata_sc_e              ,                 
     output  logic [63:0]  o_riscv_em_rddata_sc_m              ,
+    output  logic [63:0]  o_riscv_em_dcache_addr             ,
     output  logic [63:0]  o_riscv_em_pc                       ,
     output  logic         o_riscv_em_instret_m                , 
     output  logic         o_riscv_em_regw_m                   ,
@@ -90,6 +92,7 @@
             o_riscv_em_instret_m                <= 'b0;
             o_riscv_em_pc                       <= 'b0;
             o_riscv_em_rddata_sc_m              <= 'b0;
+            o_riscv_em_dcache_addr              <= 'b0;
             //---------------------------->
             `ifdef TEST
             o_riscv_em_inst                     <= 'b0;
@@ -123,6 +126,7 @@
             o_riscv_em_instret_m                <= 'b0;
             o_riscv_em_pc                       <= 'b0;
             o_riscv_em_rddata_sc_m              <= 'b0;
+            o_riscv_em_dcache_addr              <= 'b0;
             //---------------------------------------->
             `ifdef TEST
             o_riscv_em_inst                     <= 'b0;
@@ -156,6 +160,7 @@
             o_riscv_em_instret_m                <= i_riscv_em_instret_e;
             o_riscv_em_pc                       <= i_riscv_em_pc;
             o_riscv_em_rddata_sc_m              <= i_riscv_em_rddata_sc_e;
+            o_riscv_em_dcache_addr              <= i_riscv_em_dcache_addr;
             //----------------------------------------->
             `ifdef TEST
             o_riscv_em_inst                     <= i_riscv_em_inst;

@@ -154,6 +154,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic  [63:0]  riscv_rddata_sc_m   ;
   logic          datapath_memw_e     ;
   logic          datapath_memr_e     ;
+  logic  [63:0] riscv_datapath_memodata_addr;
 /************************* WB Stage Signals *************************/      
   logic  [63:0]  riscv_pc_wb         ;
   logic  [63:0]  riscv_pcplus4_wb    ;
@@ -437,7 +438,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_estage_rtrap                 (returnfromtrap_csr_mw)            ,
     .o_riscv_estage_dcache_wren           (o_riscv_datapath_memw_e)          ,
     .o_riscv_estage_dcache_rden           (o_riscv_datapath_memr_e)          ,
-    .o_riscv_estage_dcache_addr           (o_riscv_datapath_memodata_addr)   ,
+    .o_riscv_estage_dcache_addr           (riscv_datapath_memodata_addr)     ,
     .o_riscv_estage_rddata_sc             (riscv_rddata_sc_e)                ,
     .o_riscv_estage_result                (riscv_aluexe_fe)                  ,
     .o_riscv_estage_store_data            (riscv_store_data)                 ,
@@ -471,6 +472,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_em_pcplus4_e               (riscv_pcplus4_e)                  ,
     .i_riscv_em_result_e                (riscv_aluexe_fe)                  ,
     .i_riscv_em_storedata_e             (riscv_store_data)                 ,
+    .i_riscv_em_dcache_addr             (riscv_datapath_memodata_addr)     ,
     .i_riscv_em_rdaddr_e                (riscv_rdaddr_e)                   ,
     .i_riscv_em_imm_e                   (riscv_extendedimm_e)              ,
     .i_riscv_de_opcode_e                (riscv_opcode_e)                   ,
@@ -503,6 +505,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_em_store_addr_misaligned_m (store_addr_misaligned_em_csr)     , //<---
     .o_riscv_em_csrwritedata_m          (csrwdata_em_csr)                  , //<---
     .o_riscv_em_regw_m                  (riscv_regw_m)                     ,
+    .o_riscv_em_dcache_addr             (o_riscv_datapath_memodata_addr)   ,
     .o_riscv_em_resultsrc_m             (riscv_resultsrc_m)                ,
     .o_riscv_em_storesrc_m              (o_riscv_datapath_storesrc_m)      ,
     .o_riscv_em_memext_m                (riscv_memext_m)                   ,
