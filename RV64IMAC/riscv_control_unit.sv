@@ -12,7 +12,7 @@ module riscv_cu (
     output logic        o_riscv_cu_memw      ,
     output logic        o_riscv_cu_memr      ,
     output logic [ 1:0] o_riscv_cu_storesrc  ,
-    output logic [ 1:0] o_riscv_cu_resultsrc ,
+    output logic [ 2:0] o_riscv_cu_resultsrc ,
     output logic [ 1:0] o_riscv_cu_funcsel   ,
     output logic [ 3:0] o_riscv_cu_bcond     ,
     output logic [ 2:0] o_riscv_cu_memext    ,
@@ -27,7 +27,11 @@ module riscv_cu (
     output logic        o_riscv_cu_ecall_u   ,
     output logic        o_riscv_cu_ecall_s   ,
     output logic        o_riscv_cu_ecall_m   ,
-    output logic        o_riscv_cu_instret
+    output logic        o_riscv_cu_instret   ,
+    output logic [1:0]  o_riscv_cu_lr        ,
+    output logic [1:0]  o_riscv_cu_sc        ,
+    output logic [4:0]  o_riscv_cu_amo_op    ,
+    output logic        o_riscv_cu_amo
   );
 
   /******************************** Internal Signals ********************************/
@@ -193,6 +197,7 @@ module riscv_cu (
     o_riscv_cu_sel_rs_imm = 'b0;
     riscv_cu_detect_ecall = 'b0;
     o_riscv_cu_instret    = 'b1;
+    o_riscv_cu_amo_op     = 5'b0;
     ////////////////////////////////
     case(i_riscv_cu_opcode)
       OPCODE_OP :
@@ -217,6 +222,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if (!funct7_illegal_bit0 && riscv_funct7_0) // mul
             begin
@@ -235,6 +244,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b1100;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b00;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if (!funct7_illegal_bit5 && riscv_funct7_5)
             begin //sub instruction signals
@@ -253,6 +266,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -273,6 +290,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
           SLL :
@@ -294,6 +315,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if(!funct7_illegal_bit0 && riscv_funct7_0)
             begin // mulh
@@ -312,6 +337,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b1101;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b00;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -332,6 +361,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
           SLT :
@@ -353,6 +386,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if(!funct7_illegal_bit0 && riscv_funct7_0 )
             begin //mulhsu
@@ -371,6 +408,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b1111;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b00;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -391,6 +432,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
           SLTU :
@@ -412,6 +457,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if (!funct7_illegal_bit0 && riscv_funct7_0 ) // mulhu
             begin
@@ -430,6 +479,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b1110;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b00;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -450,6 +503,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
           XOR :
@@ -471,6 +528,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if (!funct7_illegal_bit0 && riscv_funct7_0) //div
             begin
@@ -489,6 +550,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b1100;
               o_riscv_cu_funcsel   = 2'b01;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -509,6 +574,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
 
@@ -531,6 +600,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if(!funct7_illegal_bit0 && riscv_funct7_0) //divu
             begin
@@ -549,6 +622,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b1101;
               o_riscv_cu_funcsel   = 2'b01;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if(!funct7_illegal_bit5 && riscv_funct7_5)
             begin //sra instruction signals
@@ -567,6 +644,10 @@ module riscv_cu (
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
               o_riscv_cu_mulctrl   = 4'b0000;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -587,6 +668,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
           OR :
@@ -608,6 +693,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if(!funct7_illegal_bit0 && riscv_funct7_0)   //rem
             begin
@@ -626,6 +715,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b1110;
               o_riscv_cu_funcsel   = 2'b01;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -646,6 +739,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
           AND :
@@ -667,6 +764,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if (!funct7_illegal_bit0 && riscv_funct7_0) //remu
             begin
@@ -685,6 +786,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b1111;
               o_riscv_cu_funcsel   = 2'b01;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -705,6 +810,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
 
@@ -733,6 +842,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if (!funct7_illegal_bit0 && riscv_funct7_0) // mulw
             begin
@@ -751,6 +864,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b1000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b00;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if (!funct7_illegal_bit5 && riscv_funct7_5)
             begin //subw instruction signals
@@ -769,6 +886,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -789,6 +910,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
 
@@ -811,6 +936,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -831,6 +960,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
 
@@ -853,6 +986,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b1000;
               o_riscv_cu_funcsel   = 2'b01;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -873,6 +1010,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
           SRLW_SRAW :
@@ -894,6 +1035,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if (!funct7_illegal_bit0 && riscv_funct7_0) //divuw
             begin
@@ -912,6 +1057,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b1001;
               o_riscv_cu_funcsel   = 2'b01;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if(!funct7_illegal_bit5 && riscv_funct7_5)
             begin //sraw instruction signals
@@ -930,6 +1079,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -950,6 +1103,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
           REMW :
@@ -971,6 +1128,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b1010;
               o_riscv_cu_funcsel   = 2'b01;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -991,6 +1152,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
 
@@ -1013,6 +1178,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b1011;
               o_riscv_cu_funcsel   = 2'b01;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -1033,6 +1202,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
 
@@ -1055,6 +1228,10 @@ module riscv_cu (
             o_riscv_cu_funcsel    = 2'b10;
             o_riscv_cu_illgalinst = 1'b1 ;
             o_riscv_cu_instret    = 1'b0;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
         endcase
       end
@@ -1079,6 +1256,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           SLLI :
           begin// slli instruction signals
@@ -1099,6 +1280,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -1119,6 +1304,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
 
           end
@@ -1139,6 +1328,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           SLTIU :
           begin // sltui instruction signals
@@ -1157,6 +1350,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           XORI :
           begin // xori instruction signals
@@ -1175,6 +1372,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           SRLI_SRAI :
           begin
@@ -1195,6 +1396,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if(!i_riscv_cu_funct7[6] && !(|i_riscv_cu_funct7[4:1]) && riscv_funct7_5)
             begin //srai instruction signals
@@ -1213,6 +1418,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -1233,6 +1442,10 @@ module riscv_cu (
               o_riscv_cu_funcsel    = 2'b10;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
           end
           ORI :
@@ -1252,6 +1465,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           ANDI :
           begin // andi instruction signals
@@ -1270,6 +1487,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           default :
           begin
@@ -1290,6 +1511,10 @@ module riscv_cu (
             o_riscv_cu_funcsel    = 2'b10;
             o_riscv_cu_illgalinst = 1'b1 ;
             o_riscv_cu_instret    = 1'b0;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
         endcase
       end
@@ -1314,6 +1539,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           SLLIW :
           begin// slliw instruction signals
@@ -1334,6 +1563,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -1352,6 +1585,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl    = 4'b0000;
               o_riscv_cu_divctrl    = 4'b0000;
               o_riscv_cu_funcsel    = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
             end
@@ -1376,6 +1613,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else if(!funct7_illegal_bit5 && riscv_funct7_5)
             begin //sraiw instruction signals
@@ -1394,6 +1635,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl   = 4'b0000;
               o_riscv_cu_divctrl   = 4'b0000;
               o_riscv_cu_funcsel   = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
             end
             else
             begin
@@ -1412,6 +1657,10 @@ module riscv_cu (
               o_riscv_cu_mulctrl    = 4'b0000;
               o_riscv_cu_divctrl    = 4'b0000;
               o_riscv_cu_funcsel    = 2'b10;
+              o_riscv_cu_amo       = 1'b0;
+              o_riscv_cu_lr        = 1'b0;
+              o_riscv_cu_sc        = 1'b0;
+              o_riscv_cu_amo_op    = 5'b0;
               o_riscv_cu_illgalinst = 1'b1 ;
               o_riscv_cu_instret    = 1'b0;
             end
@@ -1419,7 +1668,7 @@ module riscv_cu (
           default :
           begin
             o_riscv_cu_jump       = 1'b0;
-            o_riscv_cu_regw       = 1'b1;
+            o_riscv_cu_regw       = 1'b0;
             o_riscv_cu_asel       = 1'b1;
             o_riscv_cu_bsel       = 1'b0;
             o_riscv_cu_memw       = 1'b0;
@@ -1433,6 +1682,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl    = 4'b0000;
             o_riscv_cu_divctrl    = 4'b0000;
             o_riscv_cu_funcsel    = 2'b10;
+            o_riscv_cu_amo        = 1'b0;
+            o_riscv_cu_amo_op     = 5'b0;
+            o_riscv_cu_lr         = 1'b0;
+            o_riscv_cu_sc         = 1'b0;
             o_riscv_cu_illgalinst = 1'b1;
             o_riscv_cu_instret    = 1'b0;
           end
@@ -1459,11 +1712,15 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           default :
           begin
             o_riscv_cu_jump       = 1'b0;
-            o_riscv_cu_regw       = 1'b1;
+            o_riscv_cu_regw       = 1'b0;
             o_riscv_cu_asel       = 1'b1;
             o_riscv_cu_bsel       = 1'b0;
             o_riscv_cu_memw       = 1'b0;
@@ -1477,6 +1734,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl    = 4'b0000;
             o_riscv_cu_divctrl    = 4'b0000;
             o_riscv_cu_funcsel    = 2'b10;
+            o_riscv_cu_amo        = 1'b0;
+            o_riscv_cu_amo_op     = 5'b0;
+            o_riscv_cu_lr         = 1'b0;
+            o_riscv_cu_sc         = 1'b0;
             o_riscv_cu_illgalinst = 1'b1;
             o_riscv_cu_instret    = 1'b0;
           end
@@ -1503,11 +1764,15 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           default :
           begin
             o_riscv_cu_jump       = 1'b0;
-            o_riscv_cu_regw       = 1'b1;
+            o_riscv_cu_regw       = 1'b0;
             o_riscv_cu_asel       = 1'b1;
             o_riscv_cu_bsel       = 1'b0;
             o_riscv_cu_memw       = 1'b0;
@@ -1521,6 +1786,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl    = 4'b0000;
             o_riscv_cu_divctrl    = 4'b0000;
             o_riscv_cu_funcsel    = 2'b10;
+            o_riscv_cu_amo        = 1'b0;
+            o_riscv_cu_amo_op     = 5'b0;
+            o_riscv_cu_lr         = 1'b0;
+            o_riscv_cu_sc         = 1'b0;
             o_riscv_cu_illgalinst = 1'b1;
             o_riscv_cu_instret    = 1'b0;
           end
@@ -1543,6 +1812,10 @@ module riscv_cu (
         o_riscv_cu_mulctrl   = 4'b0000;
         o_riscv_cu_divctrl   = 4'b0000;
         o_riscv_cu_funcsel   = 2'b10;
+        o_riscv_cu_amo       = 1'b0;
+        o_riscv_cu_amo_op     = 5'b0;
+        o_riscv_cu_lr        = 1'b0;
+        o_riscv_cu_sc        = 1'b0;
       end
 
       OPCODE_AUIPC :
@@ -1562,6 +1835,10 @@ module riscv_cu (
         o_riscv_cu_mulctrl   = 4'b0000;
         o_riscv_cu_divctrl   = 4'b0000;
         o_riscv_cu_funcsel   = 2'b10;
+        o_riscv_cu_amo       = 1'b0;
+        o_riscv_cu_amo_op     = 5'b0;
+        o_riscv_cu_lr        = 1'b0;
+        o_riscv_cu_sc        = 1'b0;
       end
 
       OPCODE_JAL :
@@ -1581,6 +1858,10 @@ module riscv_cu (
         o_riscv_cu_mulctrl   = 4'b0000;
         o_riscv_cu_divctrl   = 4'b0000;
         o_riscv_cu_funcsel   = 2'b10;
+        o_riscv_cu_amo       = 1'b0;
+        o_riscv_cu_amo_op     = 5'b0;
+        o_riscv_cu_lr        = 1'b0;
+        o_riscv_cu_sc        = 1'b0;
       end
 
       OPCODE_STORE :
@@ -1603,11 +1884,15 @@ module riscv_cu (
             o_riscv_cu_mulctrl   = 4'b0000;
             o_riscv_cu_divctrl   = 4'b0000;
             o_riscv_cu_funcsel   = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
           end
           default :
           begin
             o_riscv_cu_jump       = 1'b0;
-            o_riscv_cu_regw       = 1'b1;
+            o_riscv_cu_regw       = 1'b0;
             o_riscv_cu_asel       = 1'b1;
             o_riscv_cu_bsel       = 1'b0;
             o_riscv_cu_memw       = 1'b0;
@@ -1621,6 +1906,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl    = 4'b0000;
             o_riscv_cu_divctrl    = 4'b0000;
             o_riscv_cu_funcsel    = 2'b10;
+            o_riscv_cu_amo        = 1'b0;
+            o_riscv_cu_amo_op     = 5'b0;
+            o_riscv_cu_lr         = 1'b0;
+            o_riscv_cu_sc         = 1'b0;
             o_riscv_cu_illgalinst = 1'b1;
             o_riscv_cu_instret    = 1'b0;
           end
@@ -1648,12 +1937,16 @@ module riscv_cu (
             o_riscv_cu_mulctrl    = 4'b0000;
             o_riscv_cu_divctrl    = 4'b0000;
             o_riscv_cu_funcsel    = 2'b10;
+            o_riscv_cu_amo       = 1'b0;
+            o_riscv_cu_amo_op    = 5'b0;
+            o_riscv_cu_lr        = 1'b0;
+            o_riscv_cu_sc        = 1'b0;
             o_riscv_cu_illgalinst = 1'b0 ;
           end
           default :
           begin
             o_riscv_cu_jump       = 1'b0;
-            o_riscv_cu_regw       = 1'b1;
+            o_riscv_cu_regw       = 1'b0;
             o_riscv_cu_asel       = 1'b1;
             o_riscv_cu_bsel       = 1'b0;
             o_riscv_cu_memw       = 1'b0;
@@ -1667,6 +1960,10 @@ module riscv_cu (
             o_riscv_cu_mulctrl    = 4'b0000;
             o_riscv_cu_divctrl    = 4'b0000;
             o_riscv_cu_funcsel    = 2'b10;
+            o_riscv_cu_amo        = 1'b0;
+            o_riscv_cu_amo_op     = 5'b0;
+            o_riscv_cu_lr         = 1'b0;
+            o_riscv_cu_sc         = 1'b0;
             o_riscv_cu_illgalinst = 1'b1;
             o_riscv_cu_instret    = 1'b0;
           end
@@ -1690,41 +1987,234 @@ module riscv_cu (
         o_riscv_cu_mulctrl    = 4'b0000;
         o_riscv_cu_divctrl    = 4'b0000;
         o_riscv_cu_funcsel    = 2'b10;
+        o_riscv_cu_amo       = 1'b0;
+        o_riscv_cu_amo_op    = 5'b0;
+        o_riscv_cu_lr        = 1'b0;
+        o_riscv_cu_sc        = 1'b0;
         o_riscv_cu_illgalinst = 1'b0 ;
         o_riscv_cu_instret    = 1'b0;
       end
-      /*
-      OPCODE_ATOMIC: begin
+
+      OPCODE_ATOMIC:
+      begin
         case(i_riscv_cu_funct3)
-        ATOMIC_D: begin
-          case(i_riscv_cu_funct7[6:2])
-          LR: begin
+          ATOMIC_D:
+          begin
+            case(i_riscv_cu_funct7[6:2])
+              LR:
+              begin
+                o_riscv_cu_jump      = 1'b0;
+                o_riscv_cu_regw      = 1'b1;
+                o_riscv_cu_asel      = 1'b1;
+                o_riscv_cu_bsel      = 1'b0;
+                o_riscv_cu_memw      = 1'b0;
+                o_riscv_cu_memr      = 1'b1;
+                o_riscv_cu_storesrc  = 2'b00;
+                o_riscv_cu_resultsrc = 3'b010;
+                o_riscv_cu_bcond     = 4'b0000;
+                o_riscv_cu_memext    = 3'b011;
+                o_riscv_cu_immsrc    = 3'b000;
+                o_riscv_cu_aluctrl   = 6'b000000;
+                o_riscv_cu_mulctrl   = 4'b000;
+                o_riscv_cu_divctrl   = 4'b0000;
+                o_riscv_cu_funcsel   = 2'b00;
+                o_riscv_cu_amo       = 1'b0;
+                o_riscv_cu_lr        = 2'b10;
+                o_riscv_cu_sc        = 2'b00;
+                o_riscv_cu_amo_op    = 5'b0;
+              end
+              SC:
+              begin
+                o_riscv_cu_jump      = 1'b0;
+                o_riscv_cu_regw      = 1'b1;
+                o_riscv_cu_asel      = 1'b1;
+                o_riscv_cu_bsel      = 1'b0;
+                o_riscv_cu_memw      = 1'b0;
+                o_riscv_cu_memr      = 1'b0;
+                o_riscv_cu_storesrc  = 2'b11;
+                o_riscv_cu_resultsrc = 3'b100;
+                o_riscv_cu_bcond     = 4'b0000;
+                o_riscv_cu_memext    = 3'b011;
+                o_riscv_cu_immsrc    = 3'b000;
+                o_riscv_cu_aluctrl   = 6'b000000;
+                o_riscv_cu_mulctrl   = 4'b000;
+                o_riscv_cu_divctrl   = 4'b0000;
+                o_riscv_cu_funcsel   = 2'b00;
+                o_riscv_cu_amo       = 1'b0;
+                o_riscv_cu_lr        = 2'b00;
+                o_riscv_cu_sc        = 2'b10;
+                o_riscv_cu_amo_op    = 5'b0;
+              end
+              AMOSWAP, AMOADD, AMOXOR, AMOAND, AMOOR, AMOMIN, AMOMAX, AMOMINU, AMOMAXU:
+              begin
+                o_riscv_cu_jump      = 1'b0;
+                o_riscv_cu_regw      = 1'b1;
+                o_riscv_cu_asel      = 1'b1;
+                o_riscv_cu_bsel      = 1'b0;
+                o_riscv_cu_memw      = 1'b0;
+                o_riscv_cu_memr      = 1'b1;
+                o_riscv_cu_storesrc  = 2'b11;
+                o_riscv_cu_resultsrc = 3'b010;
+                o_riscv_cu_bcond     = 4'b0000;
+                o_riscv_cu_memext    = 3'b011;
+                o_riscv_cu_immsrc    = 3'b000;
+                o_riscv_cu_aluctrl   = 6'b000000;
+                o_riscv_cu_mulctrl   = 4'b000;
+                o_riscv_cu_divctrl   = 4'b0000;
+                o_riscv_cu_funcsel   = 2'b00;
+                o_riscv_cu_amo       = 1'b1;
+                o_riscv_cu_lr        = 2'b00;
+                o_riscv_cu_sc        = 2'b00;
+                o_riscv_cu_amo_op    = i_riscv_cu_funct7[6:2];
+              end
+              default:
+              begin
+                o_riscv_cu_jump       = 1'b0;
+                o_riscv_cu_regw       = 1'b0;
+                o_riscv_cu_asel       = 1'b1;
+                o_riscv_cu_bsel       = 1'b0;
+                o_riscv_cu_memw       = 1'b0;
+                o_riscv_cu_memr       = 1'b0;
+                o_riscv_cu_storesrc   = 2'b00;
+                o_riscv_cu_resultsrc  = 2'b01;
+                o_riscv_cu_bcond      = 4'b0000;
+                o_riscv_cu_memext     = 3'b000;
+                o_riscv_cu_immsrc     = 3'b000;
+                o_riscv_cu_aluctrl    = 6'b100000;
+                o_riscv_cu_mulctrl    = 4'b0000;
+                o_riscv_cu_divctrl    = 4'b0000;
+                o_riscv_cu_funcsel    = 2'b10;
+                o_riscv_cu_amo        = 1'b0;
+                o_riscv_cu_amo_op     = 5'b0;
+                o_riscv_cu_lr         = 1'b0;
+                o_riscv_cu_sc         = 1'b0;
+                o_riscv_cu_illgalinst = 1'b1;
+                o_riscv_cu_instret    = 1'b0;
+              end
+            endcase
           end
-          SC: begin
+          ATOMIC_W:
+          begin
+            case(i_riscv_cu_funct7[6:2])
+              LR:
+              begin
+                o_riscv_cu_jump      = 1'b0;
+                o_riscv_cu_regw      = 1'b1;
+                o_riscv_cu_asel      = 1'b1;
+                o_riscv_cu_bsel      = 1'b0;
+                o_riscv_cu_memw      = 1'b0;
+                o_riscv_cu_memr      = 1'b1;
+                o_riscv_cu_storesrc  = 2'b00;
+                o_riscv_cu_resultsrc = 3'b010;
+                o_riscv_cu_bcond     = 4'b0000;
+                o_riscv_cu_memext    = 3'b010;
+                o_riscv_cu_immsrc    = 3'b000;
+                o_riscv_cu_aluctrl   = 6'b000000;
+                o_riscv_cu_mulctrl   = 4'b000;
+                o_riscv_cu_divctrl   = 4'b0000;
+                o_riscv_cu_funcsel   = 2'b00;
+                o_riscv_cu_amo       = 1'b0;
+                o_riscv_cu_amo_op     = 5'b0;
+                o_riscv_cu_lr        = 2'b11;
+                o_riscv_cu_sc        = 2'b00;
+              end
+              SC:
+              begin
+                o_riscv_cu_jump      = 1'b0;
+                o_riscv_cu_regw      = 1'b1;
+                o_riscv_cu_asel      = 1'b1;
+                o_riscv_cu_bsel      = 1'b0;
+                o_riscv_cu_memw      = 1'b0;
+                o_riscv_cu_memr      = 1'b0;
+                o_riscv_cu_storesrc  = 2'b10;
+                o_riscv_cu_resultsrc = 3'b100;
+                o_riscv_cu_bcond     = 4'b0000;
+                o_riscv_cu_memext    = 3'b011;
+                o_riscv_cu_immsrc    = 3'b000;
+                o_riscv_cu_aluctrl   = 6'b000000;
+                o_riscv_cu_mulctrl   = 4'b000;
+                o_riscv_cu_divctrl   = 4'b0000;
+                o_riscv_cu_funcsel   = 2'b00;
+                o_riscv_cu_amo       = 1'b0;
+                o_riscv_cu_amo_op     = 5'b0;
+                o_riscv_cu_lr        = 2'b00;
+                o_riscv_cu_sc        = 2'b11;
+              end
+              AMOSWAP, AMOADD, AMOXOR, AMOAND, AMOOR, AMOMIN, AMOMAX, AMOMINU, AMOMAXU:
+              begin
+                o_riscv_cu_jump      = 1'b0;
+                o_riscv_cu_regw      = 1'b1;
+                o_riscv_cu_asel      = 1'b1;
+                o_riscv_cu_bsel      = 1'b0;
+                o_riscv_cu_memw      = 1'b0;
+                o_riscv_cu_memr      = 1'b1;
+                o_riscv_cu_storesrc  = 2'b11;
+                o_riscv_cu_resultsrc = 3'b010;
+                o_riscv_cu_bcond     = 4'b0000;
+                o_riscv_cu_memext    = 3'b010;
+                o_riscv_cu_immsrc    = 3'b000;
+                o_riscv_cu_aluctrl   = 6'b000000;
+                o_riscv_cu_mulctrl   = 4'b000;
+                o_riscv_cu_divctrl   = 4'b0000;
+                o_riscv_cu_funcsel   = 2'b00;
+                o_riscv_cu_amo       = 1'b1;
+                o_riscv_cu_lr        = 2'b00;
+                o_riscv_cu_sc        = 2'b00;
+                o_riscv_cu_amo_op    = i_riscv_cu_funct7[6:2];
+              end
+              default:
+              begin
+                o_riscv_cu_jump       = 1'b0;
+                o_riscv_cu_regw       = 1'b0;
+                o_riscv_cu_asel       = 1'b1;
+                o_riscv_cu_bsel       = 1'b0;
+                o_riscv_cu_memw       = 1'b0;
+                o_riscv_cu_memr       = 1'b0;
+                o_riscv_cu_storesrc   = 2'b00;
+                o_riscv_cu_resultsrc  = 2'b01;
+                o_riscv_cu_bcond      = 4'b0000;
+                o_riscv_cu_memext     = 3'b000;
+                o_riscv_cu_immsrc     = 3'b000;
+                o_riscv_cu_aluctrl    = 6'b100000;
+                o_riscv_cu_mulctrl    = 4'b0000;
+                o_riscv_cu_divctrl    = 4'b0000;
+                o_riscv_cu_funcsel    = 2'b10;
+                o_riscv_cu_amo        = 1'b0;
+                o_riscv_cu_amo_op     = 5'b0;
+                o_riscv_cu_lr         = 1'b0;
+                o_riscv_cu_sc         = 1'b0;
+                o_riscv_cu_illgalinst = 1'b1;
+                o_riscv_cu_instret    = 1'b0;
+              end
+            endcase
           end
-          AMOSWAP, AMOADD, AMOXOR, AMOAND, AMOOR, AMOMIN, AMOMAX, AMOMINU, AMOMAXU: begin
+          default:
+          begin
+            o_riscv_cu_jump       = 1'b0;
+            o_riscv_cu_regw       = 1'b0;
+            o_riscv_cu_asel       = 1'b1;
+            o_riscv_cu_bsel       = 1'b0;
+            o_riscv_cu_memw       = 1'b0;
+            o_riscv_cu_memr       = 1'b0;
+            o_riscv_cu_storesrc   = 2'b00;
+            o_riscv_cu_resultsrc  = 2'b01;
+            o_riscv_cu_bcond      = 4'b0000;
+            o_riscv_cu_memext     = 3'b000;
+            o_riscv_cu_immsrc     = 3'b000;
+            o_riscv_cu_aluctrl    = 6'b100000;
+            o_riscv_cu_mulctrl    = 4'b0000;
+            o_riscv_cu_divctrl    = 4'b0000;
+            o_riscv_cu_funcsel    = 2'b10;
+            o_riscv_cu_amo        = 1'b0;
+            o_riscv_cu_amo_op     = 5'b0;
+            o_riscv_cu_lr         = 1'b0;
+            o_riscv_cu_sc         = 1'b0;
+            o_riscv_cu_illgalinst = 1'b1;
+            o_riscv_cu_instret    = 1'b0;
           end
-          default: begin
-          end
-          endcase
-        end
-        ATOMIC_W: begin
-          case(i_riscv_cu_funct7[6:2])
-          LR: begin
-          end
-          SC: begin
-          end
-          AMOSWAP, AMOADD, AMOXOR, AMOAND, AMOOR, AMOMIN, AMOMAX, AMOMINU, AMOMAXU: begin
-          end
-          default: begin
-          end
-          endcase
-        end
-        default: begin
-        end
         endcase
       end
-      */
+
       OPCODE_CSR:
       begin
         o_riscv_cu_jump       = 1'b0;
@@ -1742,6 +2232,10 @@ module riscv_cu (
         o_riscv_cu_mulctrl    = 4'b0000;  //0xxxx
         o_riscv_cu_divctrl    = 4'b0000;  //0xxxx
         o_riscv_cu_funcsel    = 2'b00;    //xx
+        o_riscv_cu_amo        = 1'b0;
+        o_riscv_cu_amo_op     = 5'b0;
+        o_riscv_cu_lr         = 1'b0;
+        o_riscv_cu_sc         = 1'b0;
 
         case(i_riscv_cu_funct3) // differentiate between ecall,mret,sret(000) and CSR instructions otherthan 000
           3'b000:
@@ -1884,6 +2378,9 @@ module riscv_cu (
         o_riscv_cu_mulctrl    = 4'b0000;
         o_riscv_cu_divctrl    = 4'b0000;
         o_riscv_cu_funcsel    = 2'b10;
+        o_riscv_cu_amo       = 1'b0;
+        o_riscv_cu_lr        = 1'b0;
+        o_riscv_cu_sc        = 1'b0;
         o_riscv_cu_illgalinst = 1'b1 ;
         o_riscv_cu_instret    = 1'b0;
       end
