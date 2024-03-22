@@ -1,0 +1,267 @@
+{D:/RISC-V/RTL Design/Core Verification/riscv_fetch_stage.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_fetch_stage.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_fstage
+
+Top level modules:
+	riscv_fstage
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_mux4.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_mux4.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_mux4
+
+Top level modules:
+	riscv_mux4
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_exception_unit.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_exception_unit.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module exception_unit
+
+Top level modules:
+	exception_unit
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_ppreg_fd.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_ppreg_fd.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_fd_ppreg
+
+Top level modules:
+	riscv_fd_ppreg
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_ppreg_em.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_ppreg_em.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_em_ppreg
+
+Top level modules:
+	riscv_em_ppreg
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_multiplier.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_multiplier.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_multiplier
+
+Top level modules:
+	riscv_multiplier
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_icache_top.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_icache_top.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_instructions_cache
+
+Top level modules:
+	riscv_instructions_cache
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_divider.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_divider.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_divider
+
+Top level modules:
+	riscv_divider
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_decode_stage.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_decode_stage.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_dstage
+
+Top level modules:
+	riscv_dstage
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_control_unit.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_control_unit.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_cu
+
+Top level modules:
+	riscv_cu
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_top_tb.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_top_tb.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_top_tb
+
+Top level modules:
+	riscv_top_tb
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_rf.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_rf.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_rf
+
+Top level modules:
+	riscv_rf
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_icache_tag.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_icache_tag.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module tag_array_i
+
+Top level modules:
+	tag_array_i
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_dm.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_dm.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_dm
+
+Top level modules:
+	riscv_dm
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_ppreg_mw.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_ppreg_mw.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_mw_ppreg
+
+Top level modules:
+	riscv_mw_ppreg
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_tracer.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_tracer.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_tracer
+
+Top level modules:
+	riscv_tracer
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_compressed_decoder.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_compressed_decoder.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_compressed_decoder
+
+Top level modules:
+	riscv_compressed_decoder
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_mem_stage.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_mem_stage.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_mstage
+
+Top level modules:
+	riscv_mstage
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_pcadder.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_pcadder.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_pcadder
+
+Top level modules:
+	riscv_pcadder
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_dcache_fsm.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_dcache_fsm.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_dcache_fsm
+
+Top level modules:
+	riscv_dcache_fsm
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_mux3.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_mux3.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_mux3
+
+Top level modules:
+	riscv_mux3
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_branch.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_branch.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_branch
+
+Top level modules:
+	riscv_branch
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_ppreg_de.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_ppreg_de.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_de_ppreg
+
+Top level modules:
+	riscv_de_ppreg
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_trap_wb.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_trap_wb.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_trap_wb
+
+Top level modules:
+	riscv_trap_wb
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_csrfile.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_csrfile.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_csrfile
+
+Top level modules:
+	riscv_csrfile
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_extend.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_extend.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_extend
+
+Top level modules:
+	riscv_extend
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_memext.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_memext.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_memext
+
+Top level modules:
+	riscv_memext
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_ram_model.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_ram_model.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module dram
+
+Top level modules:
+	dram
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_zeroextend.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_zeroextend.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_zeroextend
+
+Top level modules:
+	riscv_zeroextend
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_dcache_data.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_dcache_data.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_dcache_data
+
+Top level modules:
+	riscv_dcache_data
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_icu.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_icu.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_icu
+
+Top level modules:
+	riscv_icu
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_alu.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_alu.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_alu
+
+Top level modules:
+	riscv_alu
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_icache_fsm.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_icache_fsm.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module icache_fsm
+
+Top level modules:
+	icache_fsm
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_icache_inst.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_icache_inst.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_icache_inst
+
+Top level modules:
+	riscv_icache_inst
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_dcache_tag.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_dcache_tag.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_dcache_tag
+
+Top level modules:
+	riscv_dcache_tag
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_top.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_top.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_top
+
+Top level modules:
+	riscv_top
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_mux2.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_mux2.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_mux2
+
+Top level modules:
+	riscv_mux2
+
+} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_wb_stage.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_wb_stage.sv}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module riscv_wbstage
+
+Top level modules:
+	riscv_wbstage
+
+} {} {}}
