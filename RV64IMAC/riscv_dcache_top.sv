@@ -16,7 +16,7 @@ module riscv_data_cache #(
     input   logic         i_riscv_dcache_cpu_wren      ,
     input   logic         i_riscv_dcache_cpu_rden      ,
     input   logic [1:0]   i_riscv_dcache_store_src     ,
-    input   logic [5:0]   i_riscv_dcache_amo_op         ,  //new //amo
+    input   logic [4:0]   i_riscv_dcache_amo_op        ,  //new //amo
     input   logic [63:0]  i_riscv_dcache_phys_addr     ,
     input   logic [63:0]  i_riscv_dcache_cpu_data_in   ,
     output  logic [63:0]  o_riscv_dcache_cpu_data_out  ,
