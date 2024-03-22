@@ -102,24 +102,44 @@ riscv_icu u_icu (
   .o_riscv_icu_result       (o_riscv_estage_result)
 );
 
+/************************ Load Store Unit ************************/
+riscv_lsu u_riscv_lsu (
+  .i_riscv_lsu_clk          (),         
+  .i_riscv_lsu_rst          (),         
+  .i_riscv_lsu_address      (),     
+  .i_riscv_lsu_alu_result   (),
+  .i_riscv_lsu_LR           (),          
+  .i_riscv_lsu_SC           (),          
+  .i_riscv_lsu_AMO          (),         
+  .i_riscv_lsu_memwrite     (),
+  .i_riscv_lsu_memread      (),
+  .i_riscv_lsu_goto_trap    (),   
+  .i_riscv_lsu_return_trap  (), 
+  .i_riscv_lsu_misalignment (),
+  .o_riscv_lsu_memwrite_en  (), 
+  .o_riscv_lsu_memread_en   (),  
+  .o_riscv_lsu_mem_address  (), 
+  .o_riscv_lsu_sc_rdvalue   ()   
+);
+
 /************************ Exception Unit ************************/
-exception_unit u_exception(
-  .i_riscv_exception_opcode                 (i_riscv_stage_opcode)                  ,
-  .i_riscv_exception_icu_result             (o_riscv_estage_result)                 ,
-  .i_riscv_exception_branch_taken           (o_riscv_estage_branchtaken)            ,
-  .i_riscv_exception_load_sel               (i_riscv_estage_memext )                ,
-  .i_riscv_exception_store_sel              (i_riscv_estage_storesrc)               ,
-  .o_riscv_exception_store_addr_misaligned  (o_riscv_estage_store_addr_misaligned)  ,
-  .o_riscv_exception_load_addr_misaligned   (o_riscv_estage_load_addr_misaligned)   ,
-  .o_riscv_exception_inst_addr_misaligned   (o_riscv_estage_inst_addr_misaligned)
+riscv_misalignment_unit u_riscv_misalignment_unit(
+  .i_riscv_misalignment_opcode                 (i_riscv_stage_opcode)                  ,
+  .i_riscv_misalignment_icu_result             (o_riscv_estage_result)                 ,
+  .i_riscv_misalignment_branch_taken           (o_riscv_estage_branchtaken)            ,
+  .i_riscv_misalignment_load_sel               (i_riscv_estage_memext )                ,
+  .i_riscv_misalignment_store_sel              (i_riscv_estage_storesrc)               ,
+  .o_riscv_misalignment_store_addr_misaligned  (o_riscv_estage_store_addr_misaligned)  ,
+  .o_riscv_misalignment_load_addr_misaligned   (o_riscv_estage_load_addr_misaligned)   ,
+  .o_riscv_misalignment_inst_addr_misaligned   (o_riscv_estage_inst_addr_misaligned)
 );
 
 /************************ Zero Extend Imm ************************/
 riscv_mux2 u_imm_reg_mux(
-.i_riscv_mux2_sel (i_riscv_estage_imm_reg)      ,  
-.i_riscv_mux2_in0 (o_riscv_FWmuxA_OperandmuxA)  ,  
-.i_riscv_mux2_in1 (i_riscv_estage_immextended)  ,
-.o_riscv_mux2_out (o_riscv_estage_csrwritedata)
+  .i_riscv_mux2_sel (i_riscv_estage_imm_reg)      ,  
+  .i_riscv_mux2_in0 (o_riscv_FWmuxA_OperandmuxA)  ,  
+  .i_riscv_mux2_in1 (i_riscv_estage_immextended)  ,
+  .o_riscv_mux2_out (o_riscv_estage_csrwritedata)
 );
 
 endmodule
