@@ -16,7 +16,7 @@ module riscv_data_cache #(
     input   logic         i_riscv_dcache_cpu_wren      ,
     input   logic         i_riscv_dcache_cpu_rden      ,
     input   logic [1:0]   i_riscv_dcache_store_src     ,
-    input   logic [5:0]   i_riscv_dcache_amo_unit_en   ,  //new //amo
+    input   logic [5:0]   i_riscv_dcache_amo_op         ,  //new //amo
     input   logic [63:0]  i_riscv_dcache_phys_addr     ,
     input   logic [63:0]  i_riscv_dcache_cpu_data_in   ,
     output  logic [63:0]  o_riscv_dcache_cpu_data_out  ,
@@ -147,9 +147,11 @@ module riscv_data_cache #(
   .rst            (i_riscv_dcache_rst)       ,
   .cpu_wren       (i_riscv_dcache_cpu_wren)  ,
   .cpu_rden       (i_riscv_dcache_cpu_rden)  ,
+  .cpu_amoen      (i_riscv_dcache_amo)       ,
   .hit            (tag_hit_out)              ,
   .dirty          (tag_dirty_out)            ,
   .mem_ready      (mem_ready)                ,
+  .glob_stall     (i_riscv_dcache_globstall) ,
   .cache_rden     (fsm_cache_rden)           ,
   .cache_wren     (fsm_cache_wren)           ,
   .cache_insel    (fsm_cache_insel)          ,
@@ -159,14 +161,15 @@ module riscv_data_cache #(
   .set_valid      (fsm_set_valid)            ,
   .replace_tag    (fsm_replace_tag)          ,
   .dcache_stall   (o_riscv_dcache_cpu_stall) ,
-  .glob_stall     (i_riscv_dcache_globstall) ,
   .tag_sel        (fsm_tag_sel)
+  .amo_unit_en    ()
+  .amo_buffer_en  ()
 );
 
 
 ////////////////////////
 riscv_amo_unit u_riscv_amo_unit  (
-  .i_riscv_amo_ctrl     (i_riscv_dcache_amo_unit_en),  
+  .i_riscv_amo_ctrl     (i_riscv_dcache_amo_op),  
   .i_riscv_amo_rs1data  (cache_data_out_buffer),
   .i_riscv_amo_rs2data  (i_riscv_dcache_cpu_data_in),
   .i_riscv_amo_enable   (fsm_amo_unit_en),

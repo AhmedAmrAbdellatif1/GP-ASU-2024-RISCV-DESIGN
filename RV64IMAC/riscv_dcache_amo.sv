@@ -1,5 +1,5 @@
 module riscv_amo_unit (
-   input  logic        [5:0]      i_riscv_amo_ctrl,        //amo_ctrl = {funt3[0],funct5} = {instr[12],instr[31:27]}
+   input  logic        [4:0]      i_riscv_amo_ctrl,        //amo_ctrl = {funt3[0],funct5} = {instr[12],instr[31:27]}
    input  logic signed [63:0]     i_riscv_amo_rs1data,     //loaded value from mem[rs1]
    input  logic signed [63:0]     i_riscv_amo_rs2data,
    input  logic                   i_riscv_amo_enable,
