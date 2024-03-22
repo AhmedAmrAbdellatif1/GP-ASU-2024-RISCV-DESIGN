@@ -29,6 +29,8 @@
     input   logic         i_riscv_mw_gototrap_m       , //<--- trap
     input   logic         i_riscv_mw_returnfromtrap_m , //<--- trap
     input   logic         i_riscv_mw_instret_m        , //<--- csr
+    input   logic [63:0]  i_riscv_mw_rddata_sc_m      ,
+    output  logic [63:0]  o_riscv_mw_rddata_sc_wb     ,
     output  logic         o_riscv_mw_instret_wb       , //<--- csr
     output  logic [63:0]  o_riscv_mw_pcplus4_wb       ,
     output  logic [63:0]  o_riscv_mw_result_wb        ,
@@ -59,6 +61,7 @@
           o_riscv_mw_gototrap_wb       <='b0;
           o_riscv_mw_returnfromtrap_wb <='b0;
           o_riscv_mw_instret_wb        <='b0;
+          o_riscv_mw_rddata_sc_wb      <='b0;
           //---------------------------->
           `ifdef TEST
           o_riscv_mw_inst              <='b0;  
@@ -82,6 +85,7 @@
           o_riscv_mw_gototrap_wb        <='b0;
           o_riscv_mw_returnfromtrap_wb  <='b0;
           o_riscv_mw_instret_wb         <='b0;
+          o_riscv_mw_rddata_sc_wb       <='b0;
           //---------------------------->
           `ifdef TEST
           o_riscv_mw_inst               <='b0;  
@@ -105,6 +109,8 @@
           o_riscv_mw_gototrap_wb        <=  i_riscv_mw_gototrap_m ;
           o_riscv_mw_returnfromtrap_wb  <=  i_riscv_mw_returnfromtrap_m;
           o_riscv_mw_instret_wb         <=  i_riscv_mw_instret_m;
+          o_riscv_mw_rddata_sc_wb       <=  i_riscv_mw_rddata_sc_m;
+
           //------------------------------------------->
           `ifdef TEST
           o_riscv_mw_inst               <=  i_riscv_mw_inst;

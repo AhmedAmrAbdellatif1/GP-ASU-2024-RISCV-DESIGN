@@ -42,6 +42,14 @@
     input   logic         i_riscv_de_immreg_d         , //<--- CSR
     input   logic [63:0]  i_riscv_de_immzeroextend_d  , //<--- CSR
     input   logic         i_riscv_de_instret_d        ,
+    input   logic [1:0]   i_riscv_de_lr_d             ,    
+    input   logic [1:0]   i_riscv_de_sc_d             ,
+    input   logic [4:0]   i_riscv_de_amo_op_d         ,
+    input   logic         i_riscv_de_amo_d            ,
+    output  logic [1:0]   o_riscv_de_lr_e             ,
+    output  logic [1:0]   o_riscv_de_sc_e             ,
+    output  logic [4:0]   o_riscv_de_amo_op_e         ,
+    output  logic         o_riscv_de_amo_e            ,
     output  logic         o_riscv_de_instret_e        ,
     output  logic [63:0]  o_riscv_de_pc_e             ,
     output  logic [63:0]  o_riscv_de_pcplus4_e        ,
@@ -110,6 +118,10 @@
           o_riscv_de_immreg_e        <=  'b0;
           o_riscv_de_immzeroextend_e <=  'b0;
           o_riscv_de_instret_e       <=  'b0;
+          o_riscv_de_lr_e            <=  'b0;  
+          o_riscv_de_sc_e            <=  'b0;
+          o_riscv_de_amo_op_e        <=  'b0;
+          o_riscv_de_amo_e           <=  'b0;
         //<------------------------------>
         `ifdef TEST
           o_riscv_de_inst          <=  'b0;
@@ -150,6 +162,10 @@
           o_riscv_de_immreg_e        <=  'b0;
           o_riscv_de_immzeroextend_e <=  'b0;
           o_riscv_de_instret_e       <=  'b0;
+          o_riscv_de_lr_e            <=  'b0;  
+          o_riscv_de_sc_e            <=  'b0;
+          o_riscv_de_amo_op_e        <=  'b0;
+          o_riscv_de_amo_e           <=  'b0;
         //<------------------------------>
         `ifdef TEST
           o_riscv_de_inst            <=  'b0;
@@ -188,8 +204,12 @@
           o_riscv_de_iscsr_e         <=  i_riscv_de_iscsr_d;
           o_riscv_de_csrop_e         <=  i_riscv_de_csrop_d;
           o_riscv_de_immreg_e        <=  i_riscv_de_immreg_d;
-          o_riscv_de_immzeroextend_e <=  i_riscv_de_immzeroextend_d ;
+          o_riscv_de_immzeroextend_e <=  i_riscv_de_immzeroextend_d;
           o_riscv_de_instret_e       <=  i_riscv_de_instret_d;
+          o_riscv_de_lr_e            <=  i_riscv_de_lr_d;  
+          o_riscv_de_sc_e            <=  i_riscv_de_sc_d;
+          o_riscv_de_amo_op_e        <=  i_riscv_de_amo_op_d;
+          o_riscv_de_amo_e           <=  i_riscv_de_amo_d;
           //<-------------------------------------------
           `ifdef TEST
             o_riscv_de_inst          <= i_riscv_de_inst;

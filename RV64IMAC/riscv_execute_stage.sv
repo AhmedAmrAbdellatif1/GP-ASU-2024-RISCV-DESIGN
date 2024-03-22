@@ -21,7 +21,14 @@ module riscv_estage(
   input   logic         [63:0]  i_riscv_estage_immextended            ,   //<--- TRAPS AND CSR
   input   logic         [2:0]   i_riscv_estage_memext                 ,   //<--- TRAPS AND CSR
   input   logic         [6:0]   i_riscv_stage_opcode                  ,   //<--- TRAPS AND CSR
-  input   logic         [1:0]   i_riscv_estage_storesrc               ,   //<--- TRAPS AND CSR   
+  input   logic         [1:0]   i_riscv_estage_storesrc               ,   //<--- TRAPS AND CSR 
+  input   logic         [1:0]   i_riscv_estage_lr                     ,
+  input   logic         [1:0]   i_riscv_estage_sc                     ,
+  input   logic                 i_riscv_estage_amo                    , 
+  input   logic                 i_riscv_estage_memw                   ,
+  input   logic                 i_riscv_estage_memr                   ,
+  input   logic                 i_riscv_estage_gtrap                  ,
+  input   logic                 i_riscv_estage_rtrap                  ,
   output  logic signed  [63:0]  o_riscv_estage_result                 ,   //  Signals to E/M FF
   output  logic signed  [63:0]  o_riscv_estage_store_data             ,   //  Signals to E/M FF
   output  logic                 o_riscv_estage_branchtaken            ,   //  Branch Comparator Signals to hazard_unit
@@ -31,7 +38,11 @@ module riscv_estage(
   output  logic         [63:0]  o_riscv_estage_csrwritedata           ,   //<--- TRAPS AND CSR 
   output  logic                 o_riscv_estage_inst_addr_misaligned   ,   //<--- TRAPS AND CSR
   output  logic                 o_riscv_estage_store_addr_misaligned  ,   //<--- TRAPS AND CSR
-  output  logic                 o_riscv_estage_load_addr_misaligned       //<--- TRAPS AND CSR         
+  output  logic                 o_riscv_estage_load_addr_misaligned   ,   //<--- TRAPS AND CSR 
+  output  logic                 o_riscv_estage_dcache_wren            ,
+  output  logic                 o_riscv_estage_dcache_rden            ,
+  output  logic         [63:0]  o_riscv_estage_dcache_addr            ,
+  output  logic         [63:0]  o_riscv_estage_rddata_sc
 
 ); 
 
@@ -104,22 +115,22 @@ riscv_icu u_icu (
 
 /************************ Load Store Unit ************************/
 riscv_lsu u_riscv_lsu (
-  .i_riscv_lsu_clk          (),         
-  .i_riscv_lsu_rst          (),         
-  .i_riscv_lsu_address      (),     
-  .i_riscv_lsu_alu_result   (),
-  .i_riscv_lsu_LR           (),          
-  .i_riscv_lsu_SC           (),          
-  .i_riscv_lsu_AMO          (),         
-  .i_riscv_lsu_memwrite     (),
-  .i_riscv_lsu_memread      (),
-  .i_riscv_lsu_goto_trap    (),   
-  .i_riscv_lsu_return_trap  (), 
-  .i_riscv_lsu_misalignment (),
-  .o_riscv_lsu_memwrite_en  (), 
-  .o_riscv_lsu_memread_en   (),  
-  .o_riscv_lsu_mem_address  (), 
-  .o_riscv_lsu_sc_rdvalue   ()   
+  .i_riscv_lsu_clk          (i_riscv_estage_clk),         
+  .i_riscv_lsu_rst          (i_riscv_estage_rst),         
+  .i_riscv_lsu_address      (o_riscv_FWmuxA_OperandmuxA),     
+  .i_riscv_lsu_alu_result   (o_riscv_estage_result),
+  .i_riscv_lsu_LR           (i_riscv_estage_lr),          
+  .i_riscv_lsu_SC           (i_riscv_estage_sc),          
+  .i_riscv_lsu_AMO          (i_riscv_estage_amo),         
+  .i_riscv_lsu_memwrite     (i_riscv_estage_memw),
+  .i_riscv_lsu_memread      (i_riscv_estage_memr),
+  .i_riscv_lsu_goto_trap    (i_riscv_estage_gtrap),   
+  .i_riscv_lsu_return_trap  (i_riscv_estage_rtrap), 
+  .i_riscv_lsu_misalignment ('b0),
+  .o_riscv_lsu_memwrite_en  (o_riscv_estage_dcache_wren), 
+  .o_riscv_lsu_memread_en   (o_riscv_estage_dcache_rden),  
+  .o_riscv_lsu_mem_address  (o_riscv_estage_dcache_addr), 
+  .o_riscv_lsu_sc_rdvalue   (o_riscv_estage_rddata_sc)   
 );
 
 /************************ Exception Unit ************************/
