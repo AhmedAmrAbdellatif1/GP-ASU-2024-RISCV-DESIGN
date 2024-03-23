@@ -28,7 +28,8 @@ module riscv_estage #(parameter width=64)(
   input  logic                      i_riscv_estage_imm_reg        ,
   input  logic  [width-1:0]         i_riscv_estage_immextended    ,
   output logic  [width-1:0]         o_riscv_estage_csrwritedata   ,
-  
+ // input             [width-1:0]        i_riscv_estage_csrwritedata,
+   
   input  logic  [6:0]               i_riscv_stage_opcode          ,
   input  logic  [2:0]               i_riscv_estage_memext         ,
   input  logic  [1:0]               i_riscv_estage_storesrc       ,   
@@ -140,6 +141,6 @@ riscv_mux2 u_imm_reg_mux(
 .i_riscv_mux2_sel(i_riscv_estage_imm_reg),  // >> need to be checked  ?? where come from
 .i_riscv_mux2_in0(i_riscv_estage_rs1data),    // >> is as it is signed will make problem
 .i_riscv_mux2_in1(i_riscv_estage_immextended),
-.o_riscv_mux2_out(i_riscv_estage_csrwritedata));
+.o_riscv_mux2_out(o_riscv_estage_csrwritedata));
 
 endmodule

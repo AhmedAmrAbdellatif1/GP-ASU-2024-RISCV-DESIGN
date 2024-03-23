@@ -104,7 +104,7 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
 
   output logic [4:0] o_riscv_datapath_rs1_fd_cu ,
   output logic [11:0] o_riscv_datapath_constimm12_fd_cu ,
-
+  output  logic [1:0] o_riscv_core_privlvl_csr_cu, // to cu
      //trap 
      //input from top system 
      input logic          i_riscv_core_timerinterupt  ,
@@ -212,7 +212,7 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
   //assign flsuh_de = i_riscv_datapath_flush_de | riscv_reg_flush  ;
   //from trap to pcmux (fetcch)
     logic [1:0]   pcsel_trap_fetchpc ;
-
+    
   //from CSR(MEM) to mw direct
 
   logic             gototrap_csr_mw         ;
@@ -239,7 +239,7 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
 
 
       //logic immreg_de_em  ; 
-    logic addressalu_de_em ;
+    logic [63:0] addressalu_de_em ;
 
     //From esatge to em
     logic inst_addr_misaligned_estage_em  ;
@@ -253,7 +253,7 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
 
   logic [11:0]      riscv_datapath_csraddress_em_csr  ;
   logic             riscv_datapath_illegal_inst_em_csr ;
- // logic             riscv_datapath_iscsr_em_csr   ;
+ logic             riscv_datapath_iscsr_em_csr   ;
   logic [2:0]       riscv_datapath_csrop_em_csr  ;
 
   logic [width-1:0] riscv_datapath_addressalu_em_csr  ;
@@ -263,15 +263,14 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
   logic [width-1:0] riscv_datapath_csrwdata_em_csr ;
 
 
-
-
+logic [2:0] i_riscv_cu_csrop_de;
   //From decode stage to de register
   logic [width-1:0]  immzeroextend_dstage_de ; 
 
 //From decode stage to estage 
   logic [width-1:0] immzeroextend_de_estage ;
   logic             immreg_de_estage   ;
-
+  
 
   //From em to csr
       
@@ -322,14 +321,14 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
     .i_riscv_fstage_aluexe    (riscv_aluexe_fe)                   ,
     .i_riscv_fstage_inst      (i_riscv_datapath_inst)             ,
     .i_riscv_fstage_pcsrc     (o_riscv_datapath_pcsrc_e)          ,
-    //.o_riscv_fstage_pc        (o_riscv_datapath_pc)               ,
+    .o_riscv_fstage_pc        (o_riscv_datapath_pc)               ,
     .o_riscv_fstage_pcplus4   (riscv_pcplus4_f)                   ,
     .o_riscv_fstage_inst      (riscv_inst_f)    ,
 
     .i_riscv_fstage_pcsel(pcsel_trap_fetchpc),   //[1:0]
     .i_riscv_fstage_mtval(mtvec_csr_pctrap),      //[width-1:0]    //2'b01
-    .i_riscv_fstage_mepc(mepc_csr_pctrap) ,      //[width-1:0]   //2'b10
-    .o_riscv_fstage_pcmux_trap(o_riscv_datapath_pc)  //[width-1:0]
+    .i_riscv_fstage_mepc(mepc_csr_pctrap)    //[width-1:0]   //2'b10
+ //   o_riscv_fstage_pc(o_riscv_datapath_pc)  //[width-1:0]
 
   );
 
@@ -449,13 +448,13 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
       //trap
     //                 i_riscv_de_ecall_u_d(i_riscv_cu_ecallu_de)        ,
     //                 i_riscv_de_ecall_s_d(i_riscv_cu_ecalls_de)  , 
-    .i_riscv_de_ecall_m_d      (i_riscv_cu_ecallm_de)    , 
-    .i_riscv_de_csraddress_d   (i_riscv_datapath_inst[31:20])  ,   // [11:0]
-    .i_riscv_de_illegal_inst_d (i_riscv_cu_illgalinst_de)  ,
+    .i_riscv_de_ecall_m_d      (i_riscv_datapath_ecallm_cu_de)    , 
+    .i_riscv_de_csraddress_d   (riscv_inst_d[31:20])  ,   // [11:0]
+    .i_riscv_de_illegal_inst_d (i_riscv_datapath_illgalinst_cu_de)  ,
     //Control Signals 
-    .i_riscv_de_iscsr_d        (i_riscv_cu_iscsr_de)  , 
-   .i_riscv_de_csrop_d         (i_riscv_cu_csrop_de)  ,     // [2:0]
-    .i_riscv_de_immreg_d       (i_riscv_cu_immreg_de)  ,
+    .i_riscv_de_iscsr_d        (i_riscv_datapath_iscsr_cu_de)  , 
+   .i_riscv_de_csrop_d         (i_riscv_datapath_csrop_cu_de)  ,     // [2:0]
+    .i_riscv_de_immreg_d       (i_riscv_datapath_immreg_cu_de)  ,
     .i_riscv_de_immzeroextend_d(immzeroextend_dstage_de) ,  //[width-1:0] 
 
      
@@ -577,22 +576,23 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
 
 
      
-    //             o_riscv_em_ecall_u_m(o_riscv_datapath_ecall_u_em_csr)  ,
-    //             o_riscv_em_ecall_s_m(o_riscv_datapath_ecall_s_em_csr)  , 
-    .o_riscv_em_ecall_m_m      (o_riscv_datapath_ecall_m_em_csr)     , 
-    .o_riscv_em_csraddress_m   (o_riscv_datapath_csraddress_em_csr)  ,    //[11:0] 
-    .o_riscv_em_illegal_inst_m (o_riscv_datapath_illegal_inst_em_csr)  ,
+    //             o_riscv_em_ecall_u_m(riscv_datapath_ecall_u_em_csr)  ,
+    //             o_riscv_em_ecall_s_m(riscv_datapath_ecall_s_em_csr)  , 
+    .o_riscv_em_ecall_m_m      (riscv_datapath_ecall_m_em_csr)     , 
+    .o_riscv_em_csraddress_m   (riscv_datapath_csraddress_em_csr)  ,    //[11:0] 
+    .o_riscv_em_illegal_inst_m (riscv_datapath_illegal_inst_em_csr)  ,
     //Control Signals 
-    //.o_riscv_em_iscsr_m      (o_riscv_datapath_iscsr_em_csr)  ,
-    .o_riscv_em_csrop_m        (o_riscv_datapath_csrop_em_csr)  ,    //[2:0]
+    .o_riscv_em_iscsr_m      (iscsr_csr_mw)  ,
+    .o_riscv_em_csrop_m        (riscv_datapath_csrop_em_csr)  ,    //[2:0]
     //.o_riscv_em_immreg_m()  ,
-    .o_riscv_em_addressalu_m   (o_riscv_datapath_addressalu_em_csr)  ,  //[63:0]
-    .o_riscv_em_inst_addr_misaligned_m(o_riscv_datapath_inst_addr_misaligned_em_csr)    ,
-    .o_riscv_em_load_addr_misaligned_m(o_riscv_datapath_load_addr_misaligned_em_csr)     ,
-    .o_riscv_em_store_addr_misaligned_m(o_riscv_datapath_store_addr_misaligned_em_csr)   ,
+    .o_riscv_em_addressalu_m   (riscv_datapath_addressalu_em_csr)  ,  //[63:0]
+    .o_riscv_em_inst_addr_misaligned_m(riscv_datapath_inst_addr_misaligned_em_csr)    ,
+    .o_riscv_em_load_addr_misaligned_m(riscv_datapath_load_addr_misaligned_em_csr)     ,
+    .o_riscv_em_store_addr_misaligned_m(riscv_datapath_store_addr_misaligned_em_csr)   ,
 
-    .o_riscv_em_csrwritedata_m (o_riscv_datapath_csrwdata_em_csr)     //[width-1:0] 
+    .o_riscv_em_csrwritedata_m (riscv_datapath_csrwdata_em_csr)     //[width-1:0] 
 
+     
 
   );
 
@@ -640,13 +640,13 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
     .o_riscv_mw_regw_wb         (riscv_regw_wb)                   ,
        //Trap 
     .i_riscv_mw_flush           (riscv_reg_flush)           ,
-    .i_riscv_mw_csrout_m        (csrout_csr_mw)          ,
+    .i_riscv_mw_csrout_m        (csrout_mw_trap)          ,
     .i_riscv_mw_iscsr_m         (iscsr_csr_mw)           ,
    .i_riscv_mw_gototrap_m       (gototrap_csr_mw)        ,
     .i_riscv_mw_returnfromtrap_m(returnfromtrap_csr_mw)  ,
 
 
-    .o_riscv_mw_csrout_wb        (csrout_mw_trap)          ,   //[63:0]
+    .o_riscv_mw_csrout_wb        (csrout_csr_mw)          ,   //[63:0]
     .o_riscv_mw_iscsr_wb         (iscsr_mw_trap)           ,
     .o_riscv_mw_gototrap_wb      (gototrap_mw_trap)        ,
     .o_riscv_mw_returnfromtrap_wb(returnfromtrap_mw_trap)  
@@ -662,7 +662,7 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
     .o_riscv_wb_rddata          (riscv_rddata_wb)                ,
 
     //trap (//From mw Register input signals )
-    .i_riscv_wb_csrout          (csrout_mw_trap) ,    //[width-1:0]
+   .i_riscv_wb_csrout          (csrout_csr_mw) ,    //[width-1:0]
     //Comes from m/wb regsiter 
     .i_riscv_wb_iscsr           (iscsr_mw_trap)   ,
     .i_riscv_wb_gototrap        (gototrap_mw_trap)   ,
@@ -712,15 +712,15 @@ module riscv_datapath #(parameter width=64,parameter MXLEN = 64) (
  
         // Trap-Handler  // Interrupts/Exceptions
 
-        .o_riscv_csr_gotoTrap_cs(gototrap_mw_trap), //high before going to trap (if exception/interrupt detected)  // Output the exception PC to PC Gen, the correct CSR (mepc, sepc) is set accordingly
-        .o_riscv_csr_returnfromTrap_cs(returnfromtrap_mw_trap) , //high before returning from trap (via mret)
+        .o_riscv_csr_gotoTrap_cs(gototrap_csr_mw), //high before going to trap (if exception/interrupt detected)  // Output the exception PC to PC Gen, the correct CSR (mepc, sepc) is set accordingly
+        .o_riscv_csr_returnfromTrap_cs(returnfromtrap_csr_mw) , //high before returning from trap (via mret)
                    
         //output logic              eret_o,                     // Return from exception, set the PC of epc_o  //make mux input this signal to it asserted when mret instrution reaches csr
 
 
         .i_riscv_csr_pc(riscv_pcplus4_m) ,             //[63:0]
         .i_riscv_csr_addressALU(riscv_datapath_addressalu_em_csr),  //[63:0] //address  from ALU  used in load/store/jump/branch)
-        .o_riscv_csr_privlvl(riscv_core_privlvl_csr_cu)   //[1:0]
+        .o_riscv_csr_privlvl(o_riscv_core_privlvl_csr_cu)   //[1:0]
 
         //.o_riscv_csr_flush()   //it should be inout to trap module to flush all 
 

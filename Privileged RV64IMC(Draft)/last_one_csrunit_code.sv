@@ -11,7 +11,7 @@
         input          [2:0]        i_riscv_csr_op ,    //?? also check it
         input        [MXLEN-1:0]  i_riscv_csr_wdata ,
         output logic [MXLEN-1:0]  o_riscv_csr_rdata ,
-        //output logic              o_riscv_csr_sideeffect_flush ,
+        output logic              o_riscv_csr_sideeffect_flush ,
      
          
             // Interrupts
@@ -51,9 +51,9 @@
         //input wire    [`OPCODE_WIDTH-1:0] i_opcode, //opcode types
         //input wire    [31:0] i_y, //y value from ALU (address used in load/store/jump/branch) // to check if its misaligned or not
 
-        output logic [1:0] o_riscv_csr_privlvl  
+        output logic [1:0] o_riscv_csr_privlvl  ,
 
-        //output logic o_riscv_csr_flush
+        output logic o_riscv_csr_flush
      
    // input wire writeback_change_pc, //high if writeback will issue change_pc (which will override this stage)
 
@@ -420,8 +420,7 @@ localparam  CSR_MSTATUS_MBE_BIT            = 37;
     // CSR Write logic
     /* ---------------- */
 always_comb begin : csr_write_process
-        
-                  
+
                       if(go_to_trap ) begin
                     /* Volume 2 pg. 21: xPIE holds the value of the interrupt-enable bit active prior to the trap. 
                     
@@ -531,11 +530,11 @@ always_comb begin : csr_write_process
 
        
            // If xPP̸=M, xRET also sets MPRV=0.
-
+/*
         if (mstatus_mpp_cs != PRIV_LVL_M) begin
           mstatus_d.mprv = 1'b0;
         end  
-
+*/
 end 
 
 end
@@ -576,7 +575,7 @@ end
 
 
    else  if (csr_we ) begin    ////csr_enable  //see last always block to know when it is asserted
-            
+    //   mscratch_ns ='b0;
         unique case (i_riscv_csr_address)
         // case (i_riscv_csr_address)
           
@@ -690,8 +689,11 @@ end
 
                         //(exception-specific information to assist software in handling trap)
             CSR_MTVAL  :      mtval_ns = csr_wdata; 
-
+      //   default :begin 
+        //             mscratch_ns =            mscratch_ns ;
+         //end
          endcase    
+
 
      end
 
@@ -707,7 +709,7 @@ end
     /* ---------------- */
 
     always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst) begin    // i think it hhould be negedge clk >> it was before posedge i edit it
-        if (~i_riscv_csr_rst) begin
+        if (i_riscv_csr_rst) begin
             priv_lvl_cs             <= PRIV_LVL_M;
 
             // machine mode registers
@@ -886,16 +888,16 @@ end
             end
      
             default: begin
-                csr_we   = 1'b0;
-                csr_read = 1'b0;
+                csr_we   = 1'b1;
+               // csr_read = 1'b0;
             end
         endcase
         // if we are retiring an exception do not return from exception
-        if (ex_i.valid) begin
+    /*    if (ex_i.valid) begin
             mret = 1'b0;
             sret = 1'b0;
         end
-
+*/
 
     end
     
