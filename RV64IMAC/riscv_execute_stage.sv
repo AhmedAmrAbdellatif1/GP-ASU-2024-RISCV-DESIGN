@@ -1,6 +1,7 @@
 module riscv_estage(
   input   logic                 i_riscv_estage_clk                    ,
   input   logic                 i_riscv_estage_rst                    ,
+  input   logic                 i_riscv_estage_globstall              ,
   input   logic         [63:0]  i_riscv_estage_imm_m                  ,
   input   logic signed  [63:0]  i_riscv_estage_rs1data                ,   //  Common Signals to Forward_mux_A,B
   input   logic signed  [63:0]  i_riscv_estage_rs2data                ,   //  Common Signals to Forward_mux_A,B
@@ -20,7 +21,7 @@ module riscv_estage(
   input   logic                 i_riscv_estage_imm_reg                ,   //<--- TRAPS AND CSR
   input   logic         [63:0]  i_riscv_estage_immextended            ,   //<--- TRAPS AND CSR
   input   logic         [2:0]   i_riscv_estage_memext                 ,   //<--- TRAPS AND CSR
-  input   logic         [6:0]   i_riscv_stage_opcode                  ,   //<--- TRAPS AND CSR
+  input   logic         [6:0]   i_riscv_estage_opcode                 ,   //<--- TRAPS AND CSR
   input   logic         [1:0]   i_riscv_estage_storesrc               ,   //<--- TRAPS AND CSR 
   input   logic         [1:0]   i_riscv_estage_lr                     ,
   input   logic         [1:0]   i_riscv_estage_sc                     ,
@@ -116,7 +117,8 @@ riscv_icu u_icu (
 /************************ Load Store Unit ************************/
 riscv_lsu u_riscv_lsu (
   .i_riscv_lsu_clk          (i_riscv_estage_clk),         
-  .i_riscv_lsu_rst          (i_riscv_estage_rst),         
+  .i_riscv_lsu_rst          (i_riscv_estage_rst),
+  .i_riscv_lsu_globstall    (i_riscv_estage_globstall),       
   .i_riscv_lsu_address      (o_riscv_FWmuxA_OperandmuxA),     
   .i_riscv_lsu_alu_result   (o_riscv_estage_result),
   .i_riscv_lsu_LR           (i_riscv_estage_lr),          
@@ -135,7 +137,7 @@ riscv_lsu u_riscv_lsu (
 
 /************************ Exception Unit ************************/
 riscv_misalignment_unit u_riscv_misalignment_unit(
-  .i_riscv_misalignment_opcode                 (i_riscv_stage_opcode)                  ,
+  .i_riscv_misalignment_opcode                 (i_riscv_estage_opcode)                  ,
   .i_riscv_misalignment_icu_result             (o_riscv_estage_result)                 ,
   .i_riscv_misalignment_branch_taken           (o_riscv_estage_branchtaken)            ,
   .i_riscv_misalignment_load_sel               (i_riscv_estage_memext )                ,

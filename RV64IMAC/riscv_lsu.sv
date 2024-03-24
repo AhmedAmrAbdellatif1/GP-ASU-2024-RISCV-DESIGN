@@ -1,6 +1,7 @@
 module riscv_lsu (
     input   logic            i_riscv_lsu_clk          ,
     input   logic            i_riscv_lsu_rst          ,
+    input   logic            i_riscv_lsu_globstall    ,
     input   logic  [63:0]    i_riscv_lsu_address      , //rs1
     input   logic  [63:0]    i_riscv_lsu_alu_result   ,
     input   logic  [1:0]     i_riscv_lsu_LR           , // [1] bit indicates LR or not, [0] indicates word or double word
@@ -39,7 +40,12 @@ module riscv_lsu (
                               i_riscv_lsu_LR[1],
                               i_riscv_lsu_SC[1],
                               i_riscv_lsu_AMO};
-  assign sc_success_flag  = ((i_riscv_lsu_address ==  reserv_addr) && reserv_valid && (lr_word == i_riscv_lsu_SC [0]) &&i_riscv_lsu_SC[1] && !i_riscv_lsu_goto_trap  && !i_riscv_lsu_return_trap);
+
+  assign sc_success_flag  = ( (i_riscv_lsu_address ==  reserv_addr) &&
+                              reserv_valid                          &&
+                              i_riscv_lsu_SC[1]                     &&
+                              !i_riscv_lsu_goto_trap                &&
+                              !i_riscv_lsu_return_trap);
 
   //****************** Procedural Blocks ******************//
   always_ff @(posedge i_riscv_lsu_clk or posedge i_riscv_lsu_rst)
@@ -50,7 +56,7 @@ module riscv_lsu (
       reserv_valid  <=  1'b0 ;
       lr_word       <=  1'b0 ;
     end
-    else
+    else if(!i_riscv_lsu_globstall)
     begin
 
       //Load Reserved operation
@@ -67,22 +73,7 @@ module riscv_lsu (
         reserv_valid  <= 1'b0 ;
         reserv_addr   <=  'b0 ;
       end
-
-      // Normal Stores
-      else if(i_riscv_lsu_memwrite && reserv_valid) 
-      begin
-        if(lr_word && (i_riscv_lsu_address[63:2] == reserv_addr [63:2]))
-        begin
-          reserv_valid  <= 0 ;
-          reserv_addr   <= 0 ;
-        end
-
-        else if (!lr_word && (i_riscv_lsu_address[63:3] == reserv_addr [63:3]))
-        begin
-          reserv_valid  <= 0 ;
-          reserv_addr   <= 0 ;
-        end
-      end
+      
     end
   end
 
@@ -93,7 +84,7 @@ module riscv_lsu (
     //Store Conditional operation
     if (i_riscv_lsu_SC[1])
     begin   
-      if((i_riscv_lsu_address ==  reserv_addr) && reserv_valid && (lr_word == i_riscv_lsu_SC [0]))
+      if((i_riscv_lsu_address[63:3] ==  reserv_addr[63:3]) && reserv_valid)  // we removed  && (lr_word == i_riscv_lsu_SC [0])
       begin
         o_riscv_lsu_sc_rdvalue = 'b0  ;
       end

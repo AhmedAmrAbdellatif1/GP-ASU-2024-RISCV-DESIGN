@@ -409,6 +409,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   riscv_estage u_riscv_estage(
     .i_riscv_estage_clk                   (i_riscv_datapath_clk)             ,
     .i_riscv_estage_rst                   (i_riscv_datapath_rst)             ,
+    .i_riscv_estage_globstall             (i_riscv_datapath_globstall)       ,
     .i_riscv_estage_rs1data               (riscv_rs1data_e)                  ,
     .i_riscv_estage_rs2data               (riscv_rs2data_e)                  ,
     .i_riscv_estage_fwda                  (i_riscv_datapath_fwda)            ,
@@ -425,7 +426,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_estage_funcsel               (riscv_funcsel_e)                  ,
     .i_riscv_estage_simm                  (riscv_extendedimm_e)              ,
     .i_riscv_estage_bcond                 (riscv_b_condition_e)              ,
-    .i_riscv_stage_opcode                 (riscv_opcode_e)                   , //<---
+    .i_riscv_estage_opcode                (riscv_opcode_e)                   , //<---
     .i_riscv_estage_memext                (riscv_memext_e)                   , //<---
     .i_riscv_estage_storesrc              (riscv_storesrc_e)                 , //<---
     .i_riscv_estage_imm_reg               (immreg_de_estage)                 , //<---

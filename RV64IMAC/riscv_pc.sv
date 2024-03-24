@@ -8,7 +8,7 @@ module riscv_pc (
  
   always_ff @(posedge i_riscv_pc_clk or posedge i_riscv_pc_rst) begin
     if(i_riscv_pc_rst)
-      o_riscv_pc_pc  <=  'h101a2;
+      o_riscv_pc_pc  <=  'h101ae;
     else if(!i_riscv_pc_stallpc)
       o_riscv_pc_pc  <=  i_riscv_pc_nextpc;
   end 

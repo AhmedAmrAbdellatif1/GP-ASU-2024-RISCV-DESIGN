@@ -39,122 +39,122 @@ module riscv_cu (
 
   /******************************** Instruction Opcodes ********************************/
   typedef enum logic [6:0] {
-            OPCODE_OP          = 7'b0110011, //  (51)  : R-type Instructions
-            OPCODE_OP_IMM      = 7'b0010011, //  (19)  : I-type instructions
-            OPCODE_OP_WORD     = 7'b0111011, //  (59)  : R-type Word Instructions
-            OPCODE_OP_WORD_IMM = 7'b0011011, //  (27)  : I-type Word Instructions
-            OPCODE_LUI         = 7'b0110111, //  (55)  : LUI Instruction
-            OPCODE_AUIPC       = 7'b0010111, //  (23)  : AUIPC Instruction
-            OPCODE_LOAD        = 7'b0000011, //  (3)   : Load instructions
-            OPCODE_BRANCH      = 7'b1100011, //  (99)  : Branch Instructions
-            OPCODE_STORE       = 7'b0100011, //  (35)  : Store Instructions
-            OPCODE_JALR        = 7'b1100111, //  (103) : JALR Instruction
-            OPCODE_JAL         = 7'b1101111, //  (111) : JAL Instruction
-            OPCODE_CSR         = 7'b1110011, //  (115) : Privileged / CSR instructions
-            OPCODE_ATOMIC      = 7'b0101111  //  (47)  : Atomic instructions
-          } opcode ;
+    OPCODE_OP          = 7'b0110011, //  (51)  : R-type Instructions
+    OPCODE_OP_IMM      = 7'b0010011, //  (19)  : I-type instructions
+    OPCODE_OP_WORD     = 7'b0111011, //  (59)  : R-type Word Instructions
+    OPCODE_OP_WORD_IMM = 7'b0011011, //  (27)  : I-type Word Instructions
+    OPCODE_LUI         = 7'b0110111, //  (55)  : LUI Instruction
+    OPCODE_AUIPC       = 7'b0010111, //  (23)  : AUIPC Instruction
+    OPCODE_LOAD        = 7'b0000011, //  (3)   : Load instructions
+    OPCODE_BRANCH      = 7'b1100011, //  (99)  : Branch Instructions
+    OPCODE_STORE       = 7'b0100011, //  (35)  : Store Instructions
+    OPCODE_JALR        = 7'b1100111, //  (103) : JALR Instruction
+    OPCODE_JAL         = 7'b1101111, //  (111) : JAL Instruction
+    OPCODE_CSR         = 7'b1110011, //  (115) : Privileged / CSR instructions
+    OPCODE_ATOMIC      = 7'b0101111  //  (47)  : Atomic instructions
+  } opcode ;
 
   typedef enum logic [2:0] {
-            ADD_SUB = 3'b000,
-            SLL     = 3'b001,
-            SLT     = 3'b010,
-            SLTU    = 3'b011,
-            XOR     = 3'b100,
-            SRL_SRA = 3'b101,
-            OR      = 3'b110,
-            AND     = 3'b111
-          } funct3_op ;
+    ADD_SUB = 3'b000,
+    SLL     = 3'b001,
+    SLT     = 3'b010,
+    SLTU    = 3'b011,
+    XOR     = 3'b100,
+    SRL_SRA = 3'b101,
+    OR      = 3'b110,
+    AND     = 3'b111
+  } funct3_op ;
 
   typedef enum logic [2:0] {
-            ADDI      = 3'b000,
-            SLLI      = 3'b001,
-            SLTI      = 3'b010,
-            SLTIU     = 3'b011,
-            XORI      = 3'b100,
-            SRLI_SRAI = 3'b101,
-            ORI       = 3'b110,
-            ANDI      = 3'b111
-          } funct3_imm ;
+    ADDI      = 3'b000,
+    SLLI      = 3'b001,
+    SLTI      = 3'b010,
+    SLTIU     = 3'b011,
+    XORI      = 3'b100,
+    SRLI_SRAI = 3'b101,
+    ORI       = 3'b110,
+    ANDI      = 3'b111
+  } funct3_imm ;
 
   typedef enum logic [2:0] {
-            ADDW_SUBW = 3'b000,
-            SLLW      = 3'b001,
-            SRLW_SRAW = 3'b101
-          } funct3_opw ;
+    ADDW_SUBW = 3'b000,
+    SLLW      = 3'b001,
+    SRLW_SRAW = 3'b101
+  } funct3_opw ;
 
   typedef enum logic [2:0] {
-            ADDIW       = 3'b000,
-            SLLIW       = 3'b001,
-            SRLIW_SRAIW = 3'b101
-          } funct3_immw ;
+    ADDIW       = 3'b000,
+    SLLIW       = 3'b001,
+    SRLIW_SRAIW = 3'b101
+  } funct3_immw ;
 
   typedef enum logic [2:0] {
-            SB = 3'b000,
-            SH = 3'b001,
-            SW = 3'b010,
-            SD = 3'b011
-          } funct3_store ;
+    SB = 3'b000,
+    SH = 3'b001,
+    SW = 3'b010,
+    SD = 3'b011
+  } funct3_store ;
 
   typedef enum logic [2:0] {
-            LB  = 3'b000,
-            LH  = 3'b001,
-            LW  = 3'b010,
-            LBU = 3'b100,
-            LHU = 3'b101,
-            LWU = 3'b110,
-            LD  = 3'b011
-          } funct3_load ;
+    LB  = 3'b000,
+    LH  = 3'b001,
+    LW  = 3'b010,
+    LBU = 3'b100,
+    LHU = 3'b101,
+    LWU = 3'b110,
+    LD  = 3'b011
+  } funct3_load ;
 
   typedef enum logic [2:0] {
-            BEQ  = 3'b000,
-            BNE  = 3'b001,
-            BLT  = 3'b100,
-            BGE  = 3'b101,
-            BLTU = 3'b110,
-            BGEU = 3'b111
-          } funct3_branch ;
+    BEQ  = 3'b000,
+    BNE  = 3'b001,
+    BLT  = 3'b100,
+    BGE  = 3'b101,
+    BLTU = 3'b110,
+    BGEU = 3'b111
+  } funct3_branch ;
 
   typedef enum logic [2:0] {
-            JALR = 3'b000
-          } funct3_jump ;
+    JALR = 3'b000
+  } funct3_jump ;
 
   typedef enum logic [2:0] {
-            DIVW  = 3'b100,
-            REMW  = 3'b110,
-            REMUW = 3'b111
-          } funct3_muldiv ;
+    DIVW  = 3'b100,
+    REMW  = 3'b110,
+    REMUW = 3'b111
+  } funct3_muldiv ;
 
   typedef enum logic [2:0] {
-            CSRRW  = 3'b001,
-            CSRRS  = 3'b010,
-            CSRRC  = 3'b011,
-            CSRRWI = 3'b100,
-            CSRRSI = 3'b110,
-            CSRRCI = 3'b111
-          } funct3_csr ;
+    CSRRW  = 3'b001,
+    CSRRS  = 3'b010,
+    CSRRC  = 3'b011,
+    CSRRWI = 3'b100,
+    CSRRSI = 3'b110,
+    CSRRCI = 3'b111
+  } funct3_csr ;
 
   typedef enum logic [2:0] {
-            ECALL_MRET = 3'b000
-          } funct3_ecall ;
+    ECALL_MRET = 3'b000
+  } funct3_ecall ;
 
   typedef enum logic [2:0] {
-            ATOMIC_W = 3'b010,
-            ATOMIC_D = 3'b011
-          } funct3_atomic_xlen ;
+    ATOMIC_W = 3'b010,
+    ATOMIC_D = 3'b011
+  } funct3_atomic_xlen ;
 
   typedef enum logic [4:0] {
-            LR      = 5'b00010,
-            SC      = 5'b00011,
-            AMOSWAP = 5'b00001,
-            AMOADD  = 5'b00000,
-            AMOXOR  = 5'b00100,
-            AMOAND  = 5'b01100,
-            AMOOR   = 5'b01000,
-            AMOMIN  = 5'b10000,
-            AMOMAX  = 5'b10100,
-            AMOMINU = 5'b11000,
-            AMOMAXU = 5'b11100
-          } funct5_atomic_op ;
+    LR      = 5'b00010,
+    SC      = 5'b00011,
+    AMOSWAP = 5'b00001,
+    AMOADD  = 5'b00000,
+    AMOXOR  = 5'b00100,
+    AMOAND  = 5'b01100,
+    AMOOR   = 5'b01000,
+    AMOMIN  = 5'b10000,
+    AMOMAX  = 5'b10100,
+    AMOMINU = 5'b11000,
+    AMOMAXU = 5'b11100
+  } funct5_atomic_op ;
 
   /******************************** Parameters ********************************/
   // Privilege Useful Parameters
