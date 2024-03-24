@@ -104,10 +104,12 @@ module riscv_dcache_fsm  (
           tag_sel       = 1'b0;
           amo_buffer_en = 1'b0;
           amo_unit_en   = 1'b0;
-          if(cpu_rden || cpu_wren || cpu_amoen ) //new
-          next_state    = COMPARE_TAG ;
+          if(glob_stall)
+            next_state    = COMPARE_TAG;
+          else if(cpu_rden || cpu_wren || cpu_amoen ) //new
+            next_state    = COMPARE_TAG ;
           else 
-          next_state    = IDLE;
+            next_state    = IDLE;
         end
          else if(hit && cpu_amoen_reg) begin // new condition
           cache_rden    = 1'b1;
@@ -224,22 +226,24 @@ module riscv_dcache_fsm  (
       /****************/
       CACHE_ACCESS:begin
         if(!cpu_amoen_reg)begin
-         cache_rden    = cpu_rden_reg;
-         cache_wren    = cpu_wren_reg;
-         cache_insel   = 2'b00;
-         mem_rden      = 1'b0;
-         mem_wren      = 1'b0;  
-         set_dirty     = 1'b0;   
-         set_valid     = 1'b0;    
-         replace_tag   = 1'b0;
-         dcache_stall  = 1'b0;
-         tag_sel       = 1'b0;
-         amo_buffer_en = 1'b0;
-         amo_unit_en   = 1'b0;
-         if(cpu_rden || cpu_wren || cpu_amoen)
-          next_state    = COMPARE_TAG ;
+          cache_rden    = cpu_rden_reg;
+          cache_wren    = cpu_wren_reg;
+          cache_insel   = 2'b00;
+          mem_rden      = 1'b0;
+          mem_wren      = 1'b0;  
+          set_dirty     = 1'b0;   
+          set_valid     = 1'b0;    
+          replace_tag   = 1'b0;
+          dcache_stall  = 1'b0;
+          tag_sel       = 1'b0;
+          amo_buffer_en = 1'b0;
+          amo_unit_en   = 1'b0;
+          if(glob_stall)
+           next_state    = CACHE_ACCESS;
+          else if(cpu_rden || cpu_wren || cpu_amoen)
+            next_state    = COMPARE_TAG ;
           else 
-          next_state    = IDLE;
+            next_state    = IDLE;
         end
         else begin //new load part of the amo instruction after cache miss READ
          cache_rden    = cpu_amoen_reg;
@@ -261,7 +265,7 @@ module riscv_dcache_fsm  (
        AMO_MODIFY:begin
          cache_rden    = 1'b0;
          cache_wren    = 1'b0;
-         cache_insel   = 2'b00;
+         cache_insel   = 2'b10;
          mem_rden      = 1'b0;
          mem_wren      = 1'b0;  
          set_dirty     = 1'b0;   
@@ -274,22 +278,24 @@ module riscv_dcache_fsm  (
          next_state    = AMO_STORE;
       end
        AMO_STORE:begin
-         cache_rden    = 1'b0;
-         cache_wren    = 1'b1;
-         cache_insel   = 2'b10;
-         mem_rden      = 1'b0;
-         mem_wren      = 1'b0;  
-         set_dirty     = 1'b0;   
-         set_valid     = 1'b0;    
-         replace_tag   = 1'b0;
-         dcache_stall  = 1'b0;// vip
-         tag_sel       = 1'b0;
-         amo_buffer_en = 1'b0;
-         amo_unit_en   = 1'b1; //new 
-         if(cpu_rden || cpu_wren || cpu_amoen ) 
-         next_state    = COMPARE_TAG ;
-         else 
-         next_state    = IDLE;
+        cache_rden    = 1'b0;
+        cache_wren    = 1'b1;
+        cache_insel   = 2'b10;
+        mem_rden      = 1'b0;
+        mem_wren      = 1'b0;  
+        set_dirty     = 1'b0;   
+        set_valid     = 1'b0;    
+        replace_tag   = 1'b0;
+        dcache_stall  = 1'b0;// vip
+        tag_sel       = 1'b0;
+        amo_buffer_en = 1'b0;
+        amo_unit_en   = 1'b1;
+        if(glob_stall)
+          next_state    = AMO_STORE;
+        else if(cpu_rden || cpu_wren || cpu_amoen ) 
+          next_state    = COMPARE_TAG ;
+        else 
+          next_state    = IDLE;
       end
       default:begin
         next_state    = IDLE;

@@ -32,8 +32,11 @@ module riscv_dcache_amo (
         case(i_riscv_amo_ctrl)
         
           AMOSWAP: begin
-            if(i_riscv_amo_xlen) 
+            if(i_riscv_amo_xlen)
+            begin
+              amo_word_buffer     = 'b0;
               o_riscv_amo_result  = i_riscv_amo_rs2data;
+            end
             else  
             begin
               amo_word_buffer     = i_riscv_amo_rs2data[31:0];
@@ -42,8 +45,11 @@ module riscv_dcache_amo (
           end
             
           AMOADD: begin
-            if (i_riscv_amo_xlen) 
+            if (i_riscv_amo_xlen)
+            begin
+              amo_word_buffer     = 'b0;
               o_riscv_amo_result  = i_riscv_amo_rs1data + i_riscv_amo_rs2data;
+            end
             else 
             begin
               amo_word_buffer     = i_riscv_amo_rs1data[31:0] + i_riscv_amo_rs2data[31:0];
@@ -53,7 +59,10 @@ module riscv_dcache_amo (
 
           AMOXOR: begin
             if (i_riscv_amo_xlen)
+            begin
+              amo_word_buffer     = 'b0;
               o_riscv_amo_result  = i_riscv_amo_rs1data ^ i_riscv_amo_rs2data;
+            end
             else 
             begin
               amo_word_buffer     = i_riscv_amo_rs1data[31:0] ^ i_riscv_amo_rs2data[31:0];
@@ -62,8 +71,11 @@ module riscv_dcache_amo (
           end
 
           AMOAND: begin
-            if (i_riscv_amo_xlen) 
+            if (i_riscv_amo_xlen)
+            begin
+              amo_word_buffer     = 'b0;
               o_riscv_amo_result  = i_riscv_amo_rs1data & i_riscv_amo_rs2data;
+            end
             else
             begin
               amo_word_buffer     = i_riscv_amo_rs1data[31:0] & i_riscv_amo_rs2data[31:0];
@@ -72,8 +84,11 @@ module riscv_dcache_amo (
           end
 
           AMOOR: begin
-            if (i_riscv_amo_xlen)              
+            if (i_riscv_amo_xlen)
+            begin
+              amo_word_buffer     = 'b0;
               o_riscv_amo_result  = i_riscv_amo_rs1data | i_riscv_amo_rs2data;
+            end
             else                                   
             begin
               amo_word_buffer     = i_riscv_amo_rs1data[31:0] | i_riscv_amo_rs2data[31:0];
@@ -82,8 +97,9 @@ module riscv_dcache_amo (
           end
 
           AMOMIN: begin
-            if (i_riscv_amo_xlen)             
-            begin 
+            if (i_riscv_amo_xlen)
+            begin
+              amo_word_buffer = 'b0;
               if (i_riscv_amo_rs1data < i_riscv_amo_rs2data)
                 o_riscv_amo_result  = i_riscv_amo_rs1data;
               else 
@@ -107,6 +123,7 @@ module riscv_dcache_amo (
           AMOMAX: begin
             if (i_riscv_amo_xlen)             
             begin
+              amo_word_buffer = 'b0;
               if (i_riscv_amo_rs1data > i_riscv_amo_rs2data)
                 o_riscv_amo_result  = i_riscv_amo_rs1data;
               else 
@@ -130,6 +147,7 @@ module riscv_dcache_amo (
           AMOMINU: begin
             if (i_riscv_amo_xlen)               
             begin
+              amo_word_buffer = 'b0;
               if ($unsigned(i_riscv_amo_rs1data) < $unsigned(i_riscv_amo_rs2data))
                 o_riscv_amo_result  = i_riscv_amo_rs1data;
               else 
@@ -153,6 +171,7 @@ module riscv_dcache_amo (
           AMOMAXU: begin
             if (i_riscv_amo_xlen)             
             begin
+              amo_word_buffer = 'b0;
               if ($unsigned(i_riscv_amo_rs1data) > $unsigned(i_riscv_amo_rs2data))
                 o_riscv_amo_result  = i_riscv_amo_rs1data;
               else 

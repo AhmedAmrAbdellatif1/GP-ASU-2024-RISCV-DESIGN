@@ -2008,7 +2008,7 @@ module riscv_cu (
                 o_riscv_cu_asel      = 1'b1;
                 o_riscv_cu_bsel      = 1'b0;
                 o_riscv_cu_memw      = 1'b0;
-                o_riscv_cu_memr      = 1'b1;
+                o_riscv_cu_memr      = 1'b0;
                 o_riscv_cu_storesrc  = 2'b00;
                 o_riscv_cu_resultsrc = 3'b010;
                 o_riscv_cu_bcond     = 4'b0000;
@@ -2052,7 +2052,7 @@ module riscv_cu (
                 o_riscv_cu_asel      = 1'b1;
                 o_riscv_cu_bsel      = 1'b0;
                 o_riscv_cu_memw      = 1'b0;
-                o_riscv_cu_memr      = 1'b1;
+                o_riscv_cu_memr      = 1'b0;
                 o_riscv_cu_storesrc  = 2'b11;
                 o_riscv_cu_resultsrc = 3'b010;
                 o_riscv_cu_bcond     = 4'b0000;
@@ -2103,7 +2103,7 @@ module riscv_cu (
                 o_riscv_cu_asel      = 1'b1;
                 o_riscv_cu_bsel      = 1'b0;
                 o_riscv_cu_memw      = 1'b0;
-                o_riscv_cu_memr      = 1'b1;
+                o_riscv_cu_memr      = 1'b0;
                 o_riscv_cu_storesrc  = 2'b00;
                 o_riscv_cu_resultsrc = 3'b010;
                 o_riscv_cu_bcond     = 4'b0000;
@@ -2136,7 +2136,7 @@ module riscv_cu (
                 o_riscv_cu_divctrl   = 4'b0000;
                 o_riscv_cu_funcsel   = 2'b00;
                 o_riscv_cu_amo       = 1'b0;
-                o_riscv_cu_amo_op     = 5'b0;
+                o_riscv_cu_amo_op    = 5'b0;
                 o_riscv_cu_lr        = 2'b00;
                 o_riscv_cu_sc        = 2'b11;
               end
@@ -2147,8 +2147,8 @@ module riscv_cu (
                 o_riscv_cu_asel      = 1'b1;
                 o_riscv_cu_bsel      = 1'b0;
                 o_riscv_cu_memw      = 1'b0;
-                o_riscv_cu_memr      = 1'b1;
-                o_riscv_cu_storesrc  = 2'b11;
+                o_riscv_cu_memr      = 1'b0;
+                o_riscv_cu_storesrc  = 2'b10;
                 o_riscv_cu_resultsrc = 3'b010;
                 o_riscv_cu_bcond     = 4'b0000;
                 o_riscv_cu_memext    = 3'b010;

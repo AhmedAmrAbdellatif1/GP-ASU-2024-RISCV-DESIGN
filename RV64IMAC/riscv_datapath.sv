@@ -151,6 +151,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic  [63:0]  riscv_imm_m         ;
   logic  [63:0]  riscv_memload_m     ;
   logic          riscv_instret_m     ;
+  logic  [4:0]   riscv_amo_op_m      ;
   logic  [63:0]  riscv_rddata_sc_m   ;
   logic          datapath_memw_e     ;
   logic          datapath_memr_e     ;
@@ -242,7 +243,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   // assign o_riscv_datapath_memw_e = datapath_memw_e && !gototrap_csr_mw && !returnfromtrap_csr_mw; // data cache write enable
   // assign o_riscv_datapath_memr_e = datapath_memr_e && !gototrap_csr_mw && !returnfromtrap_csr_mw; // data cache read enable
   assign o_riscv_datapath_amo = riscv_amo_e ;
-  assign o_riscv_datapath_amo_op = riscv_amo_op_e ;
+  assign o_riscv_datapath_amo_op = riscv_amo_op_m ;
   
   assign csrop_de_em_illegal  = (gototrap_csr_mw || returnfromtrap_csr_mw)? 3'b000:csrop_de_em;
   
@@ -490,6 +491,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_em_rs1addr_e               (o_riscv_datapath_rs1addr_e)       , //<---
     .i_riscv_em_instret_e               (riscv_instret_e)                  , //<--- 
     .i_riscv_em_rddata_sc_e             (riscv_rddata_sc_e)                ,
+    .i_riscv_em_amo_op_e                (riscv_amo_op_e)                   ,
+    .o_riscv_em_amo_op_m                (riscv_amo_op_m)                   ,
     .o_riscv_em_rddata_sc_m             (riscv_rddata_sc_m)                ,
     .o_riscv_em_pc                      (riscv_pc_m)                       ,
     .o_riscv_em_instret_m               (riscv_instret_m)                  , //<--- 

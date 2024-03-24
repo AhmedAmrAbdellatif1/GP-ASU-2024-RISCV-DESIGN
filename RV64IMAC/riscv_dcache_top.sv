@@ -38,10 +38,8 @@ module riscv_data_cache #(
   logic                   fsm_cache_wren        ;
   logic                   fsm_cache_rden        ;
   logic [1:0]             fsm_cache_insel       ;
-  logic                   mux_cache_insel       ;
   logic                   fsm_mem_wren          ;
   logic                   fsm_mem_rden          ;
-  logic                   fsm_stall             ;
   logic                   fsm_tag_sel           ; 
   logic                   fsm_amo_buffer_en     ;
   logic                   fsm_amo_unit_en       ;
@@ -53,12 +51,8 @@ module riscv_data_cache #(
   logic                   tag_hit_out           ;
   logic [TAG-1:0]         tag_old_out           ;
   // memory model signals
-  logic                   mem_wren              ;
-  logic                   mem_rden              ;
   logic                   mem_ready             ;        
-  logic                   mem_tag               ;
   logic [INDEX+TAG-1:0]   mem_addr              ;
-  logic [DATA_WIDTH-1:0]  mem_data_in           ;
   logic [DATA_WIDTH-1:0]  mem_data_out          ;
   // amo unit 
   logic [63:0]            amo_result            ;
@@ -69,8 +63,6 @@ module riscv_data_cache #(
   assign {tag,index,byte_offset}      = i_riscv_dcache_phys_addr;
   // DDR input address
   assign mem_addr                     = (fsm_tag_sel)                 ? {tag_old_out,index}   : {tag,index};
-  // Data cache output
-  assign o_riscv_dcache_cpu_data_out  = (i_riscv_dcache_phys_addr[3]) ? cache_data_out[127:64]: cache_data_out[63:0]; //<----
   // AMO Operation xlen
   assign amo_xlen                     = (i_riscv_dcache_store_src == 2'b11)?  1'b1:1'b0;  // 1: doubleword -- 0: word
 
@@ -90,6 +82,15 @@ module riscv_data_cache #(
     2'b01 : cache_data_in = mem_data_out ;
     2'b10 : cache_data_in = {64'b0,amo_result};
     endcase 
+  end
+
+  //****************** cache data out sel ******************//
+  always_comb
+  begin
+    if(i_riscv_dcache_amo)
+      o_riscv_dcache_cpu_data_out = cache_data_out_buffer;
+    else
+      o_riscv_dcache_cpu_data_out  = (i_riscv_dcache_phys_addr[3]) ? cache_data_out[127:64]: cache_data_out[63:0];
   end
 
   //****************** Instantiation ******************//
