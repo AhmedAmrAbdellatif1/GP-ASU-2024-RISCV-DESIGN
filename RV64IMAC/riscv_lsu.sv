@@ -42,10 +42,11 @@ module riscv_lsu (
                               i_riscv_lsu_AMO};
 
   assign sc_success_flag  = ( (i_riscv_lsu_address ==  reserv_addr) &&
-                              reserv_valid                          &&
-                              i_riscv_lsu_SC[1]                     &&
-                              !i_riscv_lsu_goto_trap                &&
-                              !i_riscv_lsu_return_trap);
+                              (reserv_valid)                        &&
+                              (lr_word == i_riscv_lsu_SC [0])       &&
+                              (i_riscv_lsu_SC[1])                   &&
+                              (!i_riscv_lsu_goto_trap )             &&
+                              (!i_riscv_lsu_return_trap));
 
   //****************** Procedural Blocks ******************//
   always_ff @(posedge i_riscv_lsu_clk or posedge i_riscv_lsu_rst)
@@ -84,7 +85,7 @@ module riscv_lsu (
     //Store Conditional operation
     if (i_riscv_lsu_SC[1])
     begin   
-      if((i_riscv_lsu_address[63:3] ==  reserv_addr[63:3]) && reserv_valid)  // we removed  && (lr_word == i_riscv_lsu_SC [0])
+      if((i_riscv_lsu_address ==  reserv_addr) && reserv_valid && (lr_word == i_riscv_lsu_SC[0]))  // we removed  && (lr_word == i_riscv_lsu_SC [0])
       begin
         o_riscv_lsu_sc_rdvalue = 'b0  ;
       end
