@@ -10,7 +10,7 @@ module riscv_lsu (
     input   logic            i_riscv_lsu_memwrite     ,
     input   logic            i_riscv_lsu_memread      ,
     input   logic            i_riscv_lsu_goto_trap    ,   //output of CSR
-    input   logic            i_riscv_lsu_return_trap  ,   //output of CSR
+    input   logic  [1:0]     i_riscv_lsu_return_trap  ,   //output of CSR
     input   logic            i_riscv_lsu_misalignment ,   //<-- not added in the logic
     output  logic            o_riscv_lsu_memwrite_en  ,
     output  logic            o_riscv_lsu_memread_en   ,

@@ -1,4 +1,4 @@
-  module riscv_mw_ppreg(
+  module riscv_ppreg_mw(
     //------------------------------------------------>
     `ifdef TEST
     input   logic [31:0]  i_riscv_mw_inst             ,
@@ -27,7 +27,7 @@
     input   logic [63:0]  i_riscv_mw_csrout_m         , //<--- trap
     input   logic         i_riscv_mw_iscsr_m          , //<--- trap
     input   logic         i_riscv_mw_gototrap_m       , //<--- trap
-    input   logic         i_riscv_mw_returnfromtrap_m , //<--- trap
+    input   logic [1:0]   i_riscv_mw_returnfromtrap_m , //<--- trap
     input   logic         i_riscv_mw_instret_m        , //<--- csr
     input   logic [63:0]  i_riscv_mw_rddata_sc_m      ,
     output  logic [63:0]  o_riscv_mw_rddata_sc_wb     ,
@@ -42,7 +42,7 @@
     output  logic [63:0]  o_riscv_mw_csrout_wb        , //<--- csr
     output  logic         o_riscv_mw_iscsr_wb         , //<--- csr
     output  logic         o_riscv_mw_gototrap_wb      , //<--- csr
-    output  logic         o_riscv_mw_returnfromtrap_wb  //<--- csr
+    output  logic [1:0]   o_riscv_mw_returnfromtrap_wb  //<--- csr
   );  
 
   always_ff @(posedge i_riscv_mw_clk or posedge i_riscv_mw_rst)

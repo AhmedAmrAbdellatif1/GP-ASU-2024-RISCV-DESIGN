@@ -1,12 +1,4 @@
-  module riscv_de_ppreg (
-    //------------------------------------------------>
-    `ifdef TEST
-    input   logic [31:0]  i_riscv_de_inst             ,
-    input   logic [15:0]  i_riscv_de_cinst            ,
-    output  logic [31:0]  o_riscv_de_inst             ,
-    output  logic [15:0]  o_riscv_de_cinst            ,
-    `endif
-    //<------------------------------------------------
+  module riscv_ppreg_de (
     input   logic         i_riscv_de_clk              ,
     input   logic         i_riscv_de_rst              ,
     input   logic         i_riscv_de_flush            ,
@@ -46,6 +38,10 @@
     input   logic [1:0]   i_riscv_de_sc_d             ,
     input   logic [4:0]   i_riscv_de_amo_op_d         ,
     input   logic         i_riscv_de_amo_d            ,
+    input   logic [31:0]  i_riscv_de_inst             ,
+    input   logic [15:0]  i_riscv_de_cinst            ,
+    output  logic [31:0]  o_riscv_de_inst             ,
+    output  logic [15:0]  o_riscv_de_cinst            ,
     output  logic [1:0]   o_riscv_de_lr_e             ,
     output  logic [1:0]   o_riscv_de_sc_e             ,
     output  logic [4:0]   o_riscv_de_amo_op_e         ,
@@ -122,12 +118,8 @@
           o_riscv_de_sc_e            <=  'b0;
           o_riscv_de_amo_op_e        <=  'b0;
           o_riscv_de_amo_e           <=  'b0;
-        //<------------------------------>
-        `ifdef TEST
-          o_riscv_de_inst          <=  'b0;
-          o_riscv_de_cinst         <=  'b0;
-          `endif
-          //<------------------------------
+          o_riscv_de_inst            <=  'b0;
+          o_riscv_de_cinst           <=  'b0;
       end
     else if(i_riscv_de_flush)
       begin
@@ -166,12 +158,8 @@
           o_riscv_de_sc_e            <=  'b0;
           o_riscv_de_amo_op_e        <=  'b0;
           o_riscv_de_amo_e           <=  'b0;
-        //<------------------------------>
-        `ifdef TEST
           o_riscv_de_inst            <=  'b0;
           o_riscv_de_cinst           <=  'b0;
-          `endif
-        //<------------------------------
       end
     else if (!i_riscv_de_en)
       begin
@@ -210,12 +198,8 @@
           o_riscv_de_sc_e            <=  i_riscv_de_sc_d;
           o_riscv_de_amo_op_e        <=  i_riscv_de_amo_op_d;
           o_riscv_de_amo_e           <=  i_riscv_de_amo_d;
-          //<-------------------------------------------
-          `ifdef TEST
-            o_riscv_de_inst          <= i_riscv_de_inst;
-            o_riscv_de_cinst         <= i_riscv_de_cinst;
-          `endif
-          //<------------------------------------------
+          o_riscv_de_inst          <= i_riscv_de_inst;
+          o_riscv_de_cinst         <= i_riscv_de_cinst;
       end
     end
 endmodule

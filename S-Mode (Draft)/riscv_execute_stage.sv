@@ -29,7 +29,7 @@ module riscv_estage(
   input   logic                 i_riscv_estage_memw                   ,
   input   logic                 i_riscv_estage_memr                   ,
   input   logic                 i_riscv_estage_gtrap                  ,
-  input   logic                 i_riscv_estage_rtrap                  ,
+  input   logic         [1:0]   i_riscv_estage_rtrap                  ,
   output  logic signed  [63:0]  o_riscv_estage_result                 ,   //  Signals to E/M FF
   output  logic signed  [63:0]  o_riscv_estage_store_data             ,   //  Signals to E/M FF
   output  logic                 o_riscv_estage_branchtaken            ,   //  Branch Comparator Signals to hazard_unit

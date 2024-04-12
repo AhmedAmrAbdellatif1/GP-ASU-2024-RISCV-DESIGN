@@ -1,12 +1,4 @@
-  module riscv_em_ppreg (
-    //---------------------------------------------->
-    `ifdef TEST
-    input   logic [31:0]  i_riscv_em_inst                     ,
-    input   logic [15:0]  i_riscv_em_cinst                    ,
-    output  logic [31:0]  o_riscv_em_inst                     ,
-    output  logic [15:0]  o_riscv_em_cinst                    ,
-    `endif
-    //<----------------------------------------------
+  module riscv_ppreg_em (
     input   logic [63:0]  i_riscv_em_pc                       ,
     input   logic         i_riscv_em_clk                      ,
     input   logic         i_riscv_em_rst                      ,
@@ -21,7 +13,7 @@
     input   logic [63:0]  i_riscv_em_dcache_addr              ,
     input   logic [4:0]   i_riscv_em_rdaddr_e                 ,
     input   logic [63:0]  i_riscv_em_imm_e                    ,
-    input   logic [6:0]   i_riscv_de_opcode_e                 ,
+    input   logic [6:0]   i_riscv_em_opcode_e                 ,
     input   logic         i_riscv_em_flush                    , //<--- trap
     input   logic         i_riscv_em_ecall_m_e                , //<--- trap 
     input   logic [11:0]  i_riscv_em_csraddress_e             , //<--- trap
@@ -37,6 +29,10 @@
     input   logic         i_riscv_em_instret_e                ,
     input   logic [63:0]  i_riscv_em_rddata_sc_e              ,
     input   logic [4:0]   i_riscv_em_amo_op_e                 ,
+    input   logic [31:0]  i_riscv_em_inst                     ,
+    input   logic [15:0]  i_riscv_em_cinst                    ,
+    output  logic [31:0]  o_riscv_em_inst                     ,
+    output  logic [15:0]  o_riscv_em_cinst                    ,
     output  logic [4:0]   o_riscv_em_amo_op_m                 ,              
     output  logic [63:0]  o_riscv_em_rddata_sc_m              ,
     output  logic [63:0]  o_riscv_em_dcache_addr              ,
@@ -51,7 +47,7 @@
     output  logic [63:0]  o_riscv_em_storedata_m              ,
     output  logic [4:0]   o_riscv_em_rdaddr_m                 ,
     output  logic [63:0]  o_riscv_em_imm_m                    ,
-    output  logic [6:0]   o_riscv_de_opcode_m                 ,
+    output  logic [6:0]   o_riscv_em_opcode_m                 ,
     output  logic         o_riscv_em_ecall_m_m                , //<--- trap 
     output  logic [11:0]  o_riscv_em_csraddress_m             , //<--- trap
     output  logic         o_riscv_em_illegal_inst_m           , //<--- trap
@@ -79,7 +75,7 @@
             o_riscv_em_storedata_m              <= 'b0;
             o_riscv_em_rdaddr_m                 <= 'b0;
             o_riscv_em_imm_m                    <= 'b0;            
-            o_riscv_de_opcode_m                 <= 'b0;
+            o_riscv_em_opcode_m                 <= 'b0;
             o_riscv_em_ecall_m_m                <= 'b0; 
             o_riscv_em_csraddress_m             <= 'b0; 
             o_riscv_em_illegal_inst_m           <= 'b0;
@@ -96,12 +92,8 @@
             o_riscv_em_rddata_sc_m              <= 'b0;
             o_riscv_em_dcache_addr              <= 'b0;
             o_riscv_em_amo_op_m                 <= 'b0;
-            //---------------------------->
-            `ifdef TEST
             o_riscv_em_inst                     <= 'b0;
             o_riscv_em_cinst                    <= 'b0;
-            `endif
-            //<----------------------------
           end
         else if(i_riscv_em_flush)
           begin
@@ -114,7 +106,7 @@
             o_riscv_em_storedata_m              <= 'b0;
             o_riscv_em_rdaddr_m                 <= 'b0;
             o_riscv_em_imm_m                    <= 'b0;
-            o_riscv_de_opcode_m                 <= 'b0;
+            o_riscv_em_opcode_m                 <= 'b0;
             o_riscv_em_csrwritedata_m           <= 'b0; 
             o_riscv_em_ecall_m_m                <= 'b0; 
             o_riscv_em_csraddress_m             <= 'b0; 
@@ -131,12 +123,8 @@
             o_riscv_em_rddata_sc_m              <= 'b0;
             o_riscv_em_dcache_addr              <= 'b0;
             o_riscv_em_amo_op_m                 <= 'b0;
-            //---------------------------------------->
-            `ifdef TEST
             o_riscv_em_inst                     <= 'b0;
             o_riscv_em_cinst                    <= 'b0;
-            `endif
-            //<----------------------------------------
           end
         else if(!i_riscv_em_en)
           begin
@@ -149,7 +137,7 @@
             o_riscv_em_storedata_m              <= i_riscv_em_storedata_e;
             o_riscv_em_rdaddr_m                 <= i_riscv_em_rdaddr_e;
             o_riscv_em_imm_m                    <= i_riscv_em_imm_e;
-            o_riscv_de_opcode_m                 <= i_riscv_de_opcode_e;
+            o_riscv_em_opcode_m                 <= i_riscv_em_opcode_e;
             o_riscv_em_ecall_m_m                <= i_riscv_em_ecall_m_e; 
             o_riscv_em_csraddress_m             <= i_riscv_em_csraddress_e; 
             o_riscv_em_illegal_inst_m           <= i_riscv_em_illegal_inst_e;
@@ -166,12 +154,8 @@
             o_riscv_em_rddata_sc_m              <= i_riscv_em_rddata_sc_e;
             o_riscv_em_dcache_addr              <= i_riscv_em_dcache_addr;
             o_riscv_em_amo_op_m                 <= i_riscv_em_amo_op_e;
-            //----------------------------------------->
-            `ifdef TEST
             o_riscv_em_inst                     <= i_riscv_em_inst;
             o_riscv_em_cinst                    <= i_riscv_em_cinst;
-            `endif
-            //<-----------------------------------------
           end
     end
 endmodule

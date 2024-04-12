@@ -7,7 +7,7 @@ module riscv_wbstage (
    input    logic [63:0]   i_riscv_wb_csrout          , //<--- Trap
    input    logic          i_riscv_wb_iscsr           , //<--- Trap
    input    logic          i_riscv_wb_gototrap        , //<--- Trap
-   input    logic          i_riscv_wb_returnfromtrap  , //<--- Trap
+   input    logic [1:0]    i_riscv_wb_returnfromtrap  , //<--- Trap
    input    logic          i_riscv_wb_icache_stall    ,
    input    logic [63:0]   i_riscv_wb_rddata_sc       ,
    output   logic [1:0]    o_riscv_wb_pcsel           , //<--- Trap

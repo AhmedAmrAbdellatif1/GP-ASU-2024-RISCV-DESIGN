@@ -1,4 +1,6 @@
-module riscv_cu (
+module riscv_cu #( parameter support_suppervisor = 1,
+                   parameter support_user        = 1) 
+(
     input  logic [ 6:0] i_riscv_cu_opcode    ,
     input  logic [ 2:0] i_riscv_cu_funct3    ,
     input  logic [ 6:0] i_riscv_cu_funct7    ,
@@ -1994,7 +1996,6 @@ module riscv_cu (
         o_riscv_cu_illgalinst = 1'b0 ;
         o_riscv_cu_instret    = 1'b0;
       end
-
       /*
       OPCODE_ATOMIC:
       begin
@@ -2267,10 +2268,41 @@ module riscv_cu (
                 //o_riscv_cu_mret = 1'b1;
                 // check privilege level, MRET can only be executed in M mode
                 // otherwise  raise an illegal instruction
-                if ( ( i_riscv_cu_privlvl == PRIV_LVL_S) || (i_riscv_cu_privlvl == PRIV_LVL_U) )
+                if ( (support_suppervisor && i_riscv_cu_privlvl == PRIV_LVL_S) || (support_user &&i_riscv_cu_privlvl == PRIV_LVL_U) )begin
                   o_riscv_cu_illgalinst = 1'b1;
+                  o_riscv_cu_csrop = 'b0;
+                end
               end
-              default
+
+
+
+             12'b1_0000_0010: //SRET 
+               //  do not change privilege level if this is an illegal instruction
+                      //o_riscv_cu_csrop = 'b0;
+               begin
+
+                  if (support_suppervisor) 
+                    begin
+                        o_riscv_cu_csrop = SRET;
+                        riscv_cu_detect_ecall = 1'b0;
+                    // raise an illegal instruction if we are in the wrong privilege level
+                    // so check privilege level, as SRET can only be executed in S and M mode
+                        if ( (support_user && (i_riscv_cu_privlvl == PRIV_LVL_U)) || (i_riscv_cu_privlvl == PRIV_LVL_S)) begin
+                        // if we are in S-Mode and Trap SRET (tsr) is set -> trap on illegal instruction
+                            o_riscv_cu_illgalinst = 1'b1;
+                            o_riscv_cu_csrop = 'b0;
+                        end   
+                    end
+                  else 
+                    begin
+                        o_riscv_cu_illgalinst = 1'b1;
+                        o_riscv_cu_csrop = 'b0;
+                
+                    end
+
+              end
+             
+              default :
               begin
                 riscv_cu_detect_ecall = 1'b0;
                 o_riscv_cu_instret    = 1'b0;
@@ -2379,9 +2411,9 @@ module riscv_cu (
         o_riscv_cu_mulctrl    = 4'b0000;
         o_riscv_cu_divctrl    = 4'b0000;
         o_riscv_cu_funcsel    = 2'b10;
-        o_riscv_cu_amo       = 1'b0;
-        o_riscv_cu_lr        = 1'b0;
-        o_riscv_cu_sc        = 1'b0;
+        o_riscv_cu_amo        = 1'b0;
+        o_riscv_cu_lr         = 1'b0;
+        o_riscv_cu_sc         = 1'b0;
         o_riscv_cu_illgalinst = 1'b1 ;
         o_riscv_cu_instret    = 1'b0;
       end
