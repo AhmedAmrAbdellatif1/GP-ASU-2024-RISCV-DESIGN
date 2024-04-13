@@ -1,4 +1,4 @@
-module riscv_cu #( parameter support_suppervisor = 1,
+module riscv_cu #( parameter support_supervisor = 1,
                    parameter support_user        = 1) 
 (
     input  logic [ 6:0] i_riscv_cu_opcode    ,
@@ -1996,7 +1996,7 @@ module riscv_cu #( parameter support_suppervisor = 1,
         o_riscv_cu_illgalinst = 1'b0 ;
         o_riscv_cu_instret    = 1'b0;
       end
-      /*
+      
       OPCODE_ATOMIC:
       begin
         case(i_riscv_cu_funct3)
@@ -2216,7 +2216,7 @@ module riscv_cu #( parameter support_suppervisor = 1,
           end
         endcase
       end
-      */
+      
       OPCODE_CSR:
       begin
         o_riscv_cu_jump       = 1'b0;
@@ -2268,7 +2268,7 @@ module riscv_cu #( parameter support_suppervisor = 1,
                 //o_riscv_cu_mret = 1'b1;
                 // check privilege level, MRET can only be executed in M mode
                 // otherwise  raise an illegal instruction
-                if ( (support_suppervisor && i_riscv_cu_privlvl == PRIV_LVL_S) || (support_user &&i_riscv_cu_privlvl == PRIV_LVL_U) )begin
+                if ( (support_supervisor && i_riscv_cu_privlvl == PRIV_LVL_S) || (support_user &&i_riscv_cu_privlvl == PRIV_LVL_U) )begin
                   o_riscv_cu_illgalinst = 1'b1;
                   o_riscv_cu_csrop = 'b0;
                 end
@@ -2281,7 +2281,7 @@ module riscv_cu #( parameter support_suppervisor = 1,
                       //o_riscv_cu_csrop = 'b0;
                begin
 
-                  if (support_suppervisor) 
+                  if (support_supervisor) 
                     begin
                         o_riscv_cu_csrop = SRET;
                         riscv_cu_detect_ecall = 1'b0;
@@ -2425,7 +2425,7 @@ module riscv_cu #( parameter support_suppervisor = 1,
 
         PRIV_LVL_U :
         begin
-          if (SUPPORT_U)                        //if support u-mode
+          if (support_user)                        //if support u-mode
             o_riscv_cu_ecall_u = 1;
           // o_riscv_cu_ex_cause = ENV_CALL_UMODE;
           else
@@ -2433,7 +2433,7 @@ module riscv_cu #( parameter support_suppervisor = 1,
         end
         PRIV_LVL_S :
         begin
-          if (SUPPORT_S)                            //if support s-mode
+          if (support_supervisor)                            //if support s-mode
             o_riscv_cu_ecall_s = 1;
           //o_riscv_cu_ex_cause = ENV_CALL_SMODE;
           else

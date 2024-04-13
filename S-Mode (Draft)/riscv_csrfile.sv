@@ -41,7 +41,7 @@ module riscv_csrfile
       output logic              o_riscv_csr_gotoTrap_cs, //high before going to trap (if exception/interrupt detected)  // Output the exception PC to PC Gen, the correct CSR (mepc, sepc) is set accordingly
       output logic    [1:0]     o_riscv_csr_returnfromTrap_cs , //high before returning from trap (via mret)
 
-      output logic    [1:0]        o_riscv_csr_privlvl  ,
+      output logic    [1:0]     o_riscv_csr_privlvl  ,
       output logic              o_riscv_csr_flush  ,
 
       //addition from m-mode
@@ -300,6 +300,8 @@ module riscv_csrfile
   assign o_riscv_csr_return_address   = mepc_cs;
   assign o_riscv_csr_trap_address     = trap_vector_base_o ;
 
+  assign is_csr = (i_riscv_csr_op == 3'd0)? 1'b0:1'b1;
+
   // assign o_riscv_csr_trap_address     = {mtvec_base_cs ,  mtvec_mode_cs };
   // assign o_riscv_csr_trap_address     = {mtvec_base_cs ,  2'b00 };  // if direct mode
   // assign csr_mtval_o = mtval_cs;
@@ -344,15 +346,15 @@ module riscv_csrfile
   Attempts to access a
   CSR without appropriate privilege level or to write a read-only register also raise illegal instruction
   exceptions */
-  assign illegal_csr_priv   = (i_riscv_csr_address[9:8] > priv_lvl_cs);    // ex : 3 >2 gives one why as current priv = s and need to access m register
+  assign illegal_csr_priv   = ((i_riscv_csr_address[9:8] > priv_lvl_cs) && is_csr);    // ex : 3 >2 gives one why as current priv = s and need to access m register
   //  and that is not applicable
   // 3 > 3 gives zero why as current priv = m and need to access m register
   //  and that is  applicable
   assign illegal_csr_write  = (i_riscv_csr_address[11:10] == 2'b11) && csr_we ;    // csr_addr[11:10] == 2'b11 means it is readonly operation
   //  csr_we = 1 when operation  = CSR_WRITE ,  CSR_SET , CSR_CLEAR
-  assign illegal_csr = (illegal_csr_read | illegal_csr_write | illegal_csr_priv ) ;
+  assign illegal_csr    = ((illegal_csr_read | illegal_csr_write | illegal_csr_priv ) && is_csr) ;
   assign illegal_total  =  illegal_csr | i_riscv_csr_illegal_inst ;
-  assign csr_we_int  = csr_we &  ~illegal_csr;
+  assign csr_we_int     = csr_we &  ~illegal_csr;
 
 
   assign mip_timer_next    = i_riscv_csr_timer_int ;
