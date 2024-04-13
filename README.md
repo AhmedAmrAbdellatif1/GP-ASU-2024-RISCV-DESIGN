@@ -9,7 +9,7 @@ This project focuses on the design and implementation of a pipelined RISC-V 64-b
 - [Abdelrahman Mohamed Abdelhalim](mailto:abdomohamed1961@gmail.com) - Verification
 - [Bishoy Emad William](https://www.linkedin.com/in/bishoy-emad-527812227/) - Design
 - [Hebatallah Hesham Sayed](https://www.linkedin.com/in/hebatallah-hesham-a68818240/) - Design
-- [Omar Ezzeldin Mohamed](mailto:omarezzeldin121@gmail.com) - Design
+- [Omar EzzEldin Mohamed](mailto:omarezzeldin121@gmail.com) - Design
 
 ## Repository Structure
 The GitHub repository contains the following directories and files:
