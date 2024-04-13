@@ -343,7 +343,9 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_de_jump_d          (i_riscv_datapath_jump)               ,
     .i_riscv_de_pcplus4_d       (riscv_pcplus4_d)                     ,
     .i_riscv_de_opcode_d        (riscv_opcode_d)                      ,
-    .i_riscv_de_ecall_m_d       (i_riscv_datapath_ecallm_cu_de)       ,    
+    .i_riscv_de_ecall_m_d       (i_riscv_datapath_ecallm_cu_de)       , 
+    .i_riscv_de_ecall_u_d       (i_riscv_datapath_ecallu_cu_de)       ,                                             //>>
+    .i_riscv_de_ecall_s_d       (i_riscv_datapath_ecalls_cu_de)       ,                                              //<<
     .i_riscv_de_csraddress_d    (riscv_inst_d[31:20])                 ,     
     .i_riscv_de_illegal_inst_d  (illegal_inst_d)                      ,  
     .i_riscv_de_iscsr_d         (i_riscv_datapath_iscsr_cu_de)        ,   
@@ -357,6 +359,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_de_amo_d           (i_riscv_datapath_amo)                ,
     .i_riscv_de_inst            (riscv_inst_d)                        ,
     .i_riscv_de_cinst           (riscv_cinst_d)                       ,
+    
     .o_riscv_de_inst            (riscv_inst_e)                        ,
     .o_riscv_de_cinst           (riscv_cinst_e)                       ,
     .o_riscv_de_lr_e            (riscv_lr_e)                          ,
@@ -364,7 +367,10 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_de_amo_op_e        (riscv_amo_op_e)                      ,
     .o_riscv_de_amo_e           (riscv_amo_e)                         ,
     .o_riscv_de_instret_e       (riscv_instret_e )                    ,   
-    .o_riscv_de_ecall_m_e       (ecallm_de_em)                        ,   
+    .o_riscv_de_ecall_m_e       (ecallm_de_em)                        ,  
+    .o_riscv_de_ecall_s_e       (ecalls_de_em)                       ,   // >>
+    .o_riscv_de_ecall_u_e       (ecallu_de_em)                        ,  //>>
+
     .o_riscv_de_csraddress_e    (csraddress_de_em)                    ,           
     .o_riscv_de_illegal_inst_e  (illegal_inst_de_em)                  ,  
     .o_riscv_de_iscsr_e         (iscsr_de_em)                         ,  
@@ -462,6 +468,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_em_opcode_e                (riscv_opcode_e)                   ,
     .i_riscv_em_flush                   (riscv_reg_flush)                  ,  
     .i_riscv_em_ecall_m_e               (ecallm_de_em)                     ,   
+    .i_riscv_em_ecall_s_e               (ecalls_de_em)                     ,  //>>
+    .i_riscv_em_ecall_u_e               (ecallu_de_em)                     ,  //>>
     .i_riscv_em_csraddress_e            (csraddress_de_em)                 ,    
     .i_riscv_em_illegal_inst_e          (illegal_inst_de_em)               ,  
     .i_riscv_em_iscsr_e                 (iscsr_de_em)                      ,  
@@ -485,7 +493,9 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_em_instret_m               (riscv_instret_m)                  ,   
     .o_riscv_em_rs1addr_m               (o_riscv_datapath_rs1addr_m)       ,       
     .o_riscv_em_ecall_m_m               (m_em_csr)                         ,   
-    .o_riscv_em_csraddress_m            (csraddress_em_csr)                ,    
+    .o_riscv_em_ecall_s_m               (s_em_csr)                         , //<--
+    .o_riscv_em_ecall_u_m               (u_em_csr)                         , //<--
+    .o_riscv_em_csraddress_m            (csraddress_em_csr)                , 
     .o_riscv_em_illegal_inst_m          (illegal_inst_em_csr)              ,  
     .o_riscv_em_iscsr_m                 (iscsr_csr_mw)                     ,  
     .o_riscv_em_csrop_m                 (csrop_em_csr)                     ,      
@@ -595,8 +605,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .i_riscv_csr_wdata                  (muxout_csr)                     ,
   .i_riscv_csr_external_int           (i_riscv_core_externalinterupt)  , 
   .i_riscv_csr_timer_int              (i_riscv_core_timerinterupt)     ,
-  .i_riscv_csr_ecall_u                (ecall_u_em_csr)                 ,
-  .i_riscv_csr_ecall_s                (ecall_s_em_csr)                 ,
+  .i_riscv_csr_ecall_u                (u_em_csr)                 ,
+  .i_riscv_csr_ecall_s                (s_em_csr)                 ,
   .i_riscv_csr_ecall_m                (m_em_csr)                       ,
   .i_riscv_csr_illegal_inst           (illegal_inst_em_csr)            , //illegal_inst_em_csr
   .i_riscv_csr_inst_addr_misaligned   (inst_addr_misaligned_em_csr)    , 

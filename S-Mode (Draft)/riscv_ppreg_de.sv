@@ -27,6 +27,8 @@
     input   logic [63:0]  i_riscv_de_pcplus4_d        ,
     input   logic [6:0]   i_riscv_de_opcode_d         ,
     input   logic         i_riscv_de_ecall_m_d        , //<--- trap
+    input   logic         i_riscv_de_ecall_s_d        , //<--- trap
+    input   logic         i_riscv_de_ecall_u_d        , //<--- trap
     input   logic [11:0]  i_riscv_de_csraddress_d     , //<--- trap
     input   logic         i_riscv_de_illegal_inst_d   , //<--- trap
     input   logic         i_riscv_de_iscsr_d          , //<--- CSR
@@ -71,6 +73,8 @@
     output  logic         o_riscv_de_jump_e           ,
     output  logic [6:0]   o_riscv_de_opcode_e         ,
     output  logic         o_riscv_de_ecall_m_e        , //<--- CSR 
+    output  logic         o_riscv_de_ecall_s_e        , //<--- CSR 
+    output  logic         o_riscv_de_ecall_u_e        , //<--- CSR 
     output  logic [11:0]  o_riscv_de_csraddress_e     , //<--- CSR
     output  logic         o_riscv_de_illegal_inst_e   , //<--- CSR
     output  logic         o_riscv_de_iscsr_e          , //<--- CSR
@@ -107,6 +111,8 @@
           o_riscv_de_jump_e          <=  'b0;
           o_riscv_de_opcode_e        <=  'b0;
           o_riscv_de_ecall_m_e       <=  'b0; 
+          o_riscv_de_ecall_s_e       <=  'b0; // <--
+          o_riscv_de_ecall_u_e       <=  'b0; // <--
           o_riscv_de_csraddress_e    <=  'b0;
           o_riscv_de_illegal_inst_e  <=  'b0;
           o_riscv_de_iscsr_e         <=  'b0;
@@ -147,6 +153,8 @@
           o_riscv_de_jump_e          <=  'b0;
           o_riscv_de_opcode_e        <=  'b0;
           o_riscv_de_ecall_m_e       <=  'b0; 
+          o_riscv_de_ecall_s_e       <=  'b0; // <--
+          o_riscv_de_ecall_u_e       <=  'b0;// <--
           o_riscv_de_csraddress_e    <=  'b0;
           o_riscv_de_illegal_inst_e  <=  'b0;
           o_riscv_de_iscsr_e         <=  'b0;
@@ -187,6 +195,8 @@
           o_riscv_de_jump_e          <=  i_riscv_de_jump_d;    
           o_riscv_de_opcode_e        <=  i_riscv_de_opcode_d;
           o_riscv_de_ecall_m_e       <=  i_riscv_de_ecall_m_d; 
+          o_riscv_de_ecall_s_e       <=  i_riscv_de_ecall_s_d; //<--
+          o_riscv_de_ecall_u_e       <=  i_riscv_de_ecall_u_d; //<--
           o_riscv_de_csraddress_e    <=  i_riscv_de_csraddress_d;
           o_riscv_de_illegal_inst_e  <=  i_riscv_de_illegal_inst_d;
           o_riscv_de_iscsr_e         <=  i_riscv_de_iscsr_d;

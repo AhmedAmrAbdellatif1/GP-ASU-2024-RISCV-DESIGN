@@ -1022,7 +1022,7 @@ module riscv_csrfile
     else if( (i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned) && (trap_to_priv_lvl == PRIV_LVL_M)  )
       mtval_cs <= i_riscv_csr_addressALU  ;
     else if( illegal_total && (trap_to_priv_lvl == PRIV_LVL_M)  )
-      mtval_cs <= (i_riscv_csr_is_compressed)? { {32{1'b0}}, i_riscv_csr_inst }:{ {32{1'b0}}, i_riscv_csr_inst }  ;
+      mtval_cs <= (i_riscv_csr_is_compressed)? { {48{1'b0}}, i_riscv_csr_cinst }:{ {32{1'b0}}, i_riscv_csr_inst }  ;
     else if (csr_we_int && i_riscv_csr_address == CSR_MTVAL)
       mtval_cs    <= csr_wdata;
 
@@ -1042,7 +1042,7 @@ module riscv_csrfile
       stval_cs <= i_riscv_csr_addressALU;
 
     else if(illegal_total  && support_supervisor && trap_to_priv_lvl == PRIV_LVL_S)
-      stval_cs <= (i_riscv_csr_is_compressed)? {{32{1'b0}}, i_riscv_csr_inst }:{{32{1'b0}}, i_riscv_csr_inst };
+      stval_cs <= (i_riscv_csr_is_compressed)? { {48{1'b0}}, i_riscv_csr_cinst }:{ {32{1'b0}}, i_riscv_csr_inst }  ;
 
     else if (csr_we_int && i_riscv_csr_address == CSR_STVAL)
       stval_cs    <= csr_wdata;

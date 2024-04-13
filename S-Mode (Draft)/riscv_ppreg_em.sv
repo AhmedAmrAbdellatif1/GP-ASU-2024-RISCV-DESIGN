@@ -16,6 +16,8 @@
     input   logic [6:0]   i_riscv_em_opcode_e                 ,
     input   logic         i_riscv_em_flush                    , //<--- trap
     input   logic         i_riscv_em_ecall_m_e                , //<--- trap 
+    input   logic         i_riscv_em_ecall_s_e                , //<--- trap 
+    input   logic         i_riscv_em_ecall_u_e                , //<--- trap 
     input   logic [11:0]  i_riscv_em_csraddress_e             , //<--- trap
     input   logic         i_riscv_em_illegal_inst_e           , //<--- trap
     input   logic         i_riscv_em_iscsr_e                  , //<--- csr
@@ -49,6 +51,8 @@
     output  logic [63:0]  o_riscv_em_imm_m                    ,
     output  logic [6:0]   o_riscv_em_opcode_m                 ,
     output  logic         o_riscv_em_ecall_m_m                , //<--- trap 
+    output  logic         o_riscv_em_ecall_s_m                , //<--- trap 
+    output  logic         o_riscv_em_ecall_u_m                , //<--- trap 
     output  logic [11:0]  o_riscv_em_csraddress_m             , //<--- trap
     output  logic         o_riscv_em_illegal_inst_m           , //<--- trap
     output  logic         o_riscv_em_iscsr_m                  , //<--- csr
@@ -77,6 +81,8 @@
             o_riscv_em_imm_m                    <= 'b0;            
             o_riscv_em_opcode_m                 <= 'b0;
             o_riscv_em_ecall_m_m                <= 'b0; 
+            o_riscv_em_ecall_s_m                <= 'b0; 
+            o_riscv_em_ecall_u_m                <= 'b0; 
             o_riscv_em_csraddress_m             <= 'b0; 
             o_riscv_em_illegal_inst_m           <= 'b0;
             o_riscv_em_iscsr_m                  <= 'b0; 
@@ -109,6 +115,8 @@
             o_riscv_em_opcode_m                 <= 'b0;
             o_riscv_em_csrwritedata_m           <= 'b0; 
             o_riscv_em_ecall_m_m                <= 'b0; 
+            o_riscv_em_ecall_s_m                <= 'b0;
+            o_riscv_em_ecall_u_m                <= 'b0;
             o_riscv_em_csraddress_m             <= 'b0; 
             o_riscv_em_illegal_inst_m           <= 'b0;
             o_riscv_em_iscsr_m                  <= 'b0; 
@@ -139,6 +147,8 @@
             o_riscv_em_imm_m                    <= i_riscv_em_imm_e;
             o_riscv_em_opcode_m                 <= i_riscv_em_opcode_e;
             o_riscv_em_ecall_m_m                <= i_riscv_em_ecall_m_e; 
+            o_riscv_em_ecall_s_m                <= i_riscv_em_ecall_s_e; 
+            o_riscv_em_ecall_u_m                <= i_riscv_em_ecall_u_e; 
             o_riscv_em_csraddress_m             <= i_riscv_em_csraddress_e; 
             o_riscv_em_illegal_inst_m           <= i_riscv_em_illegal_inst_e;
             o_riscv_em_iscsr_m                  <= i_riscv_em_iscsr_e ; 
