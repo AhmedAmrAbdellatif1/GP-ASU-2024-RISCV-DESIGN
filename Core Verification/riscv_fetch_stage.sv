@@ -4,6 +4,7 @@ module riscv_fstage (
   input   logic         i_riscv_fstage_stallpc  ,
   input   logic         i_riscv_fstage_pcsrc    ,
   input   logic [63:0]  i_riscv_fstage_aluexe   ,
+  input   logic [63:0]  i_riscv_fstage_sepc     ,    //<--- TRAPS AND CSR  
   input   logic [31:0]  i_riscv_fstage_inst     ,  
   input   logic [1:0]   i_riscv_fstage_pcsel    ,    //<--- TRAPS AND CSR    
   input   logic [63:0]  i_riscv_fstage_mtvec    ,    //<--- TRAPS AND CSR    
@@ -58,12 +59,13 @@ module riscv_fstage (
   );
 
 /************************ PC Trap Mux ************************/
-  riscv_mux3 u_pcmuxfortrap (
-    .i_riscv_mux3_sel (i_riscv_fstage_pcsel)        ,   
-    .i_riscv_mux3_in0 (o_riscv_pcmux_nextpc)        ,  //<=
-    .i_riscv_mux3_in1 (i_riscv_fstage_mtvec)        ,  
-    .i_riscv_mux3_in2 (i_riscv_fstage_mepc)         , 
-    .o_riscv_mux3_out (o_riscv_fstage_pcmux_trap) 
+  riscv_mux4 u_pcmuxfortrap (
+    .i_riscv_mux4_sel (i_riscv_fstage_pcsel)        ,   
+    .i_riscv_mux4_in0 (o_riscv_pcmux_nextpc)        ,  //<=
+    .i_riscv_mux4_in1 (i_riscv_fstage_mtvec)        ,  
+    .i_riscv_mux4_in2 (i_riscv_fstage_mepc)         , 
+    .i_riscv_mux4_in3 (i_riscv_fstage_sepc)         ,
+    .o_riscv_mux4_out (o_riscv_fstage_pcmux_trap) 
   );
 
 endmodule

@@ -209,6 +209,7 @@ module riscv_core #(parameter MXLEN=64) (
     .o_riscv_datapath_iscsr_w_trap      (iscsr_w_hzrd_datapath)           ,
     .o_riscv_datapath_iscsr_m_trap      (iscsr_m_hzrd_datapath)           ,
     .o_riscv_datapath_iscsr_e_trap      (iscsr_e_hzrd_datapath)           ,
+    .o_riscv_datapath_tsr               (datapath_tsr)                    ,
     .o_riscv_datapath_iscsr_d_trap      (iscsr_d_hzrd_datapath)
 );
 
@@ -222,6 +223,7 @@ riscv_cu u_top_cu (
   .i_riscv_cu_privlvl       (riscv_core_privlvl_csr_cu)                   ,    
   .i_riscv_cu_rs1           (riscv_datapath_rs1_fd_cu)                    ,     
   .i_riscv_cu_cosntimm12    (riscv_datapath_constimm12_fd_cu)             ,
+  .i_riscv_cu_tsr           (datapath_tsr)                                ,
  /************************* CU -> DP Signals *************************/   
   .o_riscv_cu_jump          (riscv_cu_jump_datapath)                      , 
   .o_riscv_cu_regw          (riscv_cu_regw_datapath)                      ,

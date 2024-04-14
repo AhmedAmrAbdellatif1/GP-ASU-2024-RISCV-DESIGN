@@ -1,0 +1,46 @@
+# Compile of riscv_alu.sv was successful.
+# Compile of riscv_branch.sv was successful.
+# Compile of riscv_compressed_decoder.sv was successful.
+# Compile of riscv_control_unit.sv was successful.
+# Compile of riscv_core.sv was successful.
+# Compile of riscv_csrfile.sv was successful.
+# Compile of riscv_datapath.sv failed with 1 errors.
+# Compile of riscv_dcache_data.sv was successful.
+# Compile of riscv_dcache_fsm.sv was successful.
+# Compile of riscv_dcache_tag.sv was successful.
+# Compile of riscv_dcache_top.sv was successful.
+# Compile of riscv_decode_stage.sv was successful.
+# Compile of riscv_divider.sv was successful.
+# Compile of riscv_dm.sv was successful.
+# Compile of riscv_execute_stage.sv was successful.
+# Compile of riscv_extend.sv was successful.
+# Compile of riscv_fetch_stage.sv was successful.
+# Compile of riscv_hazardunit.sv was successful.
+# Compile of riscv_icache_fsm.sv was successful.
+# Compile of riscv_icache_inst.sv was successful.
+# Compile of riscv_icache_tag.sv was successful.
+# Compile of riscv_icache_top.sv was successful.
+# Compile of riscv_icu.sv was successful.
+# Compile of riscv_im.sv was successful.
+# Compile of riscv_iram_model.sv was successful.
+# Compile of riscv_mem_stage.sv was successful.
+# Compile of riscv_memext.sv was successful.
+# Compile of riscv_multiplier.sv was successful.
+# Compile of riscv_mux2.sv was successful.
+# Compile of riscv_mux3.sv was successful.
+# Compile of riscv_mux4.sv was successful.
+# Compile of riscv_pc.sv was successful.
+# Compile of riscv_pcadder.sv was successful.
+# Compile of riscv_ppreg_de.sv was successful.
+# Compile of riscv_ppreg_em.sv was successful.
+# Compile of riscv_ppreg_fd.sv was successful.
+# Compile of riscv_ppreg_mw.sv was successful.
+# Compile of riscv_rf.sv was successful.
+# Compile of riscv_top.sv was successful.
+# Compile of riscv_top_tb.sv failed with 23 errors.
+# Compile of riscv_tracer.sv was successful.
+# Compile of riscv_trap_wb.sv was successful.
+# Compile of riscv_wb_stage.sv was successful.
+# Compile of riscv_zeroextend.sv was successful.
+# 44 compiles, 4 failed with 24 errors.
+do sim.do

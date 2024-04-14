@@ -75,6 +75,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   output logic              o_riscv_datapath_iscsr_m_trap      ,
   output logic              o_riscv_datapath_iscsr_e_trap      ,
   output logic              o_riscv_datapath_iscsr_d_trap      ,
+  output logic              o_riscv_datapath_tsr               ,
 /************************* Traps Signals *************************/ 
   input   logic             i_riscv_datapath_illgalinst_cu_de  ,
   input   logic [2:0]       i_riscv_datapath_csrop_cu_de       ,
@@ -168,18 +169,17 @@ module riscv_datapath #(parameter MXLEN = 64) (
 /************************* Tracer Signals *************************/
   //--------------------------------->
   `ifdef TEST
-  logic [31:0]   riscv_inst_e        ;
-  logic [15:0]   riscv_cinst_e       ;
-  logic [31:0]   riscv_inst_m        ;
-  logic [15:0]   riscv_cinst_m       ;
-  logic [15:0]   riscv_cinst_d       ;
   logic [31:0]   riscv_inst_wb       ;
   logic [15:0]   riscv_cinst_wb      ;     
   logic [63:0]   riscv_memaddr_wb    ;
   logic [63:0]   riscv_rs2data_wb    ;
   `endif
   //<---------------------------------
-
+  logic [31:0]   riscv_inst_e        ;
+  logic [15:0]   riscv_cinst_e       ;
+  logic [31:0]   riscv_inst_m        ;
+  logic [15:0]   riscv_cinst_d       ;
+  logic [15:0]   riscv_cinst_m       ;
 /************************* Trap & CSR Signals *************************/
   logic               riscv_reg_flush                  ;
   logic               gototrap_mw_trap                 ;
@@ -226,12 +226,13 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic               riscv_cillegal_inst_d            ;
   logic [63:0]        muxout_csr                       ;
   logic               csr_is_compressed_flag           ;
+  logic [63:0]        csr_sepc                         ;
   
   ////////////////////////////////////////////////////////////////////////////////////
   
   assign o_riscv_datapath_pcsrc_e       = riscv_jump_e | riscv_branchtaken;
   assign o_riscv_datapath_opcode        = riscv_opcode_d          ;
-  assign o_riscv_datapath_rdaddr_m      = riscv_rdaddr_m          ;  // to hazard unit 
+  assign o_riscv_datapath_rdaddr_m      = riscv_rdaddr_m          ;  // to hazard unit
   assign o_riscv_datapath_rdaddr_e      = riscv_rdaddr_e          ;  // to hazard unit
   assign o_riscv_datapath_rdaddr_wb     = riscv_rdaddr_wb         ;  // to hazard unit
   assign o_riscv_datapath_regw_m        = riscv_regw_m            ;  // to hazard unit
@@ -269,6 +270,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_fstage_pcsel         (pcsel_trap_fetchpc)                ,   
     .i_riscv_fstage_mtvec         (mtvec_csr_pctrap)                  ,         
     .i_riscv_fstage_mepc          (mepc_csr_pctrap)                   ,   
+    .i_riscv_fstage_sepc          (csr_sepc)                          ,
     .o_riscv_fstage_pc            (o_riscv_datapath_pc)               ,
     .o_riscv_fstage_pcplus4       (riscv_pcplus4_f)                   ,
     .o_riscv_fstage_inst          (riscv_inst_f)                      ,
@@ -625,6 +627,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .o_riscv_csr_returnfromTrap_cs      (returnfromtrap_csr_mw)          ,
   .o_riscv_csr_rdata                  (csrout_mw_trap)                 ,  
   .o_riscv_csr_privlvl                (o_riscv_core_privlvl_csr_cu)    ,
+  .o_riscv_csr_tsr                    (o_riscv_datapath_tsr)           ,
+  .o_riscv_csr_sepc                   (csr_sepc)                       ,
   .o_riscv_csr_sideeffect_flush       ()                               ,
   .o_riscv_csr_flush                  ()
  );

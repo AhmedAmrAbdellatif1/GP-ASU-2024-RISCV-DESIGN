@@ -7,6 +7,7 @@ module riscv_cu #( parameter support_supervisor = 1,
     input  logic [ 1:0] i_riscv_cu_privlvl   ,
     input  logic [ 4:0] i_riscv_cu_rs1       ,
     input  logic [11:0] i_riscv_cu_cosntimm12,
+    input  logic        i_riscv_cu_tsr       ,
     output logic        o_riscv_cu_jump      ,
     output logic        o_riscv_cu_regw      ,
     output logic        o_riscv_cu_asel      ,
@@ -2287,11 +2288,14 @@ module riscv_cu #( parameter support_supervisor = 1,
                         riscv_cu_detect_ecall = 1'b0;
                     // raise an illegal instruction if we are in the wrong privilege level
                     // so check privilege level, as SRET can only be executed in S and M mode
-                        if ( (support_user && (i_riscv_cu_privlvl == PRIV_LVL_U)) || (i_riscv_cu_privlvl == PRIV_LVL_S)) begin
+                        if ( (support_user && (i_riscv_cu_privlvl == PRIV_LVL_U)) || ((i_riscv_cu_privlvl == PRIV_LVL_S) && i_riscv_cu_tsr) ) begin
                         // if we are in S-Mode and Trap SRET (tsr) is set -> trap on illegal instruction
                             o_riscv_cu_illgalinst = 1'b1;
                             o_riscv_cu_csrop = 'b0;
                         end   
+                        else
+                          o_riscv_cu_illgalinst = 1'b0;
+                          o_riscv_cu_csrop = SRET;                        
                     end
                   else 
                     begin
