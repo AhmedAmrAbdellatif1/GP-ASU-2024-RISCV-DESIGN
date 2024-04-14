@@ -149,7 +149,7 @@ module riscv_csrfile
 
 
   localparam logic [MXLEN-1 :0] ISA_CODE =
-               (1                 <<  0)  // A - Atomic Instructions extension
+             (1                 <<  0)  // A - Atomic Instructions extension
              | (1                 <<  2)  // C - Compressed extension
              | (1                 <<  8)  // I - RV32I/64I/128I base ISA
              //9-11 are reserved
@@ -313,7 +313,7 @@ module riscv_csrfile
     // trap_vector_base_o = {mtvec_q[63:2], 2'b0};
     trap_vector_base_o = {mtvec_base_cs, 2'b0};
     // output user mode stvec
-    if (trap_to_priv_lvl == PRIV_LVL_S)
+    if ((priv_lvl_cs && go_to_trap) == PRIV_LVL_S)
     begin
       //  trap_vector_base_o = {stvec_q[63:2], 2'b0};
       trap_vector_base_o = {stvec_base_cs, 2'b0};
@@ -361,6 +361,16 @@ module riscv_csrfile
   assign mip_timer_next    = i_riscv_csr_timer_int ;
   assign mip_external_next = i_riscv_csr_external_int ;
   assign o_riscv_csr_tsr   = mstatus_tsr_cs;
+
+
+  /*** Modes transition conditions ***/
+  assign go_from_s_to_s = ( (support_supervisor)  &&
+                            (priv_lvl_cs == PRIV_LVL_S) &&
+                            (medeleg_cs[execption_cause[3:0]] || mideleg_int[interrupt_cause[3:0]]));
+
+  assign go_from_s_to_m = ( (support_supervisor)  &&
+                            (priv_lvl_cs == PRIV_LVL_S) &&
+                            (!medeleg_cs[execption_cause[3:0]] || !mideleg_int[interrupt_cause[3:0]]));
 
   /*----------------  */
   // CSR Read logic
@@ -630,10 +640,10 @@ module riscv_csrfile
       mstatus_ube_cs                 <=1'b0;
     end
 
-    else if(go_to_trap )
+    else if(go_to_trap)
     begin
       // trap to supervisor mode
-      if (support_supervisor && priv_lvl_cs == PRIV_LVL_S)
+      if (go_from_s_to_s)
       begin
         // update sstatus
         mstatus_sie_cs = 1'b0;
@@ -644,7 +654,7 @@ module riscv_csrfile
       end
 
       // trap to machine mode
-      else // trap_to_priv_lvl == PRIV_LVL_M
+      else if ((priv_lvl_cs == PRIV_LVL_M) || go_from_s_to_m)
       begin
         // update mstatus
         mstatus_mie_cs   <= 0; //no nested interrupt allowed    // if done in software that will not make problem make it again zero
@@ -653,7 +663,6 @@ module riscv_csrfile
         // save the previous privilege mode
         mstatus_mpp_cs = priv_lvl_cs;  // check that statement or it is commented
         // mstatus_mpp_cs <= 2'b11;
-
       end
     end
     else if (mret )
@@ -773,8 +782,8 @@ module riscv_csrfile
         // mie_meie_cs           <= csr_wdata[M_EXT_I];      //11
         //  mie_meie_cs           <= 0 ;      //11
         // mie_ssie_cs           <= csr_wdata[S_SOFT_I];
-        mie_stie_cs             <= csr_wdata[S_TIMER_I] && mideleg_mti_cs;
-        mie_seie_cs             <= csr_wdata[S_EXT_I]  && mideleg_mei_cs;
+        mie_stie_cs             <= (!mideleg_mti_cs)? mie_stie_cs : csr_wdata[S_TIMER_I];
+        mie_seie_cs             <= (!mideleg_mei_cs)? mie_seie_cs : csr_wdata[S_EXT_I];
       end
     end   // end of always block
   end
@@ -834,7 +843,7 @@ module riscv_csrfile
   end   /* end of always block
 
 
-  /*------mtvec register-----*/
+   /*------mtvec register-----*/
   always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
   begin
     if (i_riscv_csr_rst)
@@ -946,13 +955,20 @@ module riscv_csrfile
   always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
   begin
     if (i_riscv_csr_rst)
+      mepc_cs <= 64'b0;
+    else if(go_to_trap)
+      begin
+        if(priv_lvl_cs == PRIV_LVL_M)
+          mepc_cs <= i_riscv_csr_pc ;
+          
+        else if ( (support_supervisor)  &&
+                  (priv_lvl_cs == PRIV_LVL_S) &&
+                  (!medeleg_cs[execption_cause[3:0]] || !mideleg_int[interrupt_cause[3:0]]))
 
-      mepc_cs                        <= 64'b0;
+          mepc_cs <= i_riscv_csr_pc ;
+      end
 
-    else if(go_to_trap && priv_lvl_cs == PRIV_LVL_M )
-      mepc_cs         <= i_riscv_csr_pc ;
-
-    else if (csr_we_int && i_riscv_csr_address == CSR_MEPC )
+    else if (csr_we_int && (i_riscv_csr_address == CSR_MEPC) )
 
       mepc_cs <= {csr_wdata[63:1],1'b0};
     //mepc_cs <= {csr_wdata[63:2],2'b00};    check is it 2'b00 or 1'b0 accordng to ialign
@@ -1092,23 +1108,10 @@ module riscv_csrfile
   always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
   begin
     if (i_riscv_csr_rst)
-
-      priv_lvl_cs                   <= PRIV_LVL_M;
-
-    else  if(go_to_trap)
-       begin
-      //  priv_lvl_cs <= PRIV_LVL_M      ;
-      if ( (support_supervisor && is_interrupt && mideleg_int[interrupt_cause[3:0]]) ||
-          ( (is_exception && medeleg_cs[execption_cause[3:0]] ) ) )  //~is_interrupt = is_exception
-
-      begin
-        // traps never transition from a more-privileged mode to a less privileged mode
-        // so if trap is get  in M mode, it will be evaluted in M mode >> only delgeate from m to m when it is get in s-mode
-        if (priv_lvl_cs == PRIV_LVL_M)
-        priv_lvl_cs <= PRIV_LVL_M;
-        else
-        priv_lvl_cs <= PRIV_LVL_S;
-      end
+      priv_lvl_cs <= PRIV_LVL_M;
+    else if(go_to_trap)
+    begin
+      priv_lvl_cs <= trap_to_priv_lvl;
     end
     else if (mret)
       // restore the previous privilege level
@@ -1127,27 +1130,27 @@ module riscv_csrfile
   begin
     if     (i_riscv_csr_rst)
     begin
-
       mcause_code_cs                 <= 4'b0000;
       mcause_int_excep_cs            <= 1'b0 ;
     end
-    else if( go_to_trap && (priv_lvl_cs== PRIV_LVL_M))      //  trap to machine mode
+
+    else if( go_to_trap && ((priv_lvl_cs == PRIV_LVL_M) || go_from_s_to_m))      //  trap to machine mode
     begin
 
       if(valid)
-         begin
-            if(M_ext_int_pend)
-            begin
-               mcause_code_cs      <= M_EXT_I;
-               mcause_int_excep_cs <= 'b1;
-            end
-            else if(M_timer_int_pend)
-            begin
-               mcause_code_cs      <= M_TIMER_I;
-               mcause_int_excep_cs <= 'b1;
-            end
-         end
-         
+      begin
+        if(M_ext_int_pend)
+        begin
+          mcause_code_cs      <= M_EXT_I;
+          mcause_int_excep_cs <= 'b1;
+        end
+        else if(M_timer_int_pend)
+        begin
+          mcause_code_cs      <= M_TIMER_I;
+          mcause_int_excep_cs <= 'b1;
+        end
+      end
+
       else if(illegal_total)
       begin
         mcause_code_cs      <= ILLEGAL_INSTRUCTION;
@@ -1220,11 +1223,12 @@ module riscv_csrfile
       scause_code_cs                 <= 4'b0000;
       scause_int_excep_cs            <= 1'b0 ;
     end
-    else if( go_to_trap && support_supervisor && priv_lvl_cs == PRIV_LVL_S)   // trap to supervisor mode
+  
+    else if( go_to_trap && support_supervisor && priv_lvl_cs == PRIV_LVL_S && (medeleg_cs[execption_cause[3:0]] || mideleg_int[interrupt_cause[3:0]]))   // trap to supervisor mode
     begin
-       if (valid)
-       begin
-      //  if (support_supervisor && trap_to_priv_lvl == PRIV_LVL_S) begin
+      if (valid)
+      begin
+        //  if (support_supervisor && trap_to_priv_lvl == PRIV_LVL_S) begin
         if(S_ext_int_pend)
         begin
           scause_code_cs      <= S_EXT_I;
@@ -1236,7 +1240,7 @@ module riscv_csrfile
           scause_code_cs      <= S_TIMER_I;
           scause_int_excep_cs <= 1;
           // if (mideleg_mti_cs )
-        end 
+        end
       end
       else if(illegal_total)
       begin
@@ -1371,27 +1375,24 @@ module riscv_csrfile
     // o_riscv_csr_rdata = perf_rdata;
   end
 
-  
+
 
   // update priv level
-  always @ (posedge i_riscv_csr_clk )
+  always_comb
   begin
-    trap_to_priv_lvl <= PRIV_LVL_M;
     if (go_to_trap)
-      if ( (support_supervisor && is_interrupt && mideleg_int[interrupt_cause[3:0]]) ||
-          ( (is_exception && medeleg_cs[execption_cause[3:0]] ) ) )  //~is_interrupt = is_exception
+    begin
+      if  ( (support_supervisor && is_interrupt && mideleg_int[interrupt_cause[3:0]]) ||
+            ( (is_exception && medeleg_cs[execption_cause[3:0]] ) ) )  //~is_interrupt = is_exception
       begin
-        // traps never transition from a more-privileged mode to a less privileged mode
-        // so if trap is get  in M mode, it will be evaluted in M mode >> only delgeate from m to m when it is get in s-mode
         if (priv_lvl_cs == PRIV_LVL_M)
-          trap_to_priv_lvl <= PRIV_LVL_M;
+          trap_to_priv_lvl = PRIV_LVL_M;
         else
-          trap_to_priv_lvl <= PRIV_LVL_S;
+          trap_to_priv_lvl = PRIV_LVL_S;
       end
-
-      
-    //else initial value : trap_to_priv_lvl = PRIV_LVL_M;
-
+    end
+    else
+      trap_to_priv_lvl = PRIV_LVL_M;
   end
 
   always_comb
@@ -1420,24 +1421,24 @@ module riscv_csrfile
 
     else if (mip_mtip_cs && mie_mtie_cs)
 
-      begin
-        interrupt_go = 1;
-        M_timer_int_pend = 1 ;
-        interrupt_cause = M_TIMER_I;
-      end
+    begin
+      interrupt_go = 1;
+      M_timer_int_pend = 1 ;
+      interrupt_cause = M_TIMER_I;
+    end
 
     // Machine Timer Interrupt
 
     else if (mip_meip_cs && mie_meie_cs)
 
-      begin
-        interrupt_go = 1;
-        M_ext_int_pend = 1 ;
-        interrupt_cause = M_EXT_I;
-      end
+    begin
+      interrupt_go = 1;
+      M_ext_int_pend = 1 ;
+      interrupt_cause = M_EXT_I;
+    end
 
     // Machine Mode External Interrupt
-   
+
     else
     begin
       interrupt_go = 0 ;
@@ -1446,13 +1447,14 @@ module riscv_csrfile
     end
   end
 
-    // -----------------
-    // execption Control
-    // -----------------
-  always_comb begin
+  // -----------------
+  // execption Control
+  // -----------------
+  always_comb
+  begin
 
     if(illegal_total)
-      execption_cause = ILLEGAL_INSTRUCTION ; 
+      execption_cause = ILLEGAL_INSTRUCTION ;
 
     else if(i_riscv_csr_inst_addr_misaligned)
       execption_cause = INSTRUCTION_ADDRESS_MISALIGNED;
@@ -1464,14 +1466,14 @@ module riscv_csrfile
       execption_cause = ECALL_S;
 
     else if (i_riscv_csr_ecall_u)
-      execption_cause = ECALL_U;  
+      execption_cause = ECALL_U;
 
     else if (i_riscv_csr_load_addr_misaligned)
       execption_cause = LOAD_ADDRESS_MISALIGNED;
 
     else if (i_riscv_csr_store_addr_misaligned)
       execption_cause = STORE_ADDRESS_MISALIGNED;
-  
+
   end
 
 
@@ -1495,11 +1497,11 @@ module riscv_csrfile
       if (mideleg_int[interrupt_cause[3:0]]) //if delegated so cant take action of trap if below conditions are satified
         // but if not delegated so action of trap take directly without that check
       begin
-         if (  (support_supervisor && mstatus_sie_cs && priv_lvl_cs == PRIV_LVL_S) ||
-               (support_user && priv_lvl_cs == PRIV_LVL_U) )
-            valid = 1'b1;
-         else
-            valid = 1'b0;
+        if (  (support_supervisor && mstatus_sie_cs && priv_lvl_cs == PRIV_LVL_S) ||
+              (support_user && priv_lvl_cs == PRIV_LVL_U) )
+          valid = 1'b1;
+        else
+          valid = 1'b0;
       end
       else
       begin
