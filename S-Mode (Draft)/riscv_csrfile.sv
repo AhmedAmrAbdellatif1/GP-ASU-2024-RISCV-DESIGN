@@ -184,9 +184,9 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   assign o_riscv_csr_gotoTrap_cs      = go_to_trap            ;
 
   assign is_csr                       = (i_riscv_csr_op == 3'd0)? 1'b0:1'b1;
-  assign is_trap                      = (is_interrupt || is_exception)? 1:0;
   assign is_interrupt                 = interrupt_go && interrupt_global_enable       ;
 
+  assign is_trap                      = (is_interrupt || is_exception)? 1'b1:1'b0;
   assign go_to_trap                   =  is_trap && !i_riscv_csr_flush && !i_riscv_csr_globstall ;
 
 
@@ -201,12 +201,22 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   assign mip_external_next            = i_riscv_csr_external_int ;
   assign o_riscv_csr_tsr              = mstatus_tsr;
 
+  /*** Modes transition conditions ***/
+  assign force_s_delegation = ( (support_supervisor)  &&
+                                (current_priv_lvl == PRIV_LVL_S) &&
+                                (medeleg[execption_cause[3:0]] || mideleg[interrupt_cause[3:0]]));
+
+  assign no_delegation      = ( (support_supervisor)  &&
+                                (current_priv_lvl == PRIV_LVL_S) &&
+                                (!medeleg[execption_cause[3:0]] && !mideleg[interrupt_cause[3:0]]));
+
   /****************************** Trap Base Address ******************************/
   always_comb
   begin
+
     trap_base_addr = {mtvec_base, 2'b0};  // initialize base address
 
-    if (go_to_trap && (current_priv_lvl == PRIV_LVL_S ))
+    if (current_priv_lvl == PRIV_LVL_S)
     begin
       trap_base_addr = {stvec_base, 2'b0};
     end
@@ -216,15 +226,6 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
       trap_base_addr[7:2] = interrupt_cause[5:0];
     end
   end
-
-  /*** Modes transition conditions ***/
-  assign go_from_s_to_s = ( (support_supervisor)  &&
-                            (current_priv_lvl == PRIV_LVL_S) &&
-                            (medeleg[execption_cause[3:0]] || mideleg[interrupt_cause[3:0]]));
-
-  assign go_from_s_to_m = ( (support_supervisor)  &&
-                            (current_priv_lvl == PRIV_LVL_S) &&
-                            (!medeleg[execption_cause[3:0]] || !mideleg[interrupt_cause[3:0]]));
 
   /*----------------  */
   // CSR Read logic
@@ -497,7 +498,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
     else if(go_to_trap)
     begin
       // trap to supervisor mode
-      if (go_from_s_to_s)
+      if (force_s_delegation)
       begin
         // update sstatus
         mstatus_sie = 1'b0;
@@ -508,7 +509,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
       end
 
       // trap to machine mode
-      else if ((current_priv_lvl == PRIV_LVL_M) || go_from_s_to_m)
+      else if ((current_priv_lvl == PRIV_LVL_M) || no_delegation)
       begin
         // update mstatus
         mstatus_mie   <= 0; //no nested interrupt allowed    // if done in software that will not make problem make it again zero
@@ -988,7 +989,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
       mcause_int_excep            <= 1'b0 ;
     end
 
-    else if( go_to_trap && ((current_priv_lvl == PRIV_LVL_M) || go_from_s_to_m))      //  trap to machine mode
+    else if( go_to_trap && ((current_priv_lvl == PRIV_LVL_M) || no_delegation))      //  trap to machine mode
     begin
 
       if(valid)
@@ -1359,6 +1360,8 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
       valid = 1'b0;
   end
 
+
+  /*********************************************** عشوائيات *********************************************************/
   logic sel ;
 
   always_comb
