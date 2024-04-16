@@ -1342,6 +1342,148 @@ CSR_MHPM_COUNTER_30  ,
   end
 
 
+/*Interrupts to M-mode take priority over any interrupts to lower privilege modes
+
+now you have interupt >> m-interupt  happens in m-mode only takes in m-mode
+                         s-interupt  happens in s-mode  takes in m-mode if mideleg = 0 else if mideleg = 1 takes in s-mode 
+                        
+Multiple simultaneous interrupts destined for M-mode are handled in the following decreasing
+priority order: MEI, MSI, MTI, SEI, SSI, STI
+
+An interrupt i will trap to M-mode (causing the privilege mode to change to M-mode) >>changes m-mode registers if all of
+the following are true: (a) either the current privilege mode is M and the MIE bit in the mstatus
+register is set, or the current privilege mode has less privilege than M-mode; (b) bit i is set in both
+mip and mie; and (c) if register mideleg exists, bit i is not set in mideleg.
+
+An interrupt i will trap to S-mode if both of the following are true  >>changes s-mode registers : (a) either the current privilege
+mode is S and the SIE bit in the sstatus register is set, or the current privilege mode has less
+privilege than S-mode; and (b) bit i is set in both sip and sie.*/
+    // -----------------
+    // Interrupt 
+    // -----------------
+   
+   // Machine Timer Interrupt
+    
+     if (mip_mtip && mie_mtie)
+   case (current_priv_lvl)
+
+      interrupt_go_m = 0; 
+      interrupt_go_s = 0; 
+        PRIV_LVL_M :  if (mstatus_mie) begin
+                          interrupt_go_m = 1 ;
+                          M_timer_int_pend = 1;
+                     end
+                      else begin 
+                        interrupt_go_m = 0;    
+                        M_timer_int_pend = 0;
+                      end          
+        PRIV_LVL_S : if (mideleg_mti && mstatus_sie) begin
+                        interrupt_go_s = 1 ;
+                        M_timer_int_pend = 1;
+                      end
+                      else begin 
+                        interrupt_go_s = 0 ; 
+                        M_timer_int_pend = 0;
+                      end
+      /*  PRIV_LVL_U : interrupt_global_enable_m = 1 ;
+                    interrupt_global_enable_s = 1 ;  */
+        default : begin interrupt_go_s = 0 ;
+                        interrupt_go_m = 0 ;
+                 end        
+    endcase
+
+     // Machine Mode External Interrupt
+    else if (mip_meip && mie_meie)
+
+     case (current_priv_lvl)
+
+      interrupt_go_m = 0; 
+      interrupt_go_s = 0; 
+        PRIV_LVL_M :  if (mstatus_mie) begin
+                        interrupt_go_m = 1 ;
+                        M_ext_int_pend =1 ;
+                       end 
+                        else begin
+                        interrupt_go_m = 0; 
+                         M_ext_int_pend =0 ;
+                        end             
+        PRIV_LVL_S : if (mideleg_mei && mstatus_sie) begin
+                        interrupt_go_s = 1 ;
+                         M_ext_int_pend =1 ;
+                      end 
+                     else  begin
+                        interrupt_go_s = 0 ; 
+                         M_ext_int_pend =0 ;
+                   end     
+      /*  PRIV_LVL_U : interrupt_global_enable_m = 1 ;
+                    interrupt_global_enable_s = 1 ;  */
+        default :  begin interrupt_go_s = 0 ;
+                        interrupt_go_m = 0 ;
+                 end             
+    endcase
+   
+
+   // Supervisor External Interrupt
+    // The logical-OR of the software-writable bit and the signal from the external interrupt controller is
+    // used to generate external interrupts to the supervisor
+    else if ( mie_seie && mip_seip)
+      case (current_priv_lvl)
+
+        interrupt_go_m = 0; 
+        interrupt_go_s = 0; 
+          PRIV_LVL_M :   begin
+                            interrupt_go_m = 1 ;
+                            S_ext_int_pend = 1;
+                       end
+          PRIV_LVL_S : if (mideleg_sei && mstatus_sie) begin
+                          interrupt_go_s = 1 ;
+                          S_ext_int_pend = 1;
+                       end
+                        
+                        else begin
+                          interrupt_go_s = 0 ; 
+                          S_ext_int_pend = 0;
+                        end
+        /*  PRIV_LVL_U : ;  */
+          default :  begin 
+                       interrupt_go_s = 0 ;
+                        interrupt_go_m = 0 ;
+                 end              
+    endcase
+    
+    else if (mie_stie && mip_stip)
+
+     case (current_priv_lvl)
+      
+        interrupt_go_m = 0; 
+        interrupt_go_s = 0; 
+          PRIV_LVL_M :  
+                        interrupt_go_m = 1 ;
+                                 
+          PRIV_LVL_S : if (mideleg_sti && mstatus_sie) begin 
+                          interrupt_go_s = 1 ;
+                          S_timer_int_pend  =1 ; 
+                     end
+                        else begin
+                          interrupt_go_s = 0 ; 
+                          S_timer_int_pend  =0; 
+                        end
+        /*  PRIV_LVL_U :  ;  */
+          default : 
+            begin     interrupt_go_s = 0 ;
+                      interrupt_go_m = 0 ;   
+            end        
+    endcase
+    
+   
+    else
+    begin
+              interrupt_go_s = 0 ;
+              interrupt_go_m = 0 ;
+     
+    end
+  end
+
 
   // An interrupt i will be taken if bit i is set in both mip and mie, and if interrupts are globally enabled.
   // By default, M-mode interrupts are globally enabled if the hart’s current privilege mode  is less
