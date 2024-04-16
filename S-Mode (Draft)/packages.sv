@@ -38,6 +38,7 @@ package csr_pkg;
             CSR_SCAUSE     = 12'h142,
             CSR_STVAL      = 12'h143,
             CSR_SIP        = 12'h144 ,
+  //addition from here
             CSR_SATP      = 12'h180 ,
             CSR_MENVCFG   = 12'h30A,
             CSR_SENVCFG          = 12'h10A,
