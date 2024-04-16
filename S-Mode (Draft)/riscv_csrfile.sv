@@ -1015,10 +1015,11 @@ CSR_MHPM_COUNTER_30  ,
     end
 
     else if( go_to_trap && ((current_priv_lvl == PRIV_LVL_M) || no_delegation))      //  trap to machine mode
+    || interrupt_go_m
+    
     begin
 
-      if(valid)
-      begin
+      
         if(M_ext_int_pend)
         begin
           mcause_code      <= M_EXT_I;
@@ -1029,7 +1030,16 @@ CSR_MHPM_COUNTER_30  ,
           mcause_code      <= M_TIMER_I;
           mcause_int_excep <= 'b1;
         end
-      end
+        else if(S_ext_int_pend)
+        begin
+          mcause_code      <= M_EXT_I;
+          mcause_int_excep <= 'b1;
+        end
+        else if(S_timer_int_pend)
+        begin
+          mcause_code      <= M_TIMER_I;
+          mcause_int_excep <= 'b1;
+        end
 
       else if(illegal_total)
       begin
@@ -1105,9 +1115,9 @@ CSR_MHPM_COUNTER_30  ,
     end
 
     else if( go_to_trap && support_supervisor && current_priv_lvl == PRIV_LVL_S && (medeleg[execption_cause[3:0]] || mideleg[interrupt_cause[3:0]]))   // trap to supervisor mode
+    || interrupt_go_s 
     begin
-      if (valid)
-      begin
+      
         //  if (support_supervisor && trap_to_priv_lvl == PRIV_LVL_S) begin
         if(S_ext_int_pend)
         begin
@@ -1121,7 +1131,6 @@ CSR_MHPM_COUNTER_30  ,
           scause_int_excep <= 1;
           // if (mideleg_mti )
         end
-      end
       else if(illegal_total)
       begin
         scause_code      <= ILLEGAL_INSTRUCTION;
@@ -1247,8 +1256,8 @@ CSR_MHPM_COUNTER_30  ,
   begin
     if (go_to_trap)
     begin
-      if  ( (support_supervisor && is_interrupt && mideleg[interrupt_cause[3:0]]) ||
-            ( (is_exception && medeleg[execption_cause[3:0]] ) ) )  //~is_interrupt = is_exception
+      if   (support_supervisor && is_exception && medeleg[execption_cause[3:0]]  ) //~is_interrupt = is_exception
+          
       begin
         if (current_priv_lvl == PRIV_LVL_M)
           trap_to_priv_lvl = PRIV_LVL_M;
@@ -1260,60 +1269,10 @@ CSR_MHPM_COUNTER_30  ,
       trap_to_priv_lvl = PRIV_LVL_M;
   end
 
-  always_comb
-  begin
-    // -----------------
-    // Interrupt Control
-    // -----------------
-
-    if (mie_stie && mip_stip)
-
-    begin
-      interrupt_go = 1;
-      S_timer_int_pend = 1 ;
-      interrupt_cause = S_TIMER_I ;
-
-    end
-    // Supervisor External Interrupt
-    // The logical-OR of the software-writable bit and the signal from the external interrupt controller is
-    // used to generate external interrupts to the supervisor
-    else if ( mie_seie && mip_seip)
-    begin
-      interrupt_go = 1;
-      S_ext_int_pend = 1 ;
-      interrupt_cause = S_EXT_I;
-    end
-
-    else if (mip_mtip && mie_mtie)
-
-    begin
-      interrupt_go = 1;
-      M_timer_int_pend = 1 ;
-      interrupt_cause = M_TIMER_I;
-    end
-
-    // Machine Timer Interrupt
-
-    else if (mip_meip && mie_meie)
-
-    begin
-      interrupt_go = 1;
-      M_ext_int_pend = 1 ;
-      interrupt_cause = M_EXT_I;
-    end
-
-    // Machine Mode External Interrupt
-
-    else
-    begin
-      interrupt_go = 0 ;
-      M_ext_int_pend = 0 ;
-      interrupt_cause = M_EXT_I;
-    end
-  end
+ 
 
   // -----------------
-  // execption Control
+  // execption 
   // -----------------
   always_comb
   begin
@@ -1535,6 +1494,58 @@ endmodule
 
 
   /*  
+      always_comb
+  begin
+    // -----------------
+    // Interrupt 
+    // -----------------
+
+    if (mie_stie && mip_stip)
+
+    begin
+      interrupt_go = 1;
+      S_timer_int_pend = 1 ;
+      interrupt_cause = S_TIMER_I ;
+
+    end
+    // Supervisor External Interrupt
+    // The logical-OR of the software-writable bit and the signal from the external interrupt controller is
+    // used to generate external interrupts to the supervisor
+    else if ( mie_seie && mip_seip)
+    begin
+      interrupt_go = 1;
+      S_ext_int_pend = 1 ;
+      interrupt_cause = S_EXT_I;
+    end
+
+    else if (mip_mtip && mie_mtie)
+
+    begin
+      interrupt_go = 1;
+      M_timer_int_pend = 1 ;
+      interrupt_cause = M_TIMER_I;
+    end
+
+    // Machine Timer Interrupt
+
+    else if (mip_meip && mie_meie)
+
+    begin
+      interrupt_go = 1;
+      M_ext_int_pend = 1 ;
+      interrupt_cause = M_EXT_I;
+    end
+
+    // Machine Mode External Interrupt
+
+    else
+    begin
+      interrupt_go = 0 ;
+      M_ext_int_pend = 0 ;
+      interrupt_cause = M_EXT_I;
+    end
+  end
+      
       logic             external_interrupt_pending_m  ;
       logic             timer_interrupt_pending_m     ;
       assign external_interrupt_pending_m =  (mstatus_mie && mie_meie && (mip_meip))? 1:0; //machine_interrupt_enable + machine_external_interrupt_enable + machine_external_interrupt_pending must all be high
