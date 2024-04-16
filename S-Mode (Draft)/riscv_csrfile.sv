@@ -36,9 +36,10 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
     output  logic [SXLEN-1:0]   o_riscv_csr_sepc                  ,
     output  logic               o_riscv_csr_tsr
   );
-
+   
   /****************************** Packages ******************************/
   import csr_pkg::*;
+  
   /****************************** CSR Register Implementation ******************************/
 
   //***  Privilege levels are used to provide protection between different components of the software stack
@@ -132,8 +133,8 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   logic [SXLEN-3:0] stvec_base        ; //  Address of pc taken after returning from Trap (via MRET)
   logic   [1:0]     stvec_mode        ; //  Vector mode addressing >> vectored or direct
 
-
-
+   
+  
   /****************************** Internal Flags Declaration ******************************/
   logic             is_exception                  ;  //  exception flag
   logic             is_interrupt                  ;  //  interrupt flag
@@ -358,7 +359,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
         // mcause: exception cause
         CSR_MCAUSE  :
         begin
-          //csr_read_data   = { // mcause_q.irq_ext | mcause_q.irq_int,   we combine them in one bit  // mcause_q.irq_int ? {26{1'b1}} : 26'b0,    //we dont support internal interupts only external interupts
+             //we dont support internal interupts only external interupts
 
           csr_read_data      = { mcause_int_excep ,59'b0 , mcause_code [3:0] };  //[4:0] until now it is wrong >>check it
 
@@ -366,17 +367,6 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
 
         CSR_MTVAL   :
           csr_read_data     = mtval;
-
-        /*----------------  */
-        // mconfigptr : pointer to configuration data structre
-        /* ---------------- */
-
-        CSR_MCONFIGPTR :
-          csr_read_data =        64'b0;  // not implemented >> in spec say that it must be implemnetd ?? i think its means if not implemnted must this address return value
-
-        //CSR_MCONFIGPTR: csr_read_data = CSR_MCONFIGPTR_VALUE;
-        // if (support_supervisor)
-        //read_access_exception = 0 ;
 
         CSR_SIE            :
         begin
@@ -413,10 +403,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
           // csr_read_data [0]                              = stvec_mode ;
           csr_read_data[SXLEN-1:2]                          = stvec_base;
         end
-        // CSR_SCOUNTEREN       : csr_read_data =        64'b0;   //check
-
-
-
+      
         CSR_SSTATUS     :
         begin
           /*
@@ -435,8 +422,46 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
           csr_read_data[CSR_MSTATUS_MXR_BIT]                              = mstatus_mxr ;
         end
 
-        // CSR_SATP             : csr_read_data =        64'b0;
-        //else read_access_exception = 1 ;
+    
+        // mconfigptr : pointer to configuration data structre
+      
+        CSR_SATP ,CSR_MCONFIGPTR ,CSR_MENVCFG ,CSR_SENVCFG  , CSR_MCOUNTEREN ,  CSR_SCOUNTEREN    : csr_read_data =        64'b0; //In systems without U-mode, the mcounteren register should not exist.
+        //  ” All counters should be implemented, but a legal implementation is to make both the counter and its corresponding event selector be read-only 0.
+
+         CSR_MHPM_EVENT_3 ,  CSR_MHPM_EVENT_4     ,  
+    CSR_MHPM_EVENT_5    ,   CSR_MHPM_EVENT_6    ,  
+    CSR_MHPM_EVENT_7    ,   CSR_MHPM_EVENT_8   ,  
+    CSR_MHPM_EVENT_9   ,   CSR_MHPM_EVENT_10   ,  
+     CSR_MHPM_EVENT_11   ,  CSR_MHPM_EVENT_12    ,  
+      CSR_MHPM_EVENT_13   ,   CSR_MHPM_EVENT_14   ,  
+    CSR_MHPM_EVENT_15  ,  CSR_MHPM_EVENT_16    ,  
+    CSR_MHPM_EVENT_17 ,   CSR_MHPM_EVENT_18    ,  
+    CSR_MHPM_EVENT_19    ,   CSR_MHPM_EVENT_20    ,  
+    CSR_MHPM_EVENT_21    ,   CSR_MHPM_EVENT_22   ,  
+    CSR_MHPM_EVENT_23   ,  CSR_MHPM_EVENT_24    ,  
+    CSR_MHPM_EVENT_25   ,   CSR_MHPM_EVENT_26   ,  
+    CSR_MHPM_EVENT_27   ,   CSR_MHPM_EVENT_28    ,  
+    CSR_MHPM_EVENT_29    ,   CSR_MHPM_EVENT_30    ,  
+    CSR_MHPM_EVENT_31    ,  
+    CSR_MHPM_COUNTER_3   , CSR_MHPM_COUNTER_4   ,
+    CSR_MHPM_COUNTER_5   , CSR_MHPM_COUNTER_6   ,
+    CSR_MHPM_COUNTER_7   , CSR_MHPM_COUNTER_8   ,
+    CSR_MHPM_COUNTER_9   ,  CSR_MHPM_COUNTER_10  ,  
+    CSR_MHPM_COUNTER_11  ,  CSR_MHPM_COUNTER_12  ,  
+    CSR_MHPM_COUNTER_13  ,  CSR_MHPM_COUNTER_14 ,  
+    CSR_MHPM_COUNTER_15  ,   CSR_MHPM_COUNTER_16  ,  
+    CSR_MHPM_COUNTER_17  ,  CSR_MHPM_COUNTER_18  ,  
+    CSR_MHPM_COUNTER_19  ,  CSR_MHPM_COUNTER_20  ,  
+    CSR_MHPM_COUNTER_21  ,   CSR_MHPM_COUNTER_22  ,  
+    CSR_MHPM_COUNTER_23  ,  CSR_MHPM_COUNTER_24  ,   
+    CSR_MHPM_COUNTER_25  ,  CSR_MHPM_COUNTER_26  ,  
+    CSR_MHPM_COUNTER_27  ,  CSR_MHPM_COUNTER_28  ,  
+    CSR_MHPM_COUNTER_29  ,  
+CSR_MHPM_COUNTER_30  ,  
+    CSR_MHPM_COUNTER_31  : csr_read_data = 'b0 ;  
+
+
+            // mseccfg optional so no need for it 
 
 
         default :
@@ -1197,12 +1222,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
         csr_read_en = 1'b0;
       end
     endcase
-    // if we are retiring an exception do not return from exception
-    /*    if (ex_i.valid) begin
-            mret = 1'b0;
-            sret = 1'b0;
-        end
-    */
+    
 
   end
 
@@ -1218,9 +1238,6 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
 
     o_riscv_csr_rdata = csr_read_data;
 
-    // performance counters
-    // if (is_pccr || is_pcer || is_pcmr)
-    // o_riscv_csr_rdata = perf_rdata;
   end
 
 
