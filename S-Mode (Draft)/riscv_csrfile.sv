@@ -185,7 +185,8 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   assign o_riscv_csr_gotoTrap_cs      = go_to_trap            ;
 
   assign is_csr                       = (i_riscv_csr_op == 3'd0)? 1'b0:1'b1;
-  assign is_interrupt                 = interrupt_go && interrupt_global_enable       ;
+  //assign is_interrupt                 = interrupt_go && interrupt_global_enable       ;
+  /assign is_interrupt                 = interrupt_go_m || interrupt_go_s       ;
 
   assign is_trap                      = (is_interrupt || is_exception)? 1'b1:1'b0;
   assign go_to_trap                   =  is_trap && !i_riscv_csr_flush && !i_riscv_csr_globstall ;
