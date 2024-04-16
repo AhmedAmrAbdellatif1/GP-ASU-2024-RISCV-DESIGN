@@ -199,8 +199,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
 
   assign csr_write_access_en          = csr_write_en &  ~illegal_csr_access;
 
-  assign mip_timer_next               = i_riscv_csr_timer_int ;
-  assign mip_external_next            = i_riscv_csr_external_int ;
+
   assign o_riscv_csr_tsr              = mstatus_tsr;
 
   /*** Modes transition conditions ***/
@@ -716,11 +715,16 @@ CSR_MHPM_COUNTER_30  ,
              end    */
 
     /*---check---*/  //trap is taken in m mode
-    else
-    begin
-      mip_meip                    <= mip_external_next ;
-      mip_mtip                    <= mip_timer_next;
-    end
+    else if (i_riscv_csr_external_int)  
+    
+      mip_meip                    <= i_riscv_csr_external_int ;
+    
+    else if  (i_riscv_csr_timer_int) 
+   
+      mip_mtip                    <= i_riscv_csr_timer_int;
+
+    
+    
   end   /* end of always block
 
 
