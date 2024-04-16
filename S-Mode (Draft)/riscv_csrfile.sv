@@ -425,40 +425,39 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
     
         // mconfigptr : pointer to configuration data structre
       
-        CSR_SATP ,CSR_MCONFIGPTR ,CSR_MENVCFG ,CSR_SENVCFG  , CSR_MCOUNTEREN ,  CSR_SCOUNTEREN    : csr_read_data =        64'b0; //In systems without U-mode, the mcounteren register should not exist.
+        CSR_SATP ,CSR_MCONFIGPTR ,CSR_MENVCFG ,CSR_SENVCFG  , CSR_MCOUNTEREN ,  CSR_SCOUNTEREN    : csr_read_data = 64'b0; //In systems without U-mode, the mcounteren register should not exist.
         //  ” All counters should be implemented, but a legal implementation is to make both the counter and its corresponding event selector be read-only 0.
 
-         CSR_MHPM_EVENT_3 ,  CSR_MHPM_EVENT_4     ,  
-    CSR_MHPM_EVENT_5    ,   CSR_MHPM_EVENT_6    ,  
-    CSR_MHPM_EVENT_7    ,   CSR_MHPM_EVENT_8   ,  
-    CSR_MHPM_EVENT_9   ,   CSR_MHPM_EVENT_10   ,  
-     CSR_MHPM_EVENT_11   ,  CSR_MHPM_EVENT_12    ,  
-      CSR_MHPM_EVENT_13   ,   CSR_MHPM_EVENT_14   ,  
-    CSR_MHPM_EVENT_15  ,  CSR_MHPM_EVENT_16    ,  
-    CSR_MHPM_EVENT_17 ,   CSR_MHPM_EVENT_18    ,  
-    CSR_MHPM_EVENT_19    ,   CSR_MHPM_EVENT_20    ,  
-    CSR_MHPM_EVENT_21    ,   CSR_MHPM_EVENT_22   ,  
-    CSR_MHPM_EVENT_23   ,  CSR_MHPM_EVENT_24    ,  
-    CSR_MHPM_EVENT_25   ,   CSR_MHPM_EVENT_26   ,  
-    CSR_MHPM_EVENT_27   ,   CSR_MHPM_EVENT_28    ,  
-    CSR_MHPM_EVENT_29    ,   CSR_MHPM_EVENT_30    ,  
-    CSR_MHPM_EVENT_31    ,  
-    CSR_MHPM_COUNTER_3   , CSR_MHPM_COUNTER_4   ,
-    CSR_MHPM_COUNTER_5   , CSR_MHPM_COUNTER_6   ,
-    CSR_MHPM_COUNTER_7   , CSR_MHPM_COUNTER_8   ,
-    CSR_MHPM_COUNTER_9   ,  CSR_MHPM_COUNTER_10  ,  
-    CSR_MHPM_COUNTER_11  ,  CSR_MHPM_COUNTER_12  ,  
-    CSR_MHPM_COUNTER_13  ,  CSR_MHPM_COUNTER_14 ,  
-    CSR_MHPM_COUNTER_15  ,   CSR_MHPM_COUNTER_16  ,  
-    CSR_MHPM_COUNTER_17  ,  CSR_MHPM_COUNTER_18  ,  
-    CSR_MHPM_COUNTER_19  ,  CSR_MHPM_COUNTER_20  ,  
-    CSR_MHPM_COUNTER_21  ,   CSR_MHPM_COUNTER_22  ,  
-    CSR_MHPM_COUNTER_23  ,  CSR_MHPM_COUNTER_24  ,   
-    CSR_MHPM_COUNTER_25  ,  CSR_MHPM_COUNTER_26  ,  
-    CSR_MHPM_COUNTER_27  ,  CSR_MHPM_COUNTER_28  ,  
-    CSR_MHPM_COUNTER_29  ,  
-CSR_MHPM_COUNTER_30  ,  
-    CSR_MHPM_COUNTER_31  : csr_read_data = 'b0 ;  
+       CSR_MHPM_EVENT_3   , CSR_MHPM_EVENT_4     ,  
+      CSR_MHPM_EVENT_5    , CSR_MHPM_EVENT_6    ,  
+      CSR_MHPM_EVENT_7    , CSR_MHPM_EVENT_8    ,  
+      CSR_MHPM_EVENT_9    , CSR_MHPM_EVENT_10   ,  
+      CSR_MHPM_EVENT_11   , CSR_MHPM_EVENT_12    ,  
+      CSR_MHPM_EVENT_13   , CSR_MHPM_EVENT_14   ,  
+      CSR_MHPM_EVENT_15   , CSR_MHPM_EVENT_16    ,  
+      CSR_MHPM_EVENT_17   , CSR_MHPM_EVENT_18   ,  
+      CSR_MHPM_EVENT_19   , CSR_MHPM_EVENT_20   ,  
+      CSR_MHPM_EVENT_21   , CSR_MHPM_EVENT_22   ,  
+      CSR_MHPM_EVENT_23   , CSR_MHPM_EVENT_24    ,  
+      CSR_MHPM_EVENT_25   , CSR_MHPM_EVENT_26   ,  
+      CSR_MHPM_EVENT_27   , CSR_MHPM_EVENT_28   ,  
+      CSR_MHPM_EVENT_29   , CSR_MHPM_EVENT_30   ,  
+      CSR_MHPM_EVENT_31   ,  
+      CSR_MHPM_COUNTER_3  , CSR_MHPM_COUNTER_4    ,
+      CSR_MHPM_COUNTER_5  , CSR_MHPM_COUNTER_6    ,
+      CSR_MHPM_COUNTER_7  , CSR_MHPM_COUNTER_8    ,
+      CSR_MHPM_COUNTER_9  , CSR_MHPM_COUNTER_10  ,  
+      CSR_MHPM_COUNTER_11 , CSR_MHPM_COUNTER_12  ,  
+      CSR_MHPM_COUNTER_13 , CSR_MHPM_COUNTER_14  ,  
+      CSR_MHPM_COUNTER_15 , CSR_MHPM_COUNTER_16 ,  
+      CSR_MHPM_COUNTER_17 , CSR_MHPM_COUNTER_18  ,  
+      CSR_MHPM_COUNTER_19 , CSR_MHPM_COUNTER_20  ,  
+      CSR_MHPM_COUNTER_21 , CSR_MHPM_COUNTER_22 ,  
+      CSR_MHPM_COUNTER_23 , CSR_MHPM_COUNTER_24  ,   
+      CSR_MHPM_COUNTER_25 , CSR_MHPM_COUNTER_26  ,  
+      CSR_MHPM_COUNTER_27 , CSR_MHPM_COUNTER_28  ,  
+      CSR_MHPM_COUNTER_29 , CSR_MHPM_COUNTER_30  ,  
+      CSR_MHPM_COUNTER_31  : csr_read_data = 'b0 ;  
 
 
             // mseccfg optional so no need for it 
@@ -715,13 +714,17 @@ CSR_MHPM_COUNTER_30  ,
              end    */
 
     /*---check---*/  //trap is taken in m mode
-    else if (i_riscv_csr_external_int)  
+    else if (i_riscv_csr_external_int || ack_external_int) 
+
+    case (ack_external_int) 
+    1:mip_meip <=0 ;
+    0:mip_meip <= i_riscv_csr_external_int ;
+    endcase
+      
     
-      mip_meip                    <= i_riscv_csr_external_int ;
-    
-    else if  (i_riscv_csr_timer_int) 
+    else 
    
-      mip_mtip                    <= i_riscv_csr_timer_int;
+      mip_mtip  <= i_riscv_csr_timer_int;
 
     
     
@@ -1021,14 +1024,15 @@ CSR_MHPM_COUNTER_30  ,
 
     else if( go_to_trap && ((current_priv_lvl == PRIV_LVL_M) || no_delegation))      //  trap to machine mode
     || interrupt_go_m
-    
-    begin
-
       
+    begin
+           
+        ack_external_int <= 0 ;
         if(M_ext_int_pend)
         begin
           mcause_code      <= M_EXT_I;
           mcause_int_excep <= 'b1;
+          ack_external_int <= 1    ;
         end
         else if(M_timer_int_pend)
         begin
@@ -1102,7 +1106,8 @@ CSR_MHPM_COUNTER_30  ,
       mcause_int_excep <= csr_write_data[63];
       mcause_code      <= csr_write_data[3:0];
     end
-
+   
+   
 
   end    /*---of always block---*/
 
