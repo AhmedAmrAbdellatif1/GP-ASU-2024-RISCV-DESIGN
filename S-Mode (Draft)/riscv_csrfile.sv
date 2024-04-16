@@ -42,8 +42,6 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   
   /****************************** CSR Register Implementation ******************************/
 
-  logic ack_external_int ; 
-
   //***  Privilege levels are used to provide protection between different components of the software stack
   logic   [1:0]     current_priv_lvl  ;
 
@@ -667,7 +665,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
         mie_seie             <= (!mideleg_mei)? mie_seie : csr_write_data[S_EXT_I];
       end
     end   // end of always block
-  end
+  enda m-mode trap might be delegated if we are taking it in S mode
 
 
   /*------mip register-----*/
@@ -1024,8 +1022,8 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
       mcause_int_excep            <= 1'b0 ;
     end
 
-    else if( go_to_trap && ((current_priv_lvl == PRIV_LVL_M) || no_delegation))      //  trap to machine mode
-    || interrupt_go_m
+    else if( is_exception && ((current_priv_lvl == PRIV_LVL_M) || no_delegation))      //  trap to machine mode
+            || interrupt_go_m 
       
     begin
            
@@ -1126,7 +1124,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
       scause_int_excep            <= 1'b0 ;
     end
 
-    else if( go_to_trap && support_supervisor && current_priv_lvl == PRIV_LVL_S && (medeleg[execption_cause[3:0]] || mideleg[interrupt_cause[3:0]]))   // trap to supervisor mode
+    else if( is_exception && support_supervisor && current_priv_lvl == PRIV_LVL_S && (medeleg[execption_cause[3:0]] || mideleg[interrupt_cause[3:0]]))   // trap to supervisor mode
     || interrupt_go_s 
     begin
       
@@ -1322,25 +1320,36 @@ Multiple simultaneous interrupts destined for M-mode are handled in the followin
 priority order: MEI, MSI, MTI, SEI, SSI, STI
 
 An interrupt i will trap to M-mode (causing the privilege mode to change to M-mode) >>changes m-mode registers if all of
-the following are true: (a) either the current privilege mode is M and the MIE bit in the mstatus
-register is set, or the current privilege mode has less privilege than M-mode; (b) bit i is set in both
-mip and mie; and (c) if register mideleg exists, bit i is not set in mideleg.
+the following are true: (a) bit i is set in both mip and mie 
+(b) either the current privilege mode is M and the MIE bit in the mstatus
+register is set, or the current privilege mode has less privilege than M-mode;  (c) if register mideleg exists, bit i is not set in mideleg.
 
-An interrupt i will trap to S-mode if both of the following are true  >>changes s-mode registers : (a) either the current privilege
+An interrupt i will trap to S-mode if both of the following are true  >>changes s-mode registers : 
+(a) bit i is set in both sip and sie.
+(b) either the current privilege
 mode is S and the SIE bit in the sstatus register is set, or the current privilege mode has less
-privilege than S-mode; and (b) bit i is set in both sip and sie.*/
+privilege than S-mode;  
+
+When a hart is executing in privilege mode x, interrupts are globally enabled when x IE=1 and
+globally disabled when x IE=0. Interrupts for lower-privilege modes, w<x, are always globally
+disabled regardless of the setting of any global wIE bit for the lower-privilege mode. Interrupts for
+higher-privilege modes, y>x, are always globally enabled regardless of the setting of the global yIE
+bit for the higher-privilege mode. Higher-privilege-level code can use separate per-interrupt enable
+bits to disable selected higher-privilege-mode interrupts before ceding control to a lower-privilege
+mode.*/
+
     // -----------------
     // Interrupt 
     // -----------------
    
    // Machine Timer Interrupt
     
-     if (mip_mtip && mie_mtie)
+     if (mip_mtip && mie_mtie) //not mean it happens at machine mode  
    case (current_priv_lvl)
 
       interrupt_go_m = 0; 
       interrupt_go_s = 0; 
-        PRIV_LVL_M :  if (mstatus_mie) begin
+        PRIV_LVL_M :  if (mstatus_mie && ~mideleg_mti) begin
                           interrupt_go_m = 1 ;
                           M_timer_int_pend = 1;
                      end
@@ -1348,18 +1357,29 @@ privilege than S-mode; and (b) bit i is set in both sip and sie.*/
                         interrupt_go_m = 0;    
                         M_timer_int_pend = 0;
                       end          
-        PRIV_LVL_S : if (mideleg_mti && mstatus_sie) begin
+        PRIV_LVL_S , PRIV_LVL_U : 
+                     if(~mideleg_mti)begin
+                          interrupt_go_m = 1 ;
+                        M_timer_int_pend = 1;
+                    end
+                      else 
+                          begin 
+                            interrupt_go_m = 0 ;
+                            M_timer_int_pend =0;
+                          end
+
+                    /*  if (mideleg_mti && mstatus_sie) begin
                         interrupt_go_s = 1 ;
                         M_timer_int_pend = 1;
                       end
                       else begin 
                         interrupt_go_s = 0 ; 
                         M_timer_int_pend = 0;
-                      end
+                      end */
       /*  PRIV_LVL_U : interrupt_global_enable_m = 1 ;
                     interrupt_global_enable_s = 1 ;  */
-        default : begin interrupt_go_s = 0 ;
-                        interrupt_go_m = 0 ;
+        default : begin interrupt_go_s = 0 ; // >> check
+                        interrupt_go_m = 0 ; // >> check
                  end        
     endcase
 
@@ -1370,22 +1390,37 @@ privilege than S-mode; and (b) bit i is set in both sip and sie.*/
 
       interrupt_go_m = 0; 
       interrupt_go_s = 0; 
-        PRIV_LVL_M :  if (mstatus_mie) begin
+        PRIV_LVL_M :  if (mstatus_mie && ~mideleg_mei) begin
                         interrupt_go_m = 1 ;
                         M_ext_int_pend =1 ;
                        end 
-                        else begin
-                        interrupt_go_m = 0; 
-                         M_ext_int_pend =0 ;
+                        else 
+                         begin
+                            interrupt_go_m = 0; 
+                            M_ext_int_pend =0 ;
                         end             
-        PRIV_LVL_S : if (mideleg_mei && mstatus_sie) begin
-                        interrupt_go_s = 1 ;
-                         M_ext_int_pend =1 ;
-                      end 
+        PRIV_LVL_S , PRIV_LVL_U : 
+                      if(~mideleg_mei)
+                        begin
+                            interrupt_go_m = 1 ;
+                            M_ext_int_pend = 1;
+                        end
+                      else 
+                          begin 
+                            interrupt_go_m = 0 ;
+                            M_ext_int_pend = 0 ;
+                          end
+
+                    /*if (mideleg_mei && mstatus_sie)
+                         begin
+                           interrupt_go_s = 1 ;
+                           M_ext_int_pend =1 ;
+                        end 
                      else  begin
                         interrupt_go_s = 0 ; 
                          M_ext_int_pend =0 ;
-                   end     
+                       end */   
+                        
       /*  PRIV_LVL_U : interrupt_global_enable_m = 1 ;
                     interrupt_global_enable_s = 1 ;  */
         default :  begin interrupt_go_s = 0 ;
@@ -1393,56 +1428,74 @@ privilege than S-mode; and (b) bit i is set in both sip and sie.*/
                  end             
     endcase
    
-
+/*An interrupt i will trap to S-mode if both of the following are true  >>changes s-mode registers : 
+(a) bit i is set in both sip and sie.
+(b) either the current privilege
+mode is S and the SIE bit in the sstatus register is set, or the current privilege mode has less
+privilege than S-mode;   */
    // Supervisor External Interrupt
     // The logical-OR of the software-writable bit and the signal from the external interrupt controller is
     // used to generate external interrupts to the supervisor
-    else if ( mie_seie && mip_seip)
+
+
+
+    
+/*When a hart is executing in privilege mode m, inInterrupts for lower-privilege modes, s<m, are always globally
+disabled regardless of the setting of any global wIE bit for the lower-privilege mode. */
+
+    else if ( mie_seie && mip_seip )
       case (current_priv_lvl)
 
         interrupt_go_m = 0; 
         interrupt_go_s = 0; 
           PRIV_LVL_M :   begin
-                            interrupt_go_m = 1 ;
-                            S_ext_int_pend = 1;
+                           /* interrupt_go_m = 1 ;
+                            S_ext_int_pend = 1; */
+                            interrupt_go_s = 0 ;
+                            S_ext_int_pend = 0 ;
                        end
-          PRIV_LVL_S : if (mideleg_sei && mstatus_sie) begin
-                          interrupt_go_s = 1 ;
-                          S_ext_int_pend = 1;
-                       end
+          PRIV_LVL_S : if (/*mideleg_sei &&*/ mstatus_sie) 
+                          begin
+                              interrupt_go_s = 1 ;
+                              S_ext_int_pend = 1;
+                          end
                         
                         else begin
-                          interrupt_go_s = 0 ; 
-                          S_ext_int_pend = 0;
+                            interrupt_go_s = 0 ; 
+                            S_ext_int_pend = 0;
                         end
         /*  PRIV_LVL_U : ;  */
           default :  begin 
-                       interrupt_go_s = 0 ;
+                        interrupt_go_s = 1 ;
+                        S_ext_int_pend = 1;
                         interrupt_go_m = 0 ;
                  end              
     endcase
-    
-    else if (mie_stie && mip_stip)
+     
+    else if (mie_stie && mip_stip) 
 
      case (current_priv_lvl)
       
         interrupt_go_m = 0; 
         interrupt_go_s = 0; 
           PRIV_LVL_M :  
-                        interrupt_go_m = 1 ;
+                        // interrupt_go_m = 1 ;
+                          interrupt_go_s    = 0 ;
+                          S_timer_int_pend  = 0 ;
                                  
-          PRIV_LVL_S : if (mideleg_sti && mstatus_sie) begin 
-                          interrupt_go_s = 1 ;
-                          S_timer_int_pend  =1 ; 
+          PRIV_LVL_S : if (/*mideleg_sti &&*/ mstatus_sie)  begin 
+                          interrupt_go_s    = 1 ;
+                          S_timer_int_pend  = 1 ; 
                      end
                         else begin
-                          interrupt_go_s = 0 ; 
-                          S_timer_int_pend  =0; 
+                          interrupt_go_s    = 0 ; 
+                          S_timer_int_pend  = 0; 
                         end
         /*  PRIV_LVL_U :  ;  */
           default : 
-            begin     interrupt_go_s = 0 ;
-                      interrupt_go_m = 0 ;   
+            begin     interrupt_go_s    = 1 ;
+                      S_timer_int_pend  = 1 ;
+                      interrupt_go_m    = 0 ;   
             end        
     endcase
     
@@ -1455,40 +1508,6 @@ privilege than S-mode; and (b) bit i is set in both sip and sie.*/
     end
   end
 
-
-  // An interrupt i will be taken if bit i is set in both mip and mie, and if interrupts are globally enabled.
-  // By default, M-mode interrupts are globally enabled if the hart’s current privilege mode  is less
-  // than M, or if the current privilege mode is M and the MIE bit in the mstatus register is set.
-  // All interrupts are masked in debug mode
-  assign interrupt_global_enable =  ((mstatus_mie & (current_priv_lvl == PRIV_LVL_M))
-                                     || (current_priv_lvl != PRIV_LVL_M));
-
-
-  always_comb
-  begin
-    if (interrupt_go && interrupt_global_enable )   // =1 menas it is an interuopt
-    begin
-      // However, if bit i in mideleg is set, interrupts are considered to be globally enabled
-      //if the hart’s current privilege mode equals the delegated privilege mode (S or U)
-      //  and that mode’s interrupt enable bit (SIE or UIE in mstatus) is set ,
-      //or if the current privilege mode is less than the delegated privilege mode.
-      if (mideleg[interrupt_cause[3:0]]) //if delegated so cant take action of trap if below conditions are satified
-        // but if not delegated so action of trap take directly without that check
-      begin
-        if (  (support_supervisor && mstatus_sie && current_priv_lvl == PRIV_LVL_S) ||
-              (support_user && current_priv_lvl == PRIV_LVL_U) )
-          valid = 1'b1;
-        else
-          valid = 1'b0;
-      end
-      else
-      begin
-        valid = 1'b1;
-      end
-    end
-    else
-      valid = 1'b0;
-  end
 
 
   /*********************************************** عشوائيات *********************************************************/
@@ -1577,3 +1596,38 @@ endmodule
         mtinst_cs <=  i_riscv_csr_inst ;
     end
   */
+
+
+  // An interrupt i will be taken if bit i is set in both mip and mie, and if interrupts are globally enabled.
+  // By default, M-mode interrupts are globally enabled if the hart’s current privilege mode  is less
+  // than M, or if the current privilege mode is M and the MIE bit in the mstatus register is set.
+  // All interrupts are masked in debug mode
+ /* assign interrupt_global_enable =  ((mstatus_mie & (current_priv_lvl == PRIV_LVL_M))
+                                     || (current_priv_lvl != PRIV_LVL_M));
+
+
+  always_comb
+  begin
+    if (interrupt_go && interrupt_global_enable )   // =1 menas it is an interuopt
+    begin
+      // However, if bit i in mideleg is set, interrupts are considered to be globally enabled
+      //if the hart’s current privilege mode equals the delegated privilege mode (S or U)
+      //  and that mode’s interrupt enable bit (SIE or UIE in mstatus) is set ,
+      //or if the current privilege mode is less than the delegated privilege mode.
+      if (mideleg[interrupt_cause[3:0]]) //if delegated so cant take action of trap if below conditions are satified
+        // but if not delegated so action of trap take directly without that check
+      begin
+        if (  (support_supervisor && mstatus_sie && current_priv_lvl == PRIV_LVL_S) ||
+              (support_user && current_priv_lvl == PRIV_LVL_U) )
+          valid = 1'b1;
+        else
+          valid = 1'b0;
+      end
+      else
+      begin
+        valid = 1'b1;
+      end
+    end
+    else
+      valid = 1'b0;
+  end */
