@@ -42,6 +42,8 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   
   /****************************** CSR Register Implementation ******************************/
 
+  logic ack_external_int ; 
+
   //***  Privilege levels are used to provide protection between different components of the software stack
   logic   [1:0]     current_priv_lvl  ;
 
