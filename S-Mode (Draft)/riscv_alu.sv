@@ -26,7 +26,11 @@ module riscv_alu(
               SRAW = 5'b10111;
 
 always_comb 
-  begin 
+  begin
+
+    buffer='b0;
+    word_buffer='b0;
+    
     if(!i_riscv_alu_ctrl[5])  // if ALU is disable: Output zeroes
       o_riscv_alu_result = 'b0;
 
@@ -103,7 +107,12 @@ always_comb
               o_riscv_alu_result  = { {32 {word_buffer[31]}} , word_buffer};
             end
             
-            default:  o_riscv_alu_result=64'b0;
+            default: 
+            begin
+               o_riscv_alu_result=64'b0;
+               buffer='b0;
+               word_buffer='b0;
+            end
           endcase
       end
   end
