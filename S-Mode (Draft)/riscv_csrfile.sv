@@ -1,8 +1,9 @@
-`include "packages.sv"
-module riscv_csrfile  # ( parameter MXLEN              = 64   ,
-                          parameter SXLEN              = 64   ,
-                          parameter support_supervisor = 1    ,
-                          parameter support_user       = 1    )
+module riscv_csrfile  
+  import dcache_pkg::*;
+# ( parameter MXLEN              = 64   ,
+    parameter SXLEN              = 64   ,
+    parameter support_supervisor = 1    ,
+    parameter support_user       = 1    )
   (
     input   logic               i_riscv_csr_clk                   ,
     input   logic               i_riscv_csr_rst                   ,
@@ -36,10 +37,9 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
     output  logic [SXLEN-1:0]   o_riscv_csr_sepc                  ,
     output  logic               o_riscv_csr_tsr
   );
-   
+
   /****************************** Packages ******************************/
   import csr_pkg::*;
-  
   /****************************** CSR Register Implementation ******************************/
 
   //***  Privilege levels are used to provide protection between different components of the software stack
@@ -133,8 +133,8 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   logic [SXLEN-3:0] stvec_base        ; //  Address of pc taken after returning from Trap (via MRET)
   logic   [1:0]     stvec_mode        ; //  Vector mode addressing >> vectored or direct
 
-   
-  
+
+
   /****************************** Internal Flags Declaration ******************************/
   logic             is_exception                  ;  //  exception flag
   logic             is_interrupt                  ;  //  interrupt flag
@@ -153,7 +153,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   
   logic             csr_read_en                   ;
   logic [MXLEN-1:0] csr_read_data                 ;
-  logic             ack_external_int ;
+
   logic             mret                          ;
   logic             sret                          ;
 
@@ -166,7 +166,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   logic [5:0]       execption_cause               ;
 
   logic             interrupt_global_enable       ;
-  logic             interrupt_go_s,interrupt_go_m;
+
   logic             valid                         ;
 
   logic             M_ext_int_pend                ;
@@ -185,8 +185,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
   assign o_riscv_csr_gotoTrap_cs      = go_to_trap            ;
 
   assign is_csr                       = (i_riscv_csr_op == 3'd0)? 1'b0:1'b1;
-  //assign is_interrupt                 = interrupt_go && interrupt_global_enable       ;
-  assign is_interrupt                 = interrupt_go_m || interrupt_go_s       ;
+  assign is_interrupt                 = interrupt_go && interrupt_global_enable       ;
 
   assign is_trap                      = (is_interrupt || is_exception)? 1'b1:1'b0;
   assign go_to_trap                   =  is_trap && !i_riscv_csr_flush && !i_riscv_csr_globstall ;
@@ -199,7 +198,8 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
 
   assign csr_write_access_en          = csr_write_en &  ~illegal_csr_access;
 
-
+  assign mip_timer_next               = i_riscv_csr_timer_int ;
+  assign mip_external_next            = i_riscv_csr_external_int ;
   assign o_riscv_csr_tsr              = mstatus_tsr;
 
   /*** Modes transition conditions ***/
@@ -359,7 +359,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
         // mcause: exception cause
         CSR_MCAUSE  :
         begin
-             //we dont support internal interupts only external interupts
+          //csr_read_data   = { // mcause_q.irq_ext | mcause_q.irq_int,   we combine them in one bit  // mcause_q.irq_int ? {26{1'b1}} : 26'b0,    //we dont support internal interupts only external interupts
 
           csr_read_data      = { mcause_int_excep ,59'b0 , mcause_code [3:0] };  //[4:0] until now it is wrong >>check it
 
@@ -367,6 +367,17 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
 
         CSR_MTVAL   :
           csr_read_data     = mtval;
+
+        /*----------------  */
+        // mconfigptr : pointer to configuration data structre
+        /* ---------------- */
+
+        CSR_MCONFIGPTR :
+          csr_read_data =        64'b0;  // not implemented >> in spec say that it must be implemnetd ?? i think its means if not implemnted must this address return value
+
+        //CSR_MCONFIGPTR: csr_read_data = CSR_MCONFIGPTR_VALUE;
+        // if (support_supervisor)
+        //read_access_exception = 0 ;
 
         CSR_SIE            :
         begin
@@ -403,7 +414,10 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
           // csr_read_data [0]                              = stvec_mode ;
           csr_read_data[SXLEN-1:2]                          = stvec_base;
         end
-      
+        // CSR_SCOUNTEREN       : csr_read_data =        64'b0;   //check
+
+
+
         CSR_SSTATUS     :
         begin
           /*
@@ -422,45 +436,8 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
           csr_read_data[CSR_MSTATUS_MXR_BIT]                              = mstatus_mxr ;
         end
 
-    
-        // mconfigptr : pointer to configuration data structre
-      
-        CSR_SATP ,CSR_MCONFIGPTR ,CSR_MENVCFG ,CSR_SENVCFG  , CSR_MCOUNTEREN ,  CSR_SCOUNTEREN    : csr_read_data = 64'b0; //In systems without U-mode, the mcounteren register should not exist.
-        //  ” All counters should be implemented, but a legal implementation is to make both the counter and its corresponding event selector be read-only 0.
-
-       CSR_MHPM_EVENT_3   , CSR_MHPM_EVENT_4     ,  
-      CSR_MHPM_EVENT_5    , CSR_MHPM_EVENT_6    ,  
-      CSR_MHPM_EVENT_7    , CSR_MHPM_EVENT_8    ,  
-      CSR_MHPM_EVENT_9    , CSR_MHPM_EVENT_10   ,  
-      CSR_MHPM_EVENT_11   , CSR_MHPM_EVENT_12    ,  
-      CSR_MHPM_EVENT_13   , CSR_MHPM_EVENT_14   ,  
-      CSR_MHPM_EVENT_15   , CSR_MHPM_EVENT_16    ,  
-      CSR_MHPM_EVENT_17   , CSR_MHPM_EVENT_18   ,  
-      CSR_MHPM_EVENT_19   , CSR_MHPM_EVENT_20   ,  
-      CSR_MHPM_EVENT_21   , CSR_MHPM_EVENT_22   ,  
-      CSR_MHPM_EVENT_23   , CSR_MHPM_EVENT_24    ,  
-      CSR_MHPM_EVENT_25   , CSR_MHPM_EVENT_26   ,  
-      CSR_MHPM_EVENT_27   , CSR_MHPM_EVENT_28   ,  
-      CSR_MHPM_EVENT_29   , CSR_MHPM_EVENT_30   ,  
-      CSR_MHPM_EVENT_31   ,  
-      CSR_MHPM_COUNTER_3  , CSR_MHPM_COUNTER_4    ,
-      CSR_MHPM_COUNTER_5  , CSR_MHPM_COUNTER_6    ,
-      CSR_MHPM_COUNTER_7  , CSR_MHPM_COUNTER_8    ,
-      CSR_MHPM_COUNTER_9  , CSR_MHPM_COUNTER_10  ,  
-      CSR_MHPM_COUNTER_11 , CSR_MHPM_COUNTER_12  ,  
-      CSR_MHPM_COUNTER_13 , CSR_MHPM_COUNTER_14  ,  
-      CSR_MHPM_COUNTER_15 , CSR_MHPM_COUNTER_16 ,  
-      CSR_MHPM_COUNTER_17 , CSR_MHPM_COUNTER_18  ,  
-      CSR_MHPM_COUNTER_19 , CSR_MHPM_COUNTER_20  ,  
-      CSR_MHPM_COUNTER_21 , CSR_MHPM_COUNTER_22 ,  
-      CSR_MHPM_COUNTER_23 , CSR_MHPM_COUNTER_24  ,   
-      CSR_MHPM_COUNTER_25 , CSR_MHPM_COUNTER_26  ,  
-      CSR_MHPM_COUNTER_27 , CSR_MHPM_COUNTER_28  ,  
-      CSR_MHPM_COUNTER_29 , CSR_MHPM_COUNTER_30  ,  
-      CSR_MHPM_COUNTER_31  : csr_read_data = 'b0 ;  
-
-
-            // mseccfg optional so no need for it 
+        // CSR_SATP             : csr_read_data =        64'b0;
+        //else read_access_exception = 1 ;
 
 
         default :
@@ -665,8 +642,7 @@ module riscv_csrfile  # ( parameter MXLEN              = 64   ,
         mie_seie             <= (!mideleg_mei)? mie_seie : csr_write_data[S_EXT_I];
       end
     end   // end of always block
-end
-//a m-mode trap might be delegated if we are taking it in S mode
+  end
 
 
   /*------mip register-----*/
@@ -715,20 +691,11 @@ end
              end    */
 
     /*---check---*/  //trap is taken in m mode
-    else if (i_riscv_csr_external_int || ack_external_int) 
-
-    case (ack_external_int) 
-    1:mip_meip <=0 ;
-    0:mip_meip <= i_riscv_csr_external_int ;
-    endcase
-      
-    
-    else 
-   
-      mip_mtip  <= i_riscv_csr_timer_int;
-
-    
-    
+    else
+    begin
+      mip_meip                    <= mip_external_next ;
+      mip_mtip                    <= mip_timer_next;
+    end
   end   /* end of always block
 
 
@@ -850,7 +817,9 @@ end
       if(current_priv_lvl == PRIV_LVL_M)
         mepc <= i_riscv_csr_pc ;
 
-      else if (no_delegation)
+      else if ( (support_supervisor)  &&
+                (current_priv_lvl == PRIV_LVL_S) &&
+                (!medeleg[execption_cause[3:0]] || !mideleg[interrupt_cause[3:0]]))
 
         mepc <= i_riscv_csr_pc ;
     end
@@ -871,7 +840,7 @@ end
 
       sepc                        <= 64'b0;
 
-    else if(go_to_trap && force_s_delegation )
+    else if(go_to_trap && support_supervisor && current_priv_lvl == PRIV_LVL_S )
       sepc         <= i_riscv_csr_pc ;
 
     else if (csr_write_access_en && i_riscv_csr_address == CSR_SEPC )
@@ -941,10 +910,10 @@ end
 
       stval <= 64'b0;
     // trap to supervisor mode
-    else if((i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned) && force_s_delegation)
+    else if(i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned && support_supervisor && current_priv_lvl == PRIV_LVL_S)
       stval <= i_riscv_csr_addressALU;
 
-    else if(illegal_total  && force_s_delegation)
+    else if(illegal_total  && support_supervisor && current_priv_lvl == PRIV_LVL_S)
       stval <= (i_riscv_csr_is_compressed)? { {48{1'b0}}, i_riscv_csr_cinst }:{ {32{1'b0}}, i_riscv_csr_inst }  ;
 
     else if (csr_write_access_en && i_riscv_csr_address == CSR_STVAL)
@@ -1021,33 +990,22 @@ end
       mcause_int_excep            <= 1'b0 ;
     end
 
-    else if (( is_exception && ((current_priv_lvl == PRIV_LVL_M) || no_delegation))      //  trap to machine mode
-            || interrupt_go_m )
-      
+    else if( go_to_trap && ((current_priv_lvl == PRIV_LVL_M) || no_delegation))      //  trap to machine mode
     begin
-           
-        ack_external_int <= 0 ;
+
+      if(valid)
+      begin
         if(M_ext_int_pend)
         begin
           mcause_code      <= M_EXT_I;
           mcause_int_excep <= 'b1;
-          ack_external_int <= 1    ;
         end
         else if(M_timer_int_pend)
         begin
           mcause_code      <= M_TIMER_I;
           mcause_int_excep <= 'b1;
         end
-        else if(S_ext_int_pend)
-        begin
-          mcause_code      <= M_EXT_I;
-          mcause_int_excep <= 'b1;
-        end
-        else if(S_timer_int_pend)
-        begin
-          mcause_code      <= M_TIMER_I;
-          mcause_int_excep <= 'b1;
-        end
+      end
 
       else if(illegal_total)
       begin
@@ -1105,8 +1063,7 @@ end
       mcause_int_excep <= csr_write_data[63];
       mcause_code      <= csr_write_data[3:0];
     end
-   
-   
+
 
   end    /*---of always block---*/
 
@@ -1123,10 +1080,10 @@ end
       scause_int_excep            <= 1'b0 ;
     end
 
-    else if(( is_exception && force_s_delegation)   // trap to supervisor mode
-    || interrupt_go_s )
+    else if( go_to_trap && support_supervisor && current_priv_lvl == PRIV_LVL_S && (medeleg[execption_cause[3:0]] || mideleg[interrupt_cause[3:0]]))   // trap to supervisor mode
     begin
-      
+      if (valid)
+      begin
         //  if (support_supervisor && trap_to_priv_lvl == PRIV_LVL_S) begin
         if(S_ext_int_pend)
         begin
@@ -1140,6 +1097,7 @@ end
           scause_int_excep <= 1;
           // if (mideleg_mti )
         end
+      end
       else if(illegal_total)
       begin
         scause_code      <= ILLEGAL_INSTRUCTION;
@@ -1240,7 +1198,12 @@ end
         csr_read_en = 1'b0;
       end
     endcase
-    
+    // if we are retiring an exception do not return from exception
+    /*    if (ex_i.valid) begin
+            mret = 1'b0;
+            sret = 1'b0;
+        end
+    */
 
   end
 
@@ -1256,6 +1219,9 @@ end
 
     o_riscv_csr_rdata = csr_read_data;
 
+    // performance counters
+    // if (is_pccr || is_pcer || is_pcmr)
+    // o_riscv_csr_rdata = perf_rdata;
   end
 
 
@@ -1265,7 +1231,8 @@ end
   begin
     if (go_to_trap)
     begin
-      if   (support_supervisor && is_exception && medeleg[execption_cause[3:0]] ) //~is_interrupt = is_exception
+      if  ( (support_supervisor && is_interrupt && mideleg[interrupt_cause[3:0]]) ||
+            ( (is_exception && medeleg[execption_cause[3:0]] ) ) )  //~is_interrupt = is_exception
       begin
         if (current_priv_lvl == PRIV_LVL_M)
           trap_to_priv_lvl = PRIV_LVL_M;
@@ -1273,21 +1240,64 @@ end
           trap_to_priv_lvl = PRIV_LVL_S;
       end
     end
-    else if(support_supervisor && is_interrupt)
-      begin
-      if(interrupt_go_m)
-      trap_to_priv_lvl = PRIV_LVL_M;
-      else
-      trap_to_priv_lvl = PRIV_LVL_S;
-      end
     else
       trap_to_priv_lvl = PRIV_LVL_M;
   end
 
- 
+  always_comb
+  begin
+    // -----------------
+    // Interrupt Control
+    // -----------------
+
+    if (mie_stie && mip_stip)
+
+    begin
+      interrupt_go = 1;
+      S_timer_int_pend = 1 ;
+      interrupt_cause = S_TIMER_I ;
+
+    end
+    // Supervisor External Interrupt
+    // The logical-OR of the software-writable bit and the signal from the external interrupt controller is
+    // used to generate external interrupts to the supervisor
+    else if ( mie_seie && mip_seip)
+    begin
+      interrupt_go = 1;
+      S_ext_int_pend = 1 ;
+      interrupt_cause = S_EXT_I;
+    end
+
+    else if (mip_mtip && mie_mtie)
+
+    begin
+      interrupt_go = 1;
+      M_timer_int_pend = 1 ;
+      interrupt_cause = M_TIMER_I;
+    end
+
+    // Machine Timer Interrupt
+
+    else if (mip_meip && mie_meie)
+
+    begin
+      interrupt_go = 1;
+      M_ext_int_pend = 1 ;
+      interrupt_cause = M_EXT_I;
+    end
+
+    // Machine Mode External Interrupt
+
+    else
+    begin
+      interrupt_go = 0 ;
+      M_ext_int_pend = 0 ;
+      interrupt_cause = M_EXT_I;
+    end
+  end
 
   // -----------------
-  // execption 
+  // execption Control
   // -----------------
   always_comb
   begin
@@ -1312,306 +1322,16 @@ end
 
     else if (i_riscv_csr_store_addr_misaligned)
       execption_cause = STORE_ADDRESS_MISALIGNED;
-    else 
-      execption_cause = 10 ; //always medeleg[execption_cause] = zero
 
   end
 
-
-/*Interrupts to M-mode take priority over any interrupts to lower privilege modes
-
-now you have interupt >> m-interupt  happens in m-mode only takes in m-mode
-                         s-interupt  happens in s-mode  takes in m-mode if mideleg = 0 else if mideleg = 1 takes in s-mode 
-                        
-Multiple simultaneous interrupts destined for M-mode are handled in the following decreasing
-priority order: MEI, MSI, MTI, SEI, SSI, STI
-
-An interrupt i will trap to M-mode (causing the privilege mode to change to M-mode) >>changes m-mode registers if all of
-the following are true: (a) bit i is set in both mip and mie 
-(b) either the current privilege mode is M and the MIE bit in the mstatus
-register is set, or the current privilege mode has less privilege than M-mode;  (c) if register mideleg exists, bit i is not set in mideleg.
-
-An interrupt i will trap to S-mode if both of the following are true  >>changes s-mode registers : 
-(a) bit i is set in both sip and sie.
-(b) either the current privilege
-mode is S and the SIE bit in the sstatus register is set, or the current privilege mode has less
-privilege than S-mode;  
-
-When a hart is executing in privilege mode x, interrupts are globally enabled when x IE=1 and
-globally disabled when x IE=0. Interrupts for lower-privilege modes, w<x, are always globally
-disabled regardless of the setting of any global wIE bit for the lower-privilege mode. Interrupts for
-higher-privilege modes, y>x, are always globally enabled regardless of the setting of the global yIE
-bit for the higher-privilege mode. Higher-privilege-level code can use separate per-interrupt enable
-bits to disable selected higher-privilege-mode interrupts before ceding control to a lower-privilege
-mode.*/
-
-    // -----------------
-    // Interrupt 
-    // -----------------
-   
-   // Machine Timer Interrupt
-    always_comb
-    begin
-     if (mip_mtip && mie_mtie) //not mean it happens at machine mode  
-begin
-      interrupt_go_m = 0; 
-      interrupt_go_s = 0; 
-   case (current_priv_lvl)
-
-        PRIV_LVL_M : begin
-         if (mstatus_mie && ~mideleg_mti) begin
-                          interrupt_go_m = 1 ;
-                          M_timer_int_pend = 1;
-                     end
-                      else begin 
-                        interrupt_go_m = 0;    
-                        M_timer_int_pend = 0;
-                      end 
-                    end         
-        PRIV_LVL_S , PRIV_LVL_U : begin
-                     if(~mideleg_mti)begin
-                          interrupt_go_m = 1 ;
-                        M_timer_int_pend = 1;
-                    end
-                      else 
-                          begin 
-                            interrupt_go_m = 0 ;
-                            M_timer_int_pend =0;
-                          end
-end
-                    /*  if (mideleg_mti && mstatus_sie) begin
-                        interrupt_go_s = 1 ;
-                        M_timer_int_pend = 1;
-                      end
-                      else begin 
-                        interrupt_go_s = 0 ; 
-                        M_timer_int_pend = 0;
-                      end */
-      /*  PRIV_LVL_U : interrupt_global_enable_m = 1 ;
-                    interrupt_global_enable_s = 1 ;  */
-        default : begin interrupt_go_s = 0 ; // >> check
-                        interrupt_go_m = 0 ; // >> check
-                 end        
-    endcase
-end
-     // Machine Mode External Interrupt
-    else if (mip_meip && mie_meie)
-begin
-      interrupt_go_m = 0; 
-      interrupt_go_s = 0; 
-     case (current_priv_lvl)
-
-        PRIV_LVL_M :  begin if (mstatus_mie && ~mideleg_mei) begin
-                        interrupt_go_m = 1 ;
-                        M_ext_int_pend =1 ;
-                       end 
-                        else 
-                         begin
-                            interrupt_go_m = 0; 
-                            M_ext_int_pend =0 ;
-                        end             
-                      end
-        PRIV_LVL_S , PRIV_LVL_U : begin
-                      if(~mideleg_mei)
-                        begin
-                            interrupt_go_m = 1 ;
-                            M_ext_int_pend = 1;
-                        end
-                      else 
-                          begin 
-                            interrupt_go_m = 0 ;
-                            M_ext_int_pend = 0 ;
-                          end
-end
-                    /*if (mideleg_mei && mstatus_sie)
-                         begin
-                           interrupt_go_s = 1 ;
-                           M_ext_int_pend =1 ;
-                        end 
-                     else  begin
-                        interrupt_go_s = 0 ; 
-                         M_ext_int_pend =0 ;
-                       end */   
-                        
-      /*  PRIV_LVL_U : interrupt_global_enable_m = 1 ;
-                    interrupt_global_enable_s = 1 ;  */
-        default :  begin interrupt_go_s = 0 ;
-                        interrupt_go_m = 0 ;
-                 end             
-    endcase
- end
-/*An interrupt i will trap to S-mode if both of the following are true  >>changes s-mode registers : 
-(a) bit i is set in both sip and sie.
-(b) either the current privilege
-mode is S and the SIE bit in the sstatus register is set, or the current privilege mode has less
-privilege than S-mode;   */
-   // Supervisor External Interrupt
-    // The logical-OR of the software-writable bit and the signal from the external interrupt controller is
-    // used to generate external interrupts to the supervisor
-
-
-
-    
-/*When a hart is executing in privilege mode m, inInterrupts for lower-privilege modes, s<m, are always globally
-disabled regardless of the setting of any global wIE bit for the lower-privilege mode. */
-
-    else if ( mie_seie && mip_seip )
-      begin
-              interrupt_go_m = 0; 
-        interrupt_go_s = 0; 
-      case (current_priv_lvl)
-          PRIV_LVL_M :   begin
-                           /* interrupt_go_m = 1 ;
-                            S_ext_int_pend = 1; */
-                            interrupt_go_s = 0 ;
-                            S_ext_int_pend = 0 ;
-                       end
-          PRIV_LVL_S : begin if (/*mideleg_sei &&*/ mstatus_sie) 
-                          begin
-                              interrupt_go_s = 1 ;
-                              S_ext_int_pend = 1;
-                          end
-                        
-                        else begin
-                            interrupt_go_s = 0 ; 
-                            S_ext_int_pend = 0;
-                        end
-                      end
-        /*  PRIV_LVL_U : ;  */
-          default :  begin 
-                        interrupt_go_s = 1 ;
-                        S_ext_int_pend = 1;
-                        interrupt_go_m = 0 ;
-                 end              
-    endcase
-  end
-    else if (mie_stie && mip_stip) 
-      begin
-        interrupt_go_m = 0; 
-        interrupt_go_s = 0; 
-     case (current_priv_lvl)
-      
-          PRIV_LVL_M :  begin 
-                        // interrupt_go_m = 1 ;
-                          interrupt_go_s    = 0 ;
-                          S_timer_int_pend  = 0 ;
-                             end  
-          PRIV_LVL_S : begin
-           if (/*mideleg_sti &&*/ mstatus_sie)  begin 
-                          interrupt_go_s    = 1 ;
-                          S_timer_int_pend  = 1 ; 
-                     end
-                        else begin
-                          interrupt_go_s    = 0 ; 
-                          S_timer_int_pend  = 0; 
-                        end
-                      end
-        /*  PRIV_LVL_U :  ;  */
-          default : 
-            begin     interrupt_go_s    = 1 ;
-                      S_timer_int_pend  = 1 ;
-                      interrupt_go_m    = 0 ;   
-            end        
-    endcase
-  end
-   
-    else
-    begin
-              interrupt_go_s = 0 ;
-              interrupt_go_m = 0 ;
-     
-    end
-  end
-
-
-  /*********************************************** عشوائيات *********************************************************/
-  logic sel ;
-
-  always_comb
-  begin
-    if (o_riscv_csr_flush)
-      sel = 1 ;   // for mux input to it pc+4 from mem stage
-    else
-      sel = 0 ;  // for mux input to it output from previos mux
-  end
-
-
-
-
-      always_comb
-  begin
-    // -----------------
-    // Interrupt 
-    // -----------------
-
-    if (mie_stie && mip_stip)
-
-    begin
-      interrupt_go = 1;
-      interrupt_cause = S_TIMER_I ;
-
-    end
-    // Supervisor External Interrupt
-    // The logical-OR of the software-writable bit and the signal from the external interrupt controller is
-    // used to generate external interrupts to the supervisor
-    else if ( mie_seie && mip_seip)
-    begin
-      interrupt_go = 1;
-      interrupt_cause = S_EXT_I;
-    end
-
-    else if (mip_mtip && mie_mtie)
-
-    begin
-      interrupt_go = 1;
-      interrupt_cause = M_TIMER_I;
-    end
-
-    // Machine Timer Interrupt
-
-    else if (mip_meip && mie_meie)
-
-    begin
-      interrupt_go = 1;
-      interrupt_cause = M_EXT_I;
-    end
-
-    // Machine Mode External Interrupt
-
-    else
-    begin
-      interrupt_go = 0 ;
-      interrupt_cause = 10; // always mideleg[interrupt_cause] = zero 
-    end
-  end
-endmodule
-      /*
-      logic             external_interrupt_pending_m  ;
-      logic             timer_interrupt_pending_m     ;
-      assign external_interrupt_pending_m =  (mstatus_mie && mie_meie && (mip_meip))? 1:0; //machine_interrupt_enable + machine_external_interrupt_enable + machine_external_interrupt_pending must all be high
-      assign software_interrupt_pending_m = mstatus_mie && mie_msie_cs && mip_msip_cs;  //machine_interrupt_enable + machine_software_interrupt_enable + machine_software_interrupt_pending must all be high
-      assign timer_interrupt_pending_m    = (mstatus_mie && mie_mtie && mip_mtip)? 1:0; //machine_interrupt_enable + machine_timer_interrupt_enable + machine_timer_interrupt_pending must all be high
-      assign is_interrupt                 = (external_interrupt_pending_m  || timer_interrupt_pending_m) ? 1:0  ;*/ // || software_interrupt_pending_m ;    
-
-
-  /* 
-    logic [MXLEN-1:0] mtinst_cs   ;
-    always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst )
-    begin
-      if (i_riscv_csr_rst)
-        mtinst_cs <= 'b0 ;
-      else if (csr_write_access_en && i_riscv_csr_address == CSR_MTINST)
-        //  mtinst <= (is_compressed)? i_riscv_csr_inst ;
-        mtinst_cs <=  i_riscv_csr_inst ;
-    end
-  */
 
 
   // An interrupt i will be taken if bit i is set in both mip and mie, and if interrupts are globally enabled.
   // By default, M-mode interrupts are globally enabled if the hart’s current privilege mode  is less
   // than M, or if the current privilege mode is M and the MIE bit in the mstatus register is set.
   // All interrupts are masked in debug mode
- /* assign interrupt_global_enable =  ((mstatus_mie & (current_priv_lvl == PRIV_LVL_M))
+  assign interrupt_global_enable =  ((mstatus_mie & (current_priv_lvl == PRIV_LVL_M))
                                      || (current_priv_lvl != PRIV_LVL_M));
 
 
@@ -1639,4 +1359,40 @@ endmodule
     end
     else
       valid = 1'b0;
-  end */
+  end
+
+
+  /*********************************************** عشوائيات *********************************************************/
+  logic sel ;
+
+  always_comb
+  begin
+    if (o_riscv_csr_flush)
+      sel = 1 ;   // for mux input to it pc+4 from mem stage
+    else
+      sel = 0 ;  // for mux input to it output from previos mux
+  end
+
+endmodule
+
+
+  /*  
+      logic             external_interrupt_pending_m  ;
+      logic             timer_interrupt_pending_m     ;
+      assign external_interrupt_pending_m =  (mstatus_mie && mie_meie && (mip_meip))? 1:0; //machine_interrupt_enable + machine_external_interrupt_enable + machine_external_interrupt_pending must all be high
+      assign software_interrupt_pending_m = mstatus_mie && mie_msie_cs && mip_msip_cs;  //machine_interrupt_enable + machine_software_interrupt_enable + machine_software_interrupt_pending must all be high
+      assign timer_interrupt_pending_m    = (mstatus_mie && mie_mtie && mip_mtip)? 1:0; //machine_interrupt_enable + machine_timer_interrupt_enable + machine_timer_interrupt_pending must all be high
+      assign is_interrupt                 = (external_interrupt_pending_m  || timer_interrupt_pending_m) ? 1:0  ;*/ // || software_interrupt_pending_m ;    
+
+
+  /* 
+    logic [MXLEN-1:0] mtinst_cs   ;
+    always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst )
+    begin
+      if (i_riscv_csr_rst)
+        mtinst_cs <= 'b0 ;
+      else if (csr_write_access_en && i_riscv_csr_address == CSR_MTINST)
+        //  mtinst <= (is_compressed)? i_riscv_csr_inst ;
+        mtinst_cs <=  i_riscv_csr_inst ;
+    end
+  */

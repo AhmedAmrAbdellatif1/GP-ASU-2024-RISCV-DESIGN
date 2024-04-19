@@ -20,13 +20,8 @@
     begin:rf_write_proc
       if(i_riscv_rf_rst)
         begin
-          for (i=0; i<2; i=i+1) 
-            begin
-              if(i!=2)
-                rf[i]<=64'b0;
-              else
-                rf[2] <= 'h3ffffffb40;
-            end
+          for (i=0; i<31; i=i+1) 
+            rf[i]<=64'b0;
         end         
       else
         if(i_riscv_rf_regwrite && (i_riscv_rf_rdaddr!=0))
