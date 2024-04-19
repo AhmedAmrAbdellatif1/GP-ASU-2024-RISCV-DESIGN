@@ -10,134 +10,30 @@ add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/i
 add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/o_riscv_csr_rdata
 add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/o_riscv_csr_return_address
 add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/o_riscv_csr_trap_address
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/o_riscv_csr_gotoTrap_cs
 add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/o_riscv_csr_returnfromTrap_cs
+add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/o_riscv_csr_gotoTrap_cs
 add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/o_riscv_csr_privlvl
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/priv_lvl_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/priv_lvl_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mepc_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/priv_lvl_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mepc_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mscratch_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mtval_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mtvec_base_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mtvec_mode_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_sie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_spie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_ube_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mpie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_spp_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mpp_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mprv_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_sum_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mxr_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_tvm_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_tw_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_tsr_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_uxl_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_sxl_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_sbe_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mbe_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mie_meie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mie_mtie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mie_seie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mie_stie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mip_meip_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mip_mtip_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mip_seip_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mip_stip_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mcause_int_excep_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mcause_code_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/medeleg_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mideleg_mei_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mideleg_mti_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mideleg_sei_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mideleg_sti_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/stval_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/sscratch_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/sepc_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/scause_int_excep_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/scause_code_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/stvec_base_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/stvec_mode_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/external_interrupt_pending_m
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/timer_interrupt_pending_m
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/is_interrupt
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/is_exception
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/is_trap
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/go_to_trap
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_csr_priv
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_csr_write
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_read_csr
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_csr
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/csr_we_int
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/csr_wdata
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/csr_rdata_int
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mret
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_total
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/trap_to_priv_lvl
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mscratch_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mtval_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mtvec_base_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mtvec_mode_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_sie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_spie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_ube_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mpie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_spp_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mpp_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mprv_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_sum_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mxr_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_tvm_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_tw_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_tsr_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_uxl_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_sxl_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_sbe_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mbe_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mie_meie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mie_mtie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mie_seie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mie_stie_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mip_meip_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mip_mtip_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mip_seip_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mip_stip_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mcause_int_excep_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mcause_code_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/medeleg_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mideleg_mei_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mideleg_mti_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mideleg_sei_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mideleg_sti_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/stval_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/sscratch_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/sepc_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/scause_int_excep_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/scause_code_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/stvec_base_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/stvec_mode_cs
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/external_interrupt_pending_m
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/timer_interrupt_pending_m
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/is_interrupt
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/is_exception
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/is_trap
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/go_to_trap
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_csr_priv
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_csr_write
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_read_csr
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_csr
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/csr_we_int
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/csr_wdata
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/csr_rdata_int
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mret
-add wave -noupdate /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/trap_to_priv_lvl
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -height 25 /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/priv_lvl_cs
+add wave -noupdate -height 25 /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mret
+add wave -noupdate -height 25 /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/illegal_total
+add wave -noupdate -height 25 /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_sie_cs
+add wave -noupdate -height 25 /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_spie_cs
+add wave -noupdate -height 25 /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_spp_cs
+add wave -noupdate -height 25 /riscv_top_tb/DUT/u_top_core/u_top_datapath/u_riscv_csrfile/mstatus_mpp_cs
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -divider -height 50 {New Divider}
+add wave -noupdate -divider -height 50 {New Divider}
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {0 ps} 0}
-quietly wave cursor active 0
+WaveRestoreCursors {{Cursor 1} {437967700 ps} 0}
+quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -152,4 +48,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {900 ps}
+WaveRestoreZoom {437820200 ps} {438229800 ps}

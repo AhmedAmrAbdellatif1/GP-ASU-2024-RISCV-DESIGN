@@ -5,13 +5,6 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 Top level modules:
 	riscv_instructions_cache
 
-} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_core.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_core.sv}
-QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
--- Compiling module riscv_core
-
-Top level modules:
-	riscv_core
-
 } {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_dm.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_dm.sv}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 -- Compiling module riscv_dm
@@ -40,13 +33,6 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 Top level modules:
 	riscv_trap_wb
 
-} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_csrfile.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_csrfile.sv}
-QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
--- Compiling module riscv_csrfile
-
-Top level modules:
-	riscv_csrfile
-
 } {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_icache_inst.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_icache_inst.sv}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 -- Compiling module riscv_icache_inst
@@ -67,13 +53,6 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 
 Top level modules:
 	tag_array_i
-
-} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_top_tb.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_top_tb.sv}
-QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
--- Compiling module riscv_top_tb
-
-Top level modules:
-	riscv_top_tb
 
 } {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_compressed_decoder.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_compressed_decoder.sv}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
@@ -152,13 +131,6 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 Top level modules:
 	riscv_ppreg_fd
 
-} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_control_unit.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_control_unit.sv}
-QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
--- Compiling module riscv_cu
-
-Top level modules:
-	riscv_cu
-
 } {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_rf.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_rf.sv}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 -- Compiling module riscv_rf
@@ -207,13 +179,6 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 
 Top level modules:
 	riscv_im
-
-} {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_datapath.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_datapath.sv}
-QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
--- Compiling module riscv_datapath
-
-Top level modules:
-	riscv_datapath
 
 } {} {}} {D:/RISC-V/RTL Design/Core Verification/riscv_misalignment_unit.sv} {1 {vlog -work work -vopt -sv -stats=none {D:/RISC-V/RTL Design/Core Verification/riscv_misalignment_unit.sv}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017

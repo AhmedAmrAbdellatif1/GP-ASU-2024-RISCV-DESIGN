@@ -180,7 +180,7 @@ always_ff @(posedge clk or posedge rst) begin
     end
   else if(!stall) begin
     instr.illegal   <= DUT.u_top_core.u_top_datapath.u_riscv_csrfile.illegal_total;
-    csr.priv_lvl    <= DUT.u_top_core.u_top_datapath.u_riscv_csrfile.priv_lvl_cs;
+    csr.priv_lvl    <= DUT.u_top_core.u_top_datapath.u_riscv_csrfile.current_priv_lvl;
   end
 end
 
@@ -220,77 +220,77 @@ always_comb begin
 end
 
 // mtvec register
-assign csr.mtvec[63:2] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtvec_base_cs;
-assign csr.mtvec[1:0]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtvec_mode_cs;
+assign csr.mtvec[63:2] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtvec_base;
+assign csr.mtvec[1:0]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtvec_mode;
 
 // mtval
-assign csr.mtval = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtval_cs;
+assign csr.mtval = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtval;
 
 // mscratch
-assign csr.mscratch = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mscratch_cs;
+assign csr.mscratch = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mscratch;
 
 // mepc
-assign csr.mepc = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mepc_cs;
+assign csr.mepc = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mepc;
 
 // mstatus
-assign csr.mstatus[1]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sie_cs;
-assign csr.mstatus[3]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mie_cs;
-assign csr.mstatus[5]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_spie_cs;
-assign csr.mstatus[6]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_ube_cs;
-assign csr.mstatus[7]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mpie_cs;
-assign csr.mstatus[8]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_spp_cs;
-assign csr.mstatus[12:11] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mpp_cs;
-assign csr.mstatus[17]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mprv_cs;
-assign csr.mstatus[18]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sum_cs;
-assign csr.mstatus[19]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mxr_cs;
-assign csr.mstatus[20]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tvm_cs;
-assign csr.mstatus[21]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tw_cs;
-assign csr.mstatus[22]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tsr_cs;
-assign csr.mstatus[33:32] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_uxl_cs;
-assign csr.mstatus[35:34] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sxl_cs;
-assign csr.mstatus[36]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sbe_cs;
-assign csr.mstatus[37]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mbe_cs;
+assign csr.mstatus[1]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sie;
+assign csr.mstatus[3]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mie;
+assign csr.mstatus[5]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_spie;
+assign csr.mstatus[6]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_ube;
+assign csr.mstatus[7]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mpie;
+assign csr.mstatus[8]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_spp;
+assign csr.mstatus[12:11] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mpp;
+assign csr.mstatus[17]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mprv;
+assign csr.mstatus[18]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sum;
+assign csr.mstatus[19]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mxr;
+assign csr.mstatus[20]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tvm;
+assign csr.mstatus[21]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tw;
+assign csr.mstatus[22]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tsr;
+assign csr.mstatus[33:32] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_uxl;
+assign csr.mstatus[35:34] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sxl;
+assign csr.mstatus[36]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sbe;
+assign csr.mstatus[37]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mbe;
 
 // medeleg
-assign csr.medeleg[15:0]      = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.medeleg_cs;
+assign csr.medeleg[15:0]      = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.medeleg;
 
 // mie
-assign csr.mie[5]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_stie_cs;
-assign csr.mie[7]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_mtie_cs;
-assign csr.mie[9]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_seie_cs;
-assign csr.mie[11] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_meie_cs;
+assign csr.mie[5]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_stie;
+assign csr.mie[7]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_mtie;
+assign csr.mie[9]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_seie;
+assign csr.mie[11] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_meie;
 
 assign mret_flag = ((instr.funct3 == 'b000) && (instr.rd == 'b0) && (instr.rs1 == 'b0) && (instr.csr == 'd770));
 assign sret_flag = ((instr.funct3 == 'b000) && (instr.rd == 'b0) && (instr.rs1 == 'b0) && (instr.csr == 'd258));
 
 // stvec
-assign csr.stvec[63:2] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.stvec_base_cs;
-assign csr.stvec[1:0]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.stvec_mode_cs;
+assign csr.stvec[63:2] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.stvec_base;
+assign csr.stvec[1:0]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.stvec_mode;
 
 // sstatus
-assign csr.sstatus[1]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sie_cs;
-assign csr.sstatus[3]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mie_cs;
-assign csr.sstatus[5]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_spie_cs;
-assign csr.sstatus[6]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_ube_cs;
-assign csr.sstatus[7]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mpie_cs;
-assign csr.sstatus[8]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_spp_cs;
-assign csr.sstatus[12:11] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mpp_cs;
-assign csr.sstatus[17]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mprv_cs;
-assign csr.sstatus[18]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sum_cs;
-assign csr.sstatus[19]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mxr_cs;
-assign csr.sstatus[20]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tvm_cs;
-assign csr.sstatus[21]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tw_cs;
-assign csr.sstatus[22]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tsr_cs;
-assign csr.sstatus[33:32] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_uxl_cs;
-assign csr.sstatus[35:34] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sxl_cs;
-assign csr.sstatus[36]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sbe_cs;
-assign csr.sstatus[37]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mbe_cs;
+assign csr.sstatus[1]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sie;
+assign csr.sstatus[3]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mie;
+assign csr.sstatus[5]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_spie;
+assign csr.sstatus[6]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_ube;
+assign csr.sstatus[7]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mpie;
+assign csr.sstatus[8]     = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_spp;
+assign csr.sstatus[12:11] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mpp;
+assign csr.sstatus[17]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mprv;
+assign csr.sstatus[18]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sum;
+assign csr.sstatus[19]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mxr;
+assign csr.sstatus[20]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tvm;
+assign csr.sstatus[21]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tw;
+assign csr.sstatus[22]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_tsr;
+assign csr.sstatus[33:32] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_uxl;
+assign csr.sstatus[35:34] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sxl;
+assign csr.sstatus[36]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_sbe;
+assign csr.sstatus[37]    = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mstatus_mbe;
 
 // sie    
-assign csr.sie[5]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_stie_cs;
-assign csr.sie[7]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_mtie_cs;
-assign csr.sie[9]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_seie_cs;
-assign csr.sie[11] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_meie_cs;
+assign csr.sie[5]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_stie;
+assign csr.sie[7]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_mtie;
+assign csr.sie[9]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_seie;
+assign csr.sie[11] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mie_meie;
 
 /** CSR STORED DATA **/
 always_comb begin
