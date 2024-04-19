@@ -1,366 +1,231 @@
+`include "packages.sv"
+module riscv_csrfile  # ( parameter MXLEN              = 64   ,
+                          parameter SXLEN              = 64   ,
+                          parameter support_supervisor = 1    ,
+                          parameter support_user       = 1    )
+  (
+    input   logic               i_riscv_csr_clk                   ,
+    input   logic               i_riscv_csr_rst                   ,
+    input   logic [11:0]        i_riscv_csr_address               ,
+    input   logic [2:0]         i_riscv_csr_op                    ,
+    input   logic [MXLEN-1:0]   i_riscv_csr_wdata                 ,
+    input   logic               i_riscv_csr_external_int          , 
+    input   logic               i_riscv_csr_timer_int             , 
+    input   logic [63:0]        i_riscv_csr_pc                    ,
+    input   logic [63:0]        i_riscv_csr_addressALU            , 
+    input   logic [31:0]        i_riscv_csr_inst                  ,
+    input   logic [15:0]        i_riscv_csr_cinst                 ,
+    input   logic               i_riscv_csr_illegal_inst          , 
+    input   logic               i_riscv_csr_ecall_u               ,        
+    input   logic               i_riscv_csr_ecall_s               ,        
+    input   logic               i_riscv_csr_ecall_m               ,       
+    input   logic               i_riscv_csr_inst_addr_misaligned  ,
+    input   logic               i_riscv_csr_load_addr_misaligned  ,
+    input   logic               i_riscv_csr_store_addr_misaligned ,
+    input   logic               i_riscv_csr_flush                 ,
+    input   logic               i_riscv_csr_globstall             ,
+    input   logic               i_riscv_csr_is_compressed         ,
+    output  logic [MXLEN-1:0]   o_riscv_csr_rdata                 ,
+    output  logic               o_riscv_csr_sideeffect_flush      ,
+    output  logic [MXLEN-1:0]   o_riscv_csr_return_address        , 
+    output  logic [MXLEN-1:0]   o_riscv_csr_trap_address          ,   
+    output  logic               o_riscv_csr_gotoTrap_cs           , 
+    output  logic [1:0]         o_riscv_csr_returnfromTrap_cs     ,
+    output  logic [1:0]         o_riscv_csr_privlvl               ,
+    output  logic               o_riscv_csr_flush                 ,
+    output  logic [SXLEN-1:0]   o_riscv_csr_sepc                  ,
+    output  logic               o_riscv_csr_tsr
+  );
+
+  /****************************** Packages ******************************/
+  import csr_pkg::*;
+  /****************************** CSR Register Implementation ******************************/
+
+  //***  Privilege levels are used to provide protection between different components of the software stack
+  logic   [1:0]     current_priv_lvl  ;
+
+  //***  Machine Exception Program Counter ***//
+  logic [MXLEN-1:0] mepc              ;
+
+  //***  Machine Scratch Register ***//
+  logic [MXLEN-1:0] mscratch          ;     //  Dedicated for use by machine code
+
+  //***  Machine Trap Value Register ***//
+  logic [MXLEN-1:0] mtval             ;     //  Exception-specific infotmation to assist software in handling trap
+
+  //***  Machine Trap-Vector Base-Address Register ***//
+  logic [MXLEN-3:0] mtvec_base        ;        //  Address of pc taken after returning from Trap (via MRET)
+  logic   [1:0]     mtvec_mode        ;        //  Vector mode addressing  >>  vectored or direct
+
+  //*** Machine Status Registers ***// : 
+  logic             mstatus_sie       ;           //  Supervisor Interrupt Enable
+  logic             mstatus_mie       ;           //  Machine Interrupt Enable
+  logic             mstatus_spie      ;           //  Supervisor Previous Interrupt Enable
+  logic             mstatus_ube       ;         
+  logic             mstatus_mpie      ;           //  Machine Previous Interrupt Enable
+  logic             mstatus_spp       ;
+  logic [1:0]       mstatus_mpp       ;
+  logic             mstatus_mprv      ;
+  logic             mstatus_sum       ;
+  logic             mstatus_mxr       ;
+  logic             mstatus_tvm       ;
+  logic             mstatus_tw        ;
+  logic             mstatus_tsr       ;
+  logic [1:0]       mstatus_uxl       ;
+  logic [1:0]       mstatus_sxl       ;
+  logic             mstatus_sbe       ;
+  logic             mstatus_mbe       ;
+  //  The mstatus register keeps track of and controls the hart’s current operating state.
+
+
+  //***  Machine Interrupt Registers ***//
+  logic             mie_stie          ; //  Supervisor timer interrupt enable
+  logic             mie_mtie          ; //  Machine timer interrupt enable
+  logic             mie_seie          ; //  Supervisor external exception enable
+  logic             mie_meie          ; //  Machine external exception enable
+          
+  logic             mip_stip          ; //  Supervisor timer interrupt pending
+  logic             mip_mtip          ; //  Machine timer interrupt pending
+  logic             mip_seip          ; //  Supervisor external exception pending
+  logic             mip_meip          ; //  Machine external exception pending
+  
+  //*** Machine Cause Register ***//
+  // When a trap is taken into M-mode, mcause is written with a code indicating the event that caused the trap.
+  logic             mcause_int_excep  ; //  Interrupt(1) or exception(0)
+  logic [3:0]       mcause_code       ; //  Indicates event that caused the trap
+  
+  //*** Machine Trap Delegation Registers ***//
+  logic [15:0]      medeleg           ;
+  
+  logic [15:0]      mideleg           ;
+  logic             mideleg_mei       ; //  Machine external interrupt delegation
+  logic             mideleg_mti       ; //  Machine timer interrupt delegation
+  logic             mideleg_sei       ; //  Supervisor external interrupt delegation
+  logic             mideleg_sti       ; //  Supervisor timer interrupt delegation
+
+  assign mideleg  = { 4'b0000       ,
+                      mideleg_mei   ,
+                      1'b0          ,
+                      mideleg_sei   ,
+                      1'b0          ,
+                      mideleg_mti   ,
+                      1'b0          ,
+                      mideleg_sti   ,
+                      5'b00000     };
+
+  //************************//
+
+  //*** Supervisor Trap Value Register ***//
+  logic [SXLEN-1:0] stval     ;
+
+  //*** Supervisor Scratch Register ***//
+  logic [SXLEN-1:0] sscratch  ;
+ 
+  //*** Supervisor Exception Program Counter ***//
+  logic [SXLEN-1:0] sepc      ;
+  
+  //*** Supervisor Cause Register ***//
+  logic             scause_int_excep  ; //  Interrupt(1) or exception(0)
+  logic  [3:0]      scause_code       ; //  Indicates event that caused the trap
+  
+  //*** Supervisor Trap Vector Base Address Register ***//
+  logic [SXLEN-3:0] stvec_base        ; //  Address of pc taken after returning from Trap (via MRET)
+  logic   [1:0]     stvec_mode        ; //  Vector mode addressing >> vectored or direct
 
 
 
-module riscv_csrfile
+  /****************************** Internal Flags Declaration ******************************/
+  logic             is_exception                  ;  //  exception flag
+  logic             is_interrupt                  ;  //  interrupt flag
+                  
+  logic             is_trap                       ;   //  trap detection
+  logic             go_to_trap                    ;   //  go to trap handler
 
-  # ( parameter MXLEN              = 64   ,
-      parameter SXLEN              = 64   ,
-      parameter support_supervisor = 1    ,
-      parameter support_user       = 1      )
-    (
-      //csr_instrcution
-      input                     i_riscv_csr_clk ,
-      input                     i_riscv_csr_rst ,
-      input          [11:0]     i_riscv_csr_address ,
-      input          [2:0]      i_riscv_csr_op ,
-      input        [MXLEN-1:0]  i_riscv_csr_wdata ,
-      // Interrupts
-      input logic               i_riscv_csr_external_int, //interrupt from external source
-      //input wire i_riscv_csr_software_interrupt, //interrupt from software (inter-processor interrupt)
-      input logic               i_riscv_csr_timer_int, //interrupt from timer
-      /// Exceptions ///
-      input logic  [63:0]        i_riscv_csr_pc ,
-      input logic  [63:0]       i_riscv_csr_addressALU, //address  from ALU  used in load/store/jump/branch)
+  logic             illegal_priv_access           ;
+  logic             illegal_write_access          ;
+  logic             illegal_read_access           ; 
+  logic             illegal_csr_access            ;
 
-      input logic  [31:0]       i_riscv_csr_inst  ,
-      input logic  [15:0]       i_riscv_csr_cinst  ,
-      input logic               i_riscv_csr_illegal_inst, //illegal instruction (From decoder) ??check if can come from csr
-      input logic               i_riscv_csr_ecall_u ,        //ecall instruction from user mode
-      input logic               i_riscv_csr_ecall_s ,        //ecall instruction from s mode
-      input logic               i_riscv_csr_ecall_m ,        //ecall instruction from m mode
-      input logic               i_riscv_csr_inst_addr_misaligned ,
-      input logic               i_riscv_csr_load_addr_misaligned ,
-      input logic               i_riscv_csr_store_addr_misaligned ,
-      //csr_instrcution
-      output logic [MXLEN-1:0]  o_riscv_csr_rdata ,
-      output logic              o_riscv_csr_sideeffect_flush ,
-      /// Exceptions ///
-      output logic [MXLEN-1:0]  o_riscv_csr_return_address, //mepc CSR  (address to retrun after excuting trap) to continue excuting normal instruction
-      output logic [MXLEN-1:0]  o_riscv_csr_trap_address,   //mtvec CSR
-      // Trap-Handler  // Interrupts/Exceptions
-      output logic              o_riscv_csr_gotoTrap_cs, //high before going to trap (if exception/interrupt detected)  // Output the exception PC to PC Gen, the correct CSR (mepc, sepc) is set accordingly
-      output logic    [1:0]     o_riscv_csr_returnfromTrap_cs , //high before returning from trap (via mret)
+  logic             csr_write_en                  ;
+  logic [MXLEN-1:0] csr_write_data                ;
+  logic             csr_write_access_en           ; 
+  
+  logic             csr_read_en                   ;
+  logic [MXLEN-1:0] csr_read_data                 ;
 
-      output logic    [1:0]     o_riscv_csr_privlvl  ,
-      output logic              o_riscv_csr_flush  ,
+  logic             mret                          ;
+  logic             sret                          ;
 
-      //addition from m-mode
-      input  logic             i_riscv_csr_flush  ,
-      input  logic             i_riscv_csr_globstall ,
-      input  logic             i_riscv_csr_is_compressed,
+  logic [1:0]       trap_to_priv_lvl              ;
+  logic             interrupt_go                  ;
 
-      output logic  [SXLEN-1:0] o_riscv_csr_sepc,
-      output logic              o_riscv_csr_tsr
-      // input wire writeback_change_pc, //high if writeback will issue change_pc (which will override this stage
-    );
-  //CSR addresses
-  //machine info
-  localparam CSR_MVENDORID  = 12'hF11,
-             CSR_MARCHID    = 12'hF12,
-             CSR_MIMPID     = 12'hF13,
-             CSR_MHARTID    = 12'hF14,
-             //machine trap setup
-             CSR_MSTATUS    = 12'h300,
-             CSR_MISA       = 12'h301,
-             CSR_MIE        = 12'h304,
-             CSR_MTVEC      = 12'h305,
-             //machine trap handling
-             CSR_MSCRATCH   = 12'h340,
-             CSR_MEPC       = 12'h341,
-             CSR_MCAUSE     = 12'h342,
-             CSR_MTVAL      = 12'h343,
-             CSR_MIP        = 12'h344  ,
-             CSR_MEDELEG    = 12'h302,
-             CSR_MIDELEG    = 12'h303,
-             // CSR_MCOUNTEREN = 12'h306 ;
-             CSR_MCONFIGPTR = 12'hF15 ,
-             CSR_MTINST     = 12'h34A     ,
-             // Supervisor Mode CSRs
-             CSR_SSTATUS    = 12'h100,
-             CSR_SIE        = 12'h104,
-             CSR_STVEC      = 12'h105,
-             CSR_SCOUNTEREN = 12'h106,
-             CSR_SSCRATCH   = 12'h140,
-             CSR_SEPC       = 12'h141,
-             CSR_SCAUSE     = 12'h142,
-             CSR_STVAL      = 12'h143,
-             CSR_SIP        = 12'h144 ;
+  logic [MXLEN-1:0] trap_base_addr                ;
+  
+  logic [5:0]       interrupt_cause               ;
+  logic [5:0]       execption_cause               ;
 
-  // CSR_SATP     = 12'h180
+  logic             interrupt_global_enable       ;
 
-  /*CSR_MCYCLE         = 12'hB00,
-  CSR_MCYCLEH          = 12'hB80,
-  CSR_MINSTRET   = 12'hB02,
-  CSR_MINSTRETH  = 12'hB82, */
+  logic             valid                         ;
 
-  //CSR operation type
-  localparam CSR_WRITE      = 3'b001 ,
-             CSR_SET        = 3'b010 ,
-             CSR_CLEAR      = 3'b011 ,
-             CSR_READ       = 3'b101 ,
-             SRET           = 3'b110 ,
-             MRET           = 3'b111 ;
+  logic             M_ext_int_pend                ;
+  logic             M_timer_int_pend              ;
 
-  localparam PRIV_LVL_U    =  2'b00 ,
-             PRIV_LVL_S    =  2'b01 ,
-             PRIV_LVL_M    =  2'b11 ;
+  logic             S_ext_int_pend                ;
+  logic             S_timer_int_pend              ;
+  
 
-  //interupts
-  //  localparam  S_SOFT_I     =  1  ;
-  //  localparam  M_SOFT_I     =  3  ;
-  localparam  S_TIMER_I    =  5  ,
-              M_TIMER_I    =  7  ,
-              S_EXT_I      =  9  ,
-              M_EXT_I      =  11 ;
+  /****************************** Continuous Assignment Statements ******************************/
+  // outputs
+  assign o_riscv_csr_sepc             = sepc                  ;
+  assign o_riscv_csr_return_address   = mepc                  ;
+  assign o_riscv_csr_privlvl          = current_priv_lvl      ;
+  assign o_riscv_csr_trap_address     = trap_base_addr        ;
+  assign o_riscv_csr_gotoTrap_cs      = go_to_trap            ;
 
-  //exceptions
-  localparam INSTRUCTION_ADDRESS_MISALIGNED = 0  ,
-             ILLEGAL_INSTRUCTION            = 2  ,
-             LOAD_ADDRESS_MISALIGNED        = 4  ,
-             STORE_ADDRESS_MISALIGNED       = 6  ,
-             ECALL_U                        = 8  ,
-             ECALL_S                        = 9  ,
-             ECALL_M                        = 11 ;
-
-  localparam  CSR_MSTATUS_SIE_BIT           = 1 ,
-              CSR_MSTATUS_MIE_BIT           = 3 ,
-              CSR_MSTATUS_SPIE_BIT          = 5 ,
-              CSR_MSTATUS_UBE_BIT           = 6 ,
-              CSR_MSTATUS_MPIE_BIT          = 7 ,
-              CSR_MSTATUS_SPP               = 8 ,
-
-              CSR_MSTATUS_MPP_BIT_LOW       = 11 ,
-              CSR_MSTATUS_MPP_BIT_HIGH      = 12 ,
-              CSR_MSTATUS_MPRV_BIT          = 17 ,
-              CSR_MSTATUS_SUM_BIT           = 18 ,
-              CSR_MSTATUS_MXR_BIT           = 19 ,
-              CSR_MSTATUS_TVM_BIT           = 20 ,
-              CSR_MSTATUS_TW_BIT            = 21 ,
-              CSR_MSTATUS_TSR_BIT           = 22 ,
-
-              CSR_MSTATUS_UXL_BIT_LOW       = 32 ,
-              CSR_MSTATUS_UXL_BIT_HIGH      = 33 ,
-              CSR_MSTATUS_SXL_BIT_LOW       = 34 ,
-
-              CSR_MSTATUS_SXL_BIT_HIGH      = 35 ,
-
-              CSR_MSTATUS_SBE_BIT           = 36 ,
-              CSR_MSTATUS_MBE_BIT           = 37 ;
-
-
-  localparam logic [MXLEN-1 :0] ISA_CODE =
-               (1                 <<  0)  // A - Atomic Instructions extension
-             | (1                 <<  2)  // C - Compressed extension
-             | (1                 <<  8)  // I - RV32I/64I/128I base ISA
-             //9-11 are reserved
-             | (1                 << 12)  // M - Integer Multiply/Divide extension
-             | (1                 << 18)  // S - Supervisor mode implemented
-             | (1                 << 20)  // U - User mode implemented
-             | (0                 << 62)  // M-XLEN
-             | (1                 << 63); // M-XLEN
-
-
-
-
-  logic   [1:0]     priv_lvl_cs  ;
-  // CSR register bits   //only we dont implement whole register width if there are bits (registers) not useful  >> whole registers are implemnted :
-  /*mepc , mscratch, mtval    */
-
-  logic [MXLEN-1:0] mepc_cs  ;     //machine exception i_pc (address of interrupted instruction)
-  logic [MXLEN-1:0] mscratch_cs  ; //dedicated for use by machine code
-  logic [MXLEN-1:0] mtval_cs  ;//exception-specific infotmation to assist software in handling trap
-
-  /*----------------  */
-  //     mtvec
-  /* ---------------- */
-  logic [MXLEN-3:0] mtvec_base_cs   ;//address of pc taken after returning from Trap (via MRET)
-  logic   [1:0]     mtvec_mode_cs  ;        //vector mode addressing >> vectored or direct
-  // logic          mtvec_mode_cs  ;        //only one bit as 2 bits if they are reserved and we dont care about it >> also check it
-
-  /*----------------  */
-  //     mstatus
-  /* ---------------- */
-  logic             mstatus_sie_cs ;             //  Supervisor Interrupt Enable
-  logic             mstatus_mie_cs ;             //Machine Interrupt Enable
-  logic             mstatus_spie_cs ;            // Supervisor Previous Interrupt Enable
-  logic             mstatus_ube_cs ;
-  logic             mstatus_mpie_cs ;            //Machine Previous Interrupt Enable
-  logic             mstatus_spp_cs ;
-  logic   [1:0]     mstatus_mpp_cs ;
-  //both used for FPU and user extensions and we dont support both
-  //logic [1:0]    mstatus_vs_cs ;
-  //logic [1:0]     mstatus_fs_cs ;
-  //logic [1:0]     mstatus_xs_cs ;
-  // logic          mstatus_sd_cs ;
-  //for memory
-  logic             mstatus_mprv_cs ;
-  logic             mstatus_sum_cs ;
-  logic             mstatus_mxr_cs ;
-  //virtualization support
-  logic             mstatus_tvm_cs ;
-  logic             mstatus_tw_cs ;
-  logic             mstatus_tsr_cs;
-  //base isa control
-  logic   [1:0]     mstatus_uxl_cs ;
-  logic   [1:0]     mstatus_sxl_cs ;
-  logic             mstatus_sbe_cs ;
-  logic             mstatus_mbe_cs ;
-
-  /*----------------  */
-  //     mie
-  /* ---------------- */
-  logic             mie_meie_cs  ; //machine external interrupt enable
-  logic             mie_mtie_cs ; //machine timer interrupt enable
-  logic             mie_seie_cs ; //supervisor external interrupt enable
-  logic             mie_stie_cs ; //Supervisor timer interrupt enable
-  //logic           mie_msie_cs ; //machine software interrupt enable
-  //logic           mie_ssie_cs ; //Supervisor software interrupt enable
-
-  /*----------------  */
-  //     mip
-  /* ---------------- */
-  logic             mip_meip_cs ; //machine external interrupt pending
-  logic             mip_mtip_cs ; //machine timer interrupt pending
-  logic             mip_seip_cs ; //supervisor external interrupt pending
-  logic             mip_stip_cs ; //supervisor timer interrupt pending
-  //logic           mip_msip_cs ; //machine software interrupt pending
-  // logic           mip_ssip_cs ; //supervisor software interrupt pending
-
-
-  /*----------------  */
-  //      mcause
-  /* ---------------- */
-  logic             mcause_int_excep_cs ; //interrupt(1) or exception(0)
-  logic  [3:0]      mcause_code_cs ; //indicates event that caused the trap  //as max value  =16
-
-  /*----------------  */
-  //      medeleg
-  /* ---------------- */  // >> need to checked
-
-  logic  [15:0]     medeleg_cs ;   // as we have exception until number 16 only but each exception has sepefic FF so we need 16 FF
-
-  /*----------------  */
-  //      mideleg
-  /* ---------------- */    //>>need to be checked
-  logic             mideleg_mei_cs ; //machine external interrupt delegation
-  logic             mideleg_mti_cs ; //machine timer interrupt delegation
-  logic             mideleg_sei_cs ; //supervisor external interrupt delegation
-  logic             mideleg_sti_cs ; //Supervisor timer interrupt delegation
-  //logic           mideleg_ssi_cs ; //Supervisor software interrupt delegation
-  //logic           mideleg_msi_cs ;  //machine software interrupt delegation
-
-  /*-------S-Mode register--------*/
-
-  /*stval register */
-  logic [SXLEN-1:0] stval_cs;
-  /*sscratch register */
-  logic [SXLEN-1:0] sscratch_cs;
-  /*sepc register */
-  logic [SXLEN-1:0] sepc_cs ;
-  /*scause register */
-  logic             scause_int_excep_cs  ; //interrupt(1) or exception(0)
-  logic  [3:0]      scause_code_cs     ; //indicates event that caused the trap  //as max value  =16
-  /*stvec register */
-  logic [SXLEN-3:0] stvec_base_cs   ;//address of pc taken after returning from Trap (via MRET)
-  logic   [1:0]     stvec_mode_cs ;        //vector mode addressing >> vectored or direct
-  // logic          stvec_mode_cs , mtvec_mode_ns ;        //only one bit as 2 bits if they are reserved and we dont care about it >> also check it
-  /*----------------  */
-  // Internal Signals
-  /* ---------------- */
-
-  logic             external_interrupt_pending_m ;
-  logic             timer_interrupt_pending_m ;
-  logic             is_interrupt ;
-  logic             is_exception ;
-  logic             is_trap ;
-  logic             go_to_trap ;
-  logic             illegal_csr_priv ,illegal_csr_write , illegal_read_csr ;
-  logic             illegal_csr , csr_we_int;
-  logic [MXLEN-1:0] csr_wdata ;
-  logic [MXLEN-1:0] csr_rdata_int ;
-  logic             mret      ;
-  logic             sret      ;
-  logic             csr_we    ;
-  logic             csr_read  ;
-
-  logic [1:0] trap_to_priv_lvl ;
-  logic interrupt_go ;
-  logic [MXLEN-1:0] trap_vector_base_o ;
-  logic [5:0] interrupt_cause;
-  logic [5:0] execption_cause;
-  logic [MXLEN-1:0] mtinst_cs ;
-  logic interrupt_global_enable ;
-
-  logic valid ;
-  logic S_timer_int_pend ,S_ext_int_pend ,M_timer_int_pend , M_ext_int_pend ;
-  logic illegal_csr_read ;
-  logic [15:0] mideleg_int ;
-  assign mideleg_int = {4'b0000,mideleg_mei_cs,1'b0,mideleg_sei_cs,1'b0,mideleg_mti_cs,1'b0, mideleg_sti_cs,1'b0,1'b0,1'b0,1'b0,1'b0} ;
-  /*----------- directly output some registers-------------*/
-  assign o_riscv_csr_privlvl          = priv_lvl_cs  ;
-  assign o_riscv_csr_return_address   = mepc_cs;
-  assign o_riscv_csr_trap_address     = trap_vector_base_o ;
-  assign o_riscv_csr_sepc             = sepc_cs     ;
-  assign is_csr = (i_riscv_csr_op == 3'd0)? 1'b0:1'b1;
-
-  // assign o_riscv_csr_trap_address     = {mtvec_base_cs ,  mtvec_mode_cs };
-  // assign o_riscv_csr_trap_address     = {mtvec_base_cs ,  2'b00 };  // if direct mode
-  // assign csr_mtval_o = mtval_cs;
-
-  // // output assignments dependent on privilege mode
-  always_comb
-  begin
-    // trap_vector_base_o = {mtvec_q[63:2], 2'b0};
-    trap_vector_base_o = {mtvec_base_cs, 2'b0};
-    // output user mode stvec
-    if (trap_to_priv_lvl == PRIV_LVL_S)
-    begin
-      //  trap_vector_base_o = {stvec_q[63:2], 2'b0};
-      trap_vector_base_o = {stvec_base_cs, 2'b0};
-    end
-
-    // check if we are in vectored mode, if yes then do BASE + 4 * cause
-    // we are imposing an additional alignment-constraint of 64 * 4 bytes since
-    // we want to spare the costly addition
-    if ((mtvec_base_cs[0] || stvec_base_cs[0]) && interrupt_go)
-    begin
-      trap_vector_base_o[7:2] = interrupt_cause[5:0];
-    end
-  end
-
-  /* assign external_interrupt_pending_m =  (mstatus_mie_cs && mie_meie_cs && (mip_meip_cs))? 1:0; //machine_interrupt_enable + machine_external_interrupt_enable + machine_external_interrupt_pending must all be high
-  //  assign software_interrupt_pending_m = mstatus_mie_cs && mie_msie_cs && mip_msip_cs;  //machine_interrupt_enable + machine_software_interrupt_enable + machine_software_interrupt_pending must all be high
-   assign timer_interrupt_pending_m    = (mstatus_mie_cs && mie_mtie_cs && mip_mtip_cs)? 1:0; //machine_interrupt_enable + machine_timer_interrupt_enable + machine_timer_interrupt_pending must all be high
-   assign is_interrupt                 = (external_interrupt_pending_m  || timer_interrupt_pending_m) ? 1:0  ;*/ // || software_interrupt_pending_m ;     
-
+  assign is_csr                       = (i_riscv_csr_op == 3'd0)? 1'b0:1'b1;
   assign is_interrupt                 = interrupt_go && interrupt_global_enable       ;
 
-  // assign is_exception                 = ((illegal_total | i_riscv_csr_ecall_u |i_riscv_csr_ecall_s | i_riscv_csr_ecall_m  | i_riscv_csr_inst_addr_misaligned  | i_riscv_csr_load_addr_misaligned | i_riscv_csr_store_addr_misaligned) )? 1:0 ;
-  assign is_trap                      = (is_interrupt || is_exception)? 1:0;
-  //means there is previous trap
+  assign is_trap                      = (is_interrupt || is_exception)? 1'b1:1'b0;
   assign go_to_trap                   =  is_trap && !i_riscv_csr_flush && !i_riscv_csr_globstall ;
-  //a trap is taken, save i_pc, and go to trap address
-  assign o_riscv_csr_gotoTrap_cs      =  go_to_trap ;
-
-  /*Attempts to access a non-existent CSR raise an illegal instruction exception.
-  >> done by making default case of read always
-  Attempts to access a
-  CSR without appropriate privilege level or to write a read-only register also raise illegal instruction
-  exceptions */
-  assign illegal_csr_priv   = ((i_riscv_csr_address[9:8] > priv_lvl_cs) && is_csr);    // ex : 3 >2 gives one why as current priv = s and need to access m register
-  //  and that is not applicable
-  // 3 > 3 gives zero why as current priv = m and need to access m register
-  //  and that is  applicable
-  assign illegal_csr_write  = (i_riscv_csr_address[11:10] == 2'b11) && csr_we ;    // csr_addr[11:10] == 2'b11 means it is readonly operation
-  //  csr_we = 1 when operation  = CSR_WRITE ,  CSR_SET , CSR_CLEAR
-  assign illegal_csr    = ((illegal_csr_read | illegal_csr_write | illegal_csr_priv ) && is_csr) ;
-  assign illegal_total  =  illegal_csr | i_riscv_csr_illegal_inst ;
-  assign csr_we_int     = csr_we &  ~illegal_csr;
 
 
-  assign mip_timer_next    = i_riscv_csr_timer_int ;
-  assign mip_external_next = i_riscv_csr_external_int ;
-  assign o_riscv_csr_tsr   = mstatus_tsr_cs;
+  assign illegal_priv_access          = ((i_riscv_csr_address[9:8] > current_priv_lvl) && is_csr);    
+  assign illegal_write_access         = (i_riscv_csr_address[11:10] == 2'b11) && csr_write_en ;   
+  assign illegal_csr_access           = ((illegal_read_access | illegal_write_access | illegal_priv_access ) && is_csr) ;
+  assign illegal_total                =  illegal_csr_access | i_riscv_csr_illegal_inst ;
+
+  assign csr_write_access_en          = csr_write_en &  ~illegal_csr_access;
+
+  assign mip_timer_next               = i_riscv_csr_timer_int ;
+  assign mip_external_next            = i_riscv_csr_external_int ;
+  assign o_riscv_csr_tsr              = mstatus_tsr;
+
+  /*** Modes transition conditions ***/
+  assign force_s_delegation = ( (support_supervisor)  &&
+                                (current_priv_lvl == PRIV_LVL_S) &&
+                                (medeleg[execption_cause[3:0]] || mideleg[interrupt_cause[3:0]]));
+
+  assign no_delegation      = ( (support_supervisor)  &&
+                                (current_priv_lvl == PRIV_LVL_S) &&
+                                (!medeleg[execption_cause[3:0]] && !mideleg[interrupt_cause[3:0]]));
+
+  /****************************** Trap Base Address ******************************/
+  always_comb
+  begin
+
+    trap_base_addr = {mtvec_base, 2'b0};  // initialize base address
+
+    if (current_priv_lvl == PRIV_LVL_S)
+    begin
+      trap_base_addr = {stvec_base, 2'b0};
+    end
+
+    if ((mtvec_base[0] || stvec_base[0]) && interrupt_go)
+    begin
+      trap_base_addr[7:2] = interrupt_cause[5:0];
+    end
+  end
 
   /*----------------  */
   // CSR Read logic
@@ -370,36 +235,36 @@ module riscv_csrfile
 
     // a read access exception can only occur if we attempt to read a CSR which does not exist
     //read_access_exception = 1'b0;
-    csr_rdata_int = 64'b0;
-    illegal_csr_read=1'b0 ;
+    csr_read_data = 64'b0;
+    illegal_read_access=1'b0 ;
     //perf_addr_o = csr_addr.address[4:0];;
 
-    if (csr_read)
+    if (csr_read_en)
     begin    //see last always block to know when it is asserted
       //unique case (i_riscv_csr_address)
       case (i_riscv_csr_address)
 
         // mvendorid: encoding of manufacturer/provider
         CSR_MVENDORID :
-          csr_rdata_int = 64'b0 ;  // can indicate it is not implemnted or it is not commercial implementation;
+          csr_read_data = 64'b0 ;  // can indicate it is not implemnted or it is not commercial implementation;
 
         // misa
         CSR_MISA      :
-          csr_rdata_int = ISA_CODE;   //only written ones are read one while default all are read zero
+          csr_read_data = ISA_CODE;   //only written ones are read one while default all are read zero
 
         // marchid: encoding of base microarchitecture
         CSR_MARCHID   :
-          csr_rdata_int = 64'b0 ;   //open source archture should have values
+          csr_read_data = 64'b0 ;   //open source archture should have values
 
         // mimpid: encoding of processor implementation version
-        //CSR_MIMPID: csr_rdata_int =  CSR_MIMPID_VALUE;   // we who decide the number that reflect the design of riscv itself
+        //CSR_MIMPID: csr_read_data =  CSR_MIMPID_VALUE;   // we who decide the number that reflect the design of riscv itself
         CSR_MIMPID    :
-          csr_rdata_int = 64'b0     ; // not implemented
+          csr_read_data = 64'b0     ; // not implemented
 
         // mhartid: unique hardware thread id
-        //  CSR_MHARTID   :   csr_rdata_int = hart_id_i;
+        //  CSR_MHARTID   :   csr_read_data = hart_id_i;
         CSR_MHARTID   :
-          csr_rdata_int = 'b0 ;
+          csr_read_data = 'b0 ;
 
 
         /*----------------  */
@@ -409,30 +274,30 @@ module riscv_csrfile
         begin
 
 
-          csr_rdata_int[CSR_MSTATUS_SXL_BIT_HIGH:CSR_MSTATUS_SXL_BIT_LOW] = (support_supervisor) ? 2'b10 : 2'b00 ;
-          csr_rdata_int[CSR_MSTATUS_UXL_BIT_HIGH:CSR_MSTATUS_UXL_BIT_LOW] =  (support_user)     ? 2'b10 : 2'b00 ;
+          csr_read_data[CSR_MSTATUS_SXL_BIT_HIGH:CSR_MSTATUS_SXL_BIT_LOW] = (support_supervisor) ? 2'b10 : 2'b00 ;
+          csr_read_data[CSR_MSTATUS_UXL_BIT_HIGH:CSR_MSTATUS_UXL_BIT_LOW] =  (support_user)     ? 2'b10 : 2'b00 ;
 
-          csr_rdata_int[CSR_MSTATUS_MIE_BIT]                              = mstatus_mie_cs;
-          csr_rdata_int[CSR_MSTATUS_MPIE_BIT]                             = mstatus_mpie_cs;
-          csr_rdata_int[CSR_MSTATUS_SIE_BIT]                              = mstatus_sie_cs;
-          csr_rdata_int[CSR_MSTATUS_SPIE_BIT]                             = mstatus_spie_cs;
-          csr_rdata_int[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW] = mstatus_mpp_cs;
-          csr_rdata_int[CSR_MSTATUS_SPP ]                                 = mstatus_spp_cs;
+          csr_read_data[CSR_MSTATUS_MIE_BIT]                              = mstatus_mie;
+          csr_read_data[CSR_MSTATUS_MPIE_BIT]                             = mstatus_mpie;
+          csr_read_data[CSR_MSTATUS_SIE_BIT]                              = mstatus_sie;
+          csr_read_data[CSR_MSTATUS_SPIE_BIT]                             = mstatus_spie;
+          csr_read_data[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW] = mstatus_mpp;
+          csr_read_data[CSR_MSTATUS_SPP ]                                 = mstatus_spp;
 
           //for memory
-          csr_rdata_int[CSR_MSTATUS_MPRV_BIT]                             = mstatus_mprv_cs;
-          csr_rdata_int[CSR_MSTATUS_MXR_BIT]                              = mstatus_mxr_cs ;
-          csr_rdata_int[CSR_MSTATUS_SUM_BIT]                              = mstatus_sum_cs ;
+          csr_read_data[CSR_MSTATUS_MPRV_BIT]                             = mstatus_mprv;
+          csr_read_data[CSR_MSTATUS_MXR_BIT]                              = mstatus_mxr ;
+          csr_read_data[CSR_MSTATUS_SUM_BIT]                              = mstatus_sum ;
 
           //for virtulazation supprot
-          csr_rdata_int[CSR_MSTATUS_TSR_BIT]                              = mstatus_tsr_cs;
-          csr_rdata_int[CSR_MSTATUS_TW_BIT]                               = mstatus_tw_cs ;
-          csr_rdata_int[CSR_MSTATUS_TVM_BIT]                              = mstatus_tvm_cs;
+          csr_read_data[CSR_MSTATUS_TSR_BIT]                              = mstatus_tsr;
+          csr_read_data[CSR_MSTATUS_TW_BIT]                               = mstatus_tw ;
+          csr_read_data[CSR_MSTATUS_TVM_BIT]                              = mstatus_tvm;
 
 
-          csr_rdata_int[CSR_MSTATUS_SBE_BIT]                              = mstatus_sbe_cs;
-          csr_rdata_int[CSR_MSTATUS_MBE_BIT]                              = mstatus_mbe_cs ;
-          csr_rdata_int[CSR_MSTATUS_UBE_BIT]                              = mstatus_ube_cs ;
+          csr_read_data[CSR_MSTATUS_SBE_BIT]                              = mstatus_sbe;
+          csr_read_data[CSR_MSTATUS_MBE_BIT]                              = mstatus_mbe ;
+          csr_read_data[CSR_MSTATUS_UBE_BIT]                              = mstatus_ube ;
 
         end
 
@@ -441,114 +306,114 @@ module riscv_csrfile
         /* ---------------- */
         CSR_MTVEC    :
         begin
-          csr_rdata_int [1:0]                               = mtvec_mode_cs ;
-          // csr_rdata_int [0]                              = mtvec_mode_cs ;
-          csr_rdata_int[MXLEN-1:2]                          = mtvec_base_cs;
+          csr_read_data [1:0]                               = mtvec_mode ;
+          // csr_read_data [0]                              = mtvec_mode ;
+          csr_read_data[MXLEN-1:2]                          = mtvec_base;
 
         end
 
 
         // MEDELEG
         CSR_MEDELEG  :
-          csr_rdata_int[15:0]                                = medeleg_cs;
+          csr_read_data[15:0]                                = medeleg;
 
         //  MIDELEG
         CSR_MIDELEG :
         begin
-          // csr_rdata_int[M_SOFT_I]                       = mideleg_msi_cs;
-          csr_rdata_int[M_TIMER_I]                        = mideleg_mti_cs;
-          csr_rdata_int[M_EXT_I]                          = mideleg_mei_cs;
-          //csr_rdata_int[S_SOFT_I]                       = mideleg_ssi_cs;
-          csr_rdata_int[S_TIMER_I]                        = mideleg_sti_cs;
-          csr_rdata_int[S_EXT_I]                          = mideleg_sei_cs ;
+          // csr_read_data[M_SOFT_I]                       = mideleg_msi_cs;
+          csr_read_data[M_TIMER_I]                        = mideleg_mti;
+          csr_read_data[M_EXT_I]                          = mideleg_mei;
+          //csr_read_data[S_SOFT_I]                       = mideleg_ssi_cs;
+          csr_read_data[S_TIMER_I]                        = mideleg_sti;
+          csr_read_data[S_EXT_I]                          = mideleg_sei ;
 
         end
         CSR_MIE    :
         begin
-          //csr_rdata_int                                     = '0;
-          //csr_rdata_int[M_SOFT_I]                       = mie_msie_cs;
-          csr_rdata_int[M_TIMER_I]                        = mie_mtie_cs;
-          csr_rdata_int[M_EXT_I]                          = mie_meie_cs ;
-          //csr_rdata_int[S_SOFT_I]                       = mie_ssie_cs;
-          csr_rdata_int[S_TIMER_I]                        = mie_stie_cs;
-          csr_rdata_int[S_EXT_I]                          = mie_seie_cs ;
+          //csr_read_data                                     = '0;
+          //csr_read_data[M_SOFT_I]                       = mie_msie_cs;
+          csr_read_data[M_TIMER_I]                        = mie_mtie;
+          csr_read_data[M_EXT_I]                          = mie_meie ;
+          //csr_read_data[S_SOFT_I]                       = mie_ssie_cs;
+          csr_read_data[S_TIMER_I]                        = mie_stie;
+          csr_read_data[S_EXT_I]                          = mie_seie ;
         end
 
         CSR_MIP    :
         begin
-          // csr_rdata_int                                     = '0;
-          //csr_rdata_int[M_SOFT_I]                       = mip_msip_cs;
-          csr_rdata_int[M_TIMER_I]                        = mip_mtip_cs;
-          csr_rdata_int[M_EXT_I]                          = mip_meip_cs;
-          //csr_rdata_int[S_SOFT_I]                       = mip_ssip_cs;
-          csr_rdata_int[S_TIMER_I]                        = mip_stip_cs;
-          csr_rdata_int[S_EXT_I]                          = mip_seip_cs ;
+          // csr_read_data                                     = '0;
+          //csr_read_data[M_SOFT_I]                       = mip_msip_cs;
+          csr_read_data[M_TIMER_I]                        = mip_mtip;
+          csr_read_data[M_EXT_I]                          = mip_meip;
+          //csr_read_data[S_SOFT_I]                       = mip_ssip_cs;
+          csr_read_data[S_TIMER_I]                        = mip_stip;
+          csr_read_data[S_EXT_I]                          = mip_seip ;
         end
         CSR_MSCRATCH :
-          csr_rdata_int                                   = mscratch_cs;
+          csr_read_data                                   = mscratch;
         // mepc: exception program counter
         CSR_MEPC    :
-          csr_rdata_int                                   = mepc_cs ;
+          csr_read_data                                   = mepc ;
 
         // mcause: exception cause
         CSR_MCAUSE  :
         begin
-          //csr_rdata_int   = { // mcause_q.irq_ext | mcause_q.irq_int,   we combine them in one bit  // mcause_q.irq_int ? {26{1'b1}} : 26'b0,    //we dont support internal interupts only external interupts
+          //csr_read_data   = { // mcause_q.irq_ext | mcause_q.irq_int,   we combine them in one bit  // mcause_q.irq_int ? {26{1'b1}} : 26'b0,    //we dont support internal interupts only external interupts
 
-          csr_rdata_int      = { mcause_int_excep_cs ,59'b0 , mcause_code_cs [3:0] };  //[4:0] until now it is wrong >>check it
+          csr_read_data      = { mcause_int_excep ,59'b0 , mcause_code [3:0] };  //[4:0] until now it is wrong >>check it
 
         end
 
         CSR_MTVAL   :
-          csr_rdata_int     = mtval_cs;
+          csr_read_data     = mtval;
 
         /*----------------  */
         // mconfigptr : pointer to configuration data structre
         /* ---------------- */
 
         CSR_MCONFIGPTR :
-          csr_rdata_int =        64'b0;  // not implemented >> in spec say that it must be implemnetd ?? i think its means if not implemnted must this address return value
+          csr_read_data =        64'b0;  // not implemented >> in spec say that it must be implemnetd ?? i think its means if not implemnted must this address return value
 
-        //CSR_MCONFIGPTR: csr_rdata_int = CSR_MCONFIGPTR_VALUE;
+        //CSR_MCONFIGPTR: csr_read_data = CSR_MCONFIGPTR_VALUE;
         // if (support_supervisor)
         //read_access_exception = 0 ;
 
         CSR_SIE            :
         begin
-          /*csr_rdata_int[S_TIMER_I]                        = mie_stie_cs;
-          csr_rdata_int[S_EXT_I]                          = mie_seie_cs ; */
-          csr_rdata_int[S_TIMER_I]                        = mie_stie_cs && mideleg_mti_cs;
-          csr_rdata_int[S_EXT_I]                          = mie_seie_cs  && mideleg_mei_cs;
+          /*csr_read_data[S_TIMER_I]                        = mie_stie;
+          csr_read_data[S_EXT_I]                          = mie_seie ; */
+          csr_read_data[S_TIMER_I]                        = mie_stie && mideleg_mti;
+          csr_read_data[S_EXT_I]                          = mie_seie  && mideleg_mei;
 
         end
         CSR_SIP            :
         begin
-          /*csr_rdata_int[S_TIMER_I]                        = mip_stip_cs;
-          csr_rdata_int[S_EXT_I]                          = mip_seip_cs ;  */
-          csr_rdata_int[S_TIMER_I]                        = mip_stip_cs && mideleg_mti_cs ;
-          csr_rdata_int[S_EXT_I]                          = mip_seip_cs && mideleg_mei_cs ;
+          /*csr_read_data[S_TIMER_I]                        = mip_stip;
+          csr_read_data[S_EXT_I]                          = mip_seip ;  */
+          csr_read_data[S_TIMER_I]                        = mip_stip && mideleg_mti ;
+          csr_read_data[S_EXT_I]                          = mip_seip && mideleg_mei ;
         end
 
         CSR_STVAL            :
-          csr_rdata_int =        stval_cs;
+          csr_read_data =        stval;
         CSR_SSCRATCH         :
-          csr_rdata_int =        sscratch_cs;
+          csr_read_data =        sscratch;
         CSR_SEPC             :
-          csr_rdata_int =        sepc_cs;
+          csr_read_data =        sepc;
 
         CSR_SCAUSE           :
         begin
 
-          csr_rdata_int =  { scause_int_excep_cs ,59'b0 , scause_code_cs [3:0] };
+          csr_read_data =  { scause_int_excep ,59'b0 , scause_code [3:0] };
         end
 
         CSR_STVEC            :
         begin
-          csr_rdata_int [1:0]                               = stvec_mode_cs ;
-          // csr_rdata_int [0]                              = stvec_mode_cs ;
-          csr_rdata_int[SXLEN-1:2]                          = stvec_base_cs;
+          csr_read_data [1:0]                               = stvec_mode ;
+          // csr_read_data [0]                              = stvec_mode ;
+          csr_read_data[SXLEN-1:2]                          = stvec_base;
         end
-        // CSR_SCOUNTEREN       : csr_rdata_int =        64'b0;   //check
+        // CSR_SCOUNTEREN       : csr_read_data =        64'b0;   //check
 
 
 
@@ -556,28 +421,28 @@ module riscv_csrfile
         begin
           /*
            //for virtulazation supprot
-            csr_rdata_int[CSR_MSTATUS_TSR_BIT]                              = mstatus_tsr_cs;
-            csr_rdata_int[CSR_MSTATUS_TW_BIT]                               = mstatus_tw_cs ;
-            csr_rdata_int[CSR_MSTATUS_TVM_BIT]                              = mstatus_tvm_cs;
-            csr_rdata_int[CSR_MSTATUS_UBE_BIT]                              = mstatus_ube_cs ; */
+            csr_read_data[CSR_MSTATUS_TSR_BIT]                              = mstatus_tsr;
+            csr_read_data[CSR_MSTATUS_TW_BIT]                               = mstatus_tw ;
+            csr_read_data[CSR_MSTATUS_TVM_BIT]                              = mstatus_tvm;
+            csr_read_data[CSR_MSTATUS_UBE_BIT]                              = mstatus_ube ; */
 
-          csr_rdata_int[CSR_MSTATUS_SIE_BIT]                              = mstatus_sie_cs;
-          csr_rdata_int[CSR_MSTATUS_SPIE_BIT]                             = mstatus_spie_cs;
-          csr_rdata_int[CSR_MSTATUS_SPP ]                                 = mstatus_spp_cs;
-          csr_rdata_int[CSR_MSTATUS_UXL_BIT_HIGH:CSR_MSTATUS_UXL_BIT_LOW] =  (support_user)     ? 2'b10 : 2'b00 ;
+          csr_read_data[CSR_MSTATUS_SIE_BIT]                              = mstatus_sie;
+          csr_read_data[CSR_MSTATUS_SPIE_BIT]                             = mstatus_spie;
+          csr_read_data[CSR_MSTATUS_SPP ]                                 = mstatus_spp;
+          csr_read_data[CSR_MSTATUS_UXL_BIT_HIGH:CSR_MSTATUS_UXL_BIT_LOW] =  (support_user)     ? 2'b10 : 2'b00 ;
           // for memory
-          csr_rdata_int[CSR_MSTATUS_SUM_BIT]                              = mstatus_sum_cs ;
-          csr_rdata_int[CSR_MSTATUS_MXR_BIT]                              = mstatus_mxr_cs ;
+          csr_read_data[CSR_MSTATUS_SUM_BIT]                              = mstatus_sum ;
+          csr_read_data[CSR_MSTATUS_MXR_BIT]                              = mstatus_mxr ;
         end
 
-        // CSR_SATP             : csr_rdata_int =        64'b0;
+        // CSR_SATP             : csr_read_data =        64'b0;
         //else read_access_exception = 1 ;
 
 
         default :
         begin
-          illegal_csr_read   = 1'b1 ;
-          csr_rdata_int =        64'b0;
+          illegal_read_access   = 1'b1 ;
+          csr_read_data =        64'b0;
         end
       endcase
     end  /*----of if condition----*/
@@ -605,113 +470,112 @@ module riscv_csrfile
   begin
     if (i_riscv_csr_rst)
     begin
-      mstatus_mie_cs                 <=1'b0;
-      mstatus_mpie_cs                <=1'b0;
-      mstatus_sie_cs                 <=1'b0;
-      mstatus_spie_cs                <=1'b0;
-      mstatus_mpp_cs                 <=1'b0;
-      mstatus_spp_cs                 <=1'b0;
+      mstatus_mie                 <=1'b0;
+      mstatus_mpie                <=1'b0;
+      mstatus_sie                 <=1'b0;
+      mstatus_spie                <=1'b0;
+      mstatus_mpp                 <=1'b0;
+      mstatus_spp                 <=1'b0;
       //extra add from m-mode due to spike
-      mstatus_sxl_cs  <= 2'b10;
-      mstatus_uxl_cs  <= 2'b10;
+      mstatus_sxl  <= 2'b10;
+      mstatus_uxl  <= 2'b10;
       //for memory
-      mstatus_mprv_cs                <=1'b0;
-      mstatus_mxr_cs                 <=1'b0;
-      mstatus_sum_cs                 <=1'b0 ;
+      mstatus_mprv                <=1'b0;
+      mstatus_mxr                 <=1'b0;
+      mstatus_sum                 <=1'b0 ;
 
       //for virtulazation supprot
-      mstatus_tsr_cs                 <=1'b0;
-      mstatus_tw_cs                  <=1'b0;
-      mstatus_tvm_cs                 <=1'b0;
+      mstatus_tsr                 <=1'b0;
+      mstatus_tw                  <=1'b0;
+      mstatus_tvm                 <=1'b0;
 
 
-      mstatus_sbe_cs                 <=1'b0;
-      mstatus_mbe_cs                 <=1'b0 ;
-      mstatus_ube_cs                 <=1'b0;
+      mstatus_sbe                 <=1'b0;
+      mstatus_mbe                 <=1'b0 ;
+      mstatus_ube                 <=1'b0;
     end
 
-    else if(go_to_trap )
+    else if(go_to_trap)
     begin
       // trap to supervisor mode
-      if (support_supervisor && priv_lvl_cs == PRIV_LVL_S)
+      if (force_s_delegation)
       begin
         // update sstatus
-        mstatus_sie_cs = 1'b0;
-        mstatus_spie_cs = mstatus_sie_cs;
+        mstatus_sie = 1'b0;
+        mstatus_spie = mstatus_sie;
         // this can either be user or supervisor mode
-        mstatus_spp_cs = priv_lvl_cs[0];  //check
+        mstatus_spp = current_priv_lvl[0];  //check
 
       end
 
       // trap to machine mode
-      else // trap_to_priv_lvl == PRIV_LVL_M
+      else if ((current_priv_lvl == PRIV_LVL_M) || no_delegation)
       begin
         // update mstatus
-        mstatus_mie_cs   <= 0; //no nested interrupt allowed    // if done in software that will not make problem make it again zero
+        mstatus_mie   <= 0; //no nested interrupt allowed    // if done in software that will not make problem make it again zero
         // When a trap is taken from privilege mode y into privilege mode x,xPIE is set to the value of x IE; ?? check that
-        mstatus_mpie_cs <= mstatus_mie_cs;
+        mstatus_mpie <= mstatus_mie;
         // save the previous privilege mode
-        mstatus_mpp_cs = priv_lvl_cs;  // check that statement or it is commented
-        // mstatus_mpp_cs <= 2'b11;
-
+        mstatus_mpp = current_priv_lvl;  // check that statement or it is commented
+        // mstatus_mpp <= 2'b11;
       end
     end
     else if (mret )
     begin
       // return to the previous privilege level and restore all enable flags // like global interupt enable
       // get the previous machine interrupt enable flag
-      mstatus_mie_cs    <= mstatus_mpie_cs;
-      mstatus_mpie_cs   <= 1'b1;
+      mstatus_mie    <= mstatus_mpie;
+      mstatus_mpie   <= 1'b1;
       // and xPP is set to the least-privileged supported mode (U if U-mode is implemented, else M)
       //set mpp to user mode
       if(support_user)
-        mstatus_mpp_cs   <= PRIV_LVL_U ;
+        mstatus_mpp   <= PRIV_LVL_U ;
       else
-        mstatus_mpp_cs    <= PRIV_LVL_M ;
+        mstatus_mpp    <= PRIV_LVL_M ;
 
-      // mstatus_mpp_cs  <= (support_user) ? PRIV_LVL_U : PRIV_LVL_M;
+      // mstatus_mpp  <= (support_user) ? PRIV_LVL_U : PRIV_LVL_M;
       //xPIE is set to 1 >> set mpie to 1
       // If xPP?=M, xRET also sets MPRV=0.
       /*
-              if (mstatus_mpp_cs != PRIV_LVL_M) begin
-                mstatus_mprv_cs <= 1'b0;
+              if (mstatus_mpp != PRIV_LVL_M) begin
+                mstatus_mprv <= 1'b0;
               end  */
     end
 
     else if (sret)
     begin
       // return the previous supervisor interrupt enable flag
-      mstatus_sie_cs  <= mstatus_spie_cs;
+      mstatus_sie  <= mstatus_spie;
       // set spp to user mode
-      mstatus_spp_cs  <= 1'b0;
+      mstatus_spp  <= 1'b0;
       // set spie to 1
-      mstatus_spie_cs <= 1'b1;
+      mstatus_spie <= 1'b1;
     end
 
-    else if (csr_we_int && i_riscv_csr_address == CSR_MSTATUS)
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_MSTATUS)
 
     begin
 
-      mstatus_mie_cs    <= csr_wdata[CSR_MSTATUS_MIE_BIT]                             ;
-      mstatus_mpie_cs   <= csr_wdata[CSR_MSTATUS_MPIE_BIT]                             ;
-      mstatus_sie_cs    <= csr_wdata[CSR_MSTATUS_SIE_BIT]                              ;
-      mstatus_spie_cs   <= csr_wdata[CSR_MSTATUS_SPIE_BIT]                             ;
-      mstatus_mpp_cs    <= csr_wdata[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW] ;
-      mstatus_spp_cs    <= csr_wdata[CSR_MSTATUS_SPP] ;
+      mstatus_mie    <= csr_write_data[CSR_MSTATUS_MIE_BIT]                             ;
+      mstatus_mpie   <= csr_write_data[CSR_MSTATUS_MPIE_BIT]                             ;
+      mstatus_sie    <= csr_write_data[CSR_MSTATUS_SIE_BIT]                              ;
+      mstatus_spie   <= csr_write_data[CSR_MSTATUS_SPIE_BIT]                             ;
+      mstatus_mpp    <= csr_write_data[CSR_MSTATUS_MPP_BIT_HIGH:CSR_MSTATUS_MPP_BIT_LOW] ;
+      mstatus_spp    <= csr_write_data[CSR_MSTATUS_SPP] ;
 
       //for memory
-      mstatus_mprv_cs   <=  csr_wdata[CSR_MSTATUS_MPRV_BIT]                            ;
-      mstatus_mxr_cs    <= csr_wdata[CSR_MSTATUS_MXR_BIT]                             ;
-      mstatus_sum_cs    <= csr_wdata[CSR_MSTATUS_SUM_BIT]                                ;
+      mstatus_mprv   <=  csr_write_data[CSR_MSTATUS_MPRV_BIT]                            ;
+      mstatus_mxr    <= csr_write_data[CSR_MSTATUS_MXR_BIT]                             ;
+      mstatus_sum    <= csr_write_data[CSR_MSTATUS_SUM_BIT]                                ;
 
       //for virtulazation supprot
-      mstatus_tsr_cs    <= csr_wdata[CSR_MSTATUS_TSR_BIT]                             ;
-      mstatus_tw_cs     <= csr_wdata[CSR_MSTATUS_TW_BIT]                                ;
-      //mstatus_tvm_cs  <= csr_wdata[CSR_MSTATUS_TVM_BIT]                            ;
+      mstatus_tsr    <= csr_write_data[CSR_MSTATUS_TSR_BIT]                             ;
+      mstatus_tw     <= csr_write_data[CSR_MSTATUS_TW_BIT]                                ;
+      //mstatus_tvm  <= csr_write_data[CSR_MSTATUS_TVM_BIT]                            ;
 
-      //mstatus_sbe_cs  <= csr_wdata[CSR_MSTATUS_SBE_BIT]                              ;
-      //mstatus_mbe_cs  <=csr_wdata[CSR_MSTATUS_MBE_BIT]                               ;
-      //mstatus_ube_cs  <= csr_wdata[CSR_MSTATUS_UBE_BIT]                              ;
+      //mstatus_sbe  <= csr_write_data[CSR_MSTATUS_SBE_BIT]                              ;
+      //mstatus_mbe  <=csr_write_data[CSR_MSTATUS_MBE_BIT]                               ;
+      //mstatus_ube  <= csr_write_data[CSR_MSTATUS_UBE_BIT]                              ;
 
 
       // this register has side-effects on other registers, flush the pipeline
@@ -720,16 +584,16 @@ module riscv_csrfile
 
 
     /*-----SSTATUS-----*/
-    else if (csr_we_int && i_riscv_csr_address == CSR_SSTATUS)
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_SSTATUS)
 
     begin
 
-      mstatus_sie_cs    <= csr_wdata[CSR_MSTATUS_SIE_BIT]                              ;
-      mstatus_spie_cs   <= csr_wdata[CSR_MSTATUS_SPIE_BIT]                             ;
-      mstatus_spp_cs    <= csr_wdata[CSR_MSTATUS_SPP] ;
+      mstatus_sie    <= csr_write_data[CSR_MSTATUS_SIE_BIT]                              ;
+      mstatus_spie   <= csr_write_data[CSR_MSTATUS_SPIE_BIT]                             ;
+      mstatus_spp    <= csr_write_data[CSR_MSTATUS_SPP] ;
       //for memory
-      mstatus_mxr_cs    <= csr_wdata[CSR_MSTATUS_MXR_BIT]                             ;
-      mstatus_sum_cs    <= csr_wdata[CSR_MSTATUS_SUM_BIT]                                ;
+      mstatus_mxr    <= csr_write_data[CSR_MSTATUS_MXR_BIT]                             ;
+      mstatus_sum    <= csr_write_data[CSR_MSTATUS_SUM_BIT]                                ;
 
     end
 
@@ -743,38 +607,38 @@ module riscv_csrfile
     if (i_riscv_csr_rst)
     begin
       //mie
-      mie_meie_cs                    <=1'b0 ;
-      mie_mtie_cs                    <=1'b0 ;
+      mie_meie                    <=1'b0 ;
+      mie_mtie                    <=1'b0 ;
       // mie_msie_cs                 <=1'b0 ;
-      mie_seie_cs                    <=1'b0 ;
-      mie_stie_cs                    <=1'b0 ;
+      mie_seie                    <=1'b0 ;
+      mie_stie                    <=1'b0 ;
       // mie_ssie_cs                 <=1'b0 ;
     end
-    else if (csr_we_int && i_riscv_csr_address == CSR_MIE )
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_MIE )
 
     begin
 
-      // mie_msie_cs          <= csr_wdata[M_SOFT_I];             //3
-      mie_mtie_cs           <= csr_wdata[M_TIMER_I];    //7
-      mie_meie_cs           <= csr_wdata[M_EXT_I];      //11
-      // mie_ssie_cs         <= csr_wdata[S_SOFT_I];
-      mie_stie_cs           <= csr_wdata[S_TIMER_I];
-      mie_seie_cs           <= csr_wdata[S_EXT_I];
+      // mie_msie_cs          <= csr_write_data[M_SOFT_I];             //3
+      mie_mtie           <= csr_write_data[M_TIMER_I];    //7
+      mie_meie           <= csr_write_data[M_EXT_I];      //11
+      // mie_ssie_cs         <= csr_write_data[S_SOFT_I];
+      mie_stie           <= csr_write_data[S_TIMER_I];
+      mie_seie           <= csr_write_data[S_EXT_I];
     end
     /*------sie register-----*/
-    else if (csr_we_int && i_riscv_csr_address == CSR_SIE )
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_SIE )
     begin
       // the mideleg makes sure only delegate-able register (and therefore also only implemented registers) are written
       if (support_supervisor)
       begin
-        // mie_msie_cs           <= csr_wdata[M_SOFT_I];             //3
-        // mie_mtie_cs           <= csr_wdata[M_TIMER_I];    //7
-        //mie_mtie_cs            <= 0 ;
-        // mie_meie_cs           <= csr_wdata[M_EXT_I];      //11
-        //  mie_meie_cs           <= 0 ;      //11
-        // mie_ssie_cs           <= csr_wdata[S_SOFT_I];
-        mie_stie_cs             <= csr_wdata[S_TIMER_I] && mideleg_mti_cs;
-        mie_seie_cs             <= csr_wdata[S_EXT_I]  && mideleg_mei_cs;
+        // mie_msie_cs           <= csr_write_data[M_SOFT_I];             //3
+        // mie_mtie           <= csr_write_data[M_TIMER_I];    //7
+        //mie_mtie            <= 0 ;
+        // mie_meie           <= csr_write_data[M_EXT_I];      //11
+        //  mie_meie           <= 0 ;      //11
+        // mie_ssie_cs           <= csr_write_data[S_SOFT_I];
+        mie_stie             <= (!mideleg_mti)? mie_stie : csr_write_data[S_TIMER_I];
+        mie_seie             <= (!mideleg_mei)? mie_seie : csr_write_data[S_EXT_I];
       end
     end   // end of always block
   end
@@ -787,76 +651,76 @@ module riscv_csrfile
     begin
 
       //mip
-      mip_meip_cs                    <=1'b0 ;
-      mip_mtip_cs                    <=1'b0 ;
+      mip_meip                    <=1'b0 ;
+      mip_mtip                    <=1'b0 ;
       // mip_msip_cs                 <=1'b0 ;
-      mip_seip_cs                    <=1'b0 ;
-      mip_stip_cs                    <=1'b0 ;
+      mip_seip                    <=1'b0 ;
+      mip_stip                    <=1'b0 ;
       //  mip_ssip_cs                 <=1'b0 ;
     end
 
-    else if (csr_we_int && i_riscv_csr_address == CSR_MIP )
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_MIP )
 
     begin
 
-      /* mip_mtip_cs         <= csr_wdata[M_TIMER_I];     //7
-       mip_meip_cs         <= csr_wdata[M_EXT_I];  */     //11
+      /* mip_mtip         <= csr_write_data[M_TIMER_I];     //7
+       mip_meip         <= csr_write_data[M_EXT_I];  */     //11
 
-      mip_mtip_cs         <=  mip_mtip_cs;     //7
-      mip_meip_cs         <=  mip_meip_cs ;
+      mip_mtip         <=  mip_mtip;     //7
+      mip_meip         <=  mip_meip ;
 
-      mip_stip_cs         <= csr_wdata[S_TIMER_I];
-      mip_seip_cs         <= csr_wdata[S_EXT_I];
+      mip_stip         <= csr_write_data[S_TIMER_I];
+      mip_seip         <= csr_write_data[S_EXT_I];
     end
 
     /*---sip---*/
-    /*   else if (csr_we_int && i_riscv_csr_address == CSR_SIP )
+    /*   else if (csr_write_access_en && i_riscv_csr_address == CSR_SIP )
 
          // only the supervisor software interrupt is write-able, iff delegated
 
              begin
-                        // mip_msip_cs <= csr_wdata[M_SOFT_I];           //3
-                        // mip_mtip_cs         <= csr_wdata[M_TIMER_I];     //7
-                        // mip_mtip_cs         <= 0; 
-                       // mip_meip_cs         <= csr_wdata[M_EXT_I];         //11
-                       //  mip_meip_cs         <=0 ;  
-                       // mip_ssip_cs      <= csr_wdata[S_SOFT_I]; 
-                         mip_stip_cs         <= csr_wdata[S_TIMER_I]; 
-                         mip_seip_cs         <= csr_wdata[S_EXT_I]; 
+                        // mip_msip_cs <= csr_write_data[M_SOFT_I];           //3
+                        // mip_mtip         <= csr_write_data[M_TIMER_I];     //7
+                        // mip_mtip         <= 0; 
+                       // mip_meip         <= csr_write_data[M_EXT_I];         //11
+                       //  mip_meip         <=0 ;  
+                       // mip_ssip_cs      <= csr_write_data[S_SOFT_I]; 
+                         mip_stip         <= csr_write_data[S_TIMER_I]; 
+                         mip_seip         <= csr_write_data[S_EXT_I]; 
              end    */
 
     /*---check---*/  //trap is taken in m mode
     else
     begin
-      mip_meip_cs                    <= mip_external_next ;
-      mip_mtip_cs                    <= mip_timer_next;
+      mip_meip                    <= mip_external_next ;
+      mip_mtip                    <= mip_timer_next;
     end
   end   /* end of always block
 
 
-  /*------mtvec register-----*/
+    /*------mtvec register-----*/
   always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
   begin
     if (i_riscv_csr_rst)
     begin
       //mtvec
-      mtvec_base_cs                  <= 'b10010;  // it is 62 bits
-      mtvec_mode_cs                  <= 2'b00 ;
+      mtvec_base                  <= 'b10010;  // it is 62 bits
+      mtvec_mode                  <= 2'b00 ;
       // set to boot address + direct mode + 4 byte offset which is the initial trap
       // mtvec_rst_load_q         <= 1'b1;
       // mtvec_cs                 <= '0;
     end
-    else if (csr_we_int && i_riscv_csr_address == CSR_MTVEC)
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_MTVEC)
 
     begin
-      mtvec_base_cs    <= csr_wdata[63:2];
-      // mtvec_mode_cs <= i_riscv_csr_wdata[1:0];
-      mtvec_mode_cs  <= csr_wdata[0] ;
+      mtvec_base    <= csr_write_data[63:2];
+      // mtvec_mode <= i_riscv_csr_wdata[1:0];
+      mtvec_mode  <= csr_write_data[0] ;
 
-      if (csr_wdata[0])  //we are in vector mode, as LSB <=1
+      if (csr_write_data[0])  //we are in vector mode, as LSB <=1
       begin
-        mtvec_base_cs   <= {csr_wdata[63:8] , 6'b0 };
-        mtvec_mode_cs   <=  csr_wdata[0] ;
+        mtvec_base   <= {csr_write_data[63:8] , 6'b0 };
+        mtvec_mode   <=  csr_write_data[0] ;
       end
 
     end
@@ -870,23 +734,23 @@ module riscv_csrfile
     if (i_riscv_csr_rst)
     begin
       //mtvec
-      stvec_base_cs                  <= 'b11001;  // it is 62 bits
-      stvec_mode_cs                  <= 2'b00 ;
+      stvec_base                  <= 'b11001;  // it is 62 bits
+      stvec_mode                  <= 2'b00 ;
       // set to boot address + direct mode + 4 byte offset which is the initial trap
       // mtvec_rst_load_q         <= 1'b1;
       // mtvec_cs                 <= '0;
     end
-    else if (csr_we_int && i_riscv_csr_address == CSR_STVEC)
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_STVEC)
 
     begin
-      stvec_base_cs    <= csr_wdata[63:2];
-      // mtvec_mode_cs <= i_riscv_csr_wdata[1:0];
-      stvec_mode_cs  <= csr_wdata[0] ;  //assign one bit to 2 bits >> check that
+      stvec_base    <= csr_write_data[63:2];
+      // mtvec_mode <= i_riscv_csr_wdata[1:0];
+      stvec_mode  <= csr_write_data[0] ;  //assign one bit to 2 bits >> check that
 
-      if (csr_wdata[0])  //we are in vector mode, as LSB <=1
+      if (csr_write_data[0])  //we are in vector mode, as LSB <=1
       begin
-        stvec_base_cs   <= {csr_wdata[63:8] , 6'b0 };
-        stvec_mode_cs   <=  csr_wdata[0] ;
+        stvec_base   <= {csr_write_data[63:8] , 6'b0 };
+        stvec_mode   <=  csr_write_data[0] ;
       end
 
     end
@@ -898,12 +762,12 @@ module riscv_csrfile
   begin
     if (i_riscv_csr_rst)
 
-      medeleg_cs                     <= 'b0 ;  // it is 16 bit
+      medeleg                     <= 'b0 ;  // it is 16 bit
 
     //For exceptions that cannot occur in less privileged modes, the corresponding medeleg bits should
     // be read-only zero. In particular, medeleg[11] is read-only zero.
-    else if (csr_we_int && i_riscv_csr_address == CSR_MEDELEG)
-      medeleg_cs <=  {csr_wdata[15:11],1'b0,csr_wdata[9:0]};
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_MEDELEG)
+      medeleg <=  {csr_write_data[15:11],1'b0,csr_write_data[9:0]};
 
   end  /*---of always block*/
 
@@ -914,14 +778,14 @@ module riscv_csrfile
     if (i_riscv_csr_rst)
     begin
 
-      mideleg_mei_cs                 <=1'b0 ;
-      mideleg_mti_cs                 <=1'b0 ;
+      mideleg_mei                 <=1'b0 ;
+      mideleg_mti                 <=1'b0 ;
       // mideleg_msi_cs                  <=1'b0 ;
-      mideleg_sei_cs                 <=1'b0 ;
-      mideleg_sti_cs                 <=1'b0 ;
+      mideleg_sei                 <=1'b0 ;
+      mideleg_sti                 <=1'b0 ;
       // mideleg_ssi_cs                  <=1'b0 ;
     end
-    else if (csr_we_int && i_riscv_csr_address == CSR_MIDELEG)
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_MIDELEG)
     begin
 
       // machine interrupt delegation register
@@ -929,12 +793,12 @@ module riscv_csrfile
       if (support_supervisor)
       begin
 
-        // mideleg_msi_cs   <=  csr_wdata[M_SOFT_I]     ;
-        //  mideleg_mti_cs   <=  csr_wdata[M_TIMER_I]      ;
-        //  mideleg_mei_cs   <=  csr_wdata[M_EXT_I]        ;
-        //  mideleg_ssi_cs   <=  csr_wdata[S_SOFT_I]      ;
-        mideleg_sti_cs   <=  csr_wdata[S_TIMER_I]       ;
-        mideleg_sei_cs   <=  csr_wdata[S_EXT_I]        ;
+        // mideleg_msi_cs   <=  csr_write_data[M_SOFT_I]     ;
+        //  mideleg_mti   <=  csr_write_data[M_TIMER_I]      ;
+        //  mideleg_mei   <=  csr_write_data[M_EXT_I]        ;
+        //  mideleg_ssi_cs   <=  csr_write_data[S_SOFT_I]      ;
+        mideleg_sti   <=  csr_write_data[S_TIMER_I]       ;
+        mideleg_sei   <=  csr_write_data[S_EXT_I]        ;
       end
     end
 
@@ -946,16 +810,23 @@ module riscv_csrfile
   always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
   begin
     if (i_riscv_csr_rst)
+      mepc <= 64'b0;
+    else if(go_to_trap)
+    begin
+      if(current_priv_lvl == PRIV_LVL_M)
+        mepc <= i_riscv_csr_pc ;
 
-      mepc_cs                        <= 64'b0;
+      else if ( (support_supervisor)  &&
+                (current_priv_lvl == PRIV_LVL_S) &&
+                (!medeleg[execption_cause[3:0]] || !mideleg[interrupt_cause[3:0]]))
 
-    else if(go_to_trap && priv_lvl_cs == PRIV_LVL_M )
-      mepc_cs         <= i_riscv_csr_pc ;
+        mepc <= i_riscv_csr_pc ;
+    end
 
-    else if (csr_we_int && i_riscv_csr_address == CSR_MEPC )
+    else if (csr_write_access_en && (i_riscv_csr_address == CSR_MEPC) )
 
-      mepc_cs <= {csr_wdata[63:1],1'b0};
-    //mepc_cs <= {csr_wdata[63:2],2'b00};    check is it 2'b00 or 1'b0 accordng to ialign
+      mepc <= {csr_write_data[63:1],1'b0};
+    //mepc <= {csr_write_data[63:2],2'b00};    check is it 2'b00 or 1'b0 accordng to ialign
 
   end   /*---of always block*/
 
@@ -966,15 +837,15 @@ module riscv_csrfile
   begin
     if (i_riscv_csr_rst)
 
-      sepc_cs                        <= 64'b0;
+      sepc                        <= 64'b0;
 
-    else if(go_to_trap && support_supervisor && priv_lvl_cs == PRIV_LVL_S )
-      sepc_cs         <= i_riscv_csr_pc ;
+    else if(go_to_trap && support_supervisor && current_priv_lvl == PRIV_LVL_S )
+      sepc         <= i_riscv_csr_pc ;
 
-    else if (csr_we_int && i_riscv_csr_address == CSR_SEPC )
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_SEPC )
 
-      sepc_cs <= {csr_wdata[63:1],1'b0};
-    //sepc_cs <= {csr_wdata[63:2],2'b00};    check is it 2'b00 or 1'b0 accordng to ialign
+      sepc <= {csr_write_data[63:1],1'b0};
+    //sepc <= {csr_write_data[63:2],2'b00};    check is it 2'b00 or 1'b0 accordng to ialign
 
   end   /*---of always block*/
 
@@ -985,11 +856,11 @@ module riscv_csrfile
   begin
     if (i_riscv_csr_rst)
 
-      mscratch_cs                    <= 64'b0;
+      mscratch                    <= 64'b0;
 
-    else if (csr_we_int && i_riscv_csr_address == CSR_MSCRATCH)
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_MSCRATCH)
 
-      mscratch_cs <= csr_wdata;
+      mscratch <= csr_write_data;
 
 
   end   /*---of always block*/
@@ -1000,11 +871,11 @@ module riscv_csrfile
   begin
     if (i_riscv_csr_rst)
 
-      sscratch_cs                    <= 64'b0;
+      sscratch                    <= 64'b0;
 
-    else if (csr_we_int && i_riscv_csr_address == CSR_SSCRATCH)
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_SSCRATCH)
 
-      sscratch_cs <= csr_wdata;
+      sscratch <= csr_write_data;
 
 
   end   /*---of always block*/
@@ -1017,14 +888,14 @@ module riscv_csrfile
   begin
     if (i_riscv_csr_rst)
 
-      mtval_cs  <= 64'b0;
+      mtval  <= 64'b0;
 
-    else if( (i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned) && (priv_lvl_cs == PRIV_LVL_M)  )
-      mtval_cs <= i_riscv_csr_addressALU  ;
-    else if( illegal_total && (priv_lvl_cs == PRIV_LVL_M)  )
-      mtval_cs <= (i_riscv_csr_is_compressed)? { {48{1'b0}}, i_riscv_csr_cinst }:{ {32{1'b0}}, i_riscv_csr_inst }  ;
-    else if (csr_we_int && i_riscv_csr_address == CSR_MTVAL)
-      mtval_cs    <= csr_wdata;
+    else if( (i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned) && (current_priv_lvl == PRIV_LVL_M)  )
+      mtval <= i_riscv_csr_addressALU  ;
+    else if( illegal_total && (current_priv_lvl == PRIV_LVL_M)  )
+      mtval <= (i_riscv_csr_is_compressed)? { {48{1'b0}}, i_riscv_csr_cinst }:{ {32{1'b0}}, i_riscv_csr_inst }  ;
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_MTVAL)
+      mtval    <= csr_write_data;
 
   end   /*---of always block*/
 
@@ -1036,16 +907,16 @@ module riscv_csrfile
   begin
     if (i_riscv_csr_rst)
 
-      stval_cs <= 64'b0;
+      stval <= 64'b0;
     // trap to supervisor mode
-    else if(i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned && support_supervisor && priv_lvl_cs == PRIV_LVL_S)
-      stval_cs <= i_riscv_csr_addressALU;
+    else if(i_riscv_csr_load_addr_misaligned || i_riscv_csr_store_addr_misaligned && support_supervisor && current_priv_lvl == PRIV_LVL_S)
+      stval <= i_riscv_csr_addressALU;
 
-    else if(illegal_total  && support_supervisor && priv_lvl_cs == PRIV_LVL_S)
-      stval_cs <= (i_riscv_csr_is_compressed)? { {48{1'b0}}, i_riscv_csr_cinst }:{ {32{1'b0}}, i_riscv_csr_inst }  ;
+    else if(illegal_total  && support_supervisor && current_priv_lvl == PRIV_LVL_S)
+      stval <= (i_riscv_csr_is_compressed)? { {48{1'b0}}, i_riscv_csr_cinst }:{ {32{1'b0}}, i_riscv_csr_inst }  ;
 
-    else if (csr_we_int && i_riscv_csr_address == CSR_STVAL)
-      stval_cs    <= csr_wdata;
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_STVAL)
+      stval    <= csr_write_data;
 
   end   /*---of always block*/
 
@@ -1092,30 +963,17 @@ module riscv_csrfile
   always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst)
   begin
     if (i_riscv_csr_rst)
-
-      priv_lvl_cs                   <= PRIV_LVL_M;
-
-    else  if(go_to_trap)
-       begin
-      //  priv_lvl_cs <= PRIV_LVL_M      ;
-      if ( (support_supervisor && is_interrupt && mideleg_int[interrupt_cause[3:0]]) ||
-          ( (is_exception && medeleg_cs[execption_cause[3:0]] ) ) )  //~is_interrupt = is_exception
-
-      begin
-        // traps never transition from a more-privileged mode to a less privileged mode
-        // so if trap is get  in M mode, it will be evaluted in M mode >> only delgeate from m to m when it is get in s-mode
-        if (priv_lvl_cs == PRIV_LVL_M)
-        priv_lvl_cs <= PRIV_LVL_M;
-        else
-        priv_lvl_cs <= PRIV_LVL_S;
-      end
+      current_priv_lvl <= PRIV_LVL_M;
+    else if(go_to_trap)
+    begin
+      current_priv_lvl <= trap_to_priv_lvl;
     end
     else if (mret)
       // restore the previous privilege level
-      priv_lvl_cs       <= mstatus_mpp_cs;
+      current_priv_lvl       <= mstatus_mpp;
     else if (sret)
       // restore the previous privilege level
-      priv_lvl_cs    <= {1'b0, mstatus_spp_cs};  //check
+      current_priv_lvl    <= {1'b0, mstatus_spp};  //check
 
   end   /*---of always block---*/
 
@@ -1127,82 +985,82 @@ module riscv_csrfile
   begin
     if     (i_riscv_csr_rst)
     begin
-
-      mcause_code_cs                 <= 4'b0000;
-      mcause_int_excep_cs            <= 1'b0 ;
+      mcause_code                 <= 4'b0000;
+      mcause_int_excep            <= 1'b0 ;
     end
-    else if( go_to_trap && (priv_lvl_cs== PRIV_LVL_M))      //  trap to machine mode
+
+    else if( go_to_trap && ((current_priv_lvl == PRIV_LVL_M) || no_delegation))      //  trap to machine mode
     begin
 
       if(valid)
-         begin
-            if(M_ext_int_pend)
-            begin
-               mcause_code_cs      <= M_EXT_I;
-               mcause_int_excep_cs <= 'b1;
-            end
-            else if(M_timer_int_pend)
-            begin
-               mcause_code_cs      <= M_TIMER_I;
-               mcause_int_excep_cs <= 'b1;
-            end
-         end
-         
+      begin
+        if(M_ext_int_pend)
+        begin
+          mcause_code      <= M_EXT_I;
+          mcause_int_excep <= 'b1;
+        end
+        else if(M_timer_int_pend)
+        begin
+          mcause_code      <= M_TIMER_I;
+          mcause_int_excep <= 'b1;
+        end
+      end
+
       else if(illegal_total)
       begin
-        mcause_code_cs      <= ILLEGAL_INSTRUCTION;
-        mcause_int_excep_cs <= 0 ;
-        // if (medeleg_cs[2] )
+        mcause_code      <= ILLEGAL_INSTRUCTION;
+        mcause_int_excep <= 0 ;
+        // if (medeleg[2] )
       end
       else if(i_riscv_csr_inst_addr_misaligned)
       begin
-        mcause_code_cs       <= INSTRUCTION_ADDRESS_MISALIGNED;
-        mcause_int_excep_cs  <= 0;
-        // if (medeleg_cs[0] )
+        mcause_code       <= INSTRUCTION_ADDRESS_MISALIGNED;
+        mcause_int_excep  <= 0;
+        // if (medeleg[0] )
       end
       else if(i_riscv_csr_ecall_m)
       begin
-        mcause_code_cs       <= ECALL_M;
-        mcause_int_excep_cs <= 0;
-        //if (medeleg_cs[11] )
+        mcause_code       <= ECALL_M;
+        mcause_int_excep <= 0;
+        //if (medeleg[11] )
       end
       else if(i_riscv_csr_ecall_s)
       begin
-        mcause_code_cs       <= ECALL_S;
-        mcause_int_excep_cs <= 0;
-        //if (medeleg_cs[9] )
+        mcause_code       <= ECALL_S;
+        mcause_int_excep <= 0;
+        //if (medeleg[9] )
       end
       else if(i_riscv_csr_ecall_u)
       begin
-        mcause_code_cs       <= ECALL_U;
-        mcause_int_excep_cs <= 0;
-        //  if (medeleg_cs[8] ) */
+        mcause_code       <= ECALL_U;
+        mcause_int_excep <= 0;
+        //  if (medeleg[8] ) */
       end
       else if(i_riscv_csr_load_addr_misaligned)
       begin
-        mcause_code_cs       <= LOAD_ADDRESS_MISALIGNED;
-        mcause_int_excep_cs <= 0;
-        //if (medeleg_cs[4] )
+        mcause_code       <= LOAD_ADDRESS_MISALIGNED;
+        mcause_int_excep <= 0;
+        //if (medeleg[4] )
       end
       else if(i_riscv_csr_store_addr_misaligned)
       begin
-        mcause_code_cs      <= STORE_ADDRESS_MISALIGNED;
-        mcause_int_excep_cs  <= 0;
-        //if (medeleg_cs[6] )
+        mcause_code      <= STORE_ADDRESS_MISALIGNED;
+        mcause_int_excep  <= 0;
+        //if (medeleg[6] )
       end
       // else if(software_interrupt_pending)
       // begin
-      //  mcause_code_cs       <= MACHINE_SOFTWARE_INTERRUPT;
-      //  mcause_int_excep_cs <= 1;
+      //  mcause_code       <= MACHINE_SOFTWARE_INTERRUPT;
+      //  mcause_int_excep <= 1;
       //  if (mideleg_msi_cs)
       //end
 
     end   /*---of gototrap---*/
-    else if (csr_we_int && i_riscv_csr_address == CSR_MCAUSE)
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_MCAUSE)
     begin
 
-      mcause_int_excep_cs <= csr_wdata[63];
-      mcause_code_cs      <= csr_wdata[3:0];
+      mcause_int_excep <= csr_write_data[63];
+      mcause_code      <= csr_write_data[3:0];
     end
 
 
@@ -1217,84 +1075,78 @@ module riscv_csrfile
     if     (i_riscv_csr_rst)
     begin
 
-      scause_code_cs                 <= 4'b0000;
-      scause_int_excep_cs            <= 1'b0 ;
+      scause_code                 <= 4'b0000;
+      scause_int_excep            <= 1'b0 ;
     end
-    else if( go_to_trap && support_supervisor && priv_lvl_cs == PRIV_LVL_S)   // trap to supervisor mode
+
+    else if( go_to_trap && support_supervisor && current_priv_lvl == PRIV_LVL_S && (medeleg[execption_cause[3:0]] || mideleg[interrupt_cause[3:0]]))   // trap to supervisor mode
     begin
-       if (valid)
-       begin
-      //  if (support_supervisor && trap_to_priv_lvl == PRIV_LVL_S) begin
+      if (valid)
+      begin
+        //  if (support_supervisor && trap_to_priv_lvl == PRIV_LVL_S) begin
         if(S_ext_int_pend)
         begin
-          scause_code_cs      <= S_EXT_I;
-          scause_int_excep_cs <= 1;
-          // if (mideleg_mei_cs )
+          scause_code      <= S_EXT_I;
+          scause_int_excep <= 1;
+          // if (mideleg_mei )
         end
         else if(S_timer_int_pend)
         begin
-          scause_code_cs      <= S_TIMER_I;
-          scause_int_excep_cs <= 1;
-          // if (mideleg_mti_cs )
-        end 
+          scause_code      <= S_TIMER_I;
+          scause_int_excep <= 1;
+          // if (mideleg_mti )
+        end
       end
       else if(illegal_total)
       begin
-        scause_code_cs      <= ILLEGAL_INSTRUCTION;
-        scause_int_excep_cs <= 0 ;
-        // if (medeleg_cs[2] )
+        scause_code      <= ILLEGAL_INSTRUCTION;
+        scause_int_excep <= 0 ;
+        // if (medeleg[2] )
       end
       else if(i_riscv_csr_inst_addr_misaligned)
       begin
-        scause_code_cs       <= INSTRUCTION_ADDRESS_MISALIGNED;
-        scause_int_excep_cs  <= 0;
-        // if (medeleg_cs[0] )
+        scause_code       <= INSTRUCTION_ADDRESS_MISALIGNED;
+        scause_int_excep  <= 0;
+        // if (medeleg[0] )
       end
 
       else if(i_riscv_csr_ecall_s)
       begin
-        scause_code_cs       <= ECALL_S;
-        scause_int_excep_cs <= 0;
-        //if (medeleg_cs[9] )
+        scause_code       <= ECALL_S;
+        scause_int_excep <= 0;
+        //if (medeleg[9] )
       end
       else if(i_riscv_csr_ecall_u)
       begin
-        scause_code_cs       <= ECALL_U;
-        scause_int_excep_cs <= 0;
-        // if (medeleg_cs[8] ) */
+        scause_code       <= ECALL_U;
+        scause_int_excep <= 0;
+        // if (medeleg[8] ) */
       end
       else if(i_riscv_csr_load_addr_misaligned)
       begin
-        scause_code_cs       <= LOAD_ADDRESS_MISALIGNED;
-        scause_int_excep_cs <= 0;
-        //if (medeleg_cs[4] )
+        scause_code       <= LOAD_ADDRESS_MISALIGNED;
+        scause_int_excep <= 0;
+        //if (medeleg[4] )
       end
       else if(i_riscv_csr_store_addr_misaligned)
       begin
-        scause_code_cs      <= STORE_ADDRESS_MISALIGNED;
-        scause_int_excep_cs  <= 0;
-        //if (medeleg_cs[6] )
+        scause_code      <= STORE_ADDRESS_MISALIGNED;
+        scause_int_excep  <= 0;
+        //if (medeleg[6] )
       end
     end   /*---of gototrap---*/
-    else if (csr_we_int && i_riscv_csr_address == CSR_SCAUSE)
+    else if (csr_write_access_en && i_riscv_csr_address == CSR_SCAUSE)
     begin
 
-      scause_int_excep_cs <= csr_wdata[63];
-      scause_code_cs      <= csr_wdata[3:0];
+      scause_int_excep <= csr_write_data[63];
+      scause_code      <= csr_write_data[3:0];
     end
 
 
   end    /*---of always block---*/
 
 
-  always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst )
-  begin
-    if (i_riscv_csr_rst)
-      mtinst_cs <= 'b0 ;
-    else if (csr_we_int && i_riscv_csr_address == CSR_MTINST)
-      //  mtinst <= (is_compressed)? i_riscv_csr_inst ;
-      mtinst_cs <=  i_riscv_csr_inst ;
-  end
+
   /* missing FF
   always @() begin
      satp, scoubteren ;
@@ -1308,41 +1160,41 @@ module riscv_csrfile
   always_comb
   begin : csr_op_logic
 
-    csr_wdata = i_riscv_csr_wdata;
+    csr_write_data = i_riscv_csr_wdata;
     //added from m-mode code
-    csr_we    = (!i_riscv_csr_globstall)? 1'b1:1'b0;
-    csr_read  = 1'b1;
+    csr_write_en    = (!i_riscv_csr_globstall)? 1'b1:1'b0;
+    csr_read_en  = 1'b1;
     mret      = 1'b0;
     sret      = 1'b0;
 
     case (i_riscv_csr_op)
       CSR_WRITE :
-        csr_wdata = i_riscv_csr_wdata;
+        csr_write_data = i_riscv_csr_wdata;
       CSR_SET :
-        csr_wdata = i_riscv_csr_wdata | csr_rdata_int;
+        csr_write_data = i_riscv_csr_wdata | csr_read_data;
       CSR_CLEAR :
-        csr_wdata = (~i_riscv_csr_wdata) & csr_rdata_int;
+        csr_write_data = (~i_riscv_csr_wdata) & csr_read_data;
       CSR_READ :
-        csr_we    = 1'b0 ;
+        csr_write_en    = 1'b0 ;
       SRET:
       begin
         // the return should not have any write or read side-effects
-        csr_we   = 1'b0;
-        csr_read = 1'b0;
+        csr_write_en   = 1'b0;
+        csr_read_en = 1'b0;
         sret     = 1'b1; // signal a return from supervisor mode
       end
       MRET:
       begin
         // the return should not have any write or read side-effects
-        csr_we   = 1'b0;
-        csr_read = 1'b0;
+        csr_write_en   = 1'b0;
+        csr_read_en = 1'b0;
         mret     = 1'b1; // signal a return from machine mode
       end
 
       default:
       begin
-        csr_we   = 1'b0;
-        csr_read = 1'b0;
+        csr_write_en   = 1'b0;
+        csr_read_en = 1'b0;
       end
     endcase
     // if we are retiring an exception do not return from exception
@@ -1364,34 +1216,31 @@ module riscv_csrfile
   begin : csr_read_out_process  //reading is done comb
 
 
-    o_riscv_csr_rdata = csr_rdata_int;
+    o_riscv_csr_rdata = csr_read_data;
 
     // performance counters
     // if (is_pccr || is_pcer || is_pcmr)
     // o_riscv_csr_rdata = perf_rdata;
   end
 
-  
+
 
   // update priv level
-  always @ (posedge i_riscv_csr_clk )
+  always_comb
   begin
-    trap_to_priv_lvl <= PRIV_LVL_M;
     if (go_to_trap)
-      if ( (support_supervisor && is_interrupt && mideleg_int[interrupt_cause[3:0]]) ||
-          ( (is_exception && medeleg_cs[execption_cause[3:0]] ) ) )  //~is_interrupt = is_exception
+    begin
+      if  ( (support_supervisor && is_interrupt && mideleg[interrupt_cause[3:0]]) ||
+            ( (is_exception && medeleg[execption_cause[3:0]] ) ) )  //~is_interrupt = is_exception
       begin
-        // traps never transition from a more-privileged mode to a less privileged mode
-        // so if trap is get  in M mode, it will be evaluted in M mode >> only delgeate from m to m when it is get in s-mode
-        if (priv_lvl_cs == PRIV_LVL_M)
-          trap_to_priv_lvl <= PRIV_LVL_M;
+        if (current_priv_lvl == PRIV_LVL_M)
+          trap_to_priv_lvl = PRIV_LVL_M;
         else
-          trap_to_priv_lvl <= PRIV_LVL_S;
+          trap_to_priv_lvl = PRIV_LVL_S;
       end
-
-      
-    //else initial value : trap_to_priv_lvl = PRIV_LVL_M;
-
+    end
+    else
+      trap_to_priv_lvl = PRIV_LVL_M;
   end
 
   always_comb
@@ -1400,7 +1249,7 @@ module riscv_csrfile
     // Interrupt Control
     // -----------------
 
-    if (mie_stie_cs && mip_stip_cs)
+    if (mie_stie && mip_stip)
 
     begin
       interrupt_go = 1;
@@ -1411,33 +1260,33 @@ module riscv_csrfile
     // Supervisor External Interrupt
     // The logical-OR of the software-writable bit and the signal from the external interrupt controller is
     // used to generate external interrupts to the supervisor
-    else if ( mie_seie_cs && mip_seip_cs)
+    else if ( mie_seie && mip_seip)
     begin
       interrupt_go = 1;
       S_ext_int_pend = 1 ;
       interrupt_cause = S_EXT_I;
     end
 
-    else if (mip_mtip_cs && mie_mtie_cs)
+    else if (mip_mtip && mie_mtie)
 
-      begin
-        interrupt_go = 1;
-        M_timer_int_pend = 1 ;
-        interrupt_cause = M_TIMER_I;
-      end
+    begin
+      interrupt_go = 1;
+      M_timer_int_pend = 1 ;
+      interrupt_cause = M_TIMER_I;
+    end
 
     // Machine Timer Interrupt
 
-    else if (mip_meip_cs && mie_meie_cs)
+    else if (mip_meip && mie_meie)
 
-      begin
-        interrupt_go = 1;
-        M_ext_int_pend = 1 ;
-        interrupt_cause = M_EXT_I;
-      end
+    begin
+      interrupt_go = 1;
+      M_ext_int_pend = 1 ;
+      interrupt_cause = M_EXT_I;
+    end
 
     // Machine Mode External Interrupt
-   
+
     else
     begin
       interrupt_go = 0 ;
@@ -1446,13 +1295,14 @@ module riscv_csrfile
     end
   end
 
-    // -----------------
-    // execption Control
-    // -----------------
-  always_comb begin
+  // -----------------
+  // execption Control
+  // -----------------
+  always_comb
+  begin
 
     if(illegal_total)
-      execption_cause = ILLEGAL_INSTRUCTION ; 
+      execption_cause = ILLEGAL_INSTRUCTION ;
 
     else if(i_riscv_csr_inst_addr_misaligned)
       execption_cause = INSTRUCTION_ADDRESS_MISALIGNED;
@@ -1464,14 +1314,14 @@ module riscv_csrfile
       execption_cause = ECALL_S;
 
     else if (i_riscv_csr_ecall_u)
-      execption_cause = ECALL_U;  
+      execption_cause = ECALL_U;
 
     else if (i_riscv_csr_load_addr_misaligned)
       execption_cause = LOAD_ADDRESS_MISALIGNED;
 
     else if (i_riscv_csr_store_addr_misaligned)
       execption_cause = STORE_ADDRESS_MISALIGNED;
-  
+
   end
 
 
@@ -1480,8 +1330,8 @@ module riscv_csrfile
   // By default, M-mode interrupts are globally enabled if the hart’s current privilege mode  is less
   // than M, or if the current privilege mode is M and the MIE bit in the mstatus register is set.
   // All interrupts are masked in debug mode
-  assign interrupt_global_enable =  ((mstatus_mie_cs & (priv_lvl_cs == PRIV_LVL_M))
-                                     || (priv_lvl_cs != PRIV_LVL_M));
+  assign interrupt_global_enable =  ((mstatus_mie & (current_priv_lvl == PRIV_LVL_M))
+                                     || (current_priv_lvl != PRIV_LVL_M));
 
 
   always_comb
@@ -1492,14 +1342,14 @@ module riscv_csrfile
       //if the hart’s current privilege mode equals the delegated privilege mode (S or U)
       //  and that mode’s interrupt enable bit (SIE or UIE in mstatus) is set ,
       //or if the current privilege mode is less than the delegated privilege mode.
-      if (mideleg_int[interrupt_cause[3:0]]) //if delegated so cant take action of trap if below conditions are satified
+      if (mideleg[interrupt_cause[3:0]]) //if delegated so cant take action of trap if below conditions are satified
         // but if not delegated so action of trap take directly without that check
       begin
-         if (  (support_supervisor && mstatus_sie_cs && priv_lvl_cs == PRIV_LVL_S) ||
-               (support_user && priv_lvl_cs == PRIV_LVL_U) )
-            valid = 1'b1;
-         else
-            valid = 1'b0;
+        if (  (support_supervisor && mstatus_sie && current_priv_lvl == PRIV_LVL_S) ||
+              (support_user && current_priv_lvl == PRIV_LVL_U) )
+          valid = 1'b1;
+        else
+          valid = 1'b0;
       end
       else
       begin
@@ -1510,6 +1360,8 @@ module riscv_csrfile
       valid = 1'b0;
   end
 
+
+  /*********************************************** عشوائيات *********************************************************/
   logic sel ;
 
   always_comb
@@ -1521,3 +1373,25 @@ module riscv_csrfile
   end
 
 endmodule
+
+
+  /*  
+      logic             external_interrupt_pending_m  ;
+      logic             timer_interrupt_pending_m     ;
+      assign external_interrupt_pending_m =  (mstatus_mie && mie_meie && (mip_meip))? 1:0; //machine_interrupt_enable + machine_external_interrupt_enable + machine_external_interrupt_pending must all be high
+      assign software_interrupt_pending_m = mstatus_mie && mie_msie_cs && mip_msip_cs;  //machine_interrupt_enable + machine_software_interrupt_enable + machine_software_interrupt_pending must all be high
+      assign timer_interrupt_pending_m    = (mstatus_mie && mie_mtie && mip_mtip)? 1:0; //machine_interrupt_enable + machine_timer_interrupt_enable + machine_timer_interrupt_pending must all be high
+      assign is_interrupt                 = (external_interrupt_pending_m  || timer_interrupt_pending_m) ? 1:0  ;*/ // || software_interrupt_pending_m ;    
+
+
+  /* 
+    logic [MXLEN-1:0] mtinst_cs   ;
+    always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst )
+    begin
+      if (i_riscv_csr_rst)
+        mtinst_cs <= 'b0 ;
+      else if (csr_write_access_en && i_riscv_csr_address == CSR_MTINST)
+        //  mtinst <= (is_compressed)? i_riscv_csr_inst ;
+        mtinst_cs <=  i_riscv_csr_inst ;
+    end
+  */

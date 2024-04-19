@@ -5,7 +5,7 @@ module riscv_top_tb();
   `include "declare.svh"
 
   parameter DEBUG = 0;
-  parameter logic [63:0] LAST_PC    = 'h800010c2; //800c6bce
+  parameter logic [63:0] LAST_PC    = 'h800c6bce; //800c6bce
   parameter logic [63:0] LAST_INSTR = 'h1c81ccf3; 
 
   /********* to define when to stop the simulation *********/
