@@ -1265,8 +1265,7 @@ end
   begin
     if (go_to_trap)
     begin
-      if   (support_supervisor && is_exception && medeleg[execption_cause[3:0]]  ) //~is_interrupt = is_exception
-          
+      if   (support_supervisor && is_exception && medeleg[execption_cause[3:0]] ) //~is_interrupt = is_exception
       begin
         if (current_priv_lvl == PRIV_LVL_M)
           trap_to_priv_lvl = PRIV_LVL_M;
@@ -1274,6 +1273,13 @@ end
           trap_to_priv_lvl = PRIV_LVL_S;
       end
     end
+    else if(support_supervisor && is_interrupt)
+      begin
+      if(interrupt_go_m)
+      trap_to_priv_lvl = PRIV_LVL_M;
+      else
+      trap_to_priv_lvl = PRIV_LVL_S;
+      end
     else
       trap_to_priv_lvl = PRIV_LVL_M;
   end
