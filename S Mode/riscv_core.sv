@@ -128,19 +128,6 @@ module riscv_core
     logic         iscsr_m_hzrd_datapath     ;
     logic         iscsr_d_hzrd_datapath     ;
 
-  riscv_instructions_cache u_inst_cache(
-    .i_riscv_icache_clk             (i_riscv_core_clk)                  ,
-    .i_riscv_icache_rst             (i_riscv_core_rst)                  ,
-    .i_riscv_icache_phys_addr       ((riscv_datapath_pc_im-KERNEL_PC))  ,
-    .i_riscv_icache_mem_ready       (i_riscv_core_imem_ready     )      ,
-    .i_riscv_icache_mem_data_out    (i_riscv_core_imem_data_out  )      ,
-    .o_riscv_icache_cache_data_out  (o_riscv_core_icache_data_out)      ,
-    .o_riscv_icache_mem_addr        (o_riscv_core_imem_addr      )      ,
-    .o_riscv_icache_fsm_mem_rden    (o_riscv_core_fsm_imem_rden  )      ,
-    .o_riscv_icache_cpu_instr_out   (riscv_im_inst_datapath     )       ,  
-    .o_riscv_icache_cpu_stall       (riscv_datapath_stall_m_im  )  
-  );
-
   /************************* ************** *************************/
   /************************* Instantiations *************************/
   /************************* ************** *************************/
@@ -334,6 +321,19 @@ riscv_hazardunit u_top_hzrdu (
     .o_riscv_dcache_cache_data_out  (o_riscv_core_cache_data_out )      ,
     .o_riscv_dcache_cpu_data_out    (riscv_datapath_rdata_dm)           ,
     .o_riscv_dcache_cpu_stall       (riscv_datapath_stall_m_dm)        
+  );
+
+  riscv_instructions_cache u_inst_cache(
+    .i_riscv_icache_clk             (i_riscv_core_clk)                  ,
+    .i_riscv_icache_rst             (i_riscv_core_rst)                  ,
+    .i_riscv_icache_phys_addr       ((riscv_datapath_pc_im-KERNEL_PC))  ,
+    .i_riscv_icache_mem_ready       (i_riscv_core_imem_ready     )      ,
+    .i_riscv_icache_mem_data_out    (i_riscv_core_imem_data_out  )      ,
+    .o_riscv_icache_cache_data_out  (o_riscv_core_icache_data_out)      ,
+    .o_riscv_icache_mem_addr        (o_riscv_core_imem_addr      )      ,
+    .o_riscv_icache_fsm_mem_rden    (o_riscv_core_fsm_imem_rden  )      ,
+    .o_riscv_icache_cpu_instr_out   (riscv_im_inst_datapath     )       ,  
+    .o_riscv_icache_cpu_stall       (riscv_datapath_stall_m_im  )  
   );
 
 endmodule

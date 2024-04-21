@@ -226,7 +226,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic               riscv_cillegal_inst_d            ;
   logic [63:0]        muxout_csr                       ;
   logic               csr_is_compressed_flag           ;
-  logic [63:0]        csr_sepc                         ;
+  logic [63:0]        SEPC                         ;
   
   ////////////////////////////////////////////////////////////////////////////////////
   
@@ -270,7 +270,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_fstage_pcsel         (pcsel_trap_fetchpc)                ,   
     .i_riscv_fstage_mtvec         (mtvec_csr_pctrap)                  ,         
     .i_riscv_fstage_mepc          (mepc_csr_pctrap)                   ,   
-    .i_riscv_fstage_sepc          (csr_sepc)                          ,
+    .i_riscv_fstage_sepc          (SEPC)                          ,
     .o_riscv_fstage_pc            (o_riscv_datapath_pc)               ,
     .o_riscv_fstage_pcplus4       (riscv_pcplus4_f)                   ,
     .o_riscv_fstage_inst          (riscv_inst_f)                      ,
@@ -624,13 +624,13 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .o_riscv_csr_return_address         (mepc_csr_pctrap)                ,
   .o_riscv_csr_trap_address           (mtvec_csr_pctrap)               , 
   .o_riscv_csr_gotoTrap_cs            (gototrap_csr_mw)                ,
-  .o_riscv_csr_returnfromTrap_cs      (returnfromtrap_csr_mw)          ,
+  .o_riscv_csr_returnfromTrap      (returnfromtrap_csr_mw)          ,
   .o_riscv_csr_rdata                  (csrout_mw_trap)                 ,  
   .o_riscv_csr_privlvl                (o_riscv_core_privlvl_csr_cu)    ,
   .o_riscv_csr_tsr                    (o_riscv_datapath_tsr)           ,
-  .o_riscv_csr_sepc                   (csr_sepc)                       ,
+  .o_riscv_sepc                   (SEPC)                       ,
   .o_riscv_csr_sideeffect_flush       ()                               ,
-  .o_riscv_csr_flush                  ()
+  .o_riscv_csr_reconfig               ()
  );
 
  
