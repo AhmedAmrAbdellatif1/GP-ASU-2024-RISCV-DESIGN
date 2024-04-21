@@ -47,7 +47,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   output logic [2:0]        o_riscv_datapath_resultsrc_e       ,  
   output logic [6:0]        o_riscv_datapath_opcode_m          ,
   output logic              o_datapath_div_en                  ,   
-  output logic              o_datapath_mul_en                  ,  
+  output logic              o_datapath_mul_en                  ,
 /************************* Memory Stage Signals *************************/ 
   input  logic [63:0]       i_riscv_datapath_dm_rdata          ,
   output logic [4:0]        o_riscv_datapath_rdaddr_m          ,  
@@ -84,12 +84,18 @@ module riscv_datapath #(parameter MXLEN = 64) (
   input   logic             i_riscv_datapath_ecalls_cu_de      ,
   input   logic             i_riscv_datapath_ecallm_cu_de      ,
   input   logic             i_riscv_datapath_immreg_cu_de      ,
-  input   logic             i_riscv_core_timerinterupt         ,
-  input   logic             i_riscv_core_externalinterupt      ,
+  input   logic             i_riscv_core_timer_interrupt       ,
+  input   logic             i_riscv_core_external_interrupt    ,
+  input   logic [63:0]      i_riscv_timer_datapath_rdata       ,
+  input   logic [63:0]      i_riscv_timer_datapath_time        ,
+  input   logic [63:0]      i_riscv_timer_datapath_timecmp     ,
   output  logic [4:0]       o_riscv_datapath_rs1_fd_cu         ,
   output  logic [11:0]      o_riscv_datapath_constimm12_fd_cu  ,
   output  logic [1:0]       o_riscv_core_privlvl_csr_cu        ,
-  output  logic [4:0]       o_riscv_datapath_rs1addr_m
+  output  logic [4:0]       o_riscv_datapath_rs1addr_m         ,
+  output logic              o_riscv_datapath_timer_wren        ,
+  output logic              o_riscv_datapath_timer_rden        ,
+  output logic [1:0]        o_riscv_datapath_timer_regsel      
  );
 
 /************************* Fetch Stage Signals *************************/
@@ -142,21 +148,24 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic          riscv_amo_e         ;
   logic  [63:0]  riscv_rddata_sc_e   ;
 /************************* Memory Stage Signals *************************/
-  logic  [63:0]  riscv_pc_m          ;
-  logic  [63:0]  riscv_pcplus4_m     ;
-  logic  [63:0]  riscv_rddata_me     ;
-  logic          riscv_regw_m        ;
-  logic  [2:0]   riscv_resultsrc_m   ;
-  logic  [2:0]   riscv_memext_m      ;
-  logic  [4:0]   riscv_rdaddr_m      ;
-  logic  [63:0]  riscv_imm_m         ;
-  logic  [63:0]  riscv_memload_m     ;
-  logic          riscv_instret_m     ;
-  logic  [4:0]   riscv_amo_op_m      ;
-  logic  [63:0]  riscv_rddata_sc_m   ;
-  logic          datapath_memw_e     ;
-  logic          datapath_memr_e     ;
-  logic  [63:0] riscv_datapath_memodata_addr;
+  logic  [63:0]  riscv_pc_m                   ;
+  logic  [63:0]  riscv_pcplus4_m              ;
+  logic  [63:0]  riscv_rddata_me              ;
+  logic          riscv_regw_m                 ;
+  logic  [2:0]   riscv_resultsrc_m            ;
+  logic  [2:0]   riscv_memext_m               ;
+  logic  [4:0]   riscv_rdaddr_m               ;
+  logic  [63:0]  riscv_imm_m                  ;
+  logic  [63:0]  riscv_memload_m              ;
+  logic          riscv_instret_m              ;
+  logic  [4:0]   riscv_amo_op_m               ;
+  logic  [63:0]  riscv_rddata_sc_m            ;
+  logic          datapath_memw_e              ;
+  logic          datapath_memr_e              ;
+  logic  [63:0]  riscv_datapath_memodata_addr ;
+  logic          riscv_em_timer_wren          ;
+  logic          riscv_em_timer_rden          ;
+  logic  [1:0]   riscv_em_timer_regsel        ;
 /************************* WB Stage Signals *************************/      
   logic  [63:0]  riscv_pc_wb         ;
   logic  [63:0]  riscv_pcplus4_wb    ;
@@ -226,7 +235,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic               riscv_cillegal_inst_d            ;
   logic [63:0]        muxout_csr                       ;
   logic               csr_is_compressed_flag           ;
-  logic [63:0]        SEPC                         ;
+  logic [63:0]        SEPC                             ;
   
   ////////////////////////////////////////////////////////////////////////////////////
   
@@ -449,7 +458,10 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_estage_csrwritedata          (csrwritedata_estage_em)           ,     
     .o_riscv_estage_inst_addr_misaligned  (inst_addr_misaligned_estage_em)   ,  
     .o_riscv_estage_store_addr_misaligned (store_addr_misaligned_estage_em)  ,    
-    .o_riscv_estage_load_addr_misaligned  (load_addr_misaligned_estage_em)      
+    .o_riscv_estage_load_addr_misaligned  (load_addr_misaligned_estage_em)   ,
+    .o_riscv_estage_timer_wren            (riscv_em_timer_wren)              ,
+    .o_riscv_estage_timer_rden            (riscv_em_timer_rden)              ,
+    .o_riscv_estage_timer_regsel          (riscv_em_timer_regsel)
   );
 
   riscv_ppreg_em u_riscv_em_ppreg(
@@ -485,18 +497,21 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_em_instret_e               (riscv_instret_e)                  ,   
     .i_riscv_em_rddata_sc_e             (riscv_rddata_sc_e)                ,
     .i_riscv_em_amo_op_e                (riscv_amo_op_e)                   ,
-    .i_riscv_em_inst                    (riscv_inst_e)                     , //<---
-    .i_riscv_em_cinst                   (riscv_cinst_e)                    , //<---
-    .o_riscv_em_inst                    (riscv_inst_m)                     , //<---
-    .o_riscv_em_cinst                   (riscv_cinst_m)                    , //<---
+    .i_riscv_em_inst                    (riscv_inst_e)                     ,
+    .i_riscv_em_cinst                   (riscv_cinst_e)                    ,
+    .i_riscv_em_timer_wren              (riscv_em_timer_wren)              ,
+    .i_riscv_em_timer_rden              (riscv_em_timer_rden)              ,
+    .i_riscv_em_timer_regsel            (riscv_em_timer_regsel)            ,
+    .o_riscv_em_inst                    (riscv_inst_m)                     , 
+    .o_riscv_em_cinst                   (riscv_cinst_m)                    , 
     .o_riscv_em_amo_op_m                (riscv_amo_op_m)                   ,
     .o_riscv_em_rddata_sc_m             (riscv_rddata_sc_m)                ,
     .o_riscv_em_pc                      (riscv_pc_m)                       ,
     .o_riscv_em_instret_m               (riscv_instret_m)                  ,   
     .o_riscv_em_rs1addr_m               (o_riscv_datapath_rs1addr_m)       ,       
     .o_riscv_em_ecall_m_m               (m_em_csr)                         ,   
-    .o_riscv_em_ecall_s_m               (s_em_csr)                         , //<--
-    .o_riscv_em_ecall_u_m               (u_em_csr)                         , //<--
+    .o_riscv_em_ecall_s_m               (s_em_csr)                         , 
+    .o_riscv_em_ecall_u_m               (u_em_csr)                         , 
     .o_riscv_em_csraddress_m            (csraddress_em_csr)                , 
     .o_riscv_em_illegal_inst_m          (illegal_inst_em_csr)              ,  
     .o_riscv_em_iscsr_m                 (iscsr_csr_mw)                     ,  
@@ -516,19 +531,23 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_em_storedata_m             (o_riscv_datapath_storedata_m)     ,
     .o_riscv_em_rdaddr_m                (riscv_rdaddr_m)                   ,
     .o_riscv_em_imm_m                   (riscv_imm_m)                      ,  
-    .o_riscv_em_opcode_m                (o_riscv_datapath_opcode_m)           
+    .o_riscv_em_opcode_m                (o_riscv_datapath_opcode_m)        ,
+    .o_riscv_em_timer_wren              (o_riscv_datapath_timer_wren  )    ,
+    .o_riscv_em_timer_rden              (o_riscv_datapath_timer_rden  )    ,
+    .o_riscv_em_timer_regsel            (o_riscv_datapath_timer_regsel)
   );
 
-
   riscv_mstage u_riscv_mstage(
-    .i_riscv_mstage_dm_rdata    (i_riscv_datapath_dm_rdata)         ,
-    .i_riscv_mstage_memext      (riscv_memext_m)                    ,
-    .i_riscv_mstage_addr        (riscv_rddata_me)		                ,
-    .i_riscv_mstage_mux2_sel    (i_riscv_datapath_muxcsr_sel)       ,  
-    .i_riscv_mux2_in0           (csrwdata_em_csr)                   ,  
-    .i_riscv_mux2_in1           (csrout_csr_mw)                     ,   
-    .o_riscv_mstage_memload     (riscv_memload_m)                   ,
-    .o_riscv_mstage_mux2_out    (muxout_csr)                            
+    .i_riscv_mstage_dm_rdata      (i_riscv_datapath_dm_rdata)         ,
+    .i_riscv_mstage_timer_rden    (o_riscv_datapath_timer_rden)       ,
+    .i_riscv_mstage_timer_rdata   (i_riscv_timer_datapath_rdata)      ,
+    .i_riscv_mstage_memext        (riscv_memext_m)                    ,
+    .i_riscv_mstage_addr          (riscv_rddata_me)		                ,
+    .i_riscv_mstage_mux2_sel      (i_riscv_datapath_muxcsr_sel)       ,  
+    .i_riscv_mux2_in0             (csrwdata_em_csr)                   ,  
+    .i_riscv_mux2_in1             (csrout_csr_mw)                     ,   
+    .o_riscv_mstage_memload       (riscv_memload_m)                   ,
+    .o_riscv_mstage_mux2_out      (muxout_csr)                            
   );
 
   ////memory write back pipeline flip flops ////
@@ -605,10 +624,12 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .i_riscv_csr_address                (csraddress_em_csr)              ,
   .i_riscv_csr_op                     (csrop_em_csr)                   ,
   .i_riscv_csr_wdata                  (muxout_csr)                     ,
-  .i_riscv_csr_external_int           (i_riscv_core_externalinterupt)  , 
-  .i_riscv_csr_timer_int              (i_riscv_core_timerinterupt)     ,
-  .i_riscv_csr_ecall_u                (u_em_csr)                 ,
-  .i_riscv_csr_ecall_s                (s_em_csr)                 ,
+  .i_riscv_csr_external_int           (i_riscv_core_external_interrupt), 
+  .i_riscv_csr_timer_int              (i_riscv_core_timer_interrupt)   ,
+  .i_riscv_csr_timer_time             (i_riscv_timer_datapath_time   ) ,
+  .i_riscv_csr_timer_timecmp          (i_riscv_timer_datapath_timecmp) ,
+  .i_riscv_csr_ecall_u                (u_em_csr)                       ,
+  .i_riscv_csr_ecall_s                (s_em_csr)                       ,
   .i_riscv_csr_ecall_m                (m_em_csr)                       ,
   .i_riscv_csr_illegal_inst           (illegal_inst_em_csr)            , //illegal_inst_em_csr
   .i_riscv_csr_inst_addr_misaligned   (inst_addr_misaligned_em_csr)    , 
@@ -624,29 +645,29 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .o_riscv_csr_return_address         (mepc_csr_pctrap)                ,
   .o_riscv_csr_trap_address           (mtvec_csr_pctrap)               , 
   .o_riscv_csr_gotoTrap_cs            (gototrap_csr_mw)                ,
-  .o_riscv_csr_returnfromTrap      (returnfromtrap_csr_mw)          ,
+  .o_riscv_csr_returnfromTrap         (returnfromtrap_csr_mw)          ,
   .o_riscv_csr_rdata                  (csrout_mw_trap)                 ,  
   .o_riscv_csr_privlvl                (o_riscv_core_privlvl_csr_cu)    ,
   .o_riscv_csr_tsr                    (o_riscv_datapath_tsr)           ,
-  .o_riscv_sepc                   (SEPC)                       ,
+  .o_riscv_sepc                       (SEPC)                           ,
   .o_riscv_csr_sideeffect_flush       ()                               ,
   .o_riscv_csr_reconfig               ()
  );
 
  
-///tracer instantiation///
-// --------------------------------------------------->
+  ///tracer instantiation///
+  // --------------------------------------------------->
   `ifdef TEST
   riscv_tracer u_riscv_tracer(
-  .i_riscv_clk            (i_riscv_datapath_clk)        ,
-  .i_riscv_rst            (i_riscv_datapath_rst)        ,
-  .i_riscv_trc_inst       (riscv_inst_wb)               ,
-  .i_riscv_trc_cinst      (riscv_cinst_wb)              ,
-  .i_riscv_trc_rdaddr     (riscv_rdaddr_wb)             ,
-  .i_riscv_trc_memaddr    (riscv_memaddr_wb)            ,
-  .i_riscv_trc_pc         (riscv_pc_wb)                 ,
-  .i_riscv_trc_store      (riscv_rs2data_wb)            ,
-  .i_riscv_trc_rddata     (riscv_rddata_wb)
+    .i_riscv_clk            (i_riscv_datapath_clk)        ,
+    .i_riscv_rst            (i_riscv_datapath_rst)        ,
+    .i_riscv_trc_inst       (riscv_inst_wb)               ,
+    .i_riscv_trc_cinst      (riscv_cinst_wb)              ,
+    .i_riscv_trc_rdaddr     (riscv_rdaddr_wb)             ,
+    .i_riscv_trc_memaddr    (riscv_memaddr_wb)            ,
+    .i_riscv_trc_pc         (riscv_pc_wb)                 ,
+    .i_riscv_trc_store      (riscv_rs2data_wb)            ,
+    .i_riscv_trc_rddata     (riscv_rddata_wb)
   ); 
   `endif
 // <---------------------------------------------------

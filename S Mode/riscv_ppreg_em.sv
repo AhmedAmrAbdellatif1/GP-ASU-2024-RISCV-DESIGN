@@ -14,25 +14,28 @@
     input   logic [4:0]   i_riscv_em_rdaddr_e                 ,
     input   logic [63:0]  i_riscv_em_imm_e                    ,
     input   logic [6:0]   i_riscv_em_opcode_e                 ,
-    input   logic         i_riscv_em_flush                    , //<--- trap
-    input   logic         i_riscv_em_ecall_m_e                , //<--- trap 
-    input   logic         i_riscv_em_ecall_s_e                , //<--- trap 
-    input   logic         i_riscv_em_ecall_u_e                , //<--- trap 
-    input   logic [11:0]  i_riscv_em_csraddress_e             , //<--- trap
-    input   logic         i_riscv_em_illegal_inst_e           , //<--- trap
-    input   logic         i_riscv_em_iscsr_e                  , //<--- csr
-    input   logic [2:0]   i_riscv_em_csrop_e                  , //<--- csr
-    input   logic [63:0]  i_riscv_em_addressalu_e             , //<--- csr
-    input   logic         i_riscv_em_inst_addr_misaligned_e   , //<--- csr
-    input   logic         i_riscv_em_load_addr_misaligned_e   , //<--- csr
-    input   logic         i_riscv_em_store_addr_misaligned_e  , //<--- csr
-    input   logic [63:0]  i_riscv_em_csrwritedata_e           , //<--- csr
-    input   logic [4:0]   i_riscv_em_rs1addr_e                , //<--- csr
+    input   logic         i_riscv_em_flush                    ,
+    input   logic         i_riscv_em_ecall_m_e                , 
+    input   logic         i_riscv_em_ecall_s_e                , 
+    input   logic         i_riscv_em_ecall_u_e                , 
+    input   logic [11:0]  i_riscv_em_csraddress_e             ,
+    input   logic         i_riscv_em_illegal_inst_e           ,
+    input   logic         i_riscv_em_iscsr_e                  , 
+    input   logic [2:0]   i_riscv_em_csrop_e                  , 
+    input   logic [63:0]  i_riscv_em_addressalu_e             , 
+    input   logic         i_riscv_em_inst_addr_misaligned_e   , 
+    input   logic         i_riscv_em_load_addr_misaligned_e   , 
+    input   logic         i_riscv_em_store_addr_misaligned_e  , 
+    input   logic [63:0]  i_riscv_em_csrwritedata_e           , 
+    input   logic [4:0]   i_riscv_em_rs1addr_e                , 
     input   logic         i_riscv_em_instret_e                ,
     input   logic [63:0]  i_riscv_em_rddata_sc_e              ,
     input   logic [4:0]   i_riscv_em_amo_op_e                 ,
     input   logic [31:0]  i_riscv_em_inst                     ,
     input   logic [15:0]  i_riscv_em_cinst                    ,
+    input   logic         i_riscv_em_timer_wren               ,
+    input   logic         i_riscv_em_timer_rden               ,
+    input   logic [1:0]   i_riscv_em_timer_regsel             ,
     output  logic [31:0]  o_riscv_em_inst                     ,
     output  logic [15:0]  o_riscv_em_cinst                    ,
     output  logic [4:0]   o_riscv_em_amo_op_m                 ,              
@@ -50,21 +53,23 @@
     output  logic [4:0]   o_riscv_em_rdaddr_m                 ,
     output  logic [63:0]  o_riscv_em_imm_m                    ,
     output  logic [6:0]   o_riscv_em_opcode_m                 ,
-    output  logic         o_riscv_em_ecall_m_m                , //<--- trap 
-    output  logic         o_riscv_em_ecall_s_m                , //<--- trap 
-    output  logic         o_riscv_em_ecall_u_m                , //<--- trap 
-    output  logic [11:0]  o_riscv_em_csraddress_m             , //<--- trap
-    output  logic         o_riscv_em_illegal_inst_m           , //<--- trap
-    output  logic         o_riscv_em_iscsr_m                  , //<--- csr
-    output  logic [2:0]   o_riscv_em_csrop_m                  , //<--- csr
-    output  logic [63:0]  o_riscv_em_addressalu_m             , //<--- csr
-    output  logic         o_riscv_em_inst_addr_misaligned_m   , //<--- csr
-    output  logic         o_riscv_em_load_addr_misaligned_m   , //<--- csr
-    output  logic         o_riscv_em_store_addr_misaligned_m  , //<--- csr
-    output  logic [63:0]  o_riscv_em_csrwritedata_m           , //<--- csr  
-    output  logic [4:0]   o_riscv_em_rs1addr_m                  //<--- csr
+    output  logic         o_riscv_em_ecall_m_m                ,  
+    output  logic         o_riscv_em_ecall_s_m                ,  
+    output  logic         o_riscv_em_ecall_u_m                ,  
+    output  logic [11:0]  o_riscv_em_csraddress_m             , 
+    output  logic         o_riscv_em_illegal_inst_m           , 
+    output  logic         o_riscv_em_iscsr_m                  , 
+    output  logic [2:0]   o_riscv_em_csrop_m                  , 
+    output  logic [63:0]  o_riscv_em_addressalu_m             , 
+    output  logic         o_riscv_em_inst_addr_misaligned_m   , 
+    output  logic         o_riscv_em_load_addr_misaligned_m   , 
+    output  logic         o_riscv_em_store_addr_misaligned_m  , 
+    output  logic [63:0]  o_riscv_em_csrwritedata_m           ,   
+    output  logic [4:0]   o_riscv_em_rs1addr_m                ,
+    output  logic         o_riscv_em_timer_wren               ,
+    output  logic         o_riscv_em_timer_rden               ,
+    output  logic [1:0]   o_riscv_em_timer_regsel         
   );
-
 
   always_ff @ (posedge i_riscv_em_clk or posedge i_riscv_em_rst)
     begin :em_pff_write_proc
@@ -100,6 +105,9 @@
             o_riscv_em_amo_op_m                 <= 'b0;
             o_riscv_em_inst                     <= 'b0;
             o_riscv_em_cinst                    <= 'b0;
+            o_riscv_em_timer_wren               <= 'b0;        
+            o_riscv_em_timer_rden               <= 'b0; 
+            o_riscv_em_timer_regsel             <= 'b0;
           end
         else if(i_riscv_em_flush)
           begin
@@ -133,6 +141,9 @@
             o_riscv_em_amo_op_m                 <= 'b0;
             o_riscv_em_inst                     <= 'b0;
             o_riscv_em_cinst                    <= 'b0;
+            o_riscv_em_timer_wren               <= 'b0;        
+            o_riscv_em_timer_rden               <= 'b0; 
+            o_riscv_em_timer_regsel             <= 'b0;
           end
         else if(!i_riscv_em_en)
           begin
@@ -166,6 +177,9 @@
             o_riscv_em_amo_op_m                 <= i_riscv_em_amo_op_e;
             o_riscv_em_inst                     <= i_riscv_em_inst;
             o_riscv_em_cinst                    <= i_riscv_em_cinst;
+            o_riscv_em_timer_wren               <= i_riscv_em_timer_wren  ;        
+            o_riscv_em_timer_rden               <= i_riscv_em_timer_rden  ; 
+            o_riscv_em_timer_regsel             <= i_riscv_em_timer_regsel;
           end
     end
 endmodule

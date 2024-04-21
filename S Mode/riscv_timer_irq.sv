@@ -16,7 +16,7 @@ module riscv_timer_irq (
   logic [63:0] mtimecmp ;
 
   /**********************************************/
-  enum {
+  typedef enum logic [1:0] {
     MTIME     = 2'b01,
     MTIMECMP  = 2'b10
   } timer_address ;
@@ -60,9 +60,9 @@ module riscv_timer_irq (
     if(i_riscv_timer_rden)
     begin
       case(i_riscv_timer_regsel)
-      MTIME:    o_riscv_timer_rdata = mtime     ;
-      MTIMECMP: o_riscv_timer_rdata = mtimecmp  ;
-      default:  o_riscv_timer_rdata = 64'b0     ;
+        MTIME:    o_riscv_timer_rdata = mtime     ;
+        MTIMECMP: o_riscv_timer_rdata = mtimecmp  ;
+        default:  o_riscv_timer_rdata = 64'b0     ;
       endcase
     end
     else

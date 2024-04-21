@@ -1,5 +1,8 @@
 package my_pkg;
-
+  // core local interruptor (CLINT), which contains the timer.
+  parameter CLINT           = 'h2000000;
+  parameter CLINT_MTIMECMP  = CLINT + 'h4000;
+  parameter CLINT_MTIME     = CLINT + 'hBFF8; // cycles since boot.
 endpackage
 
 package dcache_pkg;

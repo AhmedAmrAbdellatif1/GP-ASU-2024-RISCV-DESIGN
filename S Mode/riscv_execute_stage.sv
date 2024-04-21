@@ -43,7 +43,10 @@ module riscv_estage(
   output  logic                 o_riscv_estage_dcache_wren            ,
   output  logic                 o_riscv_estage_dcache_rden            ,
   output  logic         [63:0]  o_riscv_estage_dcache_addr            ,
-  output  logic         [63:0]  o_riscv_estage_rddata_sc
+  output  logic         [63:0]  o_riscv_estage_rddata_sc              ,
+  output  logic                 o_riscv_estage_timer_wren             ,
+  output  logic                 o_riscv_estage_timer_rden             ,
+  output  logic         [1:0]   o_riscv_estage_timer_regsel           
 
 ); 
 
@@ -116,28 +119,31 @@ riscv_icu u_icu (
 
 /************************ Load Store Unit ************************/
 riscv_lsu u_riscv_lsu (
-  .i_riscv_lsu_clk          (i_riscv_estage_clk),         
-  .i_riscv_lsu_rst          (i_riscv_estage_rst),
-  .i_riscv_lsu_globstall    (i_riscv_estage_globstall),       
-  .i_riscv_lsu_address      (o_riscv_FWmuxA_OperandmuxA),     
-  .i_riscv_lsu_alu_result   (o_riscv_estage_result),
-  .i_riscv_lsu_LR           (i_riscv_estage_lr),          
-  .i_riscv_lsu_SC           (i_riscv_estage_sc),          
-  .i_riscv_lsu_AMO          (i_riscv_estage_amo),         
-  .i_riscv_lsu_memwrite     (i_riscv_estage_memw),
-  .i_riscv_lsu_memread      (i_riscv_estage_memr),
-  .i_riscv_lsu_goto_trap    (i_riscv_estage_gtrap),   
-  .i_riscv_lsu_return_trap  (i_riscv_estage_rtrap), 
-  .i_riscv_lsu_misalignment (1'b0),
-  .o_riscv_lsu_memwrite_en  (o_riscv_estage_dcache_wren), 
-  .o_riscv_lsu_memread_en   (o_riscv_estage_dcache_rden),  
-  .o_riscv_lsu_mem_address  (o_riscv_estage_dcache_addr), 
-  .o_riscv_lsu_sc_rdvalue   (o_riscv_estage_rddata_sc)   
+  .i_riscv_lsu_clk          (i_riscv_estage_clk)          ,         
+  .i_riscv_lsu_rst          (i_riscv_estage_rst)          ,
+  .i_riscv_lsu_globstall    (i_riscv_estage_globstall)    ,       
+  .i_riscv_lsu_address      (o_riscv_FWmuxA_OperandmuxA)  ,     
+  .i_riscv_lsu_alu_result   (o_riscv_estage_result)       ,
+  .i_riscv_lsu_lr           (i_riscv_estage_lr)           ,          
+  .i_riscv_lsu_sc           (i_riscv_estage_sc)           ,          
+  .i_riscv_lsu_amo          (i_riscv_estage_amo)          ,         
+  .i_riscv_lsu_dcache_wren  (i_riscv_estage_memw)         ,  
+  .i_riscv_lsu_dcache_rden  (i_riscv_estage_memr)         ,
+  .i_riscv_lsu_goto_trap    (i_riscv_estage_gtrap)        ,   
+  .i_riscv_lsu_return_trap  (i_riscv_estage_rtrap)        , 
+  .i_riscv_lsu_misalignment (1'b0)                        ,
+  .o_riscv_lsu_dcache_wren  (o_riscv_estage_dcache_wren)  , 
+  .o_riscv_lsu_dcache_rden  (o_riscv_estage_dcache_rden)  ,  
+  .o_riscv_lsu_phy_address  (o_riscv_estage_dcache_addr)  , 
+  .o_riscv_lsu_sc_rdvalue   (o_riscv_estage_rddata_sc)    ,
+  .o_riscv_lsu_timer_wren   (o_riscv_estage_timer_wren)   ,
+  .o_riscv_lsu_timer_rden   (o_riscv_estage_timer_rden)   ,  
+  .o_riscv_lsu_timer_regsel (o_riscv_estage_timer_regsel)   
 );
 
 /************************ Exception Unit ************************/
 riscv_misalignment_unit u_riscv_misalignment_unit(
-  .i_riscv_misalignment_opcode                 (i_riscv_estage_opcode)                  ,
+  .i_riscv_misalignment_opcode                 (i_riscv_estage_opcode)                 ,
   .i_riscv_misalignment_icu_result             (o_riscv_estage_result)                 ,
   .i_riscv_misalignment_branch_taken           (o_riscv_estage_branchtaken)            ,
   .i_riscv_misalignment_load_sel               (i_riscv_estage_memext )                ,

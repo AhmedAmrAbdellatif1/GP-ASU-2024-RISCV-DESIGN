@@ -4,8 +4,7 @@ module riscv_core
   #(parameter MXLEN=64) (
       input   logic                   i_riscv_core_clk              , 
       input   logic                   i_riscv_core_rst              ,
-      input   logic                   i_riscv_core_timerinterupt    ,
-      input   logic                   i_riscv_core_externalinterupt ,
+      input   logic                   i_riscv_core_external_interrupt ,
       input   logic                   i_riscv_core_mem_ready        ,
       input   logic [DATA_WIDTH-1:0]  i_riscv_core_mem_data_out     ,
       input   logic                   i_riscv_core_imem_ready       ,
@@ -128,6 +127,14 @@ module riscv_core
     logic         iscsr_m_hzrd_datapath     ;
     logic         iscsr_d_hzrd_datapath     ;
 
+  /************************ Timer Interrupts ************************/
+    logic         riscv_datapath_timer_wren   ; 
+    logic         riscv_datapath_timer_rden   ;
+    logic [1:0]   riscv_datapath_timer_regsel ; 
+    logic [63:0]  riscv_timer_datapath_rdata  ;   
+    logic [63:0]  riscv_timer_datapath_time   ; 
+    logic [63:0]  riscv_timer_datapath_timecmp ;
+
   /************************* ************** *************************/
   /************************* Instantiations *************************/
   /************************* ************** *************************/
@@ -212,10 +219,13 @@ module riscv_core
     .i_riscv_datapath_ecalls_cu_de      (riscv_cu_ecalls_de)              ,
     .i_riscv_datapath_ecallm_cu_de      (riscv_cu_ecallm_de)              ,
     .i_riscv_datapath_immreg_cu_de      (riscv_cu_selrsimm_de)            , 
-    .i_riscv_core_timerinterupt         (i_riscv_core_timerinterupt)      ,
-    .i_riscv_core_externalinterupt      (i_riscv_core_externalinterupt)   ,  
+    .i_riscv_core_timer_interrupt       (riscv_core_timer_interrupt)      ,
+    .i_riscv_core_external_interrupt    (i_riscv_core_external_interrupt) ,  
     .i_riscv_datapath_muxcsr_sel        (muxcsr_sel_hzrd_datapath)        ,
     .i_riscv_datapath_globstall         (riscv_datapath_globstall_hzrdu)  ,
+    .i_riscv_timer_datapath_rdata       (riscv_timer_datapath_rdata )     ,
+    .i_riscv_timer_datapath_time        (riscv_timer_datapath_time  )     ,
+    .i_riscv_timer_datapath_timecmp     (riscv_timer_datapath_timecmp)    ,
     .o_riscv_datapath_rs1_fd_cu         (riscv_datapath_rs1_fd_cu)        ,     
     .o_riscv_datapath_constimm12_fd_cu  (riscv_datapath_constimm12_fd_cu) ,  
     .o_riscv_core_privlvl_csr_cu        (riscv_core_privlvl_csr_cu)       ,
@@ -223,8 +233,11 @@ module riscv_core
     .o_riscv_datapath_iscsr_m_trap      (iscsr_m_hzrd_datapath)           ,
     .o_riscv_datapath_iscsr_e_trap      (iscsr_e_hzrd_datapath)           ,
     .o_riscv_datapath_tsr               (datapath_tsr)                    ,
-    .o_riscv_datapath_iscsr_d_trap      (iscsr_d_hzrd_datapath)
-);
+    .o_riscv_datapath_iscsr_d_trap      (iscsr_d_hzrd_datapath)           ,
+    .o_riscv_datapath_timer_wren        (riscv_datapath_timer_wren  )     ,
+    .o_riscv_datapath_timer_rden        (riscv_datapath_timer_rden  )     ,
+    .o_riscv_datapath_timer_regsel      (riscv_datapath_timer_regsel)     
+  );
 
 riscv_cu u_top_cu (
   /************************* DP -> CU Signals *************************/  
@@ -334,6 +347,19 @@ riscv_hazardunit u_top_hzrdu (
     .o_riscv_icache_fsm_mem_rden    (o_riscv_core_fsm_imem_rden  )      ,
     .o_riscv_icache_cpu_instr_out   (riscv_im_inst_datapath     )       ,  
     .o_riscv_icache_cpu_stall       (riscv_datapath_stall_m_im  )  
+  );
+
+  riscv_timer_irq  u_riscv_timer_irq (
+    .i_riscv_timer_clk      (i_riscv_core_clk               ),
+    .i_riscv_timer_rst      (i_riscv_core_rst               ),
+    .i_riscv_timer_wren     (riscv_datapath_timer_wren      ),
+    .i_riscv_timer_rden     (riscv_datapath_timer_rden      ),
+    .i_riscv_timer_regsel   (riscv_datapath_timer_regsel    ),
+    .i_riscv_timer_wdata    (riscv_datapath_storedata_m_dm  ),
+    .o_riscv_timer_rdata    (riscv_timer_datapath_rdata     ),
+    .o_riscv_timer_time     (riscv_timer_datapath_time      ),
+    .o_riscv_timer_timecmp  (riscv_timer_datapath_timecmp    ),
+    .o_riscv_timer_irq      (riscv_core_timer_interrupt       )
   );
 
 endmodule

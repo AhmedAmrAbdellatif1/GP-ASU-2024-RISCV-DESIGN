@@ -7,10 +7,10 @@ output logic  signed  [63:0]   o_riscv_div_result,
 output logic                   o_riscv_div_valid
 );
 
-logic signed [127:0] Z,next_Z,Z_temp,Z_temp1;
+(* dont_touch = "yes" *) logic signed [127:0] Z,next_Z,Z_temp,Z_temp1;
+(* dont_touch = "yes" *) logic valid,next_valid;
 logic next_state, pres_state;
 logic [5:0] count,next_count;
-logic valid,next_valid;
 logic start;
 assign start=i_riscv_div_divctrl[3];
 
