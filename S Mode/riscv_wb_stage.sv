@@ -11,7 +11,7 @@ module riscv_wbstage (
    input    logic          i_riscv_wb_icache_stall    ,
    input    logic [63:0]   i_riscv_wb_rddata_sc       ,
    input    logic          i_riscv_wb_reconfig        ,
-   output   logic [1:0]    o_riscv_wb_pcsel           , //<--- Trap
+   output   logic [2:0]    o_riscv_wb_pcsel           , //<--- Trap
    output   logic          o_riscv_wb_flush           , //<--- Trap
    output   logic [63:0]   o_riscv_wb_rddata            //modified position
 );
