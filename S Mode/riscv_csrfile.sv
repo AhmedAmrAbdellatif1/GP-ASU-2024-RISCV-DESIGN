@@ -35,7 +35,6 @@ module riscv_csrfile
     output  logic               o_riscv_csr_gotoTrap_cs           , 
     output  logic [1:0]         o_riscv_csr_returnfromTrap        ,
     output  logic [1:0]         o_riscv_csr_privlvl               ,
-    output  logic               o_riscv_csr_reconfig              ,
     output  logic [SXLEN-1:0]   o_riscv_sepc                      ,
     output  logic               o_riscv_csr_tsr
   );
@@ -128,7 +127,6 @@ module riscv_csrfile
   logic             sret                          ;
 
   logic [1:0]       trap_to_priv_lvl              ;
-  logic             interrupt_go                  ;
 
   logic [MXLEN-1:0] trap_base_addr                ;
   
@@ -333,14 +331,14 @@ module riscv_csrfile
     else if(go_to_trap)
     begin
       // trap to machine mode
-      if((current_priv_lvl == PRIV_LVL_M) || no_delegation)
+      if((((current_priv_lvl == PRIV_LVL_M) || no_delegation) && is_exception)|| interrupt_go_m )
       begin
         mstatus.mie   <= 1'b0;
         mstatus.mpie  <= mstatus.mie;
         mstatus.mpp   <= current_priv_lvl;
       end
       // trap to supervisor mode
-      else if(force_s_delegation)
+      else if((force_s_delegation && is_exception) || interrupt_go_s )
       begin
         mstatus.sie   <= 1'b0;
         mstatus.spie  <= mstatus.sie;
@@ -534,11 +532,10 @@ module riscv_csrfile
     if(i_riscv_csr_rst)
       mepc <= 64'b0;
 
-    else if(go_to_trap)
-    begin
-      if((current_priv_lvl == PRIV_LVL_M) || no_delegation)
-        mepc <= i_riscv_csr_pc ;
-    end
+
+    else if((((current_priv_lvl == PRIV_LVL_M) || no_delegation) && is_exception)|| interrupt_go_m )
+       mepc <= i_riscv_csr_pc ;
+
 
     else if(csr_write_access_en && (i_riscv_csr_address == MEPC) )
       mepc <= {csr_write_data[63:1],1'b0};
@@ -552,7 +549,7 @@ module riscv_csrfile
     if(i_riscv_csr_rst)
       sepc <= 64'b0;
 
-    else if(go_to_trap && force_s_delegation)
+    else if(((force_s_delegation && is_exception) || interrupt_go_s))
     begin
       sepc <= i_riscv_csr_pc ;
     end
@@ -889,7 +886,7 @@ module riscv_csrfile
       end
       2'b01 :    
       begin
-        if (current_priv_lvl == PRIV_LVL_M && interrupt_go)
+        if (current_priv_lvl == PRIV_LVL_M && is_interrupt)
           trap_base_addr = {mtvec.base[MXLEN-3:6], interrupt_cause[5:0], 2'b0};
         else if  (current_priv_lvl == PRIV_LVL_S )
           trap_base_addr = {stvec.base, 2'b0} ;
@@ -898,7 +895,7 @@ module riscv_csrfile
       end
       2'b10 : 
       begin 
-        if (current_priv_lvl == PRIV_LVL_S && interrupt_go)
+        if (current_priv_lvl == PRIV_LVL_S && is_interrupt)
           trap_base_addr = {stvec.base[SXLEN-3:6], interrupt_cause[5:0], 2'b0};
   
         else if  (current_priv_lvl == PRIV_LVL_M )
@@ -909,9 +906,9 @@ module riscv_csrfile
       end
       2'b11: 
       begin
-        if (current_priv_lvl == PRIV_LVL_M && interrupt_go)
+        if (current_priv_lvl == PRIV_LVL_M && is_interrupt)
               trap_base_addr = {mtvec.base[MXLEN-3:6], interrupt_cause[5:0], 2'b0};
-        else if  (current_priv_lvl == PRIV_LVL_S && interrupt_go )
+        else if  (current_priv_lvl == PRIV_LVL_S && is_interrupt )
           trap_base_addr = {stvec.base[SXLEN-3:6], interrupt_cause[5:0], 2'b0};
         else
           trap_base_addr = {mtvec.base, 2'b0} ;
@@ -966,31 +963,27 @@ module riscv_csrfile
   begin
     if(mie.stie && mip.stip)
     begin
-      interrupt_go    = 1'b1  ;  
       interrupt_cause = STI   ;
     end
 
     else if(mie.seie && mip.seip)
     begin
-      interrupt_go    = 1'b1  ;
       interrupt_cause = SEI   ;
     end
 
     else if(mip.mtip && mie.mtie)
     begin
-      interrupt_go    = 1'b1  ;
+
       interrupt_cause = MTI   ;
     end
 
     else if (mip.meip && mie.meie) // Machine Timer Interrupt
     begin
-      interrupt_go    = 1'b1  ;
       interrupt_cause = MEI   ;
     end
 
     else  // Machine Mode External Interrupt
     begin
-      interrupt_go    = 1'b0  ;
       interrupt_cause = 'd10  ;
     end
   end
@@ -1163,19 +1156,6 @@ module riscv_csrfile
       o_riscv_csr_returnfromTrap  = 'd0 ;
   end
   
-  /**********************************    Reconfig the Pipeline     **********************************/
-  always_comb
-  begin : reconfig_csr_ctrl_proc
-  if( (csr_write_access_en)               &&
-      (i_riscv_csr_address == MSTATUS)    &&
-      (mstatus.tsr != csr_write_data[TSR]) )
-      o_riscv_csr_reconfig  = 1'b1;
-
-    else
-      o_riscv_csr_reconfig  = 1'b0;
-  end
-  // We changing the "tsr" field in mstatus, the change must propagate to the following instructions in the pipeline
-  // so, we have to flush the pipeline and re-execute these instructions
 
   /************************************* *********************** *************************************/
   /*************************************  Continuous Assignment  *************************************/
@@ -1206,13 +1186,13 @@ module riscv_csrfile
   assign csr_write_access_en          = csr_write_en  &  ~illegal_csr_access;
 
   /*********************************   Modes transition conditions    ********************************/
-  assign force_s_delegation           = ( (support_supervisor)  &&
-                                          (current_priv_lvl == PRIV_LVL_S) &&
-                                          (medeleg[exception_cause[3:0]] || mideleg[interrupt_cause[3:0]]));
+  assign force_s_delegation           = ((support_supervisor)  &&
+                                          (current_priv_lvl == PRIV_LVL_S)  && 
+                                          (medeleg[exception_cause[3:0]] ))
 
-  assign no_delegation                = ( (support_supervisor)  &&
-                                        (current_priv_lvl == PRIV_LVL_S) &&
-                                        (!medeleg[exception_cause[3:0]] && !mideleg[interrupt_cause[3:0]]));
+  assign no_delegation                = ((support_supervisor)  &&
+                                        (current_priv_lvl == PRIV_LVL_S)  &&
+                                        (!medeleg[exception_cause[3:0]]));
 
 
   /*************************************   Trap Base Address    *************************************/
