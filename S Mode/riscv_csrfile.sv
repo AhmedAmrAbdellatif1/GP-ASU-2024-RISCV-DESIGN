@@ -29,7 +29,6 @@ module riscv_csrfile
     input   logic               i_riscv_csr_globstall             ,
     input   logic               i_riscv_csr_is_compressed         ,
     output  logic [MXLEN-1:0]   o_riscv_csr_rdata                 ,
-    output  logic               o_riscv_csr_sideeffect_flush      ,
     output  logic [MXLEN-1:0]   o_riscv_csr_return_address        , 
     output  logic [MXLEN-1:0]   o_riscv_csr_trap_address          ,   
     output  logic               o_riscv_csr_gotoTrap_cs           , 
@@ -147,7 +146,7 @@ module riscv_csrfile
   logic             no_delegation                 ;
   logic             force_s_delegation            ;
 
-  logic             xtvec_base                    ;
+  logic [1:0]       xtvec_base                    ;
   
   
   /************************************* ********************** *************************************/
@@ -619,8 +618,9 @@ module riscv_csrfile
   begin
     if(i_riscv_csr_rst)
     begin
-      mcause.code       <= 4'b0000;
-      mcause.int_excep  <= 1'b0 ;
+      mcause.code       <= 4'b0000  ;
+      mcause.int_excep  <= 1'b0     ;
+      ack_external_int  <= 1'b0     ;
     end
 
     //  trap to machine mode
@@ -657,58 +657,58 @@ module riscv_csrfile
 
       else if(illegal_total)
       begin
-        mcause.code      <= ILLEGAL_INSTRUCTION;
-        mcause.int_excep <= 1'b0  ;
-        ack_external_int <= 1'b0  ;
+        mcause.code      <= ILLEGAL_INSTRUCTION ;
+        mcause.int_excep <= 1'b0                ;
+        ack_external_int <= 1'b0                ;
       end
 
       else if(i_riscv_csr_inst_addr_misaligned)
       begin
-        mcause.code       <= INSTRUCTION_ADDRESS_MISALIGNED;
-        mcause.int_excep  <= 1'b0 ;
-        ack_external_int  <= 1'b0 ;
+        mcause.code       <= INSTRUCTION_ADDRESS_MISALIGNED ;  
+        mcause.int_excep  <= 1'b0                           ;
+        ack_external_int  <= 1'b0                           ;
       end
 
       else if(i_riscv_csr_ecall_m)
       begin
-        mcause.code       <= ECALL_M;
-        mcause.int_excep  <= 1'b0   ;
-        ack_external_int  <= 1'b0   ;
+        mcause.code       <= ECALL_M  ;
+        mcause.int_excep  <= 1'b0     ;
+        ack_external_int  <= 1'b0     ;
       end
 
       else if(i_riscv_csr_ecall_s)
       begin
-        mcause.code       <= ECALL_S;
-        mcause.int_excep  <= 1'b0   ;
-        ack_external_int  <= 1'b0   ;
+        mcause.code       <= ECALL_S  ;
+        mcause.int_excep  <= 1'b0     ;
+        ack_external_int  <= 1'b0     ;
       end
 
       else if(i_riscv_csr_ecall_u)
       begin
-        mcause.code       <= ECALL_U;
-        mcause.int_excep  <= 1'b0   ;
-        ack_external_int  <= 1'b0   ;
+        mcause.code       <= ECALL_U  ;
+        mcause.int_excep  <= 1'b0     ;
+        ack_external_int  <= 1'b0     ;
       end
       
       else if(i_riscv_csr_load_addr_misaligned)
       begin
-        mcause.code       <= LOAD_ADDRESS_MISALIGNED;
-        mcause.int_excep  <= 1'b0 ;
-        ack_external_int  <= 1'b0 ;
+        mcause.code       <= LOAD_ADDRESS_MISALIGNED  ;
+        mcause.int_excep  <= 1'b0                     ;
+        ack_external_int  <= 1'b0                     ;
       end
       else if(i_riscv_csr_store_addr_misaligned)
       begin
-        mcause.code       <= STORE_ADDRESS_MISALIGNED;
-        mcause.int_excep  <= 1'b0 ;
-        ack_external_int  <= 1'b0 ;
+        mcause.code       <= STORE_ADDRESS_MISALIGNED ;
+        mcause.int_excep  <= 1'b0                     ;
+        ack_external_int  <= 1'b0                     ;
       end
     end
 
     else if (csr_write_access_en && (i_riscv_csr_address == MCAUSE))
     begin
-      mcause.int_excep  <= csr_write_data[63] ;
-      mcause.code       <= csr_write_data[3:0];
-      ack_external_int  <= 1'b0   ;
+      mcause.int_excep  <= csr_write_data[63]         ;
+      mcause.code       <= csr_write_data[3:0]        ;
+      ack_external_int  <= 1'b0                       ;
     end
 
   end
@@ -1186,13 +1186,13 @@ module riscv_csrfile
   assign csr_write_access_en          = csr_write_en  &  ~illegal_csr_access;
 
   /*********************************   Modes transition conditions    ********************************/
-  assign force_s_delegation           = ((support_supervisor)  &&
+  assign force_s_delegation           = ( (support_supervisor)              &&
                                           (current_priv_lvl == PRIV_LVL_S)  && 
-                                          (medeleg[exception_cause[3:0]] ))
+                                          (medeleg[exception_cause[3:0]]    ));
 
-  assign no_delegation                = ((support_supervisor)  &&
-                                        (current_priv_lvl == PRIV_LVL_S)  &&
-                                        (!medeleg[exception_cause[3:0]]));
+  assign no_delegation                = ( (support_supervisor)              &&
+                                          (current_priv_lvl == PRIV_LVL_S)  &&
+                                          (!medeleg[exception_cause[3:0]]   ));
 
 
   /*************************************   Trap Base Address    *************************************/
