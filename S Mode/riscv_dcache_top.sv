@@ -72,6 +72,7 @@ module riscv_data_cache
     2'b00 : cache_data_in = {64'b0,i_riscv_dcache_cpu_data_in } ;
     2'b01 : cache_data_in = i_riscv_dcache_mem_data_out ;
     2'b10 : cache_data_in = {64'b0,amo_result};
+    2'b11 : cache_data_in = 128'b0;
     endcase 
   end
 
