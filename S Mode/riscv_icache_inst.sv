@@ -14,7 +14,6 @@ module riscv_icache_inst #(
   (
     input   logic                    clk              , 
     input   logic                    wren             , //  input from ram
-    input   logic                    rden             , //  for cpu out
     input   logic                    index_sel        , //  used to identify the written block from ram to cache is the addressed one or the one after it for alignment
     input   logic [INDEX-1:0]        index            , 
     input   logic [INDEX-1:0]        index_missallign , //  index of the following block (used for missalignment)

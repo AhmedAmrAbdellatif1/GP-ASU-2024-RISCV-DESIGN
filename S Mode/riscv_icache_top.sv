@@ -1,41 +1,40 @@
 module riscv_instructions_cache 
-  import icache_pkg::*;
+  import my_pkg::*;
   (
-    input   logic               i_riscv_icache_clk            ,
-    input   logic               i_riscv_icache_rst            ,
-    input   logic [63:0]        i_riscv_icache_phys_addr      ,
-    input   logic               i_riscv_icache_mem_ready      ,
-    input   logic [IDWIDTH-1:0] i_riscv_icache_mem_data_out   ,
-    output  logic [IDWIDTH-1:0] o_riscv_icache_cache_data_out ,
-    output  logic [IAWIDTH-1:0] o_riscv_icache_mem_addr       ,
-    output  logic               o_riscv_icache_fsm_mem_rden   ,
-    output  logic [31:0]        o_riscv_icache_cpu_instr_out  ,
-    output  logic               o_riscv_icache_cpu_stall
+    input   logic                   i_riscv_icache_clk            ,
+    input   logic                   i_riscv_icache_rst            ,
+    input   logic [63:0]            i_riscv_icache_phys_addr      ,
+    input   logic                   i_riscv_icache_mem_ready      ,
+    input   logic [DATA_WIDTH-1:0]  i_riscv_icache_mem_data_out   ,
+    output  logic [DATA_WIDTH-1:0]  o_riscv_icache_cache_data_out ,
+    output  logic [S_ADDR-1:0]      o_riscv_icache_mem_addr       ,
+    output  logic                   o_riscv_icache_fsm_mem_rden   ,
+    output  logic [31:0]            o_riscv_icache_cpu_instr_out  ,
+    output  logic                   o_riscv_icache_cpu_stall
   );
 
   //****************** internal signals declarations ******************//
 
   // physical address concatenation
-  logic [     ITAG-1:0] tag        ;
-  logic [   IINDEX-1:0] index      ;
-  logic [IBYTE_OFF-1:0] byte_offset;
+  logic [     TAG-1:0] tag        ;
+  logic [   INDEX-1:0] index      ;
+  logic [BYTE_OFF-1:0] byte_offset;
 
   // fsm signals
   logic fsm_set_valid  ;
   logic fsm_replace_tag;
   logic fsm_cache_wren ;
-  logic fsm_cache_rden ;
   logic fsm_addr_sel   ;
   logic fsm_valid_align;
   logic fsm_tag_align  ;
 
   //  cache signals
-  logic [IDATA_WIDTH-1:0] cache_data_in       ;
-  logic [IDATA_WIDTH-1:0] cache_data_out_align;
+  logic [DATA_WIDTH-1:0] cache_data_in       ;
+  logic [DATA_WIDTH-1:0] cache_data_out_align;
   // tag signals
 
-  logic [  ITAG-1:0] tag_missalign    ;
-  logic [IINDEX-1:0] index_missallign ;
+  logic [  TAG-1:0] tag_missalign    ;
+  logic [INDEX-1:0] index_missallign ;
   logic             tag_hit_out      ;
   logic             tag_missalign_out;
 
@@ -43,7 +42,7 @@ module riscv_instructions_cache
   logic                  mem_wren    ;
   logic                  mem_rden    ;
   logic                  mem_tag     ;
-  logic [IDATA_WIDTH-1:0] mem_data_in ;
+  logic [DATA_WIDTH-1:0] mem_data_in ;
 
 
   // internal signals declaration
@@ -77,10 +76,10 @@ module riscv_instructions_cache
 
   //****************** Instantiation ******************//
   tag_array_i #(
-    .IDX        (IINDEX      ),
-    .TAG        (ITAG        ),
-    .CACHE_DEPTH(ICACHE_DEPTH),
-    .ADDR       (IADDR       )
+    .IDX        (INDEX      ),
+    .TAG        (TAG        ),
+    .CACHE_DEPTH(CACHE_DEPTH),
+    .ADDR       (ADDR       )
   ) u_tag_array_i (
     .clk              (i_riscv_icache_clk ),
     .tag_missalign    (tag_missalign      ),
@@ -97,13 +96,12 @@ module riscv_instructions_cache
 
   ///////////////////////////
   riscv_icache_inst #(
-    .INDEX      (IINDEX      ),
-    .DWIDTH     (IDATA_WIDTH ),
-    .CACHE_DEPTH(ICACHE_DEPTH)
+    .INDEX      (INDEX      ),
+    .DWIDTH     (DATA_WIDTH ),
+    .CACHE_DEPTH(CACHE_DEPTH)
   ) u_icache_inst (
     .clk              (i_riscv_icache_clk             )  ,
     .wren             (fsm_cache_wren                 )  ,
-    .rden             (fsm_cache_rden                 )  ,
     .index            (index                          )  ,
     .data_in          (cache_data_in                  )  ,
     .index_missallign (index_missallign               )  ,
@@ -121,7 +119,6 @@ module riscv_instructions_cache
     .hit_missalign    (tag_missalign_out            ),
     .mem_ready        (i_riscv_icache_mem_ready     ),
     .block_offset     (byte_offset                  ),
-    .cache_rden       (fsm_cache_rden               ),
     .cache_wren       (fsm_cache_wren               ),
     .mem_rden         (o_riscv_icache_fsm_mem_rden  ),
     .set_valid        (fsm_set_valid                ),

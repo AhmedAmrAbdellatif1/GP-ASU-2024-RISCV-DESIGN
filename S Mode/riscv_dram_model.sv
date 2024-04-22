@@ -1,24 +1,24 @@
 
 module riscv_dram_model
-  import dcache_pkg::*;
+  import my_pkg::*;
   (
     input   logic                   clk       ,
     input   logic                   wren      ,
     input   logic                   rden      ,
-    input   logic [INDEX+TAG-1:0]   addr      ,
+    input   logic [S_ADDR-1:0]   addr      ,
     input   logic [DATA_WIDTH-1:0]  data_in   ,
     output  logic [DATA_WIDTH-1:0]  data_out  ,
     output  logic                   mem_ready
     );
 
   logic [(ADDR+4)-1:0] base_addr;
-  logic [7:0] mem [0:MEM_DEPTH-1];
+  logic [7:0] mem [0:MEM_SIZE-1];
   logic [1:0] counter;
 
   int i;
 
   initial begin
-    for(i=0; i<MEM_DEPTH; i++)
+    for(i=0; i<MEM_SIZE; i++)
       mem[i] = 'b0;
   end
 

@@ -1,6 +1,6 @@
 module riscv_top
-  import icache_pkg::*;
-  import dcache_pkg::*;
+  import my_pkg::*;
+  import my_pkg::*;
   (
     input logic i_riscv_clk,
     input logic i_riscv_rst
@@ -30,13 +30,13 @@ module riscv_top
   logic [DATA_WIDTH-1:0]  core_mem_data_out   ;
   logic                   core_fsm_mem_wren   ;
   logic                   core_fsm_mem_rden   ;
-  logic [INDEX+TAG-1:0]   core_mem_addr       ;
+  logic [S_ADDR-1:0]   core_mem_addr       ;
   logic [DATA_WIDTH-1:0]  core_cache_data_out ;
 
   logic               core_imem_ready       ;
-  logic [IDWIDTH-1:0] core_imem_data_out    ;
-  logic [IDWIDTH-1:0] core_icache_data_out  ;
-  logic [IAWIDTH-1:0] core_imem_addr        ;
+  logic [DATA_WIDTH-1:0] core_imem_data_out    ;
+  logic [DATA_WIDTH-1:0] core_icache_data_out  ;
+  logic [S_ADDR-1:0] core_imem_addr        ;
   logic               core_fsm_imem_rden    ;
 
   riscv_core u_top_core(

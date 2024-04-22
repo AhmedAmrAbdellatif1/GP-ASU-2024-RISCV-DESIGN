@@ -7,7 +7,6 @@ module riscv_timer_irq (
     input   logic [63:0]  i_riscv_timer_wdata   ,
     output  logic [63:0]  o_riscv_timer_rdata   ,
     output  logic [63:0]  o_riscv_timer_time    ,
-    output  logic [63:0]  o_riscv_timer_timecmp ,
     output  logic         o_riscv_timer_irq   
   );
 
@@ -23,7 +22,6 @@ module riscv_timer_irq (
 
   /**********************************************/
   assign o_riscv_timer_time     = mtime;
-  assign o_riscv_timer_timecmp  = mtimecmp;
 
   /**********************************************/
   always_ff @( posedge i_riscv_timer_clk or posedge i_riscv_timer_rst )

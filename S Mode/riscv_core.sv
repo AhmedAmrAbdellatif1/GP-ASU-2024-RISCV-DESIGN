@@ -1,54 +1,51 @@
 module riscv_core 
-  import dcache_pkg::*;
-  import icache_pkg::*;
+  import my_pkg::*;
   #(parameter MXLEN=64) (
       input   logic                   i_riscv_core_clk                , 
       input   logic                   i_riscv_core_rst                ,
       input   logic                   i_riscv_core_external_interrupt ,
       input   logic                   i_riscv_core_mem_ready          ,
-      input   logic [DATA_WIDTH-1:0]  i_riscv_core_mem_data_out       ,
       input   logic                   i_riscv_core_imem_ready         ,
-      input   logic [IDWIDTH-1:0]     i_riscv_core_imem_data_out      , 
-      output  logic [IDWIDTH-1:0]     o_riscv_core_icache_data_out    , 
-      output  logic [IAWIDTH-1:0]     o_riscv_core_imem_addr          , 
+      input   logic [DATA_WIDTH-1:0]  i_riscv_core_mem_data_out       ,
+      input   logic [DATA_WIDTH-1:0]  i_riscv_core_imem_data_out      , 
+      output  logic [DATA_WIDTH-1:0]  o_riscv_core_icache_data_out    , 
+      output  logic [DATA_WIDTH-1:0]  o_riscv_core_cache_data_out     ,
+      output  logic [S_ADDR-1:0]      o_riscv_core_imem_addr          , 
+      output  logic [S_ADDR-1:0]      o_riscv_core_mem_addr           ,
       output  logic                   o_riscv_core_fsm_imem_rden      , 
       output  logic                   o_riscv_core_fsm_mem_wren       ,
-      output  logic                   o_riscv_core_fsm_mem_rden       ,
-      output  logic [INDEX+TAG-1:0]   o_riscv_core_mem_addr           ,
-      output  logic [DATA_WIDTH-1:0]  o_riscv_core_cache_data_out   
+      output  logic                   o_riscv_core_fsm_mem_rden       
     ) ;
     
 
   /************************ Datapath to CU ************************/
-    logic         riscv_datapath_stall_m_dm   ;
-    logic [63:0]  riscv_datapath_rdata_dm     ;
-    logic [6:0]   riscv_datapath_opcode_cu    ;
-    logic [2:0]   riscv_datapath_func3_cu     ;
-    logic         riscv_datapath_func7_5_cu   ;
-    logic         riscv_datapath_func7_0_cu   ;
-    logic [6:0]   riscv_datapath_func7        ;
+    logic         riscv_datapath_stall_m_dm         ;
+    logic [63:0]  riscv_datapath_rdata_dm           ;
+    logic [6:0]   riscv_datapath_opcode_cu          ;
+    logic [2:0]   riscv_datapath_func3_cu           ;
+    logic [6:0]   riscv_datapath_func7              ;
 
   /************************ CU to Datapath ************************/
-    logic         riscv_cu_regw_datapath      ;   
-    logic         riscv_cu_jump_datapath      ;     
-    logic         riscv_cu_asel_datapath      ;    
-    logic         riscv_cu_bsel_datapath      ;     
-    logic         riscv_cu_memw_datapath      ;   
-    logic         riscv_cu_memr_datapath      ;    
-    logic [1:0]   riscv_cu_storesrc_datapath  ; 
-    logic [2:0]   riscv_cu_resultsrc_datapath ;
-    logic [3:0]   riscv_cu_bcond_datapath     ;   
-    logic [2:0]   riscv_cu_memext_datapath    ;  
-    logic [5:0]   riscv_cu_aluctrl_datapath   ; 
-    logic [3:0]   riscv_cu_mulctrl_datapath   ;
-    logic [3:0]   riscv_cu_divctrl_datapath   ;
-    logic [1:0]   riscv_cu_funcsel_datapath   ;
-    logic [2:0]   riscv_cu_immsrc_datapath    ;
-    logic         riscv_cu_instret_datapath   ;
-    logic [1:0]   riscv_cu_lr_datapath        ;   
-    logic [1:0]   riscv_cu_sc_datapath        ;   
-    logic [4:0]   riscv_cu_amo_op_datapath    ; 
-    logic         riscv_cu_amo_datapath       ;
+    logic         riscv_cu_regw_datapath            ;   
+    logic         riscv_cu_jump_datapath            ;     
+    logic         riscv_cu_asel_datapath            ;    
+    logic         riscv_cu_bsel_datapath            ;     
+    logic         riscv_cu_memw_datapath            ;   
+    logic         riscv_cu_memr_datapath            ;    
+    logic [1:0]   riscv_cu_storesrc_datapath        ; 
+    logic [2:0]   riscv_cu_resultsrc_datapath       ;
+    logic [3:0]   riscv_cu_bcond_datapath           ;   
+    logic [2:0]   riscv_cu_memext_datapath          ;  
+    logic [5:0]   riscv_cu_aluctrl_datapath         ; 
+    logic [3:0]   riscv_cu_mulctrl_datapath         ;
+    logic [3:0]   riscv_cu_divctrl_datapath         ;
+    logic [1:0]   riscv_cu_funcsel_datapath         ;
+    logic [2:0]   riscv_cu_immsrc_datapath          ;
+    logic         riscv_cu_instret_datapath         ;
+    logic [1:0]   riscv_cu_lr_datapath              ;   
+    logic [1:0]   riscv_cu_sc_datapath              ;   
+    logic [4:0]   riscv_cu_amo_op_datapath          ; 
+    logic         riscv_cu_amo_datapath             ;
 
   /************************ Datapath & Hazard Unit ************************/
     logic [1:0]   riscv_datapath_fwda_hzrdu         ;        
@@ -83,57 +80,46 @@ module riscv_core
 
   /************************ Trap Signals ************************/
     // From cu to de
-    logic         riscv_cu_ecallu_de                            ;
-    logic         riscv_cu_ecalls_de                            ;
-    logic         riscv_cu_ecallm_de                            ;
-    logic         riscv_cu_illgalinst_de                        ;
-    logic [2:0]   riscv_cu_csrop_de                             ;
-    logic         riscv_cu_iscsr_de                             ;
-    logic         riscv_cu_selrsimm_de                          ;
-    logic [1:0]   riscv_core_privlvl_csr_cu                     ; 
-    logic [4:0]   riscv_datapath_rs1_fd_cu                      ; 
-    logic [11:0]  riscv_datapath_constimm12_fd_cu               ;
-    logic         riscv_datapath_ecall_u_em_csr                 ;
-    logic         riscv_datapath_ecall_s_em_csr                 ;
-    logic         riscv_datapath_ecall_m_em_csr                 ;
-    logic         riscv_datapath_illegal_inst_em_csr            ;
-    logic         riscv_datapath_inst_addr_misaligned_em_csr    ;
-    logic         riscv_datapath_load_addr_misaligned_em_csr    ;
-    logic         riscv_datapath_store_addr_misaligned_em_csr   ;
-    logic [11:0]  riscv_datapath_csraddress_em_csr              ;  
-    logic [2:0]   riscv_datapath_csrop_em_csr                   ;
-    logic [63:0]  riscv_datapath_addressalu_em_csr              ;
-    logic [63:0]  riscv_datapath_csrwdata_em_csr                ;
-    logic [4:0]   riscv_hzrdu_rs1addr_m                         ;
+    logic         riscv_cu_ecallu_de                ;
+    logic         riscv_cu_ecalls_de                ;
+    logic         riscv_cu_ecallm_de                ;
+    logic         riscv_cu_illgalinst_de            ;
+    logic [2:0]   riscv_cu_csrop_de                 ;
+    logic         riscv_cu_iscsr_de                 ;
+    logic         riscv_cu_selrsimm_de              ;
+    logic [1:0]   riscv_core_privlvl_csr_cu         ; 
+    logic [4:0]   riscv_datapath_rs1_fd_cu          ; 
+    logic [11:0]  riscv_datapath_constimm12_fd_cu   ;
+    logic [11:0]  riscv_datapath_csraddress_em_csr  ;  
+    logic [4:0]   riscv_hzrdu_rs1addr_m             ;
 
   /************************ Data Cache Signals ************************/
-    logic         riscv_datapath_memw_e_dm        ;
-    logic         riscv_datapath_memr_e_dm        ;   
-    logic [1:0]   riscv_datapath_storesrc_m_dm    ;
-    logic         riscv_datapath_amo_dm           ;   
-    logic [4:0]   riscv_datapath_amo_op_dm        ;
-    logic [63:0]  riscv_datapath_memodata_addr_dm ;
-    logic [63:0]  riscv_datapath_storedata_m_dm   ;
+    logic         riscv_datapath_memw_e_dm          ;
+    logic         riscv_datapath_memr_e_dm          ;   
+    logic [1:0]   riscv_datapath_storesrc_m_dm      ;
+    logic         riscv_datapath_amo_dm             ;   
+    logic [4:0]   riscv_datapath_amo_op_dm          ;
+    logic [63:0]  riscv_datapath_memodata_addr_dm   ;
+    logic [63:0]  riscv_datapath_storedata_m_dm     ;
 
   /************************ Instruction Cache Signals ************************/
-    logic [63:0]  riscv_datapath_pc_im      ;                
-    logic [31:0]  riscv_im_inst_datapath    ;
-    logic         riscv_datapath_stall_m_im ;
+    logic [63:0]  riscv_datapath_pc_im              ;                
+    logic [31:0]  riscv_im_inst_datapath            ;
+    logic         riscv_datapath_stall_m_im         ;
                         
   /************************ CSR Signals ************************/
-    logic         muxcsr_sel_hzrd_datapath  ;
-    logic         iscsr_w_hzrd_datapath     ;
-    logic         iscsr_e_hzrd_datapath     ;
-    logic         iscsr_m_hzrd_datapath     ;
-    logic         iscsr_d_hzrd_datapath     ;
+    logic         muxcsr_sel_hzrd_datapath          ;
+    logic         iscsr_w_hzrd_datapath             ;
+    logic         iscsr_e_hzrd_datapath             ;
+    logic         iscsr_m_hzrd_datapath             ;
+    logic         iscsr_d_hzrd_datapath             ;
 
   /************************ Timer Interrupts ************************/
-    logic         riscv_datapath_timer_wren   ; 
-    logic         riscv_datapath_timer_rden   ;
-    logic [1:0]   riscv_datapath_timer_regsel ; 
-    logic [63:0]  riscv_timer_datapath_rdata  ;   
-    logic [63:0]  riscv_timer_datapath_time   ; 
-    logic [63:0]  riscv_timer_datapath_timecmp ;
+    logic         riscv_datapath_timer_wren         ; 
+    logic         riscv_datapath_timer_rden         ;
+    logic [1:0]   riscv_datapath_timer_regsel       ; 
+    logic [63:0]  riscv_timer_datapath_rdata        ;   
+    logic [63:0]  riscv_timer_datapath_time         ; 
 
   /************************* ************** *************************/
   /************************* Instantiations *************************/
@@ -225,7 +211,6 @@ module riscv_core
     .i_riscv_datapath_globstall         (riscv_datapath_globstall_hzrdu)  ,
     .i_riscv_timer_datapath_rdata       (riscv_timer_datapath_rdata )     ,
     .i_riscv_timer_datapath_time        (riscv_timer_datapath_time  )     ,
-    .i_riscv_timer_datapath_timecmp     (riscv_timer_datapath_timecmp)    ,
     .o_riscv_datapath_rs1_fd_cu         (riscv_datapath_rs1_fd_cu)        ,     
     .o_riscv_datapath_constimm12_fd_cu  (riscv_datapath_constimm12_fd_cu) ,  
     .o_riscv_core_privlvl_csr_cu        (riscv_core_privlvl_csr_cu)       ,
@@ -316,23 +301,23 @@ riscv_hazardunit u_top_hzrdu (
   );
 
   riscv_data_cache u_data_cache(
-    .i_riscv_dcache_clk             (i_riscv_core_clk)                  ,
-    .i_riscv_dcache_rst             (i_riscv_core_rst)                  ,
-    .i_riscv_dcache_globstall       (riscv_datapath_globstall_hzrdu)    ,      
-    .i_riscv_dcache_cpu_wren        (riscv_datapath_memw_e_dm)          ,
-    .i_riscv_dcache_cpu_rden        (riscv_datapath_memr_e_dm)          ,
-    .i_riscv_dcache_store_src       (riscv_datapath_storesrc_m_dm)      ,
-    .i_riscv_dcache_amo             (riscv_datapath_amo_dm)             ,
-    .i_riscv_dcache_amo_op          (riscv_datapath_amo_op_dm)          ,
-    .i_riscv_dcache_phys_addr       (riscv_datapath_memodata_addr_dm)   ,
-    .i_riscv_dcache_cpu_data_in     (riscv_datapath_storedata_m_dm)     ,
-    .i_riscv_dcache_mem_ready       (i_riscv_core_mem_ready      )      ,
-    .i_riscv_dcache_mem_data_out    (i_riscv_core_mem_data_out   )      ,
-    .o_riscv_dcache_fsm_mem_wren    (o_riscv_core_fsm_mem_wren   )      ,
-    .o_riscv_dcache_fsm_mem_rden    (o_riscv_core_fsm_mem_rden   )      ,
-    .o_riscv_dcache_mem_addr        (o_riscv_core_mem_addr       )      ,
-    .o_riscv_dcache_cache_data_out  (o_riscv_core_cache_data_out )      ,
-    .o_riscv_dcache_cpu_data_out    (riscv_datapath_rdata_dm)           ,
+    .i_riscv_dcache_clk             (i_riscv_core_clk)                            ,
+    .i_riscv_dcache_rst             (i_riscv_core_rst)                            ,
+    .i_riscv_dcache_globstall       (riscv_datapath_globstall_hzrdu)              ,      
+    .i_riscv_dcache_cpu_wren        (riscv_datapath_memw_e_dm)                    ,
+    .i_riscv_dcache_cpu_rden        (riscv_datapath_memr_e_dm)                    ,
+    .i_riscv_dcache_store_src       (riscv_datapath_storesrc_m_dm)                ,
+    .i_riscv_dcache_amo             (riscv_datapath_amo_dm)                       ,
+    .i_riscv_dcache_amo_op          (riscv_datapath_amo_op_dm)                    ,
+    .i_riscv_dcache_phys_addr       (riscv_datapath_memodata_addr_dm[ADDR-1:0])   ,
+    .i_riscv_dcache_cpu_data_in     (riscv_datapath_storedata_m_dm)               ,
+    .i_riscv_dcache_mem_ready       (i_riscv_core_mem_ready      )                ,
+    .i_riscv_dcache_mem_data_out    (i_riscv_core_mem_data_out   )                ,
+    .o_riscv_dcache_fsm_mem_wren    (o_riscv_core_fsm_mem_wren   )                ,
+    .o_riscv_dcache_fsm_mem_rden    (o_riscv_core_fsm_mem_rden   )                ,
+    .o_riscv_dcache_mem_addr        (o_riscv_core_mem_addr       )                ,
+    .o_riscv_dcache_cache_data_out  (o_riscv_core_cache_data_out )                ,
+    .o_riscv_dcache_cpu_data_out    (riscv_datapath_rdata_dm)                     ,
     .o_riscv_dcache_cpu_stall       (riscv_datapath_stall_m_dm)        
   );
 
@@ -358,8 +343,7 @@ riscv_hazardunit u_top_hzrdu (
     .i_riscv_timer_wdata    (riscv_datapath_storedata_m_dm  ),
     .o_riscv_timer_rdata    (riscv_timer_datapath_rdata     ),
     .o_riscv_timer_time     (riscv_timer_datapath_time      ),
-    .o_riscv_timer_timecmp  (riscv_timer_datapath_timecmp    ),
-    .o_riscv_timer_irq      (riscv_core_timer_interrupt       )
+    .o_riscv_timer_irq      (riscv_core_timer_interrupt     )
   );
 
 endmodule

@@ -13,7 +13,6 @@ module riscv_csrfile
     input   logic               i_riscv_csr_external_int          , 
     input   logic               i_riscv_csr_timer_int             ,
     input   logic [63:0]        i_riscv_csr_timer_time            ,
-    input   logic [63:0]        i_riscv_csr_timer_timecmp         ,
     input   logic [63:0]        i_riscv_csr_pc                    ,
     input   logic [63:0]        i_riscv_csr_addressALU            , 
     input   logic [31:0]        i_riscv_csr_inst                  ,
@@ -121,7 +120,8 @@ module riscv_csrfile
   
   logic             csr_read_en                   ;
   logic [MXLEN-1:0] csr_read_data                 ;
-  logic             ack_external_int              ;
+  logic             m_external_ack                ; 
+  logic             s_external_ack                ; 
   logic             mret                          ;
   logic             sret                          ;
 
@@ -266,6 +266,8 @@ module riscv_csrfile
           csr_read_data[MXR ]       = mstatus.mxr     ;
           csr_read_data[UXL1:UXL0]  = (support_user)  ? 2'b10 : 2'b00 ;
         end
+
+        TIME        : csr_read_data = i_riscv_csr_timer_time ;
       
         SATP        ,
         MCONFIGPTR  ,
@@ -432,10 +434,10 @@ module riscv_csrfile
       mip.stip  <=  csr_write_data[STI];
       mip.seip  <=  csr_write_data[SEI];
     end
-
-    else if(ack_external_int || i_riscv_csr_timer_int || i_riscv_csr_external_int)
+    
+    else if(m_external_ack || i_riscv_csr_timer_int || i_riscv_csr_external_int)
     begin
-      case (ack_external_int) 
+      case (m_external_ack) 
         1'b1  : mip.meip <= 1'b0 ;
         1'b0  : mip.meip <= i_riscv_csr_external_int ;
       endcase
@@ -555,8 +557,6 @@ module riscv_csrfile
       
     else if(csr_write_access_en && (i_riscv_csr_address == SEPC))
       sepc <= {csr_write_data[63:1],1'b0};
-
-
   end 
 
 
@@ -620,87 +620,86 @@ module riscv_csrfile
     begin
       mcause.code       <= 4'b0000  ;
       mcause.int_excep  <= 1'b0     ;
-      ack_external_int  <= 1'b0     ;
+      m_external_ack    <= 1'b0     ;
     end
 
     //  trap to machine mode
     else if( (is_exception && ((current_priv_lvl == PRIV_LVL_M) || no_delegation)) || interrupt_go_m)
     begin
-    
       if(mei_pending)
       begin
         mcause.code       <= MEI    ;
         mcause.int_excep  <= 1'b1   ;
-        ack_external_int  <= 1'b1   ;
+        m_external_ack    <= 1'b1   ;
       end
 
       else if(mti_pending)
       begin
-        mcause.code      <= MTI     ;
-        mcause.int_excep <= 1'b1    ;
-        ack_external_int <= 1'b0    ;
+        mcause.code       <= MTI     ;
+        mcause.int_excep  <= 1'b1    ;
+        m_external_ack    <= 1'b0    ;
       end
 
       else if(sei_pending)
       begin
-        mcause.code      <= MEI     ;  
-        mcause.int_excep <= 1'b1    ;
-        ack_external_int <= 1'b0    ;
+        mcause.code       <= MEI     ;  
+        mcause.int_excep  <= 1'b1    ;
+        m_external_ack    <= 1'b0    ;
       end
       
       else if(sti_pending)
       begin
-        mcause.code      <= MTI     ;
-        mcause.int_excep <= 1'b1    ;
-        ack_external_int <= 1'b0    ;
+        mcause.code       <= MTI     ;
+        mcause.int_excep  <= 1'b1    ;
+        m_external_ack    <= 1'b0    ;
       end
 
       else if(illegal_total)
       begin
-        mcause.code      <= ILLEGAL_INSTRUCTION ;
-        mcause.int_excep <= 1'b0                ;
-        ack_external_int <= 1'b0                ;
+        mcause.code       <= ILLEGAL_INSTRUCTION ;
+        mcause.int_excep  <= 1'b0                ;
+        m_external_ack    <= 1'b0                ;
       end
 
       else if(i_riscv_csr_inst_addr_misaligned)
       begin
         mcause.code       <= INSTRUCTION_ADDRESS_MISALIGNED ;  
         mcause.int_excep  <= 1'b0                           ;
-        ack_external_int  <= 1'b0                           ;
+        m_external_ack    <= 1'b0                           ;
       end
 
       else if(i_riscv_csr_ecall_m)
       begin
         mcause.code       <= ECALL_M  ;
         mcause.int_excep  <= 1'b0     ;
-        ack_external_int  <= 1'b0     ;
+        m_external_ack    <= 1'b0     ;
       end
 
       else if(i_riscv_csr_ecall_s)
       begin
         mcause.code       <= ECALL_S  ;
         mcause.int_excep  <= 1'b0     ;
-        ack_external_int  <= 1'b0     ;
+        m_external_ack    <= 1'b0     ;
       end
 
       else if(i_riscv_csr_ecall_u)
       begin
         mcause.code       <= ECALL_U  ;
         mcause.int_excep  <= 1'b0     ;
-        ack_external_int  <= 1'b0     ;
+        m_external_ack    <= 1'b0     ;
       end
       
       else if(i_riscv_csr_load_addr_misaligned)
       begin
         mcause.code       <= LOAD_ADDRESS_MISALIGNED  ;
         mcause.int_excep  <= 1'b0                     ;
-        ack_external_int  <= 1'b0                     ;
+        m_external_ack    <= 1'b0                     ;
       end
       else if(i_riscv_csr_store_addr_misaligned)
       begin
         mcause.code       <= STORE_ADDRESS_MISALIGNED ;
         mcause.int_excep  <= 1'b0                     ;
-        ack_external_int  <= 1'b0                     ;
+        m_external_ack    <= 1'b0                     ;
       end
     end
 
@@ -708,7 +707,7 @@ module riscv_csrfile
     begin
       mcause.int_excep  <= csr_write_data[63]         ;
       mcause.code       <= csr_write_data[3:0]        ;
-      ack_external_int  <= 1'b0                       ;
+      m_external_ack    <= 1'b0                       ;
     end
 
   end
@@ -719,7 +718,8 @@ module riscv_csrfile
     if(i_riscv_csr_rst)
     begin
       scause.code       <= 4'b0000;
-      scause.int_excep  <= 1'b0 ;
+      scause.int_excep  <= 1'b0   ;
+      s_external_ack    <= 1'b0   ;
     end
 
     else if(( is_exception && force_s_delegation) || interrupt_go_s)
@@ -727,50 +727,58 @@ module riscv_csrfile
 
       if(sei_pending)
       begin
-        scause.code      <= SEI;
-        scause.int_excep <= 1'b1;
+        scause.code       <= SEI  ; 
+        scause.int_excep  <= 1'b1 ;
+        s_external_ack    <= 1'b1 ;
       end
 
       else if(sti_pending)
       begin
-        scause.code      <= STI;
-        scause.int_excep <= 1'b1;
+        scause.code       <= STI  ;
+        scause.int_excep  <= 1'b1 ;
+        s_external_ack    <= 1'b0  ;
       end
 
       else if(illegal_total)
       begin
-        scause.code      <= ILLEGAL_INSTRUCTION;
-        scause.int_excep <= 1'b0;
+        scause.code       <= ILLEGAL_INSTRUCTION;
+        scause.int_excep  <= 1'b0 ;
+        s_external_ack    <= 1'b0 ;
       end
 
       else if(i_riscv_csr_inst_addr_misaligned)
       begin
         scause.code       <= INSTRUCTION_ADDRESS_MISALIGNED;
-        scause.int_excep  <= 1'b0;
+        scause.int_excep  <= 1'b0 ;
+        s_external_ack    <= 1'b0 ;
       end
 
       else if(i_riscv_csr_ecall_s)
       begin
-        scause.code       <= ECALL_S;
-        scause.int_excep  <= 1'b0;
+        scause.code       <= ECALL_S  ;
+        scause.int_excep  <= 1'b0     ;
+        s_external_ack    <= 1'b0     ;
       end
 
       else if(i_riscv_csr_ecall_u)
       begin
-        scause.code       <= ECALL_U;
-        scause.int_excep  <= 1'b0;
+        scause.code       <= ECALL_U  ;
+        scause.int_excep  <= 1'b0     ;
+        s_external_ack    <= 1'b0     ;
       end
 
       else if(i_riscv_csr_load_addr_misaligned)
       begin
         scause.code       <= LOAD_ADDRESS_MISALIGNED;
-        scause.int_excep  <= 1'b0;
+        scause.int_excep  <= 1'b0 ;
+        s_external_ack    <= 1'b0 ;
       end
 
       else if(i_riscv_csr_store_addr_misaligned)
       begin
         scause.code       <= STORE_ADDRESS_MISALIGNED;
-        scause.int_excep  <= 1'b0;
+        scause.int_excep  <= 1'b0 ;
+        s_external_ack    <= 1'b0 ;
       end
   
     end
@@ -779,6 +787,7 @@ module riscv_csrfile
     begin
       scause.int_excep    <= csr_write_data[63];
       scause.code         <= csr_write_data[3:0];
+      s_external_ack      <= 1'b0 ;
     end
   end
 
@@ -998,47 +1007,7 @@ module riscv_csrfile
     sei_pending     = 1'b0  ;
     sti_pending     = 1'b0  ;
 
-    if (mip.mtip && mie.mtie) // Machine Timer Interrupt
-    begin
-      case (current_priv_lvl)
-        PRIV_LVL_M  :
-        begin
-          if (mstatus.mie && ~mideleg[MTI])
-          begin
-            interrupt_go_m  = 1'b1 ;
-            mti_pending     = 1'b1 ;
-          end
-          else
-          begin 
-            interrupt_go_m  = 1'b0  ;    
-            mti_pending     = 1'b0  ;
-          end 
-        end
-
-        PRIV_LVL_S  ,
-        PRIV_LVL_U  : 
-        begin
-          if(~mideleg[MTI])
-          begin
-            interrupt_go_m  = 1'b1  ;
-            mti_pending     = 1'b1  ;
-          end
-          else 
-          begin 
-            interrupt_go_m  = 1'b0  ;
-            mti_pending     = 1'b0  ;
-          end
-        end
-        default :
-        begin 
-          interrupt_go_s = 1'b0 ; 
-          interrupt_go_m = 1'b0 ; 
-        end        
-      endcase
-    end
-
-    
-    else if (mip.meip && mie.meie)  // Machine Mode External Interrupt
+    if (mip.meip && mie.meie)  // Machine Mode External Interrupt
     begin
       case (current_priv_lvl)
         PRIV_LVL_M :  
@@ -1074,6 +1043,45 @@ module riscv_csrfile
           interrupt_go_m = 1'b0 ;
           interrupt_go_s = 1'b0 ;
         end             
+      endcase
+    end
+
+    else if (mip.mtip && mie.mtie) // Machine Timer Interrupt
+    begin
+      case (current_priv_lvl)
+        PRIV_LVL_M  :
+        begin
+          if (mstatus.mie && ~mideleg[MTI])
+          begin
+            interrupt_go_m  = 1'b1 ;
+            mti_pending     = 1'b1 ;
+          end
+          else
+          begin 
+            interrupt_go_m  = 1'b0  ;    
+            mti_pending     = 1'b0  ;
+          end 
+        end
+
+        PRIV_LVL_S  ,
+        PRIV_LVL_U  : 
+        begin
+          if(~mideleg[MTI])
+          begin
+            interrupt_go_m  = 1'b1  ;
+            mti_pending     = 1'b1  ;
+          end
+          else 
+          begin 
+            interrupt_go_m  = 1'b0  ;
+            mti_pending     = 1'b0  ;
+          end
+        end
+        default :
+        begin 
+          interrupt_go_s = 1'b0 ; 
+          interrupt_go_m = 1'b0 ; 
+        end        
       endcase
     end
 

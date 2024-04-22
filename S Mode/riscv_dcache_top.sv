@@ -1,5 +1,5 @@
 module riscv_data_cache
-  import dcache_pkg::*;
+  import my_pkg::*;
   (  
     input   logic                   i_riscv_dcache_clk            ,
     input   logic                   i_riscv_dcache_rst            ,
@@ -9,14 +9,14 @@ module riscv_data_cache
     input   logic [1:0]             i_riscv_dcache_store_src      ,
     input   logic                   i_riscv_dcache_amo            ,
     input   logic [4:0]             i_riscv_dcache_amo_op         , 
-    input   logic [63:0]            i_riscv_dcache_phys_addr      ,
+    input   logic [ADDR-1:0]        i_riscv_dcache_phys_addr      ,
     input   logic [63:0]            i_riscv_dcache_cpu_data_in    ,
     input   logic                   i_riscv_dcache_mem_ready      ,
     input   logic [DATA_WIDTH-1:0]  i_riscv_dcache_mem_data_out   ,
+    output  logic [DATA_WIDTH-1:0]  o_riscv_dcache_cache_data_out ,
+    output  logic [S_ADDR-1:0]      o_riscv_dcache_mem_addr       ,
     output  logic                   o_riscv_dcache_fsm_mem_wren   ,
     output  logic                   o_riscv_dcache_fsm_mem_rden   ,
-    output  logic [INDEX+TAG-1:0]   o_riscv_dcache_mem_addr       ,
-    output  logic [DATA_WIDTH-1:0]  o_riscv_dcache_cache_data_out ,
     output  logic [63:0]            o_riscv_dcache_cpu_data_out   ,
     output  logic                   o_riscv_dcache_cpu_stall               
   );

@@ -22,7 +22,6 @@
     input   logic         i_riscv_em_illegal_inst_e           ,
     input   logic         i_riscv_em_iscsr_e                  , 
     input   logic [2:0]   i_riscv_em_csrop_e                  , 
-    input   logic [63:0]  i_riscv_em_addressalu_e             , 
     input   logic         i_riscv_em_inst_addr_misaligned_e   , 
     input   logic         i_riscv_em_load_addr_misaligned_e   , 
     input   logic         i_riscv_em_store_addr_misaligned_e  , 
@@ -60,7 +59,6 @@
     output  logic         o_riscv_em_illegal_inst_m           , 
     output  logic         o_riscv_em_iscsr_m                  , 
     output  logic [2:0]   o_riscv_em_csrop_m                  , 
-    output  logic [63:0]  o_riscv_em_addressalu_m             , 
     output  logic         o_riscv_em_inst_addr_misaligned_m   , 
     output  logic         o_riscv_em_load_addr_misaligned_m   , 
     output  logic         o_riscv_em_store_addr_misaligned_m  , 
@@ -93,7 +91,6 @@
             o_riscv_em_iscsr_m                  <= 'b0; 
             o_riscv_em_csrop_m                  <= 'b0; 
             o_riscv_em_rs1addr_m                <= 'b0;
-            o_riscv_em_addressalu_m             <= 'b0;
             o_riscv_em_csrwritedata_m           <= 'b0;  
             o_riscv_em_inst_addr_misaligned_m   <= 'b0;
             o_riscv_em_load_addr_misaligned_m   <= 'b0;
@@ -129,7 +126,6 @@
             o_riscv_em_illegal_inst_m           <= 'b0;
             o_riscv_em_iscsr_m                  <= 'b0; 
             o_riscv_em_csrop_m                  <= 'b0; 
-            o_riscv_em_addressalu_m             <= 'b0;
             o_riscv_em_inst_addr_misaligned_m   <= 'b0;
             o_riscv_em_load_addr_misaligned_m   <= 'b0;
             o_riscv_em_store_addr_misaligned_m  <= 'b0;  
@@ -164,7 +160,6 @@
             o_riscv_em_illegal_inst_m           <= i_riscv_em_illegal_inst_e;
             o_riscv_em_iscsr_m                  <= i_riscv_em_iscsr_e ; 
             o_riscv_em_csrop_m                  <= i_riscv_em_csrop_e ; 
-            o_riscv_em_addressalu_m             <= i_riscv_em_addressalu_e;
             o_riscv_em_inst_addr_misaligned_m   <= i_riscv_em_inst_addr_misaligned_e;
             o_riscv_em_load_addr_misaligned_m   <= i_riscv_em_load_addr_misaligned_e;
             o_riscv_em_store_addr_misaligned_m  <= i_riscv_em_store_addr_misaligned_e ; 

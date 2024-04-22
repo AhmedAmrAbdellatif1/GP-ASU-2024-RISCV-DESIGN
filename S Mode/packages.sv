@@ -1,37 +1,21 @@
 package my_pkg;
   // core local interruptor (CLINT), which contains the timer.
-  parameter CLINT           = 'h2000000;
-  parameter CLINT_MTIMECMP  = CLINT + 'h4000;
-  parameter CLINT_MTIME     = CLINT + 'hBFF8; // cycles since boot.
-endpackage
+  parameter CLINT           = 'h2000000           ;
+  parameter CLINT_MTIMECMP  = CLINT + 'h4000      ;
+  parameter CLINT_MTIME     = CLINT + 'hBFF8      ; // cycles since boot
 
-package dcache_pkg;
   parameter DATA_WIDTH  = 128                     ;
   parameter CACHE_SIZE  = 4*(2**10)               ;   //64 * (2**10)   
-  parameter MEM_SIZE    = 128*CACHE_SIZE          ;   //128*(2**20) 
-  parameter MEM_DEPTH   = 128*CACHE_SIZE          ;     
+  parameter MEM_SIZE    = 128*(2**20)             ;   //128*(2**20) 
   parameter DATAPBLOCK  = 16                      ;
   parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK   ;   //  4096
   parameter ADDR        = $clog2(MEM_SIZE)        ;   //    27 bits
   parameter BYTE_OFF    = $clog2(DATAPBLOCK)      ;   //     4 bits
   parameter INDEX       = $clog2(CACHE_DEPTH)     ;   //    12 bits
   parameter TAG         = ADDR - BYTE_OFF - INDEX ;   //    11 bits
-endpackage
+  parameter KERNEL_PC   = 'h80000000              ;
+  parameter S_ADDR      = 23                      ;
 
-package icache_pkg;
-  parameter IDATA_WIDTH   = 128                     ;
-  parameter ICACHE_SIZE   = 4*(2**10)               ; //64 * (2**10)
-  parameter IMEM_SIZE     = 256*(ICACHE_SIZE)        ; //128*(2**20)
-  parameter IDATAPBLOCK   = 16                      ;
-  parameter ICACHE_DEPTH  = ICACHE_SIZE/IDATAPBLOCK   ; //  4096
-  parameter IADDR         = $clog2(IMEM_SIZE)        ; //    27 bits
-  parameter IBYTE_OFF     = $clog2(IDATAPBLOCK)      ; //     4 bits
-  parameter IINDEX        = $clog2(ICACHE_DEPTH)     ; //    12 bits
-  parameter ITAG          = IADDR - IBYTE_OFF - IINDEX ; //    11 bits
-  parameter KERNEL_PC     = 'h80000000              ;
-  parameter IAWIDTH       = 23                      ;
-  parameter IDWIDTH       = 128                     ;
-  parameter IMEM_DEPTH    = 16*1024*4*(2**10)       ;
 endpackage
 
 package csr_pkg;
@@ -95,6 +79,7 @@ package csr_pkg;
     MENVCFG               = 12'h30A,
     SENVCFG               = 12'h10A,
     MCOUNTEREN            = 12'h306,
+    TIME                  = 12'hC01,
     CSR_MHPM_EVENT_3      = 12'h323,  
     CSR_MHPM_EVENT_4      = 12'h324,  
     CSR_MHPM_EVENT_5      = 12'h325,  
@@ -152,7 +137,7 @@ package csr_pkg;
     CSR_MHPM_COUNTER_28   = 12'hB1C,  
     CSR_MHPM_COUNTER_29   = 12'hB1D,  
     CSR_MHPM_COUNTER_30   = 12'hB1E,  
-    CSR_MHPM_COUNTER_31   = 12'hB1F 
+    CSR_MHPM_COUNTER_31   = 12'hB1F
   } csr_registers ; 
  
   //CSR operation type

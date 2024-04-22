@@ -1,16 +1,16 @@
 module riscv_iram_model 
-  import icache_pkg::*;
+  import my_pkg::*;
   (
     input   logic               clk       ,
     input   logic               rden      ,
-    input   logic [IAWIDTH-1:0]  addr      ,
-    input   logic [IDWIDTH-1:0]  data_in   ,
-    output  logic [IDWIDTH-1:0]  data_out  ,
+    input   logic [S_ADDR-1:0]  addr      ,
+    input   logic [DATA_WIDTH-1:0]  data_in   ,
+    output  logic [DATA_WIDTH-1:0]  data_out  ,
     output  logic               mem_ready 
   );
 
-  logic [(IAWIDTH+4)-1:0] base_addr;
-  logic [7:0] mem [0:IMEM_DEPTH-1];
+  logic [(S_ADDR+4)-1:0] base_addr;
+  logic [7:0] mem [0:MEM_SIZE-1];
   logic [1:0] counter;
 
   int i;
