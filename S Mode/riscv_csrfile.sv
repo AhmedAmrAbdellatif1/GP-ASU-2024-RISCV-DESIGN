@@ -435,14 +435,21 @@ module riscv_csrfile
       mip.seip  <=  csr_write_data[SEI];
     end
     
-    else if(m_external_ack || i_riscv_csr_timer_int || i_riscv_csr_external_int)
+    else if(ack_external_int || i_riscv_csr_timer_int || i_riscv_csr_external_int)
     begin
-      case (m_external_ack) 
-        1'b1  : mip.meip <= 1'b0 ;
-        1'b0  : mip.meip <= i_riscv_csr_external_int ;
+      case (ack_external_int)
+        1'b1  : 
+        begin
+          if (m_external_ack)
+            mip.meip <= 1'b0 ;
+          else if (s_external_ack)
+            mip.seip <= 1'b0 ;
+        end
+        1'b0  :
+        begin
+          mip.meip <= i_riscv_csr_external_int ;
+        end
       endcase
-
-      mip.mtip <= i_riscv_csr_timer_int;
     end
   end
 
@@ -1164,7 +1171,6 @@ module riscv_csrfile
       o_riscv_csr_returnfromTrap  = 'd0 ;
   end
   
-
   /************************************* *********************** *************************************/
   /*************************************  Continuous Assignment  *************************************/
   /************************************* *********************** *************************************/
@@ -1204,6 +1210,9 @@ module riscv_csrfile
 
 
   /*************************************   Trap Base Address    *************************************/
-  assign xtvec_base = {stvec.base[0] ,mtvec.base[0]} ;
+  assign xtvec_base                   = {stvec.base[0] ,mtvec.base[0]} ;
+
+  /*********************************   Interrupt Acknowledgement    *********************************/
+  assign ack_external_int             = m_external_ack | s_external_ack;
   
 endmodule
