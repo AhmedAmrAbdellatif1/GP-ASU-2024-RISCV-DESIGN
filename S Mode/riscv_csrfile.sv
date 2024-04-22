@@ -431,7 +431,7 @@ module riscv_csrfile
 
     else if(csr_write_access_en && (i_riscv_csr_address == MIP))
     begin
-      mip.stip  <=  csr_write_data[STI];
+      mip.seip  <=  csr_write_data[SEI];
       mip.seip  <=  csr_write_data[SEI];
     end
     
@@ -450,6 +450,7 @@ module riscv_csrfile
           mip.meip <= i_riscv_csr_external_int ;
         end
       endcase
+      mip.mtip <= i_riscv_csr_timer_int;
     end
   end
 
@@ -526,6 +527,8 @@ module riscv_csrfile
     begin
       if(support_supervisor)
       begin
+        mideleg[MTI]  <=  csr_write_data[MTI] ;
+        mideleg[MEI]  <=  csr_write_data[MEI] ;
         mideleg[STI]  <=  csr_write_data[STI] ;
         mideleg[SEI]  <=  csr_write_data[SEI] ;
       end
