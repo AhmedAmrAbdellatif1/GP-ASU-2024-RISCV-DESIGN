@@ -1,15 +1,14 @@
-####################################################################
 set PERIOD 10.000
 
 set MAX_RATIO 0.2
 set MIN_RATIO 0.05
 
-set HALF      [expr $PERIOD*0.5]
-set CLK_LAT   [expr $PERIOD*0.3]
-set MAX_DELAY [expr $PERIOD*$MAX_RATIO]
-set MIN_DELAY [expr $PERIOD*$MIN_RATIO]
+set HALF      [expr $PERIOD * 0.5 ]
+set CLK_LAT   [expr $PERIOD * 0.3 ]
+set MAX_DELAY [expr $PERIOD * $MAX_RATIO ]
+set MIN_DELAY [expr $PERIOD * $MIN_RATIO ]
 
-create_clock -period $PERIOD -name i_riscv_core_clk -waveform {0.000 $HALF} [get_ports {i_riscv_core_clk}]
+create_clock -period $PERIOD -name i_riscv_core_clk -waveform "0.000 $HALF" [get_ports {i_riscv_core_clk}]
 set_clock_latency $CLK_LAT [get_clocks {i_riscv_core_clk}]
 
 
