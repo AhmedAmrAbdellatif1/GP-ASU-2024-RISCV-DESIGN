@@ -4,19 +4,18 @@ module riscv_wbstage (
    input    logic [63:0]   i_riscv_wb_result          ,
    input    logic [63:0]   i_riscv_wb_memload         ,
    input    logic [63:0]   i_riscv_wb_uimm            ,
-   input    logic [63:0]   i_riscv_wb_csrout          , //<--- Trap
-   input    logic          i_riscv_wb_iscsr           , //<--- Trap
-   input    logic          i_riscv_wb_gototrap        , //<--- Trap
-   input    logic [1:0]    i_riscv_wb_returnfromtrap  , //<--- Trap
+   input    logic [63:0]   i_riscv_wb_csrout          ,
+   input    logic          i_riscv_wb_iscsr           ,
+   input    logic          i_riscv_wb_gototrap        ,
+   input    logic [1:0]    i_riscv_wb_returnfromtrap  ,
    input    logic          i_riscv_wb_icache_stall    ,
    input    logic [63:0]   i_riscv_wb_rddata_sc       ,
-   input    logic          i_riscv_wb_reconfig        ,
-   output   logic [2:0]    o_riscv_wb_pcsel           , //<--- Trap
-   output   logic          o_riscv_wb_flush           , //<--- Trap
-   output   logic [63:0]   o_riscv_wb_rddata            //modified position
+   output   logic [1:0]    o_riscv_wb_pcsel           ,
+   output   logic          o_riscv_wb_flush           ,
+   output   logic [63:0]   o_riscv_wb_rddata           
 );
 
-logic [63:0] riscv_wb_rddata ; //<---- NEW
+logic [63:0] riscv_wb_rddata ;
 
 riscv_mux5 u_result_mux (
    .i_riscv_mux5_sel  (i_riscv_wb_resultsrc),
@@ -28,12 +27,10 @@ riscv_mux5 u_result_mux (
    .o_riscv_mux5_out  (riscv_wb_rddata)
 );
 
-
 riscv_trap_wb trap_wb (
   .i_riscv_trap_gototrap        (i_riscv_wb_gototrap)         ,                  
   .i_riscv_trap_returnfromtrap  (i_riscv_wb_returnfromtrap)   ,
   .i_riscv_trap_icache_stall    (i_riscv_wb_icache_stall)     ,
-  .i_riscv_trap_reconfig_pip    (i_riscv_wb_reconfig)         ,
   .o_riscv_trap_flush           (o_riscv_wb_flush)            ,                    
   .o_riscv_trap_pcsel           (o_riscv_wb_pcsel)                       
 );

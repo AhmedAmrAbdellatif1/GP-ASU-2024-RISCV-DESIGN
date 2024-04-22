@@ -123,7 +123,7 @@ module riscv_csrfile
   
   logic             csr_read_en                   ;
   logic [MXLEN-1:0] csr_read_data                 ;
-  logic             ack_external_int ;
+  logic             ack_external_int              ;
   logic             mret                          ;
   logic             sret                          ;
 
@@ -627,7 +627,7 @@ module riscv_csrfile
     //  trap to machine mode
     else if( (is_exception && ((current_priv_lvl == PRIV_LVL_M) || no_delegation)) || interrupt_go_m)
     begin
-      ack_external_int    <= 1'b0   ; // initialization
+    
       if(mei_pending)
       begin
         mcause.code       <= MEI    ;
@@ -638,60 +638,70 @@ module riscv_csrfile
       else if(mti_pending)
       begin
         mcause.code      <= MTI     ;
-        mcause.int_excep <= 'b1     ;
+        mcause.int_excep <= 1'b1    ;
+        ack_external_int <= 1'b0    ;
       end
 
       else if(sei_pending)
       begin
         mcause.code      <= MEI     ;  
         mcause.int_excep <= 1'b1    ;
+        ack_external_int <= 1'b0    ;
       end
       
       else if(sti_pending)
       begin
         mcause.code      <= MTI     ;
         mcause.int_excep <= 1'b1    ;
+        ack_external_int <= 1'b0    ;
       end
 
       else if(illegal_total)
       begin
         mcause.code      <= ILLEGAL_INSTRUCTION;
-        mcause.int_excep <= 1'b0 ;
+        mcause.int_excep <= 1'b0  ;
+        ack_external_int <= 1'b0  ;
       end
 
       else if(i_riscv_csr_inst_addr_misaligned)
       begin
         mcause.code       <= INSTRUCTION_ADDRESS_MISALIGNED;
         mcause.int_excep  <= 1'b0 ;
+        ack_external_int  <= 1'b0 ;
       end
 
       else if(i_riscv_csr_ecall_m)
       begin
         mcause.code       <= ECALL_M;
         mcause.int_excep  <= 1'b0   ;
+        ack_external_int  <= 1'b0   ;
       end
 
       else if(i_riscv_csr_ecall_s)
       begin
         mcause.code       <= ECALL_S;
         mcause.int_excep  <= 1'b0   ;
+        ack_external_int  <= 1'b0   ;
       end
 
       else if(i_riscv_csr_ecall_u)
       begin
         mcause.code       <= ECALL_U;
         mcause.int_excep  <= 1'b0   ;
+        ack_external_int  <= 1'b0   ;
       end
       
       else if(i_riscv_csr_load_addr_misaligned)
       begin
         mcause.code       <= LOAD_ADDRESS_MISALIGNED;
-        mcause.int_excep  <= 1'b0;
+        mcause.int_excep  <= 1'b0 ;
+        ack_external_int  <= 1'b0 ;
       end
       else if(i_riscv_csr_store_addr_misaligned)
       begin
         mcause.code       <= STORE_ADDRESS_MISALIGNED;
-        mcause.int_excep  <= 1'b0;
+        mcause.int_excep  <= 1'b0 ;
+        ack_external_int  <= 1'b0 ;
       end
     end
 
@@ -699,6 +709,7 @@ module riscv_csrfile
     begin
       mcause.int_excep  <= csr_write_data[63] ;
       mcause.code       <= csr_write_data[3:0];
+      ack_external_int  <= 1'b0   ;
     end
 
   end
@@ -835,22 +846,27 @@ module riscv_csrfile
   begin
     if(go_to_trap)
     begin
-      if (support_supervisor && is_exception && medeleg[exception_cause[3:0]] )
+      if(support_supervisor && is_interrupt)
+      begin
+        if(interrupt_go_s)
+          trap_to_priv_lvl = PRIV_LVL_S;
+        else
+          trap_to_priv_lvl = PRIV_LVL_M;
+      end
+
+      else if(support_supervisor && is_exception && medeleg[exception_cause[3:0]])
       begin
         if(current_priv_lvl == PRIV_LVL_M)
           trap_to_priv_lvl = PRIV_LVL_M;
         else
           trap_to_priv_lvl = PRIV_LVL_S;
       end
-    end
 
-    else if(support_supervisor && is_interrupt)
+      else
       begin
-        if(interrupt_go_m)
-          trap_to_priv_lvl = PRIV_LVL_M;
-        else
-          trap_to_priv_lvl = PRIV_LVL_S;
+        trap_to_priv_lvl = PRIV_LVL_M;
       end
+    end
 
     else
       trap_to_priv_lvl = PRIV_LVL_M;
@@ -951,12 +967,15 @@ module riscv_csrfile
   /*************************************    Interrupt Flags    **************************************/
   always_comb
   begin
+    interrupt_go_m  = 1'b0  ;  
+    interrupt_go_s  = 1'b0  ; 
+    mei_pending     = 1'b0  ;
+    mti_pending     = 1'b0  ;
+    sei_pending     = 1'b0  ;
+    sti_pending     = 1'b0  ;
+
     if (mip.mtip && mie.mtie) // Machine Timer Interrupt
     begin
-
-      interrupt_go_m = 1'b0; 
-      interrupt_go_s = 1'b0;
-
       case (current_priv_lvl)
         PRIV_LVL_M  :
         begin
@@ -997,10 +1016,6 @@ module riscv_csrfile
     
     else if (mip.meip && mie.meie)  // Machine Mode External Interrupt
     begin
-
-      interrupt_go_m  = 1'b0  ;  
-      interrupt_go_s  = 1'b0  ; 
-
       case (current_priv_lvl)
         PRIV_LVL_M :  
         begin 
@@ -1032,18 +1047,14 @@ module riscv_csrfile
 
         default :  
         begin 
-          interrupt_go_s = 1'b0 ;
           interrupt_go_m = 1'b0 ;
+          interrupt_go_s = 1'b0 ;
         end             
       endcase
     end
 
     else if(mie.seie && mip.seip)
     begin
-
-      interrupt_go_m  = 1'b0  ; 
-      interrupt_go_s  = 1'b0  ;
-
       case(current_priv_lvl)
         PRIV_LVL_M :
         begin
@@ -1065,19 +1076,15 @@ module riscv_csrfile
         end
         default :  
         begin 
+          interrupt_go_m    = 1'b0  ;
           interrupt_go_s    = 1'b1  ;
           sei_pending       = 1'b1  ;
-          interrupt_go_m    = 1'b0  ;
         end              
       endcase
     end
 
     else if (mie.stie && mip.stip) 
     begin
-
-      interrupt_go_m  = 1'b0 ; 
-      interrupt_go_s  = 1'b0 ; 
-
       case(current_priv_lvl)
         PRIV_LVL_M :  
         begin 

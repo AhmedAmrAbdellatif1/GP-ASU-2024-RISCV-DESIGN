@@ -2,19 +2,19 @@ module riscv_core
   import dcache_pkg::*;
   import icache_pkg::*;
   #(parameter MXLEN=64) (
-      input   logic                   i_riscv_core_clk              , 
-      input   logic                   i_riscv_core_rst              ,
+      input   logic                   i_riscv_core_clk                , 
+      input   logic                   i_riscv_core_rst                ,
       input   logic                   i_riscv_core_external_interrupt ,
-      input   logic                   i_riscv_core_mem_ready        ,
-      input   logic [DATA_WIDTH-1:0]  i_riscv_core_mem_data_out     ,
-      input   logic                   i_riscv_core_imem_ready       ,
-      input   logic [IDWIDTH-1:0]     i_riscv_core_imem_data_out    , 
-      output  logic [IDWIDTH-1:0]     o_riscv_core_icache_data_out  , 
-      output  logic [IAWIDTH-1:0]     o_riscv_core_imem_addr        , 
-      output  logic                   o_riscv_core_fsm_imem_rden    , 
-      output  logic                   o_riscv_core_fsm_mem_wren     ,
-      output  logic                   o_riscv_core_fsm_mem_rden     ,
-      output  logic [INDEX+TAG-1:0]   o_riscv_core_mem_addr         ,
+      input   logic                   i_riscv_core_mem_ready          ,
+      input   logic [DATA_WIDTH-1:0]  i_riscv_core_mem_data_out       ,
+      input   logic                   i_riscv_core_imem_ready         ,
+      input   logic [IDWIDTH-1:0]     i_riscv_core_imem_data_out      , 
+      output  logic [IDWIDTH-1:0]     o_riscv_core_icache_data_out    , 
+      output  logic [IAWIDTH-1:0]     o_riscv_core_imem_addr          , 
+      output  logic                   o_riscv_core_fsm_imem_rden      , 
+      output  logic                   o_riscv_core_fsm_mem_wren       ,
+      output  logic                   o_riscv_core_fsm_mem_rden       ,
+      output  logic [INDEX+TAG-1:0]   o_riscv_core_mem_addr           ,
       output  logic [DATA_WIDTH-1:0]  o_riscv_core_cache_data_out   
     ) ;
     

@@ -107,14 +107,14 @@ module riscv_data_cache
     .DWIDTH       (DATA_WIDTH),
     .CACHE_DEPTH  (CACHE_DEPTH)
   ) u_dcache_data (
-      .clk        (i_riscv_dcache_clk)        ,    
-      .wren       (fsm_cache_wren)            ,
-      .rden       (fsm_cache_rden)            ,
-      .index      (index)                     ,
-      .data_in    (cache_data_in)             ,
-      .data_out   (o_riscv_dcache_cache_data_out)            ,
-      .byte_offset(byte_offset)               ,
-      .storesrc   (i_riscv_dcache_store_src)  ,
+      .clk        (i_riscv_dcache_clk)            ,    
+      .wren       (fsm_cache_wren)                ,
+      .rden       (fsm_cache_rden)                ,
+      .index      (index)                         ,
+      .data_in    (cache_data_in)                 ,
+      .data_out   (o_riscv_dcache_cache_data_out) ,  
+      .byte_offset(byte_offset)                   ,
+      .storesrc   (i_riscv_dcache_store_src)      ,
       .mem_in     (fsm_cache_insel[0])      
   );
 
@@ -127,7 +127,7 @@ module riscv_data_cache
   .cpu_amoen      (i_riscv_dcache_amo)       ,
   .hit            (tag_hit_out)              ,
   .dirty          (tag_dirty_out)            ,
-  .mem_ready      (i_riscv_dcache_mem_ready)                ,
+  .mem_ready      (i_riscv_dcache_mem_ready) ,
   .glob_stall     (i_riscv_dcache_globstall) ,
   .cache_rden     (fsm_cache_rden)           ,
   .cache_wren     (fsm_cache_wren)           ,
