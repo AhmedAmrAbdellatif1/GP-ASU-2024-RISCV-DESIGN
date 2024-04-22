@@ -148,6 +148,8 @@ module riscv_csrfile
 
   logic             no_delegation                 ;
   logic             force_s_delegation            ;
+
+  logic             xtvec_base                    ;
   
   
   /************************************* ********************** *************************************/
@@ -875,17 +877,46 @@ module riscv_csrfile
   /*************************************   Trap Base Address    *************************************/
   always_comb
   begin
-    trap_base_addr = {mtvec.base, 2'b0};  // initialize base address
-
-    if(current_priv_lvl == PRIV_LVL_S)
-    begin
-      trap_base_addr = {stvec.base, 2'b0};
-    end
-
-    if((mtvec.base[0] || stvec.base[0]) && interrupt_go)
-    begin
-      trap_base_addr[7:2] = interrupt_cause[5:0];
-    end
+    case (xtvec_base)
+      2'b00 : 
+      begin
+        if (current_priv_lvl == PRIV_LVL_S)
+          trap_base_addr = {stvec.base, 2'b0};
+        else if  (current_priv_lvl == PRIV_LVL_M )
+          trap_base_addr = {mtvec.base, 2'b0} ;
+        else
+          trap_base_addr = {mtvec.base, 2'b0} ;
+      end
+      2'b01 :    
+      begin
+        if (current_priv_lvl == PRIV_LVL_M && interrupt_go)
+          trap_base_addr = {mtvec.base[MXLEN-3:6], interrupt_cause[5:0], 2'b0};
+        else if  (current_priv_lvl == PRIV_LVL_S )
+          trap_base_addr = {stvec.base, 2'b0} ;
+        else
+          trap_base_addr = {mtvec.base, 2'b0} ;
+      end
+      2'b10 : 
+      begin 
+        if (current_priv_lvl == PRIV_LVL_S && interrupt_go)
+          trap_base_addr = {stvec.base[SXLEN-3:6], interrupt_cause[5:0], 2'b0};
+  
+        else if  (current_priv_lvl == PRIV_LVL_M )
+          trap_base_addr = {mtvec.base, 2'b0} ;
+  
+        else
+          trap_base_addr = {mtvec.base, 2'b0} ;   //will never execute it as we dont trap in u-mode >> trap base address will not be assigned to pc  in that case
+      end
+      2'b11: 
+      begin
+        if (current_priv_lvl == PRIV_LVL_M && interrupt_go)
+              trap_base_addr = {mtvec.base[MXLEN-3:6], interrupt_cause[5:0], 2'b0};
+        else if  (current_priv_lvl == PRIV_LVL_S && interrupt_go )
+          trap_base_addr = {stvec.base[SXLEN-3:6], interrupt_cause[5:0], 2'b0};
+        else
+          trap_base_addr = {mtvec.base, 2'b0} ;
+      end
+    endcase
   end
 
   /*************************************     Exception Flag     *************************************/
@@ -1183,4 +1214,8 @@ module riscv_csrfile
                                         (current_priv_lvl == PRIV_LVL_S) &&
                                         (!medeleg[exception_cause[3:0]] && !mideleg[interrupt_cause[3:0]]));
 
+
+  /*************************************   Trap Base Address    *************************************/
+  assign xtvec_base = {stvec.base[0] ,mtvec.base[0]} ;
+  
 endmodule
