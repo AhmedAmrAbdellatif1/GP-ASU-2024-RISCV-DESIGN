@@ -15,6 +15,7 @@ module riscv_iram_model
     input   logic                   clk       ,
     input   logic                   rden      ,
     input   logic [S_ADDR-1:0]      addr      ,
+    input   logic [DATA_WIDTH-1:0]  data_in   ,
     output  logic [DATA_WIDTH-1:0]  data_out  ,
     output  logic                   mem_ready 
   );

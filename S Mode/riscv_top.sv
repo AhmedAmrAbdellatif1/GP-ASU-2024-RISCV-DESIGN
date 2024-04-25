@@ -2,7 +2,7 @@ module riscv_top
  #(
     parameter DATA_WIDTH  = 128                     ,
     parameter CACHE_SIZE  = 4*(2**10)               ,   //64 * (2**10)   
-    parameter MEM_SIZE    = 4*(2**20)             ,   //128*(2**20) 
+    parameter MEM_SIZE    = 128*(2**20)             ,   //128*(2**20) 
     parameter DATAPBLOCK  = 16                      ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK   ,   //  4096
     parameter ADDR        = $clog2(MEM_SIZE)        ,   //    27 bits
@@ -10,7 +10,7 @@ module riscv_top
     parameter INDEX       = $clog2(CACHE_DEPTH)     ,   //    12 bits
     parameter TAG         = ADDR - BYTE_OFF - INDEX ,   //    11 bits
     parameter KERNEL_PC   = 'h80000000              ,
-    parameter S_ADDR      = 23                      
+    parameter S_ADDR      = ADDR - BYTE_OFF                    
   )
   (
     input logic i_riscv_clk,
