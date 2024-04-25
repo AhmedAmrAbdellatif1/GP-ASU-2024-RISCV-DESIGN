@@ -24,9 +24,6 @@ module riscv_dram_data
   // for loop variable
   integer i;
 
-  // mapping the byte addressable memory into block cache
-  assign base_addr = {addr,4'b0000};
-
   // accessing byte flags declaration
   logic byte0_flag,   byte1_flag,   byte2_flag,   byte3_flag,
         byte4_flag,   byte5_flag,   byte6_flag,   byte7_flag,
@@ -82,43 +79,43 @@ module riscv_dram_data
   // posedge edge synchronous write
   always_ff @(posedge clk) begin
     if(wren && !rden) begin
-      byte0[base_addr]  <= data_in[7:0];
-      byte1[base_addr]  <= data_in[15:8];
-      byte2[base_addr]  <= data_in[23:16];
-      byte3[base_addr]  <= data_in[31:24];
-      byte4[base_addr]  <= data_in[39:32];
-      byte5[base_addr]  <= data_in[47:40];
-      byte6[base_addr]  <= data_in[55:48];
-      byte7[base_addr]  <= data_in[63:56];
-      byte8[base_addr]  <= data_in[71:64];
-      byte9[base_addr]  <= data_in[79:72];
-      byte10[base_addr] <= data_in[87:80];
-      byte11[base_addr] <= data_in[95:88];
-      byte12[base_addr] <= data_in[103:96];
-      byte13[base_addr] <= data_in[111:104];
-      byte14[base_addr] <= data_in[119:112];
-      byte15[base_addr] <= data_in[127:120];
+      byte0[addr]  <= data_in[7:0];
+      byte1[addr]  <= data_in[15:8];
+      byte2[addr]  <= data_in[23:16];
+      byte3[addr]  <= data_in[31:24];
+      byte4[addr]  <= data_in[39:32];
+      byte5[addr]  <= data_in[47:40];
+      byte6[addr]  <= data_in[55:48];
+      byte7[addr]  <= data_in[63:56];
+      byte8[addr]  <= data_in[71:64];
+      byte9[addr]  <= data_in[79:72];
+      byte10[addr] <= data_in[87:80];
+      byte11[addr] <= data_in[95:88];
+      byte12[addr] <= data_in[103:96];
+      byte13[addr] <= data_in[111:104];
+      byte14[addr] <= data_in[119:112];
+      byte15[addr] <= data_in[127:120];
     end
   end
   
   // posedge edge synchronous read
   always_ff @(posedge clk) begin
-    byte0_out   <= byte0[base_addr];
-    byte1_out   <= byte1[base_addr];
-    byte2_out   <= byte2[base_addr];
-    byte3_out   <= byte3[base_addr];
-    byte4_out   <= byte4[base_addr];
-    byte5_out   <= byte5[base_addr];
-    byte6_out   <= byte6[base_addr];
-    byte7_out   <= byte7[base_addr];
-    byte8_out   <= byte8[base_addr];
-    byte9_out   <= byte9[base_addr];
-    byte10_out  <= byte10[base_addr];
-    byte11_out  <= byte11[base_addr];
-    byte12_out  <= byte12[base_addr];
-    byte13_out  <= byte13[base_addr];
-    byte14_out  <= byte14[base_addr];
-    byte15_out  <= byte15[base_addr];
+    byte0_out   <= byte0[addr];
+    byte1_out   <= byte1[addr];
+    byte2_out   <= byte2[addr];
+    byte3_out   <= byte3[addr];
+    byte4_out   <= byte4[addr];
+    byte5_out   <= byte5[addr];
+    byte6_out   <= byte6[addr];
+    byte7_out   <= byte7[addr];
+    byte8_out   <= byte8[addr];
+    byte9_out   <= byte9[addr];
+    byte10_out  <= byte10[addr];
+    byte11_out  <= byte11[addr];
+    byte12_out  <= byte12[addr];
+    byte13_out  <= byte13[addr];
+    byte14_out  <= byte14[addr];
+    byte15_out  <= byte15[addr];
   end
 
   // output data

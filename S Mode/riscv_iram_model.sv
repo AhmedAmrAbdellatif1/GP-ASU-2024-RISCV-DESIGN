@@ -9,7 +9,7 @@ module riscv_iram_model
     parameter BYTE_OFF    = $clog2(DATAPBLOCK)      ,   //     4 bits
     parameter INDEX       = $clog2(CACHE_DEPTH)     ,   //    12 bits
     parameter TAG         = ADDR - BYTE_OFF - INDEX ,  //    11 bits
-    parameter S_ADDR      = 23    
+    parameter S_ADDR      = ADDR - BYTE_OFF    
   )
   (
     input   logic                   clk       ,
