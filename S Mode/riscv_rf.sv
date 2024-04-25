@@ -23,7 +23,7 @@
             rf[i]<=64'b0;
     end
 
-  always_ff @(negedge i_riscv_rf_clk_n) 
+  always @(negedge i_riscv_rf_clk_n) 
     begin:rf_write_proc
       if(i_riscv_rf_regwrite && (i_riscv_rf_rdaddr!=0))
         rf[i_riscv_rf_rdaddr]<=i_riscv_rf_rddata;

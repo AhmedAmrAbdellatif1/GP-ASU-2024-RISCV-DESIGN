@@ -2,7 +2,7 @@ module riscv_top
  #(
     parameter DATA_WIDTH  = 128                     ,
     parameter CACHE_SIZE  = 4*(2**10)               ,   //64 * (2**10)   
-    parameter MEM_SIZE    = 128*(2**20)             ,   //128*(2**20) 
+    parameter MEM_SIZE    = 4*(2**20)             ,   //128*(2**20) 
     parameter DATAPBLOCK  = 16                      ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK   ,   //  4096
     parameter ADDR        = $clog2(MEM_SIZE)        ,   //    27 bits
@@ -50,7 +50,18 @@ module riscv_top
   logic [S_ADDR-1:0]      core_imem_addr        ;
   logic                   core_fsm_imem_rden    ;
 
-  riscv_core u_top_core(
+  riscv_core #(
+    .DATA_WIDTH   (DATA_WIDTH)  ,
+    .CACHE_SIZE   (CACHE_SIZE)  ,
+    .MEM_SIZE     (MEM_SIZE)    ,
+    .DATAPBLOCK   (DATAPBLOCK)  ,
+    .CACHE_DEPTH  (CACHE_DEPTH) ,
+    .ADDR         (ADDR)        ,
+    .BYTE_OFF     (BYTE_OFF)    ,
+    .INDEX        (INDEX)       ,
+    .TAG          (TAG)         ,
+    .S_ADDR       (S_ADDR)
+  ) u_top_core (
     .i_riscv_core_clk               (i_riscv_clk)               ,
     .i_riscv_core_rst               (i_riscv_rst)               ,
     .i_riscv_core_external_interrupt  ()                        , 
@@ -68,7 +79,18 @@ module riscv_top
   );
 
   //----------------------------------------------->
-  riscv_dram_model u_riscv_dram_model (
+  riscv_dram_model #(
+    .DATA_WIDTH   (DATA_WIDTH)  ,
+    .CACHE_SIZE   (CACHE_SIZE)  ,
+    .MEM_SIZE     (MEM_SIZE)    ,
+    .DATAPBLOCK   (DATAPBLOCK)  ,
+    .CACHE_DEPTH  (CACHE_DEPTH) ,
+    .ADDR         (ADDR)        ,
+    .BYTE_OFF     (BYTE_OFF)    ,
+    .INDEX        (INDEX)       ,
+    .TAG          (TAG)         ,
+    .S_ADDR       (S_ADDR)
+  ) u_riscv_dram_model (
     .clk        (i_riscv_clk)         ,  
     .wren       (core_fsm_mem_wren)   ,
     .rden       (core_fsm_mem_rden)   ,
@@ -78,7 +100,18 @@ module riscv_top
     .mem_ready  (core_mem_ready)
   );
 
-  riscv_iram_model u_riscv_iram_model (
+  riscv_iram_model #(
+    .DATA_WIDTH   (DATA_WIDTH)  ,
+    .CACHE_SIZE   (CACHE_SIZE)  ,
+    .MEM_SIZE     (MEM_SIZE)    ,
+    .DATAPBLOCK   (DATAPBLOCK)  ,
+    .CACHE_DEPTH  (CACHE_DEPTH) ,
+    .ADDR         (ADDR)        ,
+    .BYTE_OFF     (BYTE_OFF)    ,
+    .INDEX        (INDEX)       ,
+    .TAG          (TAG)         ,
+    .S_ADDR       (S_ADDR)
+  ) u_riscv_iram_model (
     .clk        (i_riscv_clk)            ,
     .rden       (core_fsm_imem_rden   )  ,
     .addr       (core_imem_addr       )  ,

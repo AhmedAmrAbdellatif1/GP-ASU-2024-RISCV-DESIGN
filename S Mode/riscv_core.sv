@@ -10,6 +10,7 @@ module riscv_core
       parameter BYTE_OFF    = $clog2(DATAPBLOCK)      ,   //     4 bits
       parameter INDEX       = $clog2(CACHE_DEPTH)     ,   //    12 bits
       parameter TAG         = ADDR - BYTE_OFF - INDEX ,  //    11 bits
+      parameter KERNEL_PC   = 'h80000000              ,
       parameter S_ADDR      = 23    
     )
     (
@@ -312,7 +313,18 @@ riscv_hazardunit u_top_hzrdu (
     .i_riscv_hzrdu_rs1addr_m  (riscv_hzrdu_rs1addr_m)
   );
 
-  riscv_data_cache u_data_cache(
+  riscv_data_cache #(
+    .DATA_WIDTH   (DATA_WIDTH)  ,
+    .CACHE_SIZE   (CACHE_SIZE)  ,
+    .MEM_SIZE     (MEM_SIZE)    ,
+    .DATAPBLOCK   (DATAPBLOCK)  ,
+    .CACHE_DEPTH  (CACHE_DEPTH) ,
+    .ADDR         (ADDR)        ,
+    .BYTE_OFF     (BYTE_OFF)    ,
+    .INDEX        (INDEX)       ,
+    .TAG          (TAG)         ,
+    .S_ADDR       (S_ADDR)
+  ) u_data_cache (
     .i_riscv_dcache_clk             (i_riscv_core_clk)                            ,
     .i_riscv_dcache_rst             (i_riscv_core_rst)                            ,
     .i_riscv_dcache_globstall       (riscv_datapath_globstall_hzrdu)              ,      
@@ -333,7 +345,18 @@ riscv_hazardunit u_top_hzrdu (
     .o_riscv_dcache_cpu_stall       (riscv_datapath_stall_m_dm)        
   );
 
-  riscv_instructions_cache u_inst_cache(
+  riscv_instructions_cache #(
+    .DATA_WIDTH   (DATA_WIDTH)  ,
+    .CACHE_SIZE   (CACHE_SIZE)  ,
+    .MEM_SIZE     (MEM_SIZE)    ,
+    .DATAPBLOCK   (DATAPBLOCK)  ,
+    .CACHE_DEPTH  (CACHE_DEPTH) ,
+    .ADDR         (ADDR)        ,
+    .BYTE_OFF     (BYTE_OFF)    ,
+    .INDEX        (INDEX)       ,
+    .TAG          (TAG)         ,
+    .S_ADDR       (S_ADDR)
+  ) u_inst_cache(
     .i_riscv_icache_clk             (i_riscv_core_clk)                  ,
     .i_riscv_icache_rst             (i_riscv_core_rst)                  ,
     .i_riscv_icache_phys_addr       ((riscv_datapath_pc_im-KERNEL_PC))  ,

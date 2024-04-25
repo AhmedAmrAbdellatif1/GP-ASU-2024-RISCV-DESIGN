@@ -303,6 +303,9 @@ module riscv_csrfile
   logic             force_s_delegation            ;
 
   logic [1:0]       xtvec_base                    ;
+
+  logic             ack_external_int              ;
+
   
   
   /************************************* ********************** *************************************/
@@ -1372,6 +1375,5 @@ module riscv_csrfile
   assign xtvec_base                   = {stvec.base[0] ,mtvec.base[0]} ;
 
   /*********************************   Interrupt Acknowledgement    *********************************/
-  assign ack_external_int             = m_external_ack | s_external_ack;
-  
+  assign ack_external_int             = m_external_ack | s_external_ack;  
 endmodule
