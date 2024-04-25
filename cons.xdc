@@ -1,3 +1,4 @@
+
 create_clock -period 10.000 -name i_riscv_core_clk -waveform {0.000 5.000} [get_ports i_riscv_core_clk]
 set_input_delay -clock [get_clocks i_riscv_core_clk] -min -add_delay 0.500 [get_ports {i_riscv_core_imem_data_out[*]}]
 set_input_delay -clock [get_clocks i_riscv_core_clk] -max -add_delay 2.000 [get_ports {i_riscv_core_imem_data_out[*]}]

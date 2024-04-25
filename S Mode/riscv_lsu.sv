@@ -1,5 +1,9 @@
 module riscv_lsu 
-  import my_pkg::*;
+  #(  
+    parameter CLINT           = 'h2000000           ,
+    parameter CLINT_MTIMECMP  = CLINT + 'h4000      ,
+    parameter CLINT_MTIME     = CLINT + 'hBFF8       // cycles since boot
+  )
   (
     input   logic            i_riscv_lsu_clk          ,
     input   logic            i_riscv_lsu_rst          ,

@@ -26,15 +26,15 @@
     input   logic         i_riscv_de_jump_d           ,
     input   logic [63:0]  i_riscv_de_pcplus4_d        ,
     input   logic [6:0]   i_riscv_de_opcode_d         ,
-    input   logic         i_riscv_de_ecall_m_d        , //<--- trap
-    input   logic         i_riscv_de_ecall_s_d        , //<--- trap
-    input   logic         i_riscv_de_ecall_u_d        , //<--- trap
-    input   logic [11:0]  i_riscv_de_csraddress_d     , //<--- trap
-    input   logic         i_riscv_de_illegal_inst_d   , //<--- trap
-    input   logic         i_riscv_de_iscsr_d          , //<--- CSR
-    input   logic [2:0]   i_riscv_de_csrop_d          , //<--- CSR
-    input   logic         i_riscv_de_immreg_d         , //<--- CSR
-    input   logic [63:0]  i_riscv_de_immzeroextend_d  , //<--- CSR
+    input   logic         i_riscv_de_ecall_m_d        ,
+    input   logic         i_riscv_de_ecall_s_d        ,
+    input   logic         i_riscv_de_ecall_u_d        ,
+    input   logic [11:0]  i_riscv_de_csraddress_d     ,
+    input   logic         i_riscv_de_illegal_inst_d   ,
+    input   logic         i_riscv_de_iscsr_d          ,
+    input   logic [2:0]   i_riscv_de_csrop_d          ,
+    input   logic         i_riscv_de_immreg_d         ,
+    input   logic [63:0]  i_riscv_de_immzeroextend_d  ,
     input   logic         i_riscv_de_instret_d        ,
     input   logic [1:0]   i_riscv_de_lr_d             ,    
     input   logic [1:0]   i_riscv_de_sc_d             ,
