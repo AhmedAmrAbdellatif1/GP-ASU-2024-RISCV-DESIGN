@@ -11,7 +11,7 @@ module riscv_core
       parameter INDEX       = $clog2(CACHE_DEPTH)     ,   //    12 bits
       parameter TAG         = ADDR - BYTE_OFF - INDEX ,  //    11 bits
       parameter KERNEL_PC   = 'h80000000              ,
-      parameter S_ADDR      = 23    
+      parameter S_ADDR      = ADDR - BYTE_OFF    
     )
     (
       input   logic                   i_riscv_core_clk                , 
@@ -21,7 +21,6 @@ module riscv_core
       input   logic                   i_riscv_core_imem_ready         ,
       input   logic [DATA_WIDTH-1:0]  i_riscv_core_mem_data_out       ,
       input   logic [DATA_WIDTH-1:0]  i_riscv_core_imem_data_out      , 
-      output  logic [DATA_WIDTH-1:0]  o_riscv_core_icache_data_out    , 
       output  logic [DATA_WIDTH-1:0]  o_riscv_core_cache_data_out     ,
       output  logic [S_ADDR-1:0]      o_riscv_core_imem_addr          , 
       output  logic [S_ADDR-1:0]      o_riscv_core_mem_addr           ,
@@ -362,7 +361,6 @@ riscv_hazardunit u_top_hzrdu (
     .i_riscv_icache_phys_addr       ((riscv_datapath_pc_im-KERNEL_PC))  ,
     .i_riscv_icache_mem_ready       (i_riscv_core_imem_ready     )      ,
     .i_riscv_icache_mem_data_out    (i_riscv_core_imem_data_out  )      ,
-    .o_riscv_icache_cache_data_out  (o_riscv_core_icache_data_out)      ,
     .o_riscv_icache_mem_addr        (o_riscv_core_imem_addr      )      ,
     .o_riscv_icache_fsm_mem_rden    (o_riscv_core_fsm_imem_rden  )      ,
     .o_riscv_icache_cpu_instr_out   (riscv_im_inst_datapath     )       ,  

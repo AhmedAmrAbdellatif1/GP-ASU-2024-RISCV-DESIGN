@@ -2,7 +2,7 @@ module riscv_iram_model
   #(  
     parameter DATA_WIDTH  = 128                     ,
     parameter CACHE_SIZE  = 4*(2**10)               ,   //64 * (2**10)   
-    parameter MEM_SIZE    = 4*CACHE_SIZE            ,   //128*(2**20) 
+    parameter MEM_SIZE    = CACHE_SIZE            ,   //128*(2**20) 
     parameter DATAPBLOCK  = 16                      ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK   ,   //  4096
     parameter ADDR        = $clog2(MEM_SIZE)        ,   //    27 bits
@@ -15,7 +15,6 @@ module riscv_iram_model
     input   logic                   clk       ,
     input   logic                   rden      ,
     input   logic [S_ADDR-1:0]      addr      ,
-    input   logic [DATA_WIDTH-1:0]  data_in   ,
     output  logic [DATA_WIDTH-1:0]  data_out  ,
     output  logic                   mem_ready 
   );

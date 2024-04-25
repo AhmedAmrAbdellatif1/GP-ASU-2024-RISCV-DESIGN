@@ -2,7 +2,7 @@ module riscv_top
  #(
     parameter DATA_WIDTH  = 128                     ,
     parameter CACHE_SIZE  = 4*(2**10)               ,   //64 * (2**10)   
-    parameter MEM_SIZE    = 4*CACHE_SIZE            ,   //128*(2**20) 
+    parameter MEM_SIZE    = 128*(2**20)             ,   //128*(2**20) 
     parameter MEM_DEPTH   = MEM_SIZE/16             ,   //128*(2**20) 
     parameter DATAPBLOCK  = 16                      ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK   ,   //  4096
@@ -70,7 +70,6 @@ module riscv_top
     .i_riscv_core_mem_data_out      (core_mem_data_out)         ,
     .i_riscv_core_imem_ready        (core_imem_ready     )      ,
     .i_riscv_core_imem_data_out     (core_imem_data_out  )      ,
-    .o_riscv_core_icache_data_out   (core_icache_data_out)      ,
     .o_riscv_core_imem_addr         (core_imem_addr      )      ,
     .o_riscv_core_fsm_imem_rden     (core_fsm_imem_rden  )      ,
     .o_riscv_core_fsm_mem_wren      (core_fsm_mem_wren)         ,
@@ -116,7 +115,6 @@ module riscv_top
     .clk        (i_riscv_clk)            ,
     .rden       (core_fsm_imem_rden   )  ,
     .addr       (core_imem_addr       )  ,
-    .data_in    (core_icache_data_out )  ,
     .data_out   (core_imem_data_out   )  ,
     .mem_ready  (core_imem_ready      )
   );
