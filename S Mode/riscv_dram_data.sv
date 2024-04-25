@@ -3,7 +3,7 @@ module riscv_dram_data
   #(  
     parameter DATA_WIDTH  = 128                     ,
     parameter CACHE_SIZE  = 4*(2**10)               ,   //64 * (2**10)   
-    parameter MEM_SIZE    = 4*(2**10)               ,   //128*(2**20) 
+    parameter MEM_SIZE    = 4*CACHE_SIZE                ,   //128*(2**20) 
     parameter DATAPBLOCK  = 16                      ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK   ,   //  4096
     parameter ADDR        = $clog2(MEM_SIZE)        ,   //    27 bits

@@ -8,9 +8,8 @@ module riscv_multiplier (
     output logic                 o_riscv_mul_valid
   );
 
-  (*dont_touch = "yes"*) logic signed [129:0] z,next_z,z_temp;
-  (*dont_touch = "yes"*) logic                valid,next_valid;
-
+  logic signed [129:0] z,next_z,z_temp;
+  logic                valid,next_valid;
   logic                next_state,pres_state;
   logic         [1:0]  temp,next_temp;                   
   logic         [6:0]  count,next_count;                 

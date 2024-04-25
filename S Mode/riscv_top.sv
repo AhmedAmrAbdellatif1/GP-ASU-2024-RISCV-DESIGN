@@ -1,7 +1,7 @@
 module riscv_top
  #(
     parameter DATA_WIDTH  = 128                     ,
-    parameter CACHE_SIZE  = 4*(2**10)               ,   //64 * (2**10)   
+    parameter CACHE_SIZE  = 16*(2**10)               ,   //64 * (2**10)   
     parameter MEM_SIZE    = 4*CACHE_SIZE             ,   //128*(2**20) 
     parameter MEM_DEPTH   = MEM_SIZE/16             ,   //128*(2**20) 
     parameter DATAPBLOCK  = 16                      ,
