@@ -18,13 +18,13 @@ module riscv_tracer #(parameter dwidth=64,iwidth=32,awidth=5,cwidth=16) (
   output  logic [dwidth-1:0]   o_riscv_trc_rddata  );
 
   // internal registers
-  (* dont_touch = “yes” *) logic [iwidth-1:0]   reg_riscv_trc_inst     ;
-  (* dont_touch = “yes” *) logic [cwidth-1:0]   reg_riscv_trc_cinst    ;
-  (* dont_touch = “yes” *) logic [awidth-1:0]   reg_riscv_trc_rdaddr   ;
-  (* dont_touch = “yes” *) logic [dwidth-1:0]   reg_riscv_trc_memaddr  ;
-  (* dont_touch = “yes” *) logic [dwidth-1:0]   reg_riscv_trc_pc       ;
-  (* dont_touch = “yes” *) logic [dwidth-1:0]   reg_riscv_trc_store    ;
-  (* dont_touch = “yes” *) logic [dwidth-1:0]   reg_riscv_trc_rddata   ;
+  (* dont_touch = "yes" *) logic [iwidth-1:0]   reg_riscv_trc_inst     ;
+  (* dont_touch = "yes" *) logic [cwidth-1:0]   reg_riscv_trc_cinst    ;
+  (* dont_touch = "yes" *) logic [awidth-1:0]   reg_riscv_trc_rdaddr   ;
+  (* dont_touch = "yes" *) logic [dwidth-1:0]   reg_riscv_trc_memaddr  ;
+  (* dont_touch = "yes" *) logic [dwidth-1:0]   reg_riscv_trc_pc       ;
+  (* dont_touch = "yes" *) logic [dwidth-1:0]   reg_riscv_trc_store    ;
+  (* dont_touch = "yes" *) logic [dwidth-1:0]   reg_riscv_trc_rddata   ;
 
 
  always_ff @(posedge i_riscv_clk or posedge i_riscv_rst )

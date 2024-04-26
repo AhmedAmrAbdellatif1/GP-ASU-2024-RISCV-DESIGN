@@ -631,7 +631,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .i_riscv_csr_load_addr_misaligned   ( )                              ,   
   .i_riscv_csr_store_addr_misaligned  ( )                              ,
   .i_riscv_csr_pc                     (riscv_pc_m)                     ,
-  //.i_riscv_csr_instret                (riscv_instret_wb)               ,
+  .i_riscv_csr_instret                (riscv_instret_wb)               ,
   .i_riscv_csr_addressALU             (riscv_rddata_me)                ,
   .i_riscv_csr_globstall              (i_riscv_datapath_globstall)     ,
   .i_riscv_csr_inst                   (riscv_inst_m)                   ,
