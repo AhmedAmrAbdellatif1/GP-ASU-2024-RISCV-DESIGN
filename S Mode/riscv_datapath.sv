@@ -455,8 +455,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_estage_div_en                (o_datapath_div_en)                ,
     .o_riscv_estage_csrwritedata          (csrwritedata_estage_em)           ,     
     .o_riscv_estage_inst_addr_misaligned  (inst_addr_misaligned_estage_em)   ,  
-    .o_riscv_estage_store_addr_misaligned (store_addr_misaligned_estage_em)  ,    
-    .o_riscv_estage_load_addr_misaligned  (load_addr_misaligned_estage_em)   ,
+    .o_riscv_estage_store_addr_misaligned (1'b0)  ,    
+    .o_riscv_estage_load_addr_misaligned  (1'b0)  ,
     .o_riscv_estage_timer_wren            (riscv_em_timer_wren)              ,
     .o_riscv_estage_timer_rden            (riscv_em_timer_rden)              ,
     .o_riscv_estage_timer_regsel          (riscv_em_timer_regsel)
