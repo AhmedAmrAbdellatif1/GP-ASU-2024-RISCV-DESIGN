@@ -23,17 +23,8 @@ module riscv_dcache_fsm  (
 );
 
   // FSM states
- /*typedef enum {IDLE, COMPARE_TAG, WRITE_BACK, ALLOCATE, CACHE_ACCESS , AMO_MODIFY , AMO_STORE} states;//new
-   states current_state, next_state;*/
-
-   typedef enum logic [2:0] { IDLE, COMPARE_TAG, WRITE_BACK, ALLOCATE, CACHE_ACCESS, AMO_MODIFY, AMO_STORE } states;  // Use logic for hardware compatibility
-
-   // State encoding using a constant array
-   localparam logic [2:0] state_encoding_gray[] =  // Array for clarity
-     { 3'b000, 3'b001, 3'b011, 3'b010, 3'b110, 3'b100, 3'b101 };
-   
-   states current_state, next_state;
-   
+ typedef enum {IDLE, COMPARE_TAG, WRITE_BACK, ALLOCATE, CACHE_ACCESS , AMO_MODIFY , AMO_STORE} states;//new
+  states current_state, next_state;
 
   // Registering CPU read and write enable
   logic       cpu_rden_reg,cpu_wren_reg,cpu_amoen_reg;//new
