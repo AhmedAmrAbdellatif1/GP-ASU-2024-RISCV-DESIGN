@@ -38,7 +38,7 @@ module riscv_csrfile
     output  logic               o_riscv_csr_tsr
   );
 
-  /****************************** Parameters Declaration ******************************/
+  /****************************** localparams Declaration ******************************/
   enum  {
     SIE   = 'd1  ,
     MIE   = 'd3  ,
@@ -160,25 +160,25 @@ module riscv_csrfile
   } csr_registers ; 
  
   //CSR operation type
-  parameter CSR_WRITE      = 3'b001 ,
+  localparam CSR_WRITE      = 3'b001 ,
             CSR_SET        = 3'b010 ,
             CSR_CLEAR      = 3'b011 ,
             CSR_READ       = 3'b101 ,
             SRET           = 3'b110 ,
             MRET           = 3'b111 ;
  
-  parameter PRIV_LVL_U    =  2'b00 ,
+  localparam PRIV_LVL_U    =  2'b00 ,
             PRIV_LVL_S    =  2'b01 ,
             PRIV_LVL_M    =  2'b11 ;
  
   //interupts
-  parameter STI    =  5  ,
+  localparam STI    =  5  ,
             MTI    =  7  ,
             SEI      =  9  ,
             MEI      =  11 ;
  
   //exceptions
-  parameter INSTRUCTION_ADDRESS_MISALIGNED = 0  ,
+  localparam INSTRUCTION_ADDRESS_MISALIGNED = 0  ,
             ILLEGAL_INSTRUCTION            = 2  ,
             LOAD_ADDRESS_MISALIGNED        = 4  ,
             STORE_ADDRESS_MISALIGNED       = 6  ,
@@ -186,7 +186,7 @@ module riscv_csrfile
             ECALL_S                        = 9  ,
             ECALL_M                        = 11 ;
 
-  parameter logic [MXLEN-1 :0] ISA_CODE =
+  localparam logic [MXLEN-1 :0] ISA_CODE =
     (1                 <<  0)  // A - Atomic Instructions extension
   | (1                 <<  2)  // C - Compressed extension
   | (1                 <<  8)  // I - RV32I/64I/128I base ISA
