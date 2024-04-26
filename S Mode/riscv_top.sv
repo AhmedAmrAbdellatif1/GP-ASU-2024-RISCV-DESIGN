@@ -1,9 +1,9 @@
 module riscv_top
  #(
     parameter DATA_WIDTH  = 128                     ,
-    parameter CACHE_SIZE  = 16*(2**10)               ,   //64 * (2**10)   
-    parameter MEM_SIZE    = 4*CACHE_SIZE             ,   //128*(2**20) 
-    parameter MEM_DEPTH   = MEM_SIZE/16             ,   //128*(2**20) 
+    parameter CACHE_SIZE  = 4*(2**10)               ,   //64 * (2**10)   
+    parameter MEM_SIZE    = 4*CACHE_SIZE            ,   //128*(2**20) 
+    parameter DMEM_DEPTH  = MEM_SIZE/16             ,   //128*(2**20) 
     parameter DATAPBLOCK  = 16                      ,
     parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK   ,   //  4096
     parameter ADDR        = $clog2(MEM_SIZE)        ,   //    27 bits
@@ -52,6 +52,7 @@ module riscv_top
   logic                   core_fsm_imem_rden    ;
 
   riscv_core #(
+    .KERNEL_PC    (KERNEL_PC)   ,
     .DATA_WIDTH   (DATA_WIDTH)  ,
     .CACHE_SIZE   (CACHE_SIZE)  ,
     .MEM_SIZE     (MEM_SIZE)    ,
@@ -82,7 +83,7 @@ module riscv_top
   riscv_dram_model #(
     .DATA_WIDTH   (DATA_WIDTH)  ,
     .CACHE_SIZE   (CACHE_SIZE)  ,
-    .MEM_SIZE     (MEM_DEPTH)   ,
+    .MEM_SIZE     (DMEM_DEPTH)  ,
     .DATAPBLOCK   (DATAPBLOCK)  ,
     .CACHE_DEPTH  (CACHE_DEPTH) ,
     .ADDR         (ADDR)        ,
@@ -103,7 +104,7 @@ module riscv_top
   riscv_iram_model #(
     .DATA_WIDTH   (DATA_WIDTH)  ,
     .CACHE_SIZE   (CACHE_SIZE)  ,
-    .MEM_SIZE     (MEM_DEPTH)    ,
+    .MEM_SIZE     (MEM_SIZE)    ,
     .DATAPBLOCK   (DATAPBLOCK)  ,
     .CACHE_DEPTH  (CACHE_DEPTH) ,
     .ADDR         (ADDR)        ,
