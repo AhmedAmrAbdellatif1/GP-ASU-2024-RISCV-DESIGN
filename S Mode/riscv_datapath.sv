@@ -628,8 +628,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
   .i_riscv_csr_ecall_m                (m_em_csr)                       ,
   .i_riscv_csr_illegal_inst           (illegal_inst_em_csr)            , //illegal_inst_em_csr
   .i_riscv_csr_inst_addr_misaligned   (inst_addr_misaligned_em_csr)    , 
-  .i_riscv_csr_load_addr_misaligned   ( )                              ,   
-  .i_riscv_csr_store_addr_misaligned  ( )                              ,
+  .i_riscv_csr_load_addr_misaligned   (load_addr_misaligned_em_csr)    ,   
+  .i_riscv_csr_store_addr_misaligned  (store_addr_misaligned_em_csr)   ,
   .i_riscv_csr_pc                     (riscv_pc_m)                     ,
   .i_riscv_csr_instret                (riscv_instret_wb)               ,
   .i_riscv_csr_addressALU             (riscv_rddata_me)                ,
