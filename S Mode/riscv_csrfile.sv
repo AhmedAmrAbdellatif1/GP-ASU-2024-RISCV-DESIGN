@@ -27,6 +27,7 @@ module riscv_csrfile
     input   logic               i_riscv_csr_flush                 ,
     input   logic               i_riscv_csr_globstall             ,
     input   logic               i_riscv_csr_is_compressed         ,
+    input   logic               i_riscv_csr_instret               ,
     output  logic [MXLEN-1:0]   o_riscv_csr_rdata                 ,
     output  logic [MXLEN-1:0]   o_riscv_csr_return_address        , 
     output  logic [MXLEN-1:0]   o_riscv_csr_trap_address          ,   
@@ -95,6 +96,9 @@ module riscv_csrfile
     SENVCFG               = 12'h10A,
     MCOUNTEREN            = 12'h306,
     TIME                  = 12'hC01,
+    MINSTRET              = 12'hB02,
+    MCYCLE                = 12'hB00,
+    MCOUNTINHIBIT         = 12'h320,
     CSR_MHPM_EVENT_3      = 12'h323,  
     CSR_MHPM_EVENT_4      = 12'h324,  
     CSR_MHPM_EVENT_5      = 12'h325,  
@@ -303,9 +307,12 @@ module riscv_csrfile
   logic             force_s_delegation            ;
 
   logic [1:0]       xtvec_base                    ;
-
   logic             ack_external_int              ;
-
+  
+  logic [1:0]       mcountinhibit                 ;
+  logic [MXLEN-1:0] mcounter [2]                  ;
+  logic [1:0]       mcounter_we                   ;
+  logic [1:0]       mcounter_incr                 ;
   
   
   /************************************* ********************** *************************************/
@@ -426,7 +433,14 @@ module riscv_csrfile
           csr_read_data[UXL1:UXL0]  = (support_user)  ? 2'b10 : 2'b00 ;
         end
 
-        TIME        : csr_read_data = i_riscv_csr_timer_time ;
+        TIME         : csr_read_data       =    i_riscv_csr_timer_time               ;
+        MCOUNTINHIBIT: 
+        begin
+           csr_read_data [0] =   mcountinhibit[0];
+           csr_read_data [2] =   mcountinhibit[1]; 
+        end
+        MCYCLE       : csr_read_data       =   mcounter[0]                           ;
+        MINSTRET     : csr_read_data       =   mcounter[1]                           ;
       
         SATP        ,
         MCONFIGPTR  ,
@@ -960,6 +974,21 @@ module riscv_csrfile
     end
   end
 
+/******************************           Mcountinhibit           ******************************/
+
+always @(posedge i_riscv_csr_clk  or posedge i_riscv_csr_rst) 
+begin    
+   if (i_riscv_csr_rst) 
+   
+            mcountinhibit  <= 2'b0;     
+
+   else if (csr_write_access_en && i_riscv_csr_address == MCOUNTINHIBIT) 
+    begin             
+            mcountinhibit[0]    <= csr_write_data[0];   
+            mcountinhibit[1]    <= csr_write_data[2];   
+    end
+end 
+
   /************************************* ********************** *************************************/
   /*************************************   Sequential Always    *************************************/
   /************************************* ********************** *************************************/
@@ -1333,6 +1362,43 @@ module riscv_csrfile
       o_riscv_csr_returnfromTrap  = 'd0 ;
   end
   
+
+/*************************************    Mcycle Counter    *************************************/
+  always @(*) 
+   begin    
+      mcounter_we[0] <= 1'b0;     
+   if (csr_write_access_en && i_riscv_csr_address == MCYCLE)                    
+      mcounter_we[0] <= 1'b1;   
+   end
+
+  riscv_counter mcycle_counter(
+  .clk(i_riscv_csr_clk),
+  .rst(i_riscv_csr_rst),
+  .write_en(mcounter_we[0]),
+  .incr_en(mcounter_incr[0] && !mcountinhibit[0]),
+  .i_value(csr_write_data),
+  .o_value(mcounter[0])
+ );
+
+
+/*************************************    Minstret Counter    *************************************/
+  always @(*) 
+  begin    
+     mcounter_we[1] <= 1'b0;    
+  if (csr_write_access_en && i_riscv_csr_address == MINSTRET)                    
+     mcounter_we[1] <= 1'b1;   
+  end
+ 
+  riscv_counter minstret_counter(
+   .clk(i_riscv_csr_clk),
+   .rst(i_riscv_csr_rst),
+   .write_en(mcounter_we[1]),
+   .incr_en(mcounter_incr[1] && !mcountinhibit[1]),
+   .i_value(csr_write_data),
+   .o_value(mcounter[1])
+  );
+  
+
   /************************************* *********************** *************************************/
   /*************************************  Continuous Assignment  *************************************/
   /************************************* *********************** *************************************/
@@ -1375,5 +1441,9 @@ module riscv_csrfile
   assign xtvec_base                   = {stvec.base[0] ,mtvec.base[0]} ;
 
   /*********************************   Interrupt Acknowledgement    *********************************/
-  assign ack_external_int             = m_external_ack | s_external_ack;  
+  assign ack_external_int             = m_external_ack | s_external_ack;
+  /*********************************           Counters    ***************************************/
+  assign mcounter_incr[0] = 1'b1; //MCYCLE
+  assign mcounter_incr[1] = i_riscv_csr_instret; //MINSTRET
+
 endmodule
