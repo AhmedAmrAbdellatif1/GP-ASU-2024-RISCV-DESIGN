@@ -1,4 +1,4 @@
-(* ram_style = "block" *)
+(* rom_style = "block" *)
 module riscv_iram_data
   #(  
     parameter DATA_WIDTH  = 128                     ,
