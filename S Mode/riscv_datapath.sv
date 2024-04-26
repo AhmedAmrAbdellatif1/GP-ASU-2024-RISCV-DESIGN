@@ -176,12 +176,12 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic          riscv_instret_wb    ;
 /************************* Tracer Signals *************************/
   //--------------------------------->
-  `ifdef TEST
+ 
   logic [31:0]   riscv_inst_wb       ;
   logic [15:0]   riscv_cinst_wb      ;     
   logic [63:0]   riscv_memaddr_wb    ;
   logic [63:0]   riscv_rs2data_wb    ;
-  `endif
+ 
   //<---------------------------------
   logic [31:0]   riscv_inst_e        ;
   logic [15:0]   riscv_cinst_e       ;
@@ -549,7 +549,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   ////memory write back pipeline flip flops ////
   riscv_ppreg_mw u_riscv_mw_ppreg(
     //------------------------------------------------------------>
-    `ifdef TEST
+   
     .i_riscv_mw_inst            (riscv_inst_m)                    ,
     .i_riscv_mw_cinst           (riscv_cinst_m)                   ,
     .i_riscv_mw_memaddr         (o_riscv_datapath_memodata_addr)  ,
@@ -560,7 +560,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_mw_memaddr         (riscv_memaddr_wb)                ,
     .o_riscv_mw_pc              (riscv_pc_wb)                     ,
     .o_riscv_mw_rs2data         (riscv_rs2data_wb)                ,
-    `endif
+   
     // <---------------------------------------------------
     .i_riscv_mw_regw_m            (riscv_regw_m && !gototrap_csr_mw && !returnfromtrap_csr_mw),  
     .i_riscv_mw_en                (i_riscv_datapath_stall_mw)     ,
@@ -650,7 +650,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
  
   ///tracer instantiation///
   // --------------------------------------------------->
-  `ifdef TEST
+ 
   riscv_tracer u_riscv_tracer(
     .i_riscv_clk            (i_riscv_datapath_clk)        ,
     .i_riscv_rst            (i_riscv_datapath_rst)        ,
@@ -662,7 +662,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_trc_store      (riscv_rs2data_wb)            ,
     .i_riscv_trc_rddata     (riscv_rddata_wb)
   ); 
-  `endif
+ 
 // <---------------------------------------------------
 
 endmodule
