@@ -605,7 +605,7 @@ module riscv_csrfile
     else if(csr_write_access_en && (i_riscv_csr_address == MIP))
     begin
       mip.seip  <=  csr_write_data[SEI];
-      mip.seip  <=  csr_write_data[SEI];
+      mip.stip  <=  csr_write_data[STI];
     end
     
     else if(ack_external_int || i_riscv_csr_timer_int || i_riscv_csr_external_int)
