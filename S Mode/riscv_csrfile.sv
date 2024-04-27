@@ -1168,28 +1168,28 @@ end
   /************************************   Interrupt Cause Flag   ************************************/
   always_comb
   begin
-    if(mie.stie && mip.stip)
-    begin
-      interrupt_cause = STI   ;
-    end
 
+   if (mip.meip && mie.meie) // Machine external Interrupt
+    begin
+      interrupt_cause = MEI   ;
+    end
+   
+   else if(mip.mtip && mie.mtie) // Machine timer Interrupt
+    begin
+      interrupt_cause = MTI   ;
+    end
+   
     else if(mie.seie && mip.seip)
     begin
       interrupt_cause = SEI   ;
     end
-
-    else if(mip.mtip && mie.mtie)
+   
+   else if(mie.stie && mip.stip)
     begin
-
-      interrupt_cause = MTI   ;
+      interrupt_cause = STI   ;
     end
 
-    else if (mip.meip && mie.meie) // Machine Timer Interrupt
-    begin
-      interrupt_cause = MEI   ;
-    end
-
-    else  // Machine Mode External Interrupt
+    else  
     begin
       interrupt_cause = 'd10  ;
     end
