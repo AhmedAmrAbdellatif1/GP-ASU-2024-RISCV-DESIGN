@@ -1,4 +1,4 @@
-set period 33.00
+set period 29.00
 set min_delay [expr $period * 0.05]
 set max_delay [expr $period * 0.2]
 set half   [ expr $period / 2 ]
