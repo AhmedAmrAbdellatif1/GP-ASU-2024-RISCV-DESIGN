@@ -285,7 +285,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_fstage_cillegal_inst (riscv_cillegal_inst)                    
   );
 
-  riscv_ppwire_fd u_riscv_fd_ppwire(
+  riscv_ppreg_fd u_riscv_fd_ppreg(
     .i_riscv_fd_clk             (i_riscv_datapath_clk)            ,
     .i_riscv_fd_rst             (i_riscv_datapath_rst)            ,
     .i_riscv_fd_flush           (riscv_rstctrl_f)                 ,   
@@ -324,7 +324,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
 
   );
 
-  riscv_ppwire_de u_riscv_de_ppwire(
+  riscv_ppreg_de u_riscv_de_ppreg(
     .i_riscv_de_en              (i_riscv_datapath_stall_de)           ,
     .i_riscv_de_clk             (i_riscv_datapath_clk)                ,
     .i_riscv_de_rst             (i_riscv_datapath_rst)                ,
@@ -462,7 +462,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_estage_timer_wiresel          (riscv_em_timer_wiresel)
   );
 
-  riscv_ppwire_em u_riscv_em_ppwire(
+  riscv_ppreg_em u_riscv_em_ppreg(
     .i_riscv_em_pc                      (riscv_pc_e)                       ,
     .i_riscv_em_en                      (i_riscv_datapath_stall_em)        ,
     .i_riscv_em_clk                     (i_riscv_datapath_clk)             ,
@@ -547,7 +547,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   );
 
   ////memory write back pipeline flip flops ////
-  riscv_ppwire_mw u_riscv_mw_ppwire(
+  riscv_ppreg_mw u_riscv_mw_ppreg(
     //------------------------------------------------------------>
    
     .i_riscv_mw_inst            (riscv_inst_m)                    ,
