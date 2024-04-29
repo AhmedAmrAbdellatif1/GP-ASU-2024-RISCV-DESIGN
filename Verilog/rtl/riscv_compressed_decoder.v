@@ -338,7 +338,7 @@ module riscv_compressed_decoder (
                                           3'b0, 5'b0                  ,
                                           {OPCODE_JALR} };
 
-                o_riscv_cdecoder_cillegal_inst = (i_riscv_cdecoder_inst[11:7] != '0) ? 1'b0 : 1'b1;
+                o_riscv_cdecoder_cillegal_inst = (i_riscv_cdecoder_inst[11:7] != 'b0) ? 1'b0 : 1'b1;
               end
 
             end else begin

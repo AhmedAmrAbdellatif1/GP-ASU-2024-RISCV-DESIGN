@@ -27,7 +27,7 @@
 
 	#Add the path of the libraries to the search_path variable
 	lappend search_path /home/IC/tsmc_fb_cl013g_sc/aci/sc-m/synopsys
-	lappend search_path /home/IC/RISCV/$top_module/rtl
+	lappend search_path /home/IC/RISCV/rtl
 
 	set SSLIB "scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db"
 	set TTLIB "scmetro_tsmc_cl013g_rvt_tt_1p2v_25c.db"
