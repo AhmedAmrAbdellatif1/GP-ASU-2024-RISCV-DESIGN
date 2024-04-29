@@ -17,7 +17,7 @@ module riscv_instructions_cache
     input   wire [63:0]            i_riscv_icache_phys_addr      ,
     input   wire                   i_riscv_icache_mem_ready      ,
     input   wire [DATA_WIDTH-1:0]  i_riscv_icache_mem_data_out   ,
-    output  reg [S_ADDR-1:0]      o_riscv_icache_mem_addr       ,
+    output  wire [S_ADDR-1:0]      o_riscv_icache_mem_addr       ,
     output  reg                   o_riscv_icache_fsm_mem_rden   ,
     output  reg [31:0]            o_riscv_icache_cpu_instr_out  ,
     output  reg                   o_riscv_icache_cpu_stall

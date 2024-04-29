@@ -10,15 +10,15 @@ module riscv_dcache_tag #(
     input   wire           dirty_in    ,   //  input set dirty signal
     input   wire           valid_in    ,   //  input set valid signal
     input   wire           replace_tag ,   //  input replace enable signal
-    output  reg           hit         ,   //  output hit signal
-    output  reg           dirty       ,   //  output dirty signal
-    output  reg [TAG-1:0] tag_old         //  output old tag stored given input index
+    output  wire           hit         ,   //  output hit signal
+    output  wire           dirty       ,   //  output dirty signal
+    output  wire [TAG-1:0] tag_old         //  output old tag stored given input index
   );
 
   // distributed RAM blocks
-  logic [TAG-1:0] tag_buffer   [0:CACHE_DEPTH-1];
-  logic           valid_buffer [0:CACHE_DEPTH-1];
-  logic           dirty_buffer [0:CACHE_DEPTH-1];
+  reg [TAG-1:0] tag_buffer   [0:CACHE_DEPTH-1];
+  reg           valid_buffer [0:CACHE_DEPTH-1];
+  reg           dirty_buffer [0:CACHE_DEPTH-1];
 
   // initialize the RAM
   integer i;

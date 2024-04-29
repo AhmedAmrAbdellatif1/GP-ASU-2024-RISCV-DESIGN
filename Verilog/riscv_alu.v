@@ -5,8 +5,8 @@ module riscv_alu(
   output reg  signed [63:0] o_riscv_alu_result
   );
   
-  logic [31:0] word_buffer;
-  logic [63:0] buffer;
+  reg [31:0] word_buffer;
+  reg [63:0] buffer;
 
   localparam  ADD  = 5'b00000,
               SUB  = 5'b00001,

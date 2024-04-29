@@ -14,42 +14,42 @@ module riscv_top
     parameter S_ADDR      = ADDR - BYTE_OFF                    
   )
   (
-    input logic i_riscv_clk,
-    input logic i_riscv_rst
+    input wire i_riscv_clk,
+    input wire i_riscv_rst
   );
 
   /************************** Datapath to IM **************************/
-  logic [63:0] riscv_datapath_pc_im;
+  wire [63:0] riscv_datapath_pc_im;
   /************************** IM to Datapath **************************/
-  logic [31:0] riscv_im_inst_datapath;
+  wire [31:0] riscv_im_inst_datapath;
 
   /************************** Datapath to DM **************************/
-  logic        riscv_datapath_memw_e_dm;
-  logic        riscv_datapath_memr_e_dm;
-  logic        riscv_datapath_stall_m_dm;
-  logic        riscv_datapath_stall_m_im;
-  logic [1:0]  riscv_datapath_storesrc_m_dm;
-  logic [63:0] riscv_datapath_memodata_addr_dm;
-  logic [63:0] riscv_datapath_storedata_m_dm;
-  logic        riscv_datapath_amo_dm;
-  logic [4:0]  riscv_datapath_amo_op_dm;
+  wire        riscv_datapath_memw_e_dm;
+  wire        riscv_datapath_memr_e_dm;
+  wire        riscv_datapath_stall_m_dm;
+  wire        riscv_datapath_stall_m_im;
+  wire [1:0]  riscv_datapath_storesrc_m_dm;
+  wire [63:0] riscv_datapath_memodata_addr_dm;
+  wire [63:0] riscv_datapath_storedata_m_dm;
+  wire        riscv_datapath_amo_dm;
+  wire [4:0]  riscv_datapath_amo_op_dm;
 
   /************************** IM to Datapath **************************/
-  logic [63:0] riscv_datapath_rdata_dm;
+  wire [63:0] riscv_datapath_rdata_dm;
 
   /************************** Core to DRAM **************************/
-  logic                   core_mem_ready        ;
-  logic [DATA_WIDTH-1:0]  core_mem_data_out     ;
-  logic                   core_fsm_mem_wren     ;
-  logic                   core_fsm_mem_rden     ;
-  logic [S_ADDR-1:0]      core_mem_addr         ;
-  logic [DATA_WIDTH-1:0]  core_cache_data_out   ;
+  wire                   core_mem_ready        ;
+  wire [DATA_WIDTH-1:0]  core_mem_data_out     ;
+  wire                   core_fsm_mem_wren     ;
+  wire                   core_fsm_mem_rden     ;
+  wire [S_ADDR-1:0]      core_mem_addr         ;
+  wire [DATA_WIDTH-1:0]  core_cache_data_out   ;
 
-  logic                   core_imem_ready       ;
-  logic [DATA_WIDTH-1:0]  core_imem_data_out    ;
-  logic [DATA_WIDTH-1:0]  core_icache_data_out  ;
-  logic [S_ADDR-1:0]      core_imem_addr        ;
-  logic                   core_fsm_imem_rden    ;
+  wire                   core_imem_ready       ;
+  wire [DATA_WIDTH-1:0]  core_imem_data_out    ;
+  wire [DATA_WIDTH-1:0]  core_icache_data_out  ;
+  wire [S_ADDR-1:0]      core_imem_addr        ;
+  wire                   core_fsm_imem_rden    ;
 
   riscv_core #(
     .KERNEL_PC    (KERNEL_PC)   ,

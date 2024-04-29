@@ -28,13 +28,13 @@ module riscv_data_cache
     output  wire [S_ADDR-1:0]      o_riscv_dcache_mem_addr       ,
     output  wire                   o_riscv_dcache_fsm_mem_wren   ,
     output  wire                   o_riscv_dcache_fsm_mem_rden   ,
-    output  wire [63:0]            o_riscv_dcache_cpu_data_out   ,
+    output  reg [63:0]            o_riscv_dcache_cpu_data_out   ,
     output  wire                   o_riscv_dcache_cpu_stall               
   );
 
   //****************** internal signals declaration ******************//
   // amo buffer 
-  wire [63:0]            cache_data_out_buffer ;
+  reg [63:0]            cache_data_out_buffer ;
 
   // physical address concatenation
   wire [TAG-1:0]         tag                   ;
@@ -51,7 +51,7 @@ module riscv_data_cache
   wire                   fsm_amo_buffer_en     ;
   wire                   fsm_amo_unit_en       ;
   //  cache signals
-  wire [DATA_WIDTH-1:0]  cache_data_in         ;
+  reg [DATA_WIDTH-1:0]  cache_data_in         ;
   // tag signals
   wire                   tag_dirty_out         ;
   wire                   tag_hit_out           ;

@@ -25,38 +25,38 @@ module riscv_dram_data
   integer i;
 
   // accessing byte flags declaration
-  logic byte0_flag,   byte1_flag,   byte2_flag,   byte3_flag,
+  wire byte0_flag,   byte1_flag,   byte2_flag,   byte3_flag,
         byte4_flag,   byte5_flag,   byte6_flag,   byte7_flag,
         byte8_flag,   byte9_flag,   byte10_flag,  byte11_flag,
         byte12_flag,  byte13_flag,  byte14_flag,  byte15_flag;
 
   // output data retrieving
-  logic [7:0] byte0_out,  byte1_out,  byte2_out,  byte3_out,
+  reg [7:0] byte0_out,  byte1_out,  byte2_out,  byte3_out,
               byte4_out,  byte5_out,  byte6_out,  byte7_out,
               byte8_out,  byte9_out,  byte10_out, byte11_out,
               byte12_out, byte13_out, byte14_out, byte15_out;
 
   // Block RAM of 16 bytes per block
-  logic [7:0] byte0  [0:MEM_SIZE-1];
-  logic [7:0] byte1  [0:MEM_SIZE-1];
-  logic [7:0] byte2  [0:MEM_SIZE-1];
-  logic [7:0] byte3  [0:MEM_SIZE-1];
-  logic [7:0] byte4  [0:MEM_SIZE-1];
-  logic [7:0] byte5  [0:MEM_SIZE-1];
-  logic [7:0] byte6  [0:MEM_SIZE-1];
-  logic [7:0] byte7  [0:MEM_SIZE-1];
-  logic [7:0] byte8  [0:MEM_SIZE-1];
-  logic [7:0] byte9  [0:MEM_SIZE-1];
-  logic [7:0] byte10 [0:MEM_SIZE-1];
-  logic [7:0] byte11 [0:MEM_SIZE-1];
-  logic [7:0] byte12 [0:MEM_SIZE-1];
-  logic [7:0] byte13 [0:MEM_SIZE-1];
-  logic [7:0] byte14 [0:MEM_SIZE-1];
-  logic [7:0] byte15 [0:MEM_SIZE-1];
+  reg [7:0] byte0  [0:MEM_SIZE-1];
+  reg [7:0] byte1  [0:MEM_SIZE-1];
+  reg [7:0] byte2  [0:MEM_SIZE-1];
+  reg [7:0] byte3  [0:MEM_SIZE-1];
+  reg [7:0] byte4  [0:MEM_SIZE-1];
+  reg [7:0] byte5  [0:MEM_SIZE-1];
+  reg [7:0] byte6  [0:MEM_SIZE-1];
+  reg [7:0] byte7  [0:MEM_SIZE-1];
+  reg [7:0] byte8  [0:MEM_SIZE-1];
+  reg [7:0] byte9  [0:MEM_SIZE-1];
+  reg [7:0] byte10 [0:MEM_SIZE-1];
+  reg [7:0] byte11 [0:MEM_SIZE-1];
+  reg [7:0] byte12 [0:MEM_SIZE-1];
+  reg [7:0] byte13 [0:MEM_SIZE-1];
+  reg [7:0] byte14 [0:MEM_SIZE-1];
+  reg [7:0] byte15 [0:MEM_SIZE-1];
 
   // initialize the cache with zeroes
   initial begin
-    for(i=0; i<MEM_SIZE; i++) begin
+    for(i=0; i<MEM_SIZE; i=i+1) begin
       byte0 [i] = 'b0;
       byte1 [i] = 'b0;
       byte2 [i] = 'b0;

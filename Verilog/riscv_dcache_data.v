@@ -61,7 +61,7 @@ module riscv_dcache_data #(
 
   // initialize the cache with zeroes
   initial begin
-    for(i=0; i<CACHE_DEPTH; i++) begin
+    for(i=0; i<CACHE_DEPTH; i=i+1) begin
       byte0 [i] = 'b0;
       byte1 [i] = 'b0;
       byte2 [i] = 'b0;

@@ -5,7 +5,7 @@ module riscv_iram_counter
     output  reg mem_ready 
   );
   
-  logic [1:0] counter;
+  reg [1:0] counter;
 
   always @(posedge clk)
   begin

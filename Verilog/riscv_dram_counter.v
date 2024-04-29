@@ -6,7 +6,7 @@ module riscv_dram_counter
     output  reg mem_ready 
   );
   
-  logic [1:0] counter;
+  reg [1:0] counter;
 
    // counter to model latency
   always @(posedge clk) 
