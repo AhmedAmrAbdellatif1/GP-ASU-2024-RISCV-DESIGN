@@ -21,12 +21,12 @@ module riscv_core
       input   wire                   i_riscv_core_imem_ready         ,
       input   wire [DATA_WIDTH-1:0]  i_riscv_core_mem_data_out       ,
       input   wire [DATA_WIDTH-1:0]  i_riscv_core_imem_data_out      , 
-      output  reg [DATA_WIDTH-1:0]  o_riscv_core_cache_data_out     ,
-      output  reg [S_ADDR-1:0]      o_riscv_core_imem_addr          , 
-      output  reg [S_ADDR-1:0]      o_riscv_core_mem_addr           ,
-      output  reg                   o_riscv_core_fsm_imem_rden      , 
-      output  reg                   o_riscv_core_fsm_mem_wren       ,
-      output  reg                   o_riscv_core_fsm_mem_rden       
+      output  wire [DATA_WIDTH-1:0]  o_riscv_core_cache_data_out     ,
+      output  wire [S_ADDR-1:0]      o_riscv_core_imem_addr          , 
+      output  wire [S_ADDR-1:0]      o_riscv_core_mem_addr           ,
+      output  wire                   o_riscv_core_fsm_imem_rden      , 
+      output  wire                   o_riscv_core_fsm_mem_wren       ,
+      output  wire                   o_riscv_core_fsm_mem_rden       
     ) ;
     
 

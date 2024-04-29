@@ -220,8 +220,8 @@ always_comb begin
 end
 
 // mtvec register
-assign csr.mtvec[63:2] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtvec.base;
-assign csr.mtvec[1:0]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtvec.mode;
+assign csr.mtvec[63:2] = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtvec_base;
+assign csr.mtvec[1:0]  = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtvec_mode;
 
 // mtval
 assign csr.mtval = DUT.u_top_core.u_top_datapath.u_riscv_csrfile.mtval;

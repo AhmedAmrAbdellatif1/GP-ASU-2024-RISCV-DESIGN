@@ -279,8 +279,8 @@ module riscv_csrfile #(
   wire [      1:0] xtvec_base             ;
   wire             ack_external_int       ;
   reg  [      1:0] mcountinhibit          ;
-  reg  [MXLEN-1:0] mcounter_0             ;
-  reg  [MXLEN-1:0] mcounter_1             ;
+  wire  [MXLEN-1:0] mcounter_0             ;
+  wire  [MXLEN-1:0] mcounter_1             ;
   reg  [      1:0] mcounter_we            ;
   wire [      1:0] mcounter_incr          ;
 
@@ -1355,7 +1355,7 @@ module riscv_csrfile #(
     .write_en(mcounter_we[0]                       ),
     .incr_en (mcounter_incr[0] && !mcountinhibit[0]),
     .i_value (csr_write_data                       ),
-    .o_value (mcounter_0                          )
+    .o_value (mcounter_0                           )
   );
 
 
