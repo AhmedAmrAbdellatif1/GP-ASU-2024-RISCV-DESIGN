@@ -6,7 +6,7 @@ module riscv_cu #( parameter support_supervisor = 1,
     input  logic [ 6:0] i_riscv_cu_funct7    ,
     input  logic [ 1:0] i_riscv_cu_privlvl   ,
     input  logic [ 4:0] i_riscv_cu_rs1       ,
-    input  logic [11:0] i_riscv_cu_cosntimm12,
+    input  logic [11:0] i_riscv_cu_constimm12,
     input  logic        i_riscv_cu_tsr       ,
     output logic        o_riscv_cu_jump      ,
     output logic        o_riscv_cu_regw      ,
@@ -2245,7 +2245,7 @@ module riscv_cu #( parameter support_supervisor = 1,
           begin
             riscv_cu_detect_ecall = 1'b0;
             // decode the immiediate field
-            case (i_riscv_cu_cosntimm12)
+            case (i_riscv_cu_constimm12)
               // ECALL -> inject exception
               12'b0:
               begin

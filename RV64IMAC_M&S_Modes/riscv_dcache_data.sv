@@ -24,7 +24,7 @@ module riscv_dcache_data #(
   logic [63:0] data_buffer;
 
   // distribute the input data along the buffer to assure correct storing
-  assign data_buffer = (storesrc == 2'b00)? {8{data_in[7:0]}} : 
+  assign data_buffer = (storesrc == 2'b00)? {8{data_in[7:0]}} :
                        (storesrc == 2'b01)? {4{data_in[15:0]}}:
                        (storesrc == 2'b10)? {2{data_in[31:0]}}:
                        (storesrc == 2'b11)? data_in[63:0]     : 'b0;
