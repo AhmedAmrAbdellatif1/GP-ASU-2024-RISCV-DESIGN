@@ -7,8 +7,8 @@
 
 	########################### Define Top Module ############################
 													   
-	set top_module riscv_top
-  set design_files [list $top_module.v riscv_alu.v riscv_branch.v riscv_compressed_decoder.v riscv_control_unit.v riscv_core.v riscv_counter.v riscv_csrfile.v riscv_datapath.v riscv_dcache_amo.v riscv_dcache_data.v riscv_dcache_fsm.v riscv_dcache_tag.v riscv_dcache_top.v riscv_decode_stage.v riscv_divider.v riscv_dram_counter.v riscv_dram_data.v riscv_dram_model.v riscv_execute_stage.v riscv_extend.v riscv_fetch_stage.v riscv_hazardunit.v riscv_icache_fsm.v riscv_icache_inst.v riscv_icache_tag.v riscv_icache_top.v riscv_ICU.v riscv_iram_counter.v riscv_iram_data.v riscv_iram_model.v riscv_lsu.v riscv_memext.v riscv_mem_stage.v riscv_misalignment_unit.v riscv_multiplier.v riscv_mux2.v riscv_mux3.v riscv_mux4.v riscv_mux5.v riscv_pc.v riscv_pcadder.v riscv_ppreg_de.v riscv_ppreg_em.v riscv_ppreg_fd.v riscv_ppreg_mw.v riscv_rf.v riscv_timer_irq.v riscv_tracer.v riscv_trap_wb.v riscv_wb_stage.v riscv_zeroextend.v]
+	set top_module riscv_datapath
+  set design_files [list riscv_alu.v riscv_branch.v riscv_compressed_decoder.v riscv_control_unit.v riscv_core.v riscv_counter.v riscv_csrfile.v riscv_datapath.v riscv_dcache_amo.v riscv_dcache_data.v riscv_dcache_fsm.v riscv_dcache_tag.v riscv_dcache_top.v riscv_decode_stage.v riscv_divider.v riscv_dram_counter.v riscv_dram_data.v riscv_dram_model.v riscv_execute_stage.v riscv_extend.v riscv_fetch_stage.v riscv_hazardunit.v riscv_icache_fsm.v riscv_icache_inst.v riscv_icache_tag.v riscv_icache_top.v riscv_ICU.v riscv_iram_counter.v riscv_iram_data.v riscv_iram_model.v riscv_lsu.v riscv_memext.v riscv_mem_stage.v riscv_misalignment_unit.v riscv_multiplier.v riscv_mux2.v riscv_mux3.v riscv_mux4.v riscv_mux5.v riscv_pc.v riscv_pcadder.v riscv_ppreg_de.v riscv_ppreg_em.v riscv_ppreg_fd.v riscv_ppreg_mw.v riscv_rf.v riscv_timer_irq.v riscv_tracer.v riscv_trap_wb.v riscv_wb_stage.v riscv_zeroextend.v]
   set_svf $top_module.svf
   set GUI 0
 
