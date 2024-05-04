@@ -11,10 +11,10 @@
 	
   ############################## Clock Variables ################################
 
-  set CLK_PORT 	i_riscv_clk
-  set RST_PORT 	i_riscv_rst  
+  set CLK_PORT 	i_riscv_datapath_clk
+  set RST_PORT 	i_riscv_datapath_rst  
   set CLK_NAME 	CLK
-  set CLK_PER 	100
+  set CLK_PER 	10
   set CLK_LAT 	0
   set CLK_TRANS	0.1
   set CAP_LOAD	0.5
