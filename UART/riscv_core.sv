@@ -64,7 +64,7 @@ module riscv_core #(
   /************************* Instantiations *************************/
   /************************* ************** *************************/
 
-  assign o_riscv_core_uart_tx_data = riscv_datapath_storedata_m_dm;
+  assign o_riscv_core_uart_tx_data = riscv_datapath_storedata_m_dm[7:0];
 
   riscv_datapath u_riscv_datapath (
     .i_riscv_datapath_clk            (i_riscv_core_clk               ),

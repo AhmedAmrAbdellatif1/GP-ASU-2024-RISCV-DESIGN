@@ -139,7 +139,7 @@ module riscv_top #(
     .PAR_TYPE  (PAR_TYPE  )
   ) uart_peripheral_top_inst (
     .i_uart_clk      (i_riscv_clk        ),
-    .i_uart_rst_n    (!i_riscv_rst       ),
+    .i_uart_rst_n    (~i_riscv_rst       ),
     .i_uart_tx_pdata (core_uart_tx_pdata ),
     .i_uart_tx_valid (core_uart_tx_valid ),
     .o_uart_fifo_full(uart_tx_fifo_full  ),

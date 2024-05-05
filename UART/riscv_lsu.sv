@@ -33,6 +33,7 @@ module riscv_lsu #(
   logic        lr_word        ;
   logic [ 4:0] case_sel       ;
   logic        sc_success_flag;
+  logic        memory_mapped_instruction;
 
   //****************** enum declaration ******************//
   typedef enum logic [4:0] {
@@ -210,8 +211,8 @@ module riscv_lsu #(
   end
 
 
-assign memory_mapped_instruction  = ( (i_riscv_lsu_alu_result == CLINT_MTIME)     ||
-                                      (i_riscv_lsu_alu_result == CLINT_MTIMECMP)  ||
-                                      (i_riscv_lsu_alu_result == UART_BASE)       );
+  assign memory_mapped_instruction  = ( (i_riscv_lsu_alu_result == CLINT_MTIME)     ||
+                                        (i_riscv_lsu_alu_result == CLINT_MTIMECMP)  ||
+                                        (i_riscv_lsu_alu_result == UART_BASE)       );
 
 endmodule

@@ -35,7 +35,7 @@
     input  logic        i_riscv_em_timer_wren             ,
     input  logic        i_riscv_em_timer_rden             ,
     input  logic [ 1:0] i_riscv_em_timer_regsel           ,
-    output logic        i_riscv_em_uart_tx_valid          ,
+    input  logic        i_riscv_em_uart_tx_valid          ,
     output logic [31:0] o_riscv_em_inst                   ,
     output logic [15:0] o_riscv_em_cinst                  ,
     output logic [ 4:0] o_riscv_em_amo_op_m               ,
