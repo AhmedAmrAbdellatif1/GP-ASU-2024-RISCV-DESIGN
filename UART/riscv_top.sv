@@ -1,7 +1,7 @@
 module riscv_top #(
   parameter              DATA_WIDTH  = 128                    ,
   parameter              CACHE_SIZE  = 4*(2**10)              , //64 * (2**10)
-  parameter              MEM_SIZE    = 4*CACHE_SIZE           , //128*(2**20)
+  parameter              MEM_SIZE    = 4*CACHE_SIZE            , //128*(2**20)
   parameter              DMEM_DEPTH  = MEM_SIZE/16            , //128*(2**20)
   parameter              DATAPBLOCK  = 16                     ,
   parameter              CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK  , //  4096
@@ -9,15 +9,16 @@ module riscv_top #(
   parameter              BYTE_OFF    = $clog2(DATAPBLOCK)     , //     4 bits
   parameter              INDEX       = $clog2(CACHE_DEPTH)    , //    12 bits
   parameter              TAG         = ADDR - BYTE_OFF - INDEX, //    11 bits
-  parameter              KERNEL_PC   = 'h80000000             ,
+  parameter              KERNEL_PC   = 'h00000000             ,
   parameter              S_ADDR      = ADDR - BYTE_OFF        ,
   parameter              FIFO_DEPTH  = 256                    ,
   parameter logic [16:0] BAUD_RATE   = 115200                 ,
   parameter logic [ 0:0] PAR_EN      = 1                      ,
   parameter logic [ 0:0] PAR_TYPE    = 0
 ) (
-  input  logic i_riscv_clk        ,
-  input  logic i_riscv_rst        ,
+  input  logic i_riscv_clk                   ,
+  input  logic i_riscv_rst                   ,
+  input  logic i_riscv_top_external_interrupt,
   output logic o_riscv_top_tx_data
 );
 
@@ -76,7 +77,7 @@ module riscv_top #(
   ) u_top_core (
     .i_riscv_core_clk               (i_riscv_clk        ),
     .i_riscv_core_rst               (i_riscv_rst        ),
-    .i_riscv_core_external_interrupt(1'b0               ),
+    .i_riscv_core_external_interrupt(                   ),
     .i_riscv_core_mem_ready         (core_mem_ready     ),
     .i_riscv_core_mem_data_out      (core_mem_data_out  ),
     .i_riscv_core_imem_ready        (core_imem_ready    ),
