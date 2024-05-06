@@ -9,11 +9,17 @@ module riscv_top #(
   parameter BYTE_OFF    = $clog2(DATAPBLOCK)     , //     4 bits
   parameter INDEX       = $clog2(CACHE_DEPTH)    , //    12 bits
   parameter TAG         = ADDR - BYTE_OFF - INDEX, //    11 bits
-  parameter KERNEL_PC   = 'h80000000             ,
-  parameter S_ADDR      = ADDR - BYTE_OFF
+  parameter KERNEL_PC   = 'h00000000             ,
+  parameter S_ADDR      = ADDR - BYTE_OFF        ,
+  parameter FIFO_DEPTH  = 256                    ,
+  parameter BAUD_RATE   = 115200                 ,
+  parameter PAR_EN      = 1                      ,
+  parameter PAR_TYPE    = 0
 ) (
-  input wire i_riscv_clk,
-  input wire i_riscv_rst
+  input  wire i_riscv_clk                   ,
+  input  wire i_riscv_rst                   ,
+  input  wire i_riscv_top_external_interrupt,
+  output wire o_riscv_top_tx_data
 );
 
   /************************** Datapath to IM **************************/
@@ -49,6 +55,13 @@ module riscv_top #(
   wire [    S_ADDR-1:0] core_imem_addr      ;
   wire                  core_fsm_imem_rden  ;
 
+  /************************** Core to UART **************************/
+  wire [7:0] core_uart_tx_pdata;
+  wire       core_uart_tx_valid;
+
+  /************************** UART to Core **************************/
+  wire uart_tx_fifo_full;
+
   riscv_core #(
     .KERNEL_PC  (KERNEL_PC  ),
     .DATA_WIDTH (DATA_WIDTH ),
@@ -64,11 +77,14 @@ module riscv_top #(
   ) u_top_core (
     .i_riscv_core_clk               (i_riscv_clk        ),
     .i_riscv_core_rst               (i_riscv_rst        ),
-    .i_riscv_core_external_interrupt(1'b0               ),
+    .i_riscv_core_external_interrupt(                   ),
     .i_riscv_core_mem_ready         (core_mem_ready     ),
     .i_riscv_core_mem_data_out      (core_mem_data_out  ),
     .i_riscv_core_imem_ready        (core_imem_ready    ),
     .i_riscv_core_imem_data_out     (core_imem_data_out ),
+    .i_riscv_core_fifo_full         (uart_tx_fifo_full  ),
+    .o_riscv_core_uart_tx_data      (core_uart_tx_pdata ),
+    .o_riscv_core_uart_tx_valid     (core_uart_tx_valid ),
     .o_riscv_core_imem_addr         (core_imem_addr     ),
     .o_riscv_core_fsm_imem_rden     (core_fsm_imem_rden ),
     .o_riscv_core_fsm_mem_wren      (core_fsm_mem_wren  ),
@@ -77,7 +93,6 @@ module riscv_top #(
     .o_riscv_core_cache_data_out    (core_cache_data_out)
   );
 
-  //----------------------------------------------->
   riscv_dram_model #(
     .DATA_WIDTH (DATA_WIDTH ),
     .CACHE_SIZE (CACHE_SIZE ),
@@ -117,6 +132,19 @@ module riscv_top #(
     .data_out (core_imem_data_out),
     .mem_ready(core_imem_ready   )
   );
-  //----------------------------------------------->
+
+  uart_peripheral_top #(
+    .FIFO_DEPTH(FIFO_DEPTH),
+    .BAUD_RATE (BAUD_RATE ),
+    .PAR_EN    (PAR_EN    ),
+    .PAR_TYPE  (PAR_TYPE  )
+  ) uart_peripheral_top_inst (
+    .i_uart_clk      (i_riscv_clk        ),
+    .i_uart_rst_n    (~i_riscv_rst       ),
+    .i_uart_tx_pdata (core_uart_tx_pdata ),
+    .i_uart_tx_valid (core_uart_tx_valid ),
+    .o_uart_fifo_full(uart_tx_fifo_full  ),
+    .o_uart_tx_sdata (o_riscv_top_tx_data)
+  );
 
 endmodule

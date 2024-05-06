@@ -28,7 +28,10 @@ module riscv_datapath #(parameter MXLEN = 64) (
   input  wire [63:0] i_riscv_timer_datapath_time     ,
   output wire        o_riscv_datapath_timer_wren     ,
   output wire        o_riscv_datapath_timer_rden     ,
-  output wire [ 1:0] o_riscv_datapath_timer_regsel
+  output wire [ 1:0] o_riscv_datapath_timer_regsel   ,
+  /************************* UART Signals *************************/
+  input  wire        i_riscv_datapath_fifo_full      ,
+  output wire        o_riscv_datapath_uart_tx_valid
 );
 
   /************************* Fetch Stage Signals *************************/
@@ -129,6 +132,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
   wire        datapath_memw_e             ;
   wire        datapath_memr_e             ;
   wire [63:0] riscv_datapath_memodata_addr;
+  wire        riscv_em_uart_tx_valid      ;
   wire        riscv_em_timer_wren         ;
   wire        riscv_em_timer_rden         ;
   wire [ 1:0] riscv_em_timer_regsel       ;
@@ -472,6 +476,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_estage_inst_addr_misaligned (inst_addr_misaligned_estage_em  ),
     .o_riscv_estage_store_addr_misaligned(                                ),
     .o_riscv_estage_load_addr_misaligned (                                ),
+    .o_riscv_estage_uart_tx_valid        (riscv_em_uart_tx_valid          ),
     .o_riscv_estage_timer_wren           (riscv_em_timer_wren             ),
     .o_riscv_estage_timer_rden           (riscv_em_timer_rden             ),
     .o_riscv_estage_timer_regsel         (riscv_em_timer_regsel           )
@@ -514,6 +519,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_em_timer_wren             (riscv_em_timer_wren            ),
     .i_riscv_em_timer_rden             (riscv_em_timer_rden            ),
     .i_riscv_em_timer_regsel           (riscv_em_timer_regsel          ),
+    .i_riscv_em_uart_tx_valid          (riscv_em_uart_tx_valid         ),
     .o_riscv_em_inst                   (riscv_inst_m                   ),
     .o_riscv_em_cinst                  (riscv_cinst_m                  ),
     .o_riscv_em_amo_op_m               (riscv_amo_op_m                 ),
@@ -545,6 +551,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_em_opcode_m               (riscv_datapath_hzrdu_opcode    ),
     .o_riscv_em_timer_wren             (o_riscv_datapath_timer_wren    ),
     .o_riscv_em_timer_rden             (o_riscv_datapath_timer_rden    ),
+    .o_riscv_em_uart_tx_valid          (o_riscv_datapath_uart_tx_valid ),
     .o_riscv_em_timer_regsel           (o_riscv_datapath_timer_regsel  )
   );
 
@@ -672,6 +679,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_hzrdu_regw_m     (riscv_regw_m                    ),
     .i_riscv_dcahe_stall_m    (i_riscv_datapath_stall_dm       ),
     .i_riscv_icahe_stall_m    (i_riscv_datapath_stall_im       ),
+    .i_riscv_fifo_full        (i_riscv_datapath_fifo_full      ),
     .i_riscv_hzrdu_pcsrc      (riscv_datapath_hzrdu_pcsrc_e    ),
     .i_riscv_hzrdu_rdaddr_w   (riscv_rdaddr_wb                 ),
     .i_riscv_hzrdu_regw_w     (riscv_regw_wb                   ),

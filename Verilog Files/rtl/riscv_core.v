@@ -2,14 +2,14 @@ module riscv_core #(
   parameter MXLEN       = 64                     ,
   parameter DATA_WIDTH  = 128                    ,
   parameter CACHE_SIZE  = 4*(2**10)              , //64 * (2**10)
-  parameter MEM_SIZE    = 4*CACHE_SIZE           , //128*(2**20)
+  parameter MEM_SIZE    = 128*(2**20)            , //128*(2**20)
   parameter DATAPBLOCK  = 16                     ,
   parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK  , //  4096
   parameter ADDR        = $clog2(MEM_SIZE)       , //    27 bits
   parameter BYTE_OFF    = $clog2(DATAPBLOCK)     , //     4 bits
   parameter INDEX       = $clog2(CACHE_DEPTH)    , //    12 bits
   parameter TAG         = ADDR - BYTE_OFF - INDEX, //    11 bits
-  parameter KERNEL_PC   = 'h80000000             ,
+  parameter KERNEL_PC   = 'h00000000             ,
   parameter S_ADDR      = ADDR - BYTE_OFF
 ) (
   input  wire                  i_riscv_core_clk               ,
@@ -19,6 +19,9 @@ module riscv_core #(
   input  wire                  i_riscv_core_imem_ready        ,
   input  wire [DATA_WIDTH-1:0] i_riscv_core_mem_data_out      ,
   input  wire [DATA_WIDTH-1:0] i_riscv_core_imem_data_out     ,
+  input  wire                  i_riscv_core_fifo_full         ,
+  output wire [           7:0] o_riscv_core_uart_tx_data      ,
+  output wire                  o_riscv_core_uart_tx_valid     ,
   output wire [DATA_WIDTH-1:0] o_riscv_core_cache_data_out    ,
   output wire [    S_ADDR-1:0] o_riscv_core_imem_addr         ,
   output wire [    S_ADDR-1:0] o_riscv_core_mem_addr          ,
@@ -33,8 +36,8 @@ module riscv_core #(
   wire [63:0] riscv_datapath_rdata_dm  ;
 
   /************************ Datapath & Hazard Unit ************************/
-  wire [4:0] riscv_datapath_rdaddr_m_hzrdu   ;
-  wire       riscv_datapath_globstall_hzrdu  ;
+  wire [4:0] riscv_datapath_rdaddr_m_hzrdu ;
+  wire       riscv_datapath_globstall_hzrdu;
 
   /************************ Data Cache Signals ************************/
   wire        riscv_datapath_memw_e_dm       ;
@@ -61,6 +64,8 @@ module riscv_core #(
   /************************* Instantiations *************************/
   /************************* ************** *************************/
 
+  assign o_riscv_core_uart_tx_data = riscv_datapath_storedata_m_dm[7:0];
+
   riscv_datapath u_riscv_datapath (
     .i_riscv_datapath_clk            (i_riscv_core_clk               ),
     .i_riscv_datapath_rst            (i_riscv_core_rst               ),
@@ -85,7 +90,9 @@ module riscv_core #(
     .i_riscv_timer_datapath_time     (riscv_timer_datapath_time      ),
     .o_riscv_datapath_timer_wren     (riscv_datapath_timer_wren      ),
     .o_riscv_datapath_timer_rden     (riscv_datapath_timer_rden      ),
-    .o_riscv_datapath_timer_regsel   (riscv_datapath_timer_regsel    )
+    .o_riscv_datapath_timer_regsel   (riscv_datapath_timer_regsel    ),
+    .i_riscv_datapath_fifo_full      (i_riscv_core_fifo_full         ),
+    .o_riscv_datapath_uart_tx_valid  (o_riscv_core_uart_tx_valid     )
   );
 
   riscv_data_cache #(
