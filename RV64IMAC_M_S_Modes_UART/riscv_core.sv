@@ -20,10 +20,8 @@ module riscv_core #(
   input  logic [DATA_WIDTH-1:0] i_riscv_core_mem_data_out      ,
   input  logic [DATA_WIDTH-1:0] i_riscv_core_imem_data_out     ,
   input  logic                  i_riscv_core_fifo_full         ,
-  input  logic [           7:0] i_riscv_core_uart_rx_data      ,
   output logic [           7:0] o_riscv_core_uart_tx_data      ,
   output logic                  o_riscv_core_uart_tx_valid     ,
-  output logic                  o_riscv_core_uart_rx_request   ,
   output logic [DATA_WIDTH-1:0] o_riscv_core_cache_data_out    ,
   output logic [    S_ADDR-1:0] o_riscv_core_imem_addr         ,
   output logic [    S_ADDR-1:0] o_riscv_core_mem_addr          ,
@@ -56,11 +54,11 @@ module riscv_core #(
   logic        riscv_datapath_stall_m_im;
 
   /************************ Timer Interrupts ************************/
-  logic        riscv_datapath_timer_wren    ;
-  logic        riscv_datapath_timer_rden    ;
-  logic [ 1:0] riscv_datapath_timer_logicsel;
-  logic [63:0] riscv_timer_datapath_rdata   ;
-  logic [63:0] riscv_timer_datapath_time    ;
+  logic        riscv_datapath_timer_wren  ;
+  logic        riscv_datapath_timer_rden  ;
+  logic [ 1:0] riscv_datapath_timer_regsel;
+  logic [63:0] riscv_timer_datapath_rdata ;
+  logic [63:0] riscv_timer_datapath_time  ;
 
   /************************* ************** *************************/
   /************************* Instantiations *************************/
@@ -89,14 +87,12 @@ module riscv_core #(
     .i_riscv_core_timer_interrupt    (riscv_core_timer_interrupt     ),
     .i_riscv_core_external_interrupt (i_riscv_core_external_interrupt),
     .i_riscv_timer_datapath_rdata    (riscv_timer_datapath_rdata     ),
-    .i_riscv_datapath_uart_rx_data   (i_riscv_core_uart_rx_data      ),
     .i_riscv_timer_datapath_time     (riscv_timer_datapath_time      ),
     .o_riscv_datapath_timer_wren     (riscv_datapath_timer_wren      ),
     .o_riscv_datapath_timer_rden     (riscv_datapath_timer_rden      ),
-    .o_riscv_datapath_timer_regsel   (riscv_datapath_timer_logicsel  ),
+    .o_riscv_datapath_timer_regsel   (riscv_datapath_timer_regsel    ),
     .i_riscv_datapath_fifo_full      (i_riscv_core_fifo_full         ),
-    .o_riscv_datapath_uart_tx_valid  (o_riscv_core_uart_tx_valid     ),
-    .o_riscv_datapath_uart_rx_request(o_riscv_core_uart_rx_request   )
+    .o_riscv_datapath_uart_tx_valid  (o_riscv_core_uart_tx_valid     )
   );
 
   riscv_data_cache #(
@@ -159,7 +155,7 @@ module riscv_core #(
     .i_riscv_timer_rst   (i_riscv_core_rst             ),
     .i_riscv_timer_wren  (riscv_datapath_timer_wren    ),
     .i_riscv_timer_rden  (riscv_datapath_timer_rden    ),
-    .i_riscv_timer_regsel(riscv_datapath_timer_logicsel),
+    .i_riscv_timer_regsel(riscv_datapath_timer_regsel  ),
     .i_riscv_timer_wdata (riscv_datapath_storedata_m_dm),
     .o_riscv_timer_rdata (riscv_timer_datapath_rdata   ),
     .o_riscv_timer_time  (riscv_timer_datapath_time    ),

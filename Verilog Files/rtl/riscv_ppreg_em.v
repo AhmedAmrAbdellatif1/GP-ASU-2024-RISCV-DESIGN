@@ -36,7 +36,6 @@
     input  wire        i_riscv_em_timer_rden             ,
     input  wire [ 1:0] i_riscv_em_timer_regsel           ,
     input  wire        i_riscv_em_uart_tx_valid          ,
-    input  wire        i_riscv_em_uart_rx_request        ,
     output reg  [31:0] o_riscv_em_inst                   ,
     output reg  [15:0] o_riscv_em_cinst                  ,
     output reg  [ 4:0] o_riscv_em_amo_op_m               ,
@@ -69,8 +68,7 @@
     output reg         o_riscv_em_timer_wren             ,
     output reg         o_riscv_em_timer_rden             ,
     output reg  [ 1:0] o_riscv_em_timer_regsel           ,
-    output reg         o_riscv_em_uart_tx_valid          ,
-    output reg         o_riscv_em_uart_rx_request
+    output reg         o_riscv_em_uart_tx_valid
   );
 
     always @ (posedge i_riscv_em_clk or posedge i_riscv_em_rst)
@@ -110,7 +108,6 @@
             o_riscv_em_timer_rden              <= 'b0;
             o_riscv_em_timer_regsel            <= 'b0;
             o_riscv_em_uart_tx_valid           <= 'b0;
-            o_riscv_em_uart_rx_request         <= 'b0;
           end
         else if(i_riscv_em_flush)
           begin
@@ -147,7 +144,6 @@
             o_riscv_em_timer_rden              <= 'b0;
             o_riscv_em_timer_regsel            <= 'b0;
             o_riscv_em_uart_tx_valid           <= 'b0;
-            o_riscv_em_uart_rx_request         <= 'b0;
           end
         else if(!i_riscv_em_en)
           begin
@@ -184,7 +180,6 @@
             o_riscv_em_timer_rden              <= i_riscv_em_timer_rden  ;
             o_riscv_em_timer_regsel            <= i_riscv_em_timer_regsel;
             o_riscv_em_uart_tx_valid           <= i_riscv_em_uart_tx_valid;
-            o_riscv_em_uart_rx_request         <= i_riscv_em_uart_rx_request;
           end
       end
   endmodule
