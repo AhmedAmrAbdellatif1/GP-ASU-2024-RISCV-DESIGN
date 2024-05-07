@@ -239,8 +239,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
   assign csrop_de_em_illegal    = (gototrap_csr_mw || returnfromtrap_csr_mw)? 3'b000:csrop_de_em;
   assign csr_is_compressed_flag = ~&(riscv_cinst_m[1:0]);
 
-  assign riscv_rstctrl_f = riscv_datapath_hzrdu_flush_fd | i_riscv_datapath_rst | riscv_reg_flush;
-  assign riscv_rstctrl_d = riscv_datapath_hzrdu_flush_de | i_riscv_datapath_rst | riscv_reg_flush | gototrap_csr_mw | returnfromtrap_csr_mw;
+  assign riscv_rstctrl_f = riscv_datapath_hzrdu_flush_fd  || i_riscv_datapath_rst || riscv_reg_flush;
+  assign riscv_rstctrl_d = (riscv_datapath_hzrdu_flush_de || i_riscv_datapath_rst || riscv_reg_flush || gototrap_csr_mw || (|returnfromtrap_csr_mw));
 
   assign riscv_datapath_hzrd_iscsr_w = iscsr_mw_trap                 ;
   assign riscv_datapath_hzrd_iscsr_m = iscsr_csr_mw                  ;
