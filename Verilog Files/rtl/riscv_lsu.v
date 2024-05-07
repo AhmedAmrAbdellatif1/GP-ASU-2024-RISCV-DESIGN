@@ -4,27 +4,28 @@ module riscv_lsu #(
   parameter CLINT_MTIMECMP = CLINT + 'h4000,
   parameter CLINT_MTIME    = CLINT + 'hBFF8  // cycles since boot
 ) (
-  input  wire        i_riscv_lsu_clk          ,
-  input  wire        i_riscv_lsu_rst          ,
-  input  wire        i_riscv_lsu_globstall    ,
-  input  wire [63:0] i_riscv_lsu_address      , //  rs1
-  input  wire [63:0] i_riscv_lsu_alu_result   ,
-  input  wire [ 1:0] i_riscv_lsu_lr           , //  [1] bit indicates LR or not, [0] indicates word or double word
-  input  wire [ 1:0] i_riscv_lsu_sc           , //  [1] bit indicates SC or not, [0] indicates word or double word
-  input  wire        i_riscv_lsu_amo          ,
-  input  wire        i_riscv_lsu_dcache_wren  ,
-  input  wire        i_riscv_lsu_dcache_rden  ,
-  input  wire        i_riscv_lsu_goto_trap    , //  output of CSR
-  input  wire [ 1:0] i_riscv_lsu_return_trap  , //  output of CSR
-  input  wire        i_riscv_lsu_misalignment , //  <-- not added in the wire
-  output reg         o_riscv_lsu_dcache_wren  ,
-  output reg         o_riscv_lsu_dcache_rden  ,
-  output reg  [63:0] o_riscv_lsu_phy_address  ,
-  output reg  [63:0] o_riscv_lsu_sc_rdvalue   ,
-  output reg         o_riscv_lsu_timer_wren   ,
-  output reg         o_riscv_lsu_timer_rden   ,
-  output reg  [ 1:0] o_riscv_lsu_timer_regsel ,
-  output reg         o_riscv_lsu_uart_tx_valid
+  input  wire        i_riscv_lsu_clk            ,
+  input  wire        i_riscv_lsu_rst            ,
+  input  wire        i_riscv_lsu_globstall      ,
+  input  wire [63:0] i_riscv_lsu_address        , //  rs1
+  input  wire [63:0] i_riscv_lsu_alu_result     ,
+  input  wire [ 1:0] i_riscv_lsu_lr             , //  [1] bit indicates LR or not, [0] indicates word or double word
+  input  wire [ 1:0] i_riscv_lsu_sc             , //  [1] bit indicates SC or not, [0] indicates word or double word
+  input  wire        i_riscv_lsu_amo            ,
+  input  wire        i_riscv_lsu_dcache_wren    ,
+  input  wire        i_riscv_lsu_dcache_rden    ,
+  input  wire        i_riscv_lsu_goto_trap      , //  output of CSR
+  input  wire [ 1:0] i_riscv_lsu_return_trap    , //  output of CSR
+  input  wire        i_riscv_lsu_misalignment   , //  <-- not added in the wire
+  output reg         o_riscv_lsu_dcache_wren    ,
+  output reg         o_riscv_lsu_dcache_rden    ,
+  output reg  [63:0] o_riscv_lsu_phy_address    ,
+  output reg  [63:0] o_riscv_lsu_sc_rdvalue     ,
+  output reg         o_riscv_lsu_timer_wren     ,
+  output reg         o_riscv_lsu_timer_rden     ,
+  output reg  [ 1:0] o_riscv_lsu_timer_regsel   ,
+  output reg         o_riscv_lsu_uart_tx_valid  ,
+  output reg         o_riscv_lsu_uart_rx_request
 );
 
   //****************** internal signals declaration ******************//
@@ -36,14 +37,14 @@ module riscv_lsu #(
   wire        memory_mapped_instruction;
 
   //****************** enum declaration ******************//
-  localparam  NORMAL_READ  = 5'b10000,
+  localparam NORMAL_READ  = 5'b10000,
     NORMAL_WRITE = 5'b01000,
     LR           = 5'b00100,
     SC           = 5'b00010,
     AMO          = 5'b00001;
 
   /**********************************************/
-  localparam  MTIME    = 2'b01,
+  localparam MTIME    = 2'b01,
     MTIMECMP = 2'b10;
 
   //****************** Internal Connections ******************//
@@ -196,13 +197,20 @@ module riscv_lsu #(
   // --> UART signals
   always @(*)
   begin
-    if((i_riscv_lsu_alu_result == UART_BASE))
+    if((i_riscv_lsu_alu_result == UART_BASE) && i_riscv_lsu_dcache_wren)
       begin
-        o_riscv_lsu_uart_tx_valid = 1'b1;
+        o_riscv_lsu_uart_tx_valid   = 1'b1;
+        o_riscv_lsu_uart_rx_request = 1'b0;
+      end
+    else if((i_riscv_lsu_alu_result == UART_BASE) && i_riscv_lsu_dcache_rden)
+      begin
+        o_riscv_lsu_uart_tx_valid   = 1'b0;
+        o_riscv_lsu_uart_rx_request = 1'b1;
       end
     else
       begin
-        o_riscv_lsu_uart_tx_valid = 1'b0;
+        o_riscv_lsu_uart_tx_valid   = 1'b0;
+        o_riscv_lsu_uart_rx_request = 1'b0;
       end
   end
 

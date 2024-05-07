@@ -18,7 +18,7 @@ module riscv_branch (
   assign  LT  = (i_riscv_branch_rs1data<i_riscv_branch_rs2data)? 1:0;
   assign  LTU = ($unsigned(i_riscv_branch_rs1data)<$unsigned(i_riscv_branch_rs2data))? 1:0;
 
-  always @(*) 
+  always_comb 
     begin
       if (i_riscv_branch_cond[3]) // if branch comparator is enabled
         begin

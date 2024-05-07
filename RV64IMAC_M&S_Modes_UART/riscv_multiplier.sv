@@ -86,7 +86,7 @@ module riscv_multiplier (
     end 
   end
 
-  always @(*)
+  always_comb
   begin
     case (pres_state)
       idle:
