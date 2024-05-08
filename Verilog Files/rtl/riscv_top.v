@@ -75,22 +75,22 @@ module riscv_top #(
     .TAG        (TAG        ),
     .S_ADDR     (S_ADDR     )
   ) u_top_core (
-    .i_riscv_core_clk               (i_riscv_clk        ),
-    .i_riscv_core_rst               (i_riscv_rst        ),
-    .i_riscv_core_external_interrupt(                   ),
-    .i_riscv_core_mem_ready         (core_mem_ready     ),
-    .i_riscv_core_mem_data_out      (core_mem_data_out  ),
-    .i_riscv_core_imem_ready        (core_imem_ready    ),
-    .i_riscv_core_imem_data_out     (core_imem_data_out ),
-    .i_riscv_core_fifo_full         (uart_tx_fifo_full  ),
-    .o_riscv_core_uart_tx_data      (core_uart_tx_pdata ),
-    .o_riscv_core_uart_tx_valid     (core_uart_tx_valid ),
-    .o_riscv_core_imem_addr         (core_imem_addr     ),
-    .o_riscv_core_fsm_imem_rden     (core_fsm_imem_rden ),
-    .o_riscv_core_fsm_mem_wren      (core_fsm_mem_wren  ),
-    .o_riscv_core_fsm_mem_rden      (core_fsm_mem_rden  ),
-    .o_riscv_core_mem_addr          (core_mem_addr      ),
-    .o_riscv_core_cache_data_out    (core_cache_data_out)
+    .i_riscv_core_clk               (i_riscv_clk                   ),
+    .i_riscv_core_rst               (i_riscv_rst                   ),
+    .i_riscv_core_external_interrupt(i_riscv_top_external_interrupt),
+    .i_riscv_core_mem_ready         (core_mem_ready                ),
+    .i_riscv_core_mem_data_out      (core_mem_data_out             ),
+    .i_riscv_core_imem_ready        (core_imem_ready               ),
+    .i_riscv_core_imem_data_out     (core_imem_data_out            ),
+    .i_riscv_core_fifo_full         (uart_tx_fifo_full             ),
+    .o_riscv_core_uart_tx_data      (core_uart_tx_pdata            ),
+    .o_riscv_core_uart_tx_valid     (core_uart_tx_valid            ),
+    .o_riscv_core_imem_addr         (core_imem_addr                ),
+    .o_riscv_core_fsm_imem_rden     (core_fsm_imem_rden            ),
+    .o_riscv_core_fsm_mem_wren      (core_fsm_mem_wren             ),
+    .o_riscv_core_fsm_mem_rden      (core_fsm_mem_rden             ),
+    .o_riscv_core_mem_addr          (core_mem_addr                 ),
+    .o_riscv_core_cache_data_out    (core_cache_data_out           )
   );
 
   riscv_dram_model #(
