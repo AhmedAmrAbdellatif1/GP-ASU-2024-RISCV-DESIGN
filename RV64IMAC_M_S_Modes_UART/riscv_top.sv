@@ -1,20 +1,18 @@
 module riscv_top #(
-  parameter              DATA_WIDTH  = 128                    ,
-  parameter              CACHE_SIZE  = 4*(2**10)              , //64 * (2**10)
-  parameter              MEM_SIZE    = 4*CACHE_SIZE            , //128*(2**20)
-  parameter              DMEM_DEPTH  = MEM_SIZE/16            , //128*(2**20)
-  parameter              DATAPBLOCK  = 16                     ,
-  parameter              CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK  , //  4096
-  parameter              ADDR        = $clog2(MEM_SIZE)       , //    27 bits
-  parameter              BYTE_OFF    = $clog2(DATAPBLOCK)     , //     4 bits
-  parameter              INDEX       = $clog2(CACHE_DEPTH)    , //    12 bits
-  parameter              TAG         = ADDR - BYTE_OFF - INDEX, //    11 bits
-  parameter              KERNEL_PC   = 'h00000000             ,
-  parameter              S_ADDR      = ADDR - BYTE_OFF        ,
-  parameter              FIFO_DEPTH  = 256                    ,
-  parameter logic [16:0] BAUD_RATE   = 115200                 ,
-  parameter logic [ 0:0] PAR_EN      = 1                      ,
-  parameter logic [ 0:0] PAR_TYPE    = 0
+  parameter DATA_WIDTH  = 128                    ,
+  parameter CACHE_SIZE  = 4*(2**10)              , //64 * (2**10)
+  parameter MEM_SIZE    = 4*CACHE_SIZE           , //128*(2**20)
+  parameter DMEM_DEPTH  = MEM_SIZE/16            , //128*(2**20)
+  parameter DATAPBLOCK  = 16                     ,
+  parameter CACHE_DEPTH = CACHE_SIZE/DATAPBLOCK  , //  4096
+  parameter ADDR        = $clog2(MEM_SIZE)       , //    27 bits
+  parameter BYTE_OFF    = $clog2(DATAPBLOCK)     , //     4 bits
+  parameter INDEX       = $clog2(CACHE_DEPTH)    , //    12 bits
+  parameter TAG         = ADDR - BYTE_OFF - INDEX, //    11 bits
+  parameter KERNEL_PC   = 'h00000000             ,
+  parameter S_ADDR      = ADDR - BYTE_OFF        ,
+  parameter FIFO_DEPTH  = 256                    ,
+  parameter BAUD_RATE   = 115200
 ) (
   input  logic i_riscv_clk                   ,
   input  logic i_riscv_rst                   ,
@@ -135,9 +133,7 @@ module riscv_top #(
 
   uart_peripheral_top #(
     .FIFO_DEPTH(FIFO_DEPTH),
-    .BAUD_RATE (BAUD_RATE ),
-    .PAR_EN    (PAR_EN    ),
-    .PAR_TYPE  (PAR_TYPE  )
+    .BAUD_RATE (BAUD_RATE )
   ) uart_peripheral_top_inst (
     .i_uart_clk      (i_riscv_clk        ),
     .i_uart_rst_n    (~i_riscv_rst       ),
