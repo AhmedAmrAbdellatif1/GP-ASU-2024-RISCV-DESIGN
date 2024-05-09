@@ -219,8 +219,8 @@ module riscv_lsu #(
     end
 
 
-  assign memory_mapped_instruction = ( (i_riscv_lsu_alu_result == CLINT_MTIME)     ||
-    (i_riscv_lsu_alu_result == CLINT_MTIMECMP)  ||
-    (i_riscv_lsu_alu_result == UART_BASE)       );
+  assign memory_mapped_instruction =  ( (i_riscv_lsu_alu_result == CLINT_MTIME)     ||
+                                        (i_riscv_lsu_alu_result == CLINT_MTIMECMP)  ||
+                                        (i_riscv_lsu_alu_result == UART_BASE)       );
 
 endmodule
