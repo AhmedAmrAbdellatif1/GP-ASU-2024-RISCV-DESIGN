@@ -15,9 +15,9 @@ module uart_tx_serializer #(parameter
   logic [     WIDTH-1:0] data     ;
 
   // uart_tx_serializer sequential always block
-  always @(posedge CLK, negedge RST)
+  always @(posedge CLK, posedge RST)
     begin
-      if(!RST)
+      if(RST)
         begin
           ser_data <= 1'b1;
           data     <= 'b0;
@@ -32,9 +32,9 @@ module uart_tx_serializer #(parameter
     end
 
   // counter sequential always block
-  always @(posedge CLK, negedge RST)
+  always @(posedge CLK, posedge RST)
     begin
-      if(!RST)
+      if(RST)
         counter_r <= WIDTH;
       else
         counter_r <= counter;

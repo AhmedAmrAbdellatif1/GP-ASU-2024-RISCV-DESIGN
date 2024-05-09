@@ -85,7 +85,7 @@ module riscv_top #(
     .S_ADDR     (S_ADDR     )
   ) u_top_core (
     .i_riscv_core_clk               (i_riscv_clk                       ),
-    .i_riscv_core_rst               (i_riscv_rst                       ),
+    .i_riscv_core_rst               (riscv_sync_rst                    ),
     .i_riscv_core_external_interrupt(riscv_top_external_interrupt_pulse),
     .i_riscv_core_mem_ready         (core_mem_ready                    ),
     .i_riscv_core_mem_data_out      (core_mem_data_out                 ),
@@ -148,7 +148,7 @@ module riscv_top #(
 
   uart_peripheral_top #(.FIFO_DEPTH(FIFO_DEPTH)) uart_peripheral_top_inst (
     .i_uart_clk         (i_riscv_clk             ),
-    .i_uart_rst_n       (~i_riscv_rst            ),
+    .i_uart_rst         (riscv_sync_rst          ),
     .i_uart_baud_divisor(uart_config_baud_divisor),
     .i_uart_parity_en   (uart_config_parity_en   ),
     .i_uart_parity_type (uart_config_parity_type ),
@@ -161,7 +161,7 @@ module riscv_top #(
 
   riscv_uart_config riscv_uart_config_inst (
     .i_riscv_config_clk              (i_riscv_clk                  ),
-    .i_riscv_config_rst              (i_riscv_rst                  ),
+    .i_riscv_config_rst              (riscv_sync_rst               ),
     .i_riscv_uart_tx_busy            (uart_tx_busy                 ),
     .i_riscv_config_baud_divisor     (core_config_baud_divisor     ),
     .i_riscv_config_baud_divisor_wren(core_config_baud_divisor_wren),
@@ -174,16 +174,22 @@ module riscv_top #(
 
   riscv_button_debouncer u_riscv_button_debouncer_ext (
     .clk             (i_riscv_clk                           ),
-    .rst             (i_riscv_rst                           ),
+    .rst             (riscv_sync_rst                        ),
     .glitchy_signal  (i_riscv_top_external_interrupt        ),
     .debounced_signal(riscv_top_external_interrupt_debounced)
   );
 
   uart_pulse_gen u_riscv_ext_int_pulse_gen (
     .i_pulse_gen_clk      (i_riscv_clk                           ),
-    .i_pulse_gen_rst_n    (i_riscv_rst                           ),
+    .i_pulse_gen_rst      (riscv_sync_rst                        ),
     .i_pulse_gen_lvl_sig  (riscv_top_external_interrupt_debounced),
     .o_pulse_gen_pulse_sig(riscv_top_external_interrupt_pulse    )
+  );
+
+  uart_rst_sync u_rst_sync_glob (
+    .CLK     (i_riscv_clk   ),
+    .RST     (i_riscv_rst   ),
+    .SYNC_RST(riscv_sync_rst)
   );
 
 endmodule

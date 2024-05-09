@@ -27,9 +27,9 @@ module uart_tx_fsm #(parameter WIDTH = 8) (
   localparam mux_stop   = 2'b11;
 
   // state transition always block
-  always @(posedge CLK, negedge RST)
+  always @(posedge CLK, posedge RST)
     begin
-      if(!RST)
+      if(RST)
         current_state <= IDLE;
       else
         current_state <= next_state;

@@ -1,6 +1,6 @@
 module uart_clk_div (
   input  logic        i_clk_div_ref_clk ,
-  input  logic        i_clk_div_rst_n   ,
+  input  logic        i_clk_div_rst   ,
   input  logic        i_clk_div_clk_en  ,
   input  logic [19:0] i_clk_div_ratio   ,
   output logic        o_clk_div_baud_clk
@@ -29,10 +29,10 @@ module uart_clk_div (
     end
 
   // sequential always block
-  always @(posedge i_clk_div_ref_clk, negedge i_clk_div_rst_n)
+  always @(posedge i_clk_div_ref_clk, posedge i_clk_div_rst)
     begin
       // reset state
-      if(!i_clk_div_rst_n)  begin
+      if(i_clk_div_rst)  begin
         div_clk <= 0;
         counter <= 0;
         flag    <= 0;
