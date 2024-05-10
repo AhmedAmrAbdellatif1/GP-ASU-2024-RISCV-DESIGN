@@ -26,6 +26,8 @@ module riscv_top #(
   logic riscv_top_external_interrupt_debounced;
   logic riscv_rst_sync                        ;
 
+  logic riscv_clk;
+  
   /************************** Datapath to IM **************************/
   logic [63:0] riscv_datapath_pc_im;
   /************************** IM to Datapath **************************/
@@ -68,6 +70,15 @@ module riscv_top #(
   logic uart_tx_busy     ;
 
   assign o_riscv_top_tx_busy = ~uart_tx_busy;
+  
+  clk_wiz_0 u_driving_clock
+     (
+      // Clock out ports
+      .clk_out1(riscv_clk),     // output clk_out1
+      // Status and control signals
+      .reset(i_riscv_rst), // input reset
+     // Clock in ports
+      .clk_in1(i_riscv_clk));
 
   riscv_core #(
     .KERNEL_PC  (KERNEL_PC  ),
@@ -82,7 +93,7 @@ module riscv_top #(
     .TAG        (TAG        ),
     .S_ADDR     (S_ADDR     )
   ) u_top_core (
-    .i_riscv_core_clk               (i_riscv_clk                           ),
+    .i_riscv_core_clk               (riscv_clk                           ),
     .i_riscv_core_rst               (riscv_rst_sync                        ),
     .i_riscv_core_external_interrupt(riscv_top_external_interrupt_debounced),
     .i_riscv_core_mem_ready         (core_mem_ready                        ),
@@ -112,7 +123,7 @@ module riscv_top #(
     .TAG        (TAG        ),
     .S_ADDR     (S_ADDR     )
   ) u_riscv_dram_model (
-    .clk      (i_riscv_clk        ),
+    .clk      (riscv_clk        ),
     .wren     (core_fsm_mem_wren  ),
     .rden     (core_fsm_mem_rden  ),
     .addr     (core_mem_addr      ),
@@ -133,7 +144,7 @@ module riscv_top #(
     .TAG        (TAG        ),
     .S_ADDR     (S_ADDR     )
   ) u_riscv_iram_model (
-    .clk      (i_riscv_clk       ),
+    .clk      (riscv_clk       ),
     .rden     (core_fsm_imem_rden),
     .addr     (core_imem_addr    ),
     .data_out (core_imem_data_out),
@@ -146,7 +157,7 @@ module riscv_top #(
     .PAR_EN      (PAR_EN      ),
     .PAR_TYPE    (PAR_TYPE    )
   ) uart_peripheral_top_inst (
-    .i_uart_clk      (i_riscv_clk        ),
+    .i_uart_clk      (riscv_clk        ),
     .i_uart_rst_n    (~riscv_rst_sync    ),
     .i_uart_tx_pdata (core_uart_tx_pdata ),
     .i_uart_tx_valid (core_uart_tx_valid ),
@@ -156,14 +167,14 @@ module riscv_top #(
   );
 
   riscv_button_debouncer riscv_button_debouncer_inst (
-    .clk      (i_riscv_clk                           ),
+    .clk      (riscv_clk                           ),
     .reset    (riscv_rst_sync                        ),
     .noisy    (i_riscv_top_external_interrupt        ),
     .debounced(riscv_top_external_interrupt_debounced)
   );
 
   riscv_rst_sync riscv_rst_sync_inst (
-    .CLK     (i_riscv_clk   ),
+    .CLK     (riscv_clk   ),
     .RST     (i_riscv_rst   ),
     .SYNC_RST(riscv_rst_sync)
   );
