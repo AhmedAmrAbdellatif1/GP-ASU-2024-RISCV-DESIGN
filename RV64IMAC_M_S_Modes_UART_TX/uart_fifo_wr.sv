@@ -7,7 +7,7 @@
 
 module uart_fifo_wr #(parameter PTR_WIDTH = 4) (
   input  logic                 i_fifo_wr_clk      ,
-  input  logic                 i_fifo_wr_rst    ,
+  input  logic                 i_fifo_wr_rst_n    ,
   input  logic                 i_fifo_wr_winc     ,
   input  logic [PTR_WIDTH-1:0] i_fifo_wr_wptr_conv,
   input  logic [PTR_WIDTH-1:0] i_fifo_wr_rptr_conv,
@@ -20,9 +20,9 @@ module uart_fifo_wr #(parameter PTR_WIDTH = 4) (
   logic FULL_FLAG;
 
   // full calculation always block
-  always @(posedge i_fifo_wr_clk or posedge i_fifo_wr_rst)
+  always @(posedge i_fifo_wr_clk or negedge i_fifo_wr_rst_n)
     begin
-      if(i_fifo_wr_rst)
+      if(!i_fifo_wr_rst_n)
         o_fifo_wr_full <= 1'b0;
       else if(FULL_FLAG)
         o_fifo_wr_full <= 1'b1;
@@ -31,9 +31,9 @@ module uart_fifo_wr #(parameter PTR_WIDTH = 4) (
     end
 
   // write address increment always block
-  always @(posedge i_fifo_wr_clk or posedge i_fifo_wr_rst)
+  always @(posedge i_fifo_wr_clk or negedge i_fifo_wr_rst_n)
     begin
-      if(i_fifo_wr_rst)
+      if(!i_fifo_wr_rst_n)
         o_fifo_wr_wptr <= 'b0;
       else if(i_fifo_wr_winc)
         o_fifo_wr_wptr <= o_fifo_wr_wptr + 1'b1;

@@ -20,11 +20,7 @@ module riscv_core #(
   input  logic [DATA_WIDTH-1:0] i_riscv_core_mem_data_out      ,
   input  logic [DATA_WIDTH-1:0] i_riscv_core_imem_data_out     ,
   input  logic                  i_riscv_core_fifo_full         ,
-  output logic [          19:0] o_riscv_core_baud_divisor      ,
-  output logic [           1:0] o_riscv_core_parity            ,
   output logic [           7:0] o_riscv_core_uart_tx_data      ,
-  output logic                  o_riscv_core_baud_divisor_wren ,
-  output logic                  o_riscv_core_parity_wren       ,
   output logic                  o_riscv_core_uart_tx_valid     ,
   output logic [DATA_WIDTH-1:0] o_riscv_core_cache_data_out    ,
   output logic [    S_ADDR-1:0] o_riscv_core_imem_addr         ,
@@ -65,48 +61,38 @@ module riscv_core #(
   logic [63:0] riscv_timer_datapath_time  ;
 
   /************************* ************** *************************/
-  /************************ Assign Statements ***********************/
-  /************************* ************** *************************/
-
-  assign o_riscv_core_uart_tx_data = riscv_datapath_storedata_m_dm[7:0];
-  assign o_riscv_core_baud_divisor = riscv_datapath_storedata_m_dm[19:0];
-  assign o_riscv_core_parity       = riscv_datapath_storedata_m_dm[1:0];
-
-
-  /************************* ************** *************************/
   /************************* Instantiations *************************/
   /************************* ************** *************************/
 
+  assign o_riscv_core_uart_tx_data = riscv_datapath_storedata_m_dm[7:0];
 
   riscv_datapath u_riscv_datapath (
-    .i_riscv_datapath_clk              (i_riscv_core_clk               ),
-    .i_riscv_datapath_rst              (i_riscv_core_rst               ),
-    .o_riscv_datapath_pc               (riscv_datapath_pc_im           ),
-    .i_riscv_datapath_inst             (riscv_im_inst_datapath         ),
-    .i_riscv_datapath_dm_rdata         (riscv_datapath_rdata_dm        ),
-    .o_riscv_datapath_rdaddr_m         (riscv_datapath_rdaddr_m_hzrdu  ),
-    .o_riscv_datapath_memw_e           (riscv_datapath_memw_e_dm       ),
-    .o_riscv_datapath_memr_e           (riscv_datapath_memr_e_dm       ),
-    .o_riscv_datapath_amo              (riscv_datapath_amo_dm          ),
-    .o_riscv_datapath_amo_op           (riscv_datapath_amo_op_dm       ),
-    .o_riscv_datapath_storesrc_m       (riscv_datapath_storesrc_m_dm   ),
-    .o_riscv_datapath_memodata_addr    (riscv_datapath_memodata_addr_dm),
-    .o_riscv_datapath_storedata_m      (riscv_datapath_storedata_m_dm  ),
-    .i_riscv_datapath_icache_stall_wb  (riscv_datapath_stall_m_im      ),
-    .i_riscv_datapath_stall_dm         (riscv_datapath_stall_m_dm      ),
-    .i_riscv_datapath_stall_im         (riscv_datapath_stall_m_im      ),
-    .o_riscv_datapath_hzrdu_globstall  (riscv_datapath_globstall_hzrdu ),
-    .i_riscv_core_timer_interrupt      (riscv_core_timer_interrupt     ),
-    .i_riscv_core_external_interrupt   (i_riscv_core_external_interrupt),
-    .i_riscv_timer_datapath_rdata      (riscv_timer_datapath_rdata     ),
-    .i_riscv_timer_datapath_time       (riscv_timer_datapath_time      ),
-    .o_riscv_datapath_timer_wren       (riscv_datapath_timer_wren      ),
-    .o_riscv_datapath_timer_rden       (riscv_datapath_timer_rden      ),
-    .o_riscv_datapath_timer_regsel     (riscv_datapath_timer_regsel    ),
-    .i_riscv_datapath_fifo_full        (i_riscv_core_fifo_full         ),
-    .o_riscv_datapath_uart_tx_valid    (o_riscv_core_uart_tx_valid     ),
-    .o_riscv_datapath_baud_divisor_wren(o_riscv_core_baud_divisor_wren ),
-    .o_riscv_datapath_uart_parity_wren (o_riscv_core_parity_wren       )
+    .i_riscv_datapath_clk            (i_riscv_core_clk               ),
+    .i_riscv_datapath_rst            (i_riscv_core_rst               ),
+    .o_riscv_datapath_pc             (riscv_datapath_pc_im           ),
+    .i_riscv_datapath_inst           (riscv_im_inst_datapath         ),
+    .i_riscv_datapath_dm_rdata       (riscv_datapath_rdata_dm        ),
+    .o_riscv_datapath_rdaddr_m       (riscv_datapath_rdaddr_m_hzrdu  ),
+    .o_riscv_datapath_memw_e         (riscv_datapath_memw_e_dm       ),
+    .o_riscv_datapath_memr_e         (riscv_datapath_memr_e_dm       ),
+    .o_riscv_datapath_amo            (riscv_datapath_amo_dm          ),
+    .o_riscv_datapath_amo_op         (riscv_datapath_amo_op_dm       ),
+    .o_riscv_datapath_storesrc_m     (riscv_datapath_storesrc_m_dm   ),
+    .o_riscv_datapath_memodata_addr  (riscv_datapath_memodata_addr_dm),
+    .o_riscv_datapath_storedata_m    (riscv_datapath_storedata_m_dm  ),
+    .i_riscv_datapath_icache_stall_wb(riscv_datapath_stall_m_im      ),
+    .i_riscv_datapath_stall_dm       (riscv_datapath_stall_m_dm      ),
+    .i_riscv_datapath_stall_im       (riscv_datapath_stall_m_im      ),
+    .o_riscv_datapath_hzrdu_globstall(riscv_datapath_globstall_hzrdu ),
+    .i_riscv_core_timer_interrupt    (riscv_core_timer_interrupt     ),
+    .i_riscv_core_external_interrupt (i_riscv_core_external_interrupt),
+    .i_riscv_timer_datapath_rdata    (riscv_timer_datapath_rdata     ),
+    .i_riscv_timer_datapath_time     (riscv_timer_datapath_time      ),
+    .o_riscv_datapath_timer_wren     (riscv_datapath_timer_wren      ),
+    .o_riscv_datapath_timer_rden     (riscv_datapath_timer_rden      ),
+    .o_riscv_datapath_timer_regsel   (riscv_datapath_timer_regsel    ),
+    .i_riscv_datapath_fifo_full      (i_riscv_core_fifo_full         ),
+    .o_riscv_datapath_uart_tx_valid  (o_riscv_core_uart_tx_valid     )
   );
 
   riscv_data_cache #(

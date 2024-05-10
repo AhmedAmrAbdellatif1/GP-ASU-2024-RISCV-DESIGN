@@ -1,6 +1,6 @@
 module uart_fifo_df_sync #(parameter BUS_WIDTH = 4, NUM_STAGES = 2) (
   input  logic                 i_fifo_dfsync_clk  ,
-  input  logic                 i_fifo_dfsync_rst,
+  input  logic                 i_fifo_dfsync_rst_n,
   input  logic [BUS_WIDTH-1:0] i_fifo_dfsync_async,
   output logic [BUS_WIDTH-1:0] o_fifo_dfsync_sync
 );
@@ -11,9 +11,9 @@ module uart_fifo_df_sync #(parameter BUS_WIDTH = 4, NUM_STAGES = 2) (
   // control loop index
   integer i;
 
-  always @(posedge i_fifo_dfsync_rst or posedge i_fifo_dfsync_clk)
+  always @(negedge i_fifo_dfsync_rst_n or posedge i_fifo_dfsync_clk)
     begin
-      if(i_fifo_dfsync_rst)
+      if(!i_fifo_dfsync_rst_n)
         for(i = 0; i < NUM_STAGES; i = i + 1)
           sync_dff[i] <= 'b0;
       else

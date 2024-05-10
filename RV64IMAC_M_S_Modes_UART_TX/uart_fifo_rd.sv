@@ -7,7 +7,7 @@
 
 module uart_fifo_rd #(parameter PTR_WIDTH = 4) (
   input  logic                 i_fifo_rd_clk      ,
-  input  logic                 i_fifo_rd_rst    ,
+  input  logic                 i_fifo_rd_rst_n    ,
   input  logic                 i_fifo_rd_rinc     ,
   input  logic [PTR_WIDTH-1:0] i_fifo_rd_wptr_conv,
   input  logic [PTR_WIDTH-1:0] i_fifo_rd_rptr_conv,
@@ -20,9 +20,9 @@ module uart_fifo_rd #(parameter PTR_WIDTH = 4) (
   logic EMPTY_FLAG;
 
   // empty calculation always block
-  always @(posedge i_fifo_rd_clk or posedge i_fifo_rd_rst)
+  always @(posedge i_fifo_rd_clk or negedge i_fifo_rd_rst_n)
     begin
-      if(i_fifo_rd_rst)
+      if(!i_fifo_rd_rst_n)
         o_fifo_rd_empty <= 1'b1;
       else if(EMPTY_FLAG)
         o_fifo_rd_empty <= 1'b1;
@@ -31,9 +31,9 @@ module uart_fifo_rd #(parameter PTR_WIDTH = 4) (
     end
 
   // read address increment always block
-  always @(posedge i_fifo_rd_clk or posedge i_fifo_rd_rst)
+  always @(posedge i_fifo_rd_clk or negedge i_fifo_rd_rst_n)
     begin
-      if(i_fifo_rd_rst)
+      if(!i_fifo_rd_rst_n)
         o_fifo_rd_rptr <= 'b0;
       else if(!o_fifo_rd_empty && i_fifo_rd_rinc)
         o_fifo_rd_rptr <= o_fifo_rd_rptr + 1'b1;

@@ -1364,7 +1364,7 @@ end
   
 
 /*************************************    Mcycle Counter    *************************************/
-  always @(*) 
+  always_comb 
    begin    
       mcounter_we[0] <= 1'b0;     
    if (csr_write_access_en && i_riscv_csr_address == MCYCLE)                    
@@ -1382,7 +1382,7 @@ end
 
 
 /*************************************    Minstret Counter    *************************************/
-  always @(*) 
+  always_comb 
   begin    
      mcounter_we[1] <= 1'b0;    
   if (csr_write_access_en && i_riscv_csr_address == MINSTRET)                    

@@ -12,7 +12,7 @@ module uart_fifo_mem_ctrl #(parameter FIFO_DEPTH = 8, parameter PTR_WIDTH = ($cl
   input  logic [PTR_WIDTH-2:0] i_mem_ctrl_waddr  ,
   input  logic [PTR_WIDTH-2:0] i_mem_ctrl_raddr  ,
   input  logic                 i_mem_ctrl_wclk   ,
-  input  logic                 i_mem_ctrl_wrst ,
+  input  logic                 i_mem_ctrl_wrst_n ,
   output logic [          7:0] o_mem_ctrl_rdata
 );
 
@@ -23,9 +23,9 @@ module uart_fifo_mem_ctrl #(parameter FIFO_DEPTH = 8, parameter PTR_WIDTH = ($cl
   integer i;
 
   // write-port memory
-  always @(posedge i_mem_ctrl_wclk or posedge i_mem_ctrl_wrst)
+  always @(posedge i_mem_ctrl_wclk or negedge i_mem_ctrl_wrst_n)
     begin
-      if(i_mem_ctrl_wrst)
+      if(!i_mem_ctrl_wrst_n)
         begin
           for(i = 0; i < FIFO_DEPTH; i = i + 1)
             begin
