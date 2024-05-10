@@ -71,7 +71,7 @@ module riscv_top #(
 
   assign o_riscv_top_tx_busy = ~uart_tx_busy;
   
-  clk_wiz_0 u_driving_clock
+  clk_wiz_0 clk_wiz_0
      (
       // Clock out ports
       .clk_out1(riscv_clk),     // output clk_out1
