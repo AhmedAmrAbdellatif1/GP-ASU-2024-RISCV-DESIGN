@@ -100,7 +100,6 @@
             o_riscv_em_instret_m               <= 'b0;
             o_riscv_em_pc                      <= 'b0;
             o_riscv_em_rddata_sc_m             <= 'b0;
-            o_riscv_em_dcache_addr             <= 'b0;
             o_riscv_em_amo_op_m                <= 'b0;
             o_riscv_em_inst                    <= 'b0;
             o_riscv_em_cinst                   <= 'b0;
@@ -136,7 +135,6 @@
             o_riscv_em_instret_m               <= 'b0;
             o_riscv_em_pc                      <= 'b0;
             o_riscv_em_rddata_sc_m             <= 'b0;
-            o_riscv_em_dcache_addr             <= 'b0;
             o_riscv_em_amo_op_m                <= 'b0;
             o_riscv_em_inst                    <= 'b0;
             o_riscv_em_cinst                   <= 'b0;
@@ -172,7 +170,6 @@
             o_riscv_em_instret_m               <= i_riscv_em_instret_e;
             o_riscv_em_pc                      <= i_riscv_em_pc;
             o_riscv_em_rddata_sc_m             <= i_riscv_em_rddata_sc_e;
-            o_riscv_em_dcache_addr             <= i_riscv_em_dcache_addr;
             o_riscv_em_amo_op_m                <= i_riscv_em_amo_op_e;
             o_riscv_em_inst                    <= i_riscv_em_inst;
             o_riscv_em_cinst                   <= i_riscv_em_cinst;
@@ -180,6 +177,25 @@
             o_riscv_em_timer_rden              <= i_riscv_em_timer_rden  ;
             o_riscv_em_timer_regsel            <= i_riscv_em_timer_regsel;
             o_riscv_em_uart_tx_valid           <= i_riscv_em_uart_tx_valid;
+          end
+      end
+
+      always_ff @ (posedge i_riscv_em_clk)
+      begin
+        if (i_riscv_em_rst)
+          begin
+            o_riscv_em_dcache_addr             <= 'b0;
+
+          end
+        else if(i_riscv_em_flush)
+          begin
+            o_riscv_em_dcache_addr             <= 'b0;
+
+          end
+        else if(!i_riscv_em_en)
+          begin
+            o_riscv_em_dcache_addr             <= i_riscv_em_dcache_addr;
+
           end
       end
   endmodule

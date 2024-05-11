@@ -30,7 +30,7 @@ module riscv_dcache_fsm  (
   logic       cpu_rden_reg,cpu_wren_reg,cpu_amoen_reg;//new
 
   //
-   always_ff @(posedge clk or posedge rst) begin
+   always_ff @(posedge clk) begin
    if(rst)begin
      cpu_rden_reg  <= 1'b0;
      cpu_wren_reg  <= 1'b0;

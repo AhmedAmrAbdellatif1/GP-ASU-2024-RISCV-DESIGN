@@ -1,27 +1,27 @@
-module riscv_top #(
-  parameter              DATA_WIDTH   = 128                    ,
-  parameter              CACHE_SIZE   = 4*(2**10)              , //64 * (2**10)
-  parameter              MEM_SIZE     = 4*CACHE_SIZE           , //128*(2**20)
-  parameter              DMEM_DEPTH   = MEM_SIZE/16            , //128*(2**20)
-  parameter              DATAPBLOCK   = 16                     ,
-  parameter              CACHE_DEPTH  = CACHE_SIZE/DATAPBLOCK  , //  4096
-  parameter              ADDR         = $clog2(MEM_SIZE)       , //    27 bits
-  parameter              BYTE_OFF     = $clog2(DATAPBLOCK)     , //     4 bits
-  parameter              INDEX        = $clog2(CACHE_DEPTH)    , //    12 bits
-  parameter              TAG          = ADDR - BYTE_OFF - INDEX, //    11 bits
-  parameter              KERNEL_PC    = 'h00000000             ,
-  parameter              S_ADDR       = ADDR - BYTE_OFF        ,
-  parameter              FIFO_DEPTH   = 256                    ,
-  parameter logic [19:0] BAUD_DIVISOR = 6945                   ,
-  parameter logic [ 0:0] PAR_EN       = 1                      ,
-  parameter logic [ 0:0] PAR_TYPE     = 0
-) (
+module riscv_top (
   input  logic i_riscv_clk                   ,
   input  logic i_riscv_rst                   ,
   input  logic i_riscv_top_external_interrupt,
   output logic o_riscv_top_tx_data           ,
   output logic o_riscv_top_tx_busy
 );
+
+  parameter              DATA_WIDTH   = 128                    ;
+  parameter              CACHE_SIZE   = 4*(2**10)              ; //64 * (2**10)
+  parameter              MEM_SIZE     = 4*CACHE_SIZE           ; //128*(2**20)
+  parameter              DMEM_DEPTH   = MEM_SIZE/16            ; //128*(2**20)
+  parameter              DATAPBLOCK   = 16                     ;
+  parameter              CACHE_DEPTH  = CACHE_SIZE/DATAPBLOCK  ; //  4096
+  parameter              ADDR         = $clog2(MEM_SIZE)       ; //    27 bits
+  parameter              BYTE_OFF     = $clog2(DATAPBLOCK)     ; //     4 bits
+  parameter              INDEX        = $clog2(CACHE_DEPTH)    ; //    12 bits
+  parameter              TAG          = ADDR - BYTE_OFF - INDEX; //    11 bits
+  parameter              KERNEL_PC    = 'h00000000             ;
+  parameter              S_ADDR       = ADDR - BYTE_OFF        ;
+  parameter              FIFO_DEPTH   = 256                    ;
+  parameter logic [19:0] BAUD_DIVISOR = 6945                   ;
+  parameter logic [ 0:0] PAR_EN       = 1                      ;
+  parameter logic [ 0:0] PAR_TYPE     = 0                      ;
 
   logic riscv_top_external_interrupt_debounced;
   logic riscv_rst_sync                        ;
