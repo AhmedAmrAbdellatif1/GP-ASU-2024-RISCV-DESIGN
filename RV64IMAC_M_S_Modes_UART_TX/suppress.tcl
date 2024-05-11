@@ -191,3 +191,7 @@ set_msg_config -suppress -id {Synth 8-3332} -string {{WARNING: [Synth 8-3332] Se
 set_msg_config -suppress -id {Synth 8-3332} -string {{WARNING: [Synth 8-3332] Sequential element (o_riscv_em_load_addr_misaligned_m_reg) is unused and will be removed from module riscv_ppreg_em.} } 
 set_msg_config -suppress -id {Synth 8-3332} -string {{WARNING: [Synth 8-3332] Sequential element (o_riscv_em_amo_op_m_reg[1]) is unused and will be removed from module riscv_ppreg_em.} } 
 set_msg_config -suppress -id {Synth 8-3332} -string {{WARNING: [Synth 8-3332] Sequential element (o_riscv_de_immzeroextend_e_reg[63]) is unused and will be removed from module riscv_ppreg_de.} } 
+
+
+set_property STEPS.PLACE_DESIGN.ARGS.DIRECTIVE ExtraTimingOpt [get_runs impl_1]
+set_property STEPS.PHYS_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
