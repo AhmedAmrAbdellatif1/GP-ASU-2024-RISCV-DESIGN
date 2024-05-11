@@ -7,15 +7,15 @@ module riscv_tracer #(parameter dwidth=64,iwidth=32,awidth=5,cwidth=16) (
   input   logic [dwidth-1:0]   i_riscv_trc_memaddr ,
   input   logic [dwidth-1:0]   i_riscv_trc_pc      ,
   input   logic [dwidth-1:0]   i_riscv_trc_store   ,
-  input   logic [dwidth-1:0]   i_riscv_trc_rddata  ,
+  input   logic [dwidth-1:0]   i_riscv_trc_rddata  );
   
-  output  logic [iwidth-1:0]   o_riscv_trc_inst    ,
-  output  logic [cwidth-1:0]   o_riscv_trc_cinst   ,
-  output  logic [awidth-1:0]   o_riscv_trc_rdaddr  ,
-  output  logic [dwidth-1:0]   o_riscv_trc_memaddr ,
-  output  logic [dwidth-1:0]   o_riscv_trc_pc      ,
-  output  logic [dwidth-1:0]   o_riscv_trc_store   ,
-  output  logic [dwidth-1:0]   o_riscv_trc_rddata  );
+  //output  logic [iwidth-1:0]   o_riscv_trc_inst    ,
+  //output  logic [cwidth-1:0]   o_riscv_trc_cinst   ,
+  //output  logic [awidth-1:0]   o_riscv_trc_rdaddr  ,
+  //output  logic [dwidth-1:0]   o_riscv_trc_memaddr ,
+  //output  logic [dwidth-1:0]   o_riscv_trc_pc      ,
+  //output  logic [dwidth-1:0]   o_riscv_trc_store   ,
+  //output  logic [dwidth-1:0]   o_riscv_trc_rddata  );
 
   // internal registers
   (* dont_touch = "yes" *) logic [iwidth-1:0]   reg_riscv_trc_inst     ;

@@ -712,14 +712,7 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_trc_memaddr(riscv_memaddr_wb    ),
     .i_riscv_trc_pc     (riscv_pc_wb         ),
     .i_riscv_trc_store  (riscv_rs2data_wb    ),
-    .i_riscv_trc_rddata (riscv_rddata_wb     ),
-    .o_riscv_trc_inst   (                    ),
-    .o_riscv_trc_cinst  (                    ),
-    .o_riscv_trc_rdaddr (                    ),
-    .o_riscv_trc_memaddr(                    ),
-    .o_riscv_trc_pc     (                    ),
-    .o_riscv_trc_store  (                    ),
-    .o_riscv_trc_rddata (                    )
+    .i_riscv_trc_rddata (riscv_rddata_wb     )
   );
 
 endmodule

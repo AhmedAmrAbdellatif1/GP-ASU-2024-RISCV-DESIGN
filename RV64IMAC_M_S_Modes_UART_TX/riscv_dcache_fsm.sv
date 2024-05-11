@@ -46,11 +46,11 @@ module riscv_dcache_fsm  (
  /********************************************* FSM *********************************************/
 
    // Current state sequential block
-  always_ff @(posedge clk or posedge rst) begin
+  always_ff @(posedge clk) begin
     if(rst)
       current_state <= IDLE;
     else
-      current_state <= next_state;    
+      current_state <= next_state;
   end
 
   // Next State & Output combinational block
