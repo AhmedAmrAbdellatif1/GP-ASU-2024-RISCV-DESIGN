@@ -81,7 +81,6 @@
             o_riscv_em_memext_m                <= 'b0;
             o_riscv_em_pcplus4_m               <= 'b0;
             o_riscv_em_result_m                <= 'b0;
-            o_riscv_em_storedata_m             <= 'b0;
             o_riscv_em_rdaddr_m                <= 'b0;
             o_riscv_em_imm_m                   <= 'b0;
             o_riscv_em_opcode_m                <= 'b0;
@@ -116,7 +115,6 @@
             o_riscv_em_memext_m                <= 'b0;
             o_riscv_em_pcplus4_m               <= 'b0;
             o_riscv_em_result_m                <= 'b0;
-            o_riscv_em_storedata_m             <= 'b0;
             o_riscv_em_rdaddr_m                <= 'b0;
             o_riscv_em_imm_m                   <= 'b0;
             o_riscv_em_opcode_m                <= 'b0;
@@ -151,7 +149,6 @@
             o_riscv_em_memext_m                <= i_riscv_em_memext_e;
             o_riscv_em_pcplus4_m               <= i_riscv_em_pcplus4_e;
             o_riscv_em_result_m                <= i_riscv_em_result_e;
-            o_riscv_em_storedata_m             <= i_riscv_em_storedata_e;
             o_riscv_em_rdaddr_m                <= i_riscv_em_rdaddr_e;
             o_riscv_em_imm_m                   <= i_riscv_em_imm_e;
             o_riscv_em_opcode_m                <= i_riscv_em_opcode_e;
@@ -185,17 +182,19 @@
         if (i_riscv_em_rst)
           begin
             o_riscv_em_dcache_addr             <= 'b0;
+            o_riscv_em_storedata_m             <= 'b0;
 
           end
         else if(i_riscv_em_flush)
           begin
             o_riscv_em_dcache_addr             <= 'b0;
+            o_riscv_em_storedata_m             <= 'b0;
 
           end
         else if(!i_riscv_em_en)
           begin
             o_riscv_em_dcache_addr             <= i_riscv_em_dcache_addr;
-
+            o_riscv_em_storedata_m             <= i_riscv_em_storedata_e;
           end
       end
   endmodule
