@@ -12,6 +12,8 @@ set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property CFGBVS VCCO [current_design]
 
 create_generated_clock -name UART_CLK -source [get_pins clk_wiz_0/inst/plle2_adv_inst/CLKOUT0] -divide_by 6945 [get_pins uart_peripheral_top_inst/uart_clk_div_inst/div_clk_reg/Q]
+set_false_path -from [get_clocks -of_objects [get_pins clk_wiz_0/inst/plle2_adv_inst/CLKOUT0]] -to [get_clocks UART_CLK]
+
 set_input_delay -clock [get_clocks UART_CLK] -min -add_delay 1.500 [get_ports i_riscv_rst]
 set_input_delay -clock [get_clocks UART_CLK] -max -add_delay 4.500 [get_ports i_riscv_rst]
 set_output_delay -clock [get_clocks UART_CLK] -min -add_delay -1.500 [get_ports o_riscv_top_tx_data]

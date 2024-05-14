@@ -18,6 +18,8 @@ set_input_delay -clock [get_clocks {VIRTUAL_CLK}] -min -add_delay 1.5 [get_ports
 set_input_delay -clock [get_clocks {VIRTUAL_CLK}] -max -add_delay 4.5 [get_ports {i_riscv_top_external_interrupt}]
 
 create_generated_clock -name UART_CLK -source [get_ports i_riscv_clk] -divide_by 20834 [get_pins {uart_peripheral_top_inst/uart_clk_div_inst/div_clk_reg/Q}]
+set_false_path -from [get_clocks -of_objects [get_pins clk_wiz_0/inst/plle2_adv_inst/CLKOUT0]] -to [get_clocks UART_CLK]
+
 set_input_delay -clock [get_clocks UART_CLK] -min -add_delay 1.500 [get_ports i_riscv_rst];
 set_input_delay -clock [get_clocks UART_CLK] -max -add_delay 4.500 [get_ports i_riscv_rst];
 
