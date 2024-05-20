@@ -1,16 +1,16 @@
   module riscv_ppreg_mw(
     //------------------------------------------------>
     `ifdef TEST
+    input   logic [31:0]  i_riscv_mw_inst             ,
     input   logic [15:0]  i_riscv_mw_cinst            ,
     input   logic [63:0]  i_riscv_mw_memaddr          ,
     output  logic [15:0]  o_riscv_mw_cinst            ,
     output  logic [63:0]  o_riscv_mw_memaddr          ,
+    output  logic [31:0]  o_riscv_mw_inst             ,
     `endif
     //<------------------------------------------------
-    input   logic [31:0]  i_riscv_mw_inst             ,
     input   logic [63:0]  i_riscv_mw_pc               ,
     input   logic [63:0]  i_riscv_mw_rs2data          ,
-    output  logic [31:0]  o_riscv_mw_inst             ,
     output  logic [63:0]  o_riscv_mw_pc               ,
     output  logic [63:0]  o_riscv_mw_rs2data          ,
     input   logic         i_riscv_mw_clk              , 
