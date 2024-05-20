@@ -51,14 +51,4 @@ module riscv_tracer #(parameter dwidth=64,iwidth=32,awidth=5,cwidth=16) (
          reg_riscv_trc_rddata   <= i_riscv_trc_rddata;
         end
     end
-
-    assign o_riscv_trc_inst     = i_riscv_trc_inst    ;
-    assign o_riscv_trc_cinst    = i_riscv_trc_cinst   ;
-    assign o_riscv_trc_rdaddr   = i_riscv_trc_rdaddr  ;
-    assign o_riscv_trc_memaddr  = i_riscv_trc_memaddr ;
-    assign o_riscv_trc_pc       = i_riscv_trc_pc      ;
-    assign o_riscv_trc_store    = i_riscv_trc_store   ;
-    assign o_riscv_trc_rddata   = i_riscv_trc_rddata  ;
-
-
 endmodule 

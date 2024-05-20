@@ -177,24 +177,22 @@
           end
       end
 
-      always_ff @ (posedge i_riscv_em_clk)
+    always @ (posedge i_riscv_em_clk)
       begin
         if (i_riscv_em_rst)
           begin
-            o_riscv_em_dcache_addr             <= 'b0;
-            o_riscv_em_storedata_m             <= 'b0;
-
+            o_riscv_em_storedata_m <= 'b0;
+            o_riscv_em_dcache_addr <= 'b0;
           end
         else if(i_riscv_em_flush)
           begin
-            o_riscv_em_dcache_addr             <= 'b0;
-            o_riscv_em_storedata_m             <= 'b0;
-
+            o_riscv_em_storedata_m <= 'b0;
+            o_riscv_em_dcache_addr <= 'b0;
           end
         else if(!i_riscv_em_en)
           begin
-            o_riscv_em_dcache_addr             <= i_riscv_em_dcache_addr;
-            o_riscv_em_storedata_m             <= i_riscv_em_storedata_e;
+            o_riscv_em_storedata_m <= i_riscv_em_storedata_e;
+            o_riscv_em_dcache_addr <= i_riscv_em_dcache_addr;
           end
       end
   endmodule

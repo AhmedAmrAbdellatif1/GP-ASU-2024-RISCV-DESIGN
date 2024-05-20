@@ -1,18 +1,18 @@
   module riscv_ppreg_mw(
     //------------------------------------------------>
-   
-    input   logic [31:0]  i_riscv_mw_inst             ,
+    `ifdef TEST
     input   logic [15:0]  i_riscv_mw_cinst            ,
     input   logic [63:0]  i_riscv_mw_memaddr          ,
+    output  logic [15:0]  o_riscv_mw_cinst            ,
+    output  logic [63:0]  o_riscv_mw_memaddr          ,
+    `endif
+    //<------------------------------------------------
+    input   logic [31:0]  i_riscv_mw_inst             ,
     input   logic [63:0]  i_riscv_mw_pc               ,
     input   logic [63:0]  i_riscv_mw_rs2data          ,
     output  logic [31:0]  o_riscv_mw_inst             ,
-    output  logic [15:0]  o_riscv_mw_cinst            ,
-    output  logic [63:0]  o_riscv_mw_memaddr          ,
     output  logic [63:0]  o_riscv_mw_pc               ,
     output  logic [63:0]  o_riscv_mw_rs2data          ,
-   
-    //<------------------------------------------------
     input   logic         i_riscv_mw_clk              , 
     input   logic         i_riscv_mw_rst              , 
     input   logic         i_riscv_mw_en               , 
@@ -62,14 +62,14 @@
           o_riscv_mw_returnfromtrap_wb <='b0;
           o_riscv_mw_instret_wb        <='b0;
           o_riscv_mw_rddata_sc_wb      <='b0;
-          //---------------------------->
-         
           o_riscv_mw_inst              <='b0;  
-          o_riscv_mw_cinst             <='b0;
           o_riscv_mw_pc                <='b0;
-          o_riscv_mw_memaddr           <='b0;
           o_riscv_mw_rs2data           <='b0;
-         
+          //---------------------------->
+          `ifdef TEST
+          o_riscv_mw_cinst             <='b0;
+          o_riscv_mw_memaddr           <='b0;
+          `endif
           //<----------------------------
         end
       else if (i_riscv_mw_flush) begin
@@ -86,14 +86,14 @@
           o_riscv_mw_returnfromtrap_wb  <='b0;
           o_riscv_mw_instret_wb         <='b0;
           o_riscv_mw_rddata_sc_wb       <='b0;
-          //---------------------------->
-         
           o_riscv_mw_inst               <='b0;  
-          o_riscv_mw_cinst              <='b0;
           o_riscv_mw_pc                 <='b0;
-          o_riscv_mw_memaddr            <='b0;
           o_riscv_mw_rs2data            <='b0;
-         
+          //---------------------------->
+          `ifdef TEST
+          o_riscv_mw_cinst             <='b0;
+          o_riscv_mw_memaddr           <='b0;
+          `endif
           //<----------------------------
         end
         else if (!i_riscv_mw_en) begin
@@ -110,15 +110,14 @@
           o_riscv_mw_returnfromtrap_wb  <=  i_riscv_mw_returnfromtrap_m;
           o_riscv_mw_instret_wb         <=  i_riscv_mw_instret_m;
           o_riscv_mw_rddata_sc_wb       <=  i_riscv_mw_rddata_sc_m;
-
-          //------------------------------------------->
-         
           o_riscv_mw_inst               <=  i_riscv_mw_inst;
-          o_riscv_mw_cinst              <=  i_riscv_mw_cinst;
           o_riscv_mw_pc                 <=  i_riscv_mw_pc;
-          o_riscv_mw_memaddr            <=  i_riscv_mw_memaddr;
           o_riscv_mw_rs2data            <=  i_riscv_mw_rs2data;
-         
+          //------------------------------------------->
+          `ifdef TEST
+          o_riscv_mw_cinst              <=  i_riscv_mw_cinst;
+          o_riscv_mw_memaddr            <=  i_riscv_mw_memaddr;
+          `endif
          //<---------------------------------------------
         end
         else
