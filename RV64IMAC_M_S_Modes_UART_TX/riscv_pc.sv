@@ -1,12 +1,12 @@
-module riscv_pc # (parameter KERNEL_PC = 'h80000000  ) (
+module riscv_pc # (parameter KERNEL_PC = 'h00000000  ) (
  input  logic         i_riscv_pc_clk      ,
- input  logic         i_riscv_pc_rst      ,           
+ input  logic         i_riscv_pc_rst      ,
  input  logic         i_riscv_pc_stallpc  ,
  input  logic [63:0]  i_riscv_pc_nextpc   ,
  output logic [63:0]  o_riscv_pc_pc
  );
  
-  always_ff @(posedge i_riscv_pc_clk or posedge i_riscv_pc_rst) begin
+  always_ff @(posedge i_riscv_pc_clk) begin
     if(i_riscv_pc_rst)
       o_riscv_pc_pc  <=  KERNEL_PC;
     else if(!i_riscv_pc_stallpc)
