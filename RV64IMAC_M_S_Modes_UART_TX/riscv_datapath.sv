@@ -570,18 +570,16 @@ module riscv_datapath #(parameter MXLEN = 64) (
 
   ////memory write back pipeline flip flops ////
   riscv_ppreg_mw u_riscv_mw_ppreg (
-    .i_riscv_mw_inst             (riscv_inst_m                                              ),
+    `ifdef TEST
     .i_riscv_mw_cinst            (riscv_cinst_m                                             ),
     .i_riscv_mw_memaddr          (o_riscv_datapath_memodata_addr                            ),
-    .i_riscv_mw_pc               (riscv_pc_m                                                ),
-    .i_riscv_mw_rs2data          (i_riscv_datapath_dm_rdata                                 ),
-    .o_riscv_mw_inst             (riscv_inst_wb                                             ),
-
-    `ifdef TEST
     .o_riscv_mw_cinst            (riscv_cinst_wb                                            ),
     .o_riscv_mw_memaddr          (riscv_memaddr_wb                                          ),
     `endif
-
+    .i_riscv_mw_inst             (riscv_inst_m                                              ),
+    .i_riscv_mw_pc               (riscv_pc_m                                                ),
+    .i_riscv_mw_rs2data          (i_riscv_datapath_dm_rdata                                 ),
+    .o_riscv_mw_inst             (riscv_inst_wb                                             ),
     .o_riscv_mw_pc               (riscv_pc_wb                                               ),
     .o_riscv_mw_rs2data          (riscv_rs2data_wb                                          ),
     .i_riscv_mw_regw_m           (riscv_regw_m && !gototrap_csr_mw && !returnfromtrap_csr_mw),
