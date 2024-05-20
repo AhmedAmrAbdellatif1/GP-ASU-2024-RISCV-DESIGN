@@ -211,7 +211,4 @@ set_msg_config -suppress -id {Synth 8-3332} -string {{WARNING: [Synth 8-3332] Se
 set_msg_config -suppress -id {Synth 8-3332} -string {{WARNING: [Synth 8-3332] Sequential element (o_riscv_em_dcache_addr_reg[49]) is unused and will be removed from module riscv_ppreg_em.} } 
 
 
-#set_property STEPS.POST_PLACE_POWER_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
-#set_property STEPS.PHYS_OPT_DESIGN.ARGS.DIRECTIVE AggressiveFanoutOpt [get_runs impl_1]
-#set_property STEPS.POST_ROUTE_PHYS_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
-#set_property STEPS.POST_ROUTE_PHYS_OPT_DESIGN.ARGS.DIRECTIVE AddRetime [get_runs impl_1]
+create_run impl_2 -parent_run synth_1 -flow {Vivado Implementation 2018} -strategy Performance_ExtraTimingOpt -report_strategy {Vivado Implementation Default Reports}
