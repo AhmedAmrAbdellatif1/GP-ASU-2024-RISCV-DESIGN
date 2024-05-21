@@ -1,6 +1,0 @@
-# compile verilog/system verilog design source files
-verilog xil_defaultlib  --include "../../../../../syn.srcs/sources_1/ip/clk_wiz_0" \
-"riscv_top_time_synth.v" \
-
-# Do not sort compile order
-nosort
