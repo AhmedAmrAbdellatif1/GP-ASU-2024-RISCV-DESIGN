@@ -1,0 +1,12 @@
+
+{ 
+    crc :  2657549637772119895  , 
+    ccp_crc :  0  , 
+    cmdline : " -wto 40695bd87a0d4eea8554de4ae0dc7c9c --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L secureip --snapshot riscv_top_func_synth xil_defaultlib.riscv_top xil_defaultlib.glbl" , 
+    buildDate : "Jun 14 2018" , 
+    buildTime : "20:41:02" , 
+    linkCmd : "E:\\Xilinx\\Vivado\\2018.2\\data\\..\\tps\\mingw\\6.2.0\\win64.o\\nt\\bin\\gcc.exe -Wa,-W  -O -Wl,--stack,104857600 -o \"xsim.dir/riscv_top_func_synth/xsimk.exe\"   \"xsim.dir/riscv_top_func_synth/obj/xsim_0.win64.obj\" \"xsim.dir/riscv_top_func_synth/obj/xsim_1.win64.obj\" \"xsim.dir/riscv_top_func_synth/obj/xsim_2.win64.obj\" \"xsim.dir/riscv_top_func_synth/obj/xsim_3.win64.obj\" \"xsim.dir/riscv_top_func_synth/obj/xsim_4.win64.obj\" \"xsim.dir/riscv_top_func_synth/obj/xsim_5.win64.obj\" \"xsim.dir/riscv_top_func_synth/obj/xsim_6.win64.obj\" \"E:\\Xilinx\\Vivado\\2018.2\\lib\\win64.o\\\\librdi_simulator_kernel.dll\"  \"E:\\Xilinx\\Vivado\\2018.2\\lib\\win64.o\\\\librdi_simbridge_kernel.dll\"" , 
+    aggregate_nets : 
+    [ 
+    ] 
+} 
