@@ -20,6 +20,11 @@ module riscv_core #(
   input  logic [DATA_WIDTH-1:0] i_riscv_core_mem_data_out      ,
   input  logic [DATA_WIDTH-1:0] i_riscv_core_imem_data_out     ,
   input  logic                  i_riscv_core_fifo_full         ,
+  input  logic [           7:0] i_riscv_core_switches_upper    ,
+  input  logic [           7:0] i_riscv_core_switches_lower    ,
+  input  logic                  i_riscv_core_button1           ,
+  input  logic                  i_riscv_core_button2           ,
+  input  logic                  i_riscv_core_button3           ,
   output logic [           7:0] o_riscv_core_uart_tx_data      ,
   output logic                  o_riscv_core_uart_tx_valid     ,
   output logic [DATA_WIDTH-1:0] o_riscv_core_cache_data_out    ,
@@ -27,7 +32,10 @@ module riscv_core #(
   output logic [    S_ADDR-1:0] o_riscv_core_mem_addr          ,
   output logic                  o_riscv_core_fsm_imem_rden     ,
   output logic                  o_riscv_core_fsm_mem_wren      ,
-  output logic                  o_riscv_core_fsm_mem_rden
+  output logic                  o_riscv_core_fsm_mem_rden      ,
+  output logic [          63:0] o_riscv_core_storedata_m_dm    ,
+  output logic                  o_riscv_core_seg_en            ,
+  output logic                  o_riscv_core_led_en
 );
 
 
@@ -46,7 +54,6 @@ module riscv_core #(
   logic        riscv_datapath_amo_dm          ;
   logic [ 4:0] riscv_datapath_amo_op_dm       ;
   logic [63:0] riscv_datapath_memodata_addr_dm;
-  logic [63:0] riscv_datapath_storedata_m_dm  ;
 
   /************************ Instruction Cache Signals ************************/
   logic [63:0] riscv_datapath_pc_im     ;
@@ -64,7 +71,7 @@ module riscv_core #(
   /************************* Instantiations *************************/
   /************************* ************** *************************/
 
-  assign o_riscv_core_uart_tx_data = riscv_datapath_storedata_m_dm[7:0];
+  assign o_riscv_core_uart_tx_data = o_riscv_core_storedata_m_dm[7:0];
 
   riscv_datapath u_riscv_datapath (
     .i_riscv_datapath_clk            (i_riscv_core_clk               ),
@@ -72,6 +79,11 @@ module riscv_core #(
     .o_riscv_datapath_pc             (riscv_datapath_pc_im           ),
     .i_riscv_datapath_inst           (riscv_im_inst_datapath         ),
     .i_riscv_datapath_dm_rdata       (riscv_datapath_rdata_dm        ),
+    .i_riscv_datapath_switches_upper (i_riscv_core_switches_upper    ),
+    .i_riscv_datapath_switches_lower (i_riscv_core_switches_lower    ),
+    .i_riscv_datapath_button1        (i_riscv_core_button1           ),
+    .i_riscv_datapath_button2        (i_riscv_core_button2           ),
+    .i_riscv_datapath_button3        (i_riscv_core_button3           ),
     .o_riscv_datapath_rdaddr_m       (riscv_datapath_rdaddr_m_hzrdu  ),
     .o_riscv_datapath_memw_e         (riscv_datapath_memw_e_dm       ),
     .o_riscv_datapath_memr_e         (riscv_datapath_memr_e_dm       ),
@@ -79,7 +91,7 @@ module riscv_core #(
     .o_riscv_datapath_amo_op         (riscv_datapath_amo_op_dm       ),
     .o_riscv_datapath_storesrc_m     (riscv_datapath_storesrc_m_dm   ),
     .o_riscv_datapath_memodata_addr  (riscv_datapath_memodata_addr_dm),
-    .o_riscv_datapath_storedata_m    (riscv_datapath_storedata_m_dm  ),
+    .o_riscv_datapath_storedata_m    (o_riscv_core_storedata_m_dm    ),
     .i_riscv_datapath_icache_stall_wb(riscv_datapath_stall_m_im      ),
     .i_riscv_datapath_stall_dm       (riscv_datapath_stall_m_dm      ),
     .i_riscv_datapath_stall_im       (riscv_datapath_stall_m_im      ),
@@ -92,7 +104,9 @@ module riscv_core #(
     .o_riscv_datapath_timer_rden     (riscv_datapath_timer_rden      ),
     .o_riscv_datapath_timer_regsel   (riscv_datapath_timer_regsel    ),
     .i_riscv_datapath_fifo_full      (i_riscv_core_fifo_full         ),
-    .o_riscv_datapath_uart_tx_valid  (o_riscv_core_uart_tx_valid     )
+    .o_riscv_datapath_uart_tx_valid  (o_riscv_core_uart_tx_valid     ),
+    .o_riscv_datapath_seg_en         (o_riscv_core_seg_en            ),
+    .o_riscv_datapath_led_en         (o_riscv_core_led_en            )
   );
 
   riscv_data_cache #(
@@ -116,7 +130,7 @@ module riscv_core #(
     .i_riscv_dcache_amo           (riscv_datapath_amo_dm                    ),
     .i_riscv_dcache_amo_op        (riscv_datapath_amo_op_dm                 ),
     .i_riscv_dcache_phys_addr     (riscv_datapath_memodata_addr_dm[ADDR-1:0]),
-    .i_riscv_dcache_cpu_data_in   (riscv_datapath_storedata_m_dm            ),
+    .i_riscv_dcache_cpu_data_in   (o_riscv_core_storedata_m_dm              ),
     .i_riscv_dcache_mem_ready     (i_riscv_core_mem_ready                   ),
     .i_riscv_dcache_mem_data_out  (i_riscv_core_mem_data_out                ),
     .o_riscv_dcache_fsm_mem_wren  (o_riscv_core_fsm_mem_wren                ),
@@ -151,15 +165,15 @@ module riscv_core #(
   );
 
   riscv_timer_irq u_riscv_timer_irq (
-    .i_riscv_timer_clk   (i_riscv_core_clk             ),
-    .i_riscv_timer_rst   (i_riscv_core_rst             ),
-    .i_riscv_timer_wren  (riscv_datapath_timer_wren    ),
-    .i_riscv_timer_rden  (riscv_datapath_timer_rden    ),
-    .i_riscv_timer_regsel(riscv_datapath_timer_regsel  ),
-    .i_riscv_timer_wdata (riscv_datapath_storedata_m_dm),
-    .o_riscv_timer_rdata (riscv_timer_datapath_rdata   ),
-    .o_riscv_timer_time  (riscv_timer_datapath_time    ),
-    .o_riscv_timer_irq   (riscv_core_timer_interrupt   )
+    .i_riscv_timer_clk   (i_riscv_core_clk           ),
+    .i_riscv_timer_rst   (i_riscv_core_rst           ),
+    .i_riscv_timer_wren  (riscv_datapath_timer_wren  ),
+    .i_riscv_timer_rden  (riscv_datapath_timer_rden  ),
+    .i_riscv_timer_regsel(riscv_datapath_timer_regsel),
+    .i_riscv_timer_wdata (o_riscv_core_storedata_m_dm),
+    .o_riscv_timer_rdata (riscv_timer_datapath_rdata ),
+    .o_riscv_timer_time  (riscv_timer_datapath_time  ),
+    .o_riscv_timer_irq   (riscv_core_timer_interrupt )
   );
 
 endmodule

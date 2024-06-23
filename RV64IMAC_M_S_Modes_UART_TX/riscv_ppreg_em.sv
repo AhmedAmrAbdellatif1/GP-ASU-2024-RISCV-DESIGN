@@ -36,6 +36,8 @@
     input  logic        i_riscv_em_timer_rden             ,
     input  logic [ 1:0] i_riscv_em_timer_regsel           ,
     input  logic        i_riscv_em_uart_tx_valid          ,
+    input  logic [ 2:0] i_riscv_em_mstage_mux_sel         ,
+    output logic [ 2:0] o_riscv_em_mstage_mux_sel         ,
     output logic [31:0] o_riscv_em_inst                   ,
     output logic [15:0] o_riscv_em_cinst                  ,
     output logic [ 4:0] o_riscv_em_amo_op_m               ,
@@ -105,6 +107,7 @@
             o_riscv_em_timer_rden              <= 'b0;
             o_riscv_em_timer_regsel            <= 'b0;
             o_riscv_em_uart_tx_valid           <= 'b0;
+            o_riscv_em_mstage_mux_sel          <= 'b0;
           end
         else if(i_riscv_em_flush)
           begin
@@ -138,6 +141,7 @@
             o_riscv_em_timer_rden              <= 'b0;
             o_riscv_em_timer_regsel            <= 'b0;
             o_riscv_em_uart_tx_valid           <= 'b0;
+            o_riscv_em_mstage_mux_sel          <= 'b0;
           end
         else if(!i_riscv_em_en)
           begin
@@ -171,6 +175,7 @@
             o_riscv_em_timer_rden              <= i_riscv_em_timer_rden  ;
             o_riscv_em_timer_regsel            <= i_riscv_em_timer_regsel;
             o_riscv_em_uart_tx_valid           <= i_riscv_em_uart_tx_valid;
+            o_riscv_em_mstage_mux_sel          <= i_riscv_em_mstage_mux_sel;
           end
       end
 

@@ -1,5 +1,5 @@
 module uart_peripheral_top #(
-  parameter              FIFO_DEPTH = 256   ,
+  parameter              FIFO_DEPTH = 4096   ,
   parameter logic [19:0] BAUD_DIVISOR  = 6945,
   parameter logic [ 0:0] PAR_EN     = 1     ,
   parameter logic [ 0:0] PAR_TYPE   = 0
