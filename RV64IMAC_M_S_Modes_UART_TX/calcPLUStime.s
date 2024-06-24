@@ -17,14 +17,6 @@
 
 _main:
     ########################
-    li x1, 0b00001000
-    csrw mstatus, x1                # set MIE (Machine Interrupt Enable) in mstatus
-    li x1, 0b100010001000           # 
-    csrw mie, x1                    # set MEIE(Machine External Interrupt Enable),MTIE(Machine Timer Interrupt Enable), and MSIE(Machine Software Interrupt Enable) in mie 
-    lla x1, interrupt_handler               
-    csrw mtvec, x1                  # set mtvec (trap_address) to interrupt_handler
-  
-    ########################
     li gp, UART_BASE
     li s10, GPIOU_BASE
     li s11, GPIOL_BASE
@@ -193,7 +185,10 @@ _main:
     li t0, '\n'
     sb t0, UART_THR_OFFSET(gp)
 
-    j loop
+    li t0, BUT1_BASE
+    li t1, BUT2_BASE
+    li t3, BUT3_BASE
+    j wait_for_button
 
 convert_init:
     li t1, 10           # Divisor for decimal conversion
@@ -225,28 +220,99 @@ send_loop:
 end_calcu:
     ret
 
-loop:
-    j loop
-         
+wait_for_button:
+    lb s0, 0(t0)
+    beqz s0, wait_for_button
+    j start_timer_irq
+
+start_timer_irq:
+    li t0, '.'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '.'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '.'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'C'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'u'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+
+    li t0, 0b00001000
+    csrw mstatus, t0                # set MIE (Machine Interrupt Enable) in mstatus
+    li t0, 0b100010001000           # 
+    csrw mie, t0                    # set MEIE(Machine External Interrupt Enable),MTIE(Machine Timer Interrupt Enable), and MSIE(Machine Software Interrupt Enable) in mie 
+    lla t0, interrupt_handler               
+    csrw mtvec, t0                # set mtvec (trap_address) to interrupt_handler
+    li a0, 9
+    li a7, 3
+    j wait_one_sec
+
+
+wait_one_sec:
+    li ra, MTIME_BASE       
+    ld sp, 0(ra)                 
+    li gp,33333333
+    add sp, sp,gp                  
+    li gp, MTIMECMP_BASE
+    sd sp, 0(gp)
+    li tp, SEG_BASE
+    sd a0, 0(tp)
+
+wait_for_interrupt:
+  j wait_for_interrupt
+     
 interrupt_handler:
         # determine cause of interrupt   
-        csrr x2, mcause                 # save mcause to x2
-        li  x3, 0x800000000000000b      # mcause for external interrupt
-        li  x5, 0x8000000000000007      # mcause for timer interrupt
-        beq x2, x5, timer_interrupt    # cause is timer interrupt
-     return_tany:
-        mret
-	 timer_interrupt:
-        # disable timer interrupt by resetting mtimecmp
-        li x2, 0                       
-        la x3, MTIME_BASE
-        sw x2, 0(x3)                    # set MTIME_BASE to all 0s
-        addi t0,t0,-1
-        li t1 , -1
-        beq t0,t1,timer_reset
-  return:
-  		sb t0, 77777777777SEGMENT
-  		j  return_tany
-  timer_reset:
-  		addi t0,t0,10
-      j return
+        csrr sp, mcause                 # save mcause to sp
+        li  gp, 0x800000000000000b      # mcause for external interrupt
+        li  t0, 0x8000000000000007      # mcause for timer interrupt
+        beq sp, t0, timer_interrupt_handler    # cause is timer interrupt
+
+timer_interrupt_handler:
+        li sp, 0                       
+        li gp, MTIME_BASE
+        sd sp, 0(gp)                    # set MTIME_BASE to all 0s
+        addi a0,a0,-1
+        beqz a0, blinking_led
+        j wait_one_sec
+  
+  blinking_led:
+    beqz a7, loop
+    j turn_on_led
+    li s8, 15000000
+
+    nop_loop_1:
+    addi s8, s8, -1
+    bnez s8, nop_loop_1
+
+    j turn_off_led
+
+    nop_loop_2:
+    addi s8, s8, -1
+    bnez s8, nop_loop_2
+
+    addi a7, a7, -1
+    j blinking_led
+
+  turn_on_led:
+    li gp, LED_BASE
+    li s0, 1
+    sd s0, 0(gp)
+    ret
+  
+  turn_off_led:
+    li gp, LED_BASE
+    li s0, 0
+    sd s0, 0(gp)
+    ret
+
+  loop:
+    j loop

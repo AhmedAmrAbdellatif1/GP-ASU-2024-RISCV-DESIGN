@@ -61,7 +61,7 @@ module riscv_top (
   logic                  core_fsm_mem_rden  ;
   logic [    S_ADDR-1:0] core_mem_addr      ;
   logic [DATA_WIDTH-1:0] core_cache_data_out;
-
+ 
   logic                  core_imem_ready     ;
   logic [DATA_WIDTH-1:0] core_imem_data_out  ;
   logic [DATA_WIDTH-1:0] core_icache_data_out;
