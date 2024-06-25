@@ -1094,7 +1094,7 @@ end
       2'b01 :    
       begin
         if (current_priv_lvl == PRIV_LVL_M && is_interrupt)
-          trap_base_addr = {mtvec.base[MXLEN-3:6], interrupt_cause[5:0], 2'b0};
+        trap_base_addr = {mtvec.base, 2'b0} ;
         else if  (current_priv_lvl == PRIV_LVL_S )
           trap_base_addr = {stvec.base, 2'b0} ;
         else
@@ -1114,7 +1114,7 @@ end
       2'b11: 
       begin
         if (current_priv_lvl == PRIV_LVL_M && is_interrupt)
-              trap_base_addr = {mtvec.base[MXLEN-3:6], interrupt_cause[5:0], 2'b0};
+        trap_base_addr = {mtvec.base, 2'b0} ;
         else if  (current_priv_lvl == PRIV_LVL_S && is_interrupt )
           trap_base_addr = {stvec.base[SXLEN-3:6], interrupt_cause[5:0], 2'b0};
         else
@@ -1205,7 +1205,7 @@ end
     sei_pending     = 1'b0  ;
     sti_pending     = 1'b0  ;
 
-    if (mip.meip && mie.meie)  // Machine Mode External Interrupt
+    if (mip.meip && mie.meie && i_riscv_csr_external_int )  // Machine Mode External Interrupt
     begin
       case (current_priv_lvl)
         PRIV_LVL_M :  
@@ -1244,7 +1244,7 @@ end
       endcase
     end
 
-    else if (mip.mtip && mie.mtie) // Machine Timer Interrupt
+    else if (mip.mtip && mie.mtie && i_riscv_csr_timer_int) // Machine Timer Interrupt
     begin
       case (current_priv_lvl)
         PRIV_LVL_M  :
@@ -1419,9 +1419,9 @@ end
   assign go_to_trap                   =  is_trap && !i_riscv_csr_flush && !i_riscv_csr_globstall  ;
   
   /************************************       Illegal Flags       ************************************/
-  assign illegal_priv_access          = ((i_riscv_csr_address[9:8] > current_priv_lvl) && is_csr);    
+  assign illegal_priv_access          = 'b0;    
   assign illegal_write_access         = (i_riscv_csr_address[11:10] == 2'b11) && csr_write_en ;   
-  assign illegal_csr_access           = ((illegal_read_access | illegal_write_access | illegal_priv_access ) && is_csr) ;
+  assign illegal_csr_access           = 'b0 ;
   assign illegal_total                =   illegal_csr_access  | i_riscv_csr_illegal_inst ;
 
   /************************************      CSR Write Enable     ************************************/

@@ -129,7 +129,7 @@
       end
     else if(i_riscv_de_flush)
       begin
-          o_riscv_de_pc_e            <=  'b0;
+          o_riscv_de_pc_e            <=  i_riscv_de_pc_d;
           o_riscv_de_pcplus4_e       <=  'b0;
           o_riscv_de_rs1addr_e       <=  'b0;
           o_riscv_de_rs1data_e       <=  'b0;

@@ -139,7 +139,7 @@
             o_riscv_em_store_addr_misaligned_m <= 'b0;
             o_riscv_em_rs1addr_m               <= 'b0;
             o_riscv_em_instret_m               <= 'b0;
-            o_riscv_em_pc                      <= 'b0;
+            o_riscv_em_pc                      <= i_riscv_em_pc;
             o_riscv_em_rddata_sc_m             <= 'b0;
             o_riscv_em_amo_op_m                <= 'b0;
             o_riscv_em_inst                    <= 'b0;
