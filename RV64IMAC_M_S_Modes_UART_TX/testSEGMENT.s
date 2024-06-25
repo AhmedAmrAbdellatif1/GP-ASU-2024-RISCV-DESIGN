@@ -22,7 +22,8 @@ _main:
 
   print: 
     sb a0, 0(gp)
-    li s0, 11111111
+    li s0, 10000000
+
   wait:
     addi s0, s0, -1
     bnez s0, wait
@@ -34,14 +35,15 @@ _main:
   blinking_led:
     beqz a7, loop
     call turn_on_led
-    li s8, 15000000
+    li s8, 8000000
+
 
     nop_loop_1:
     addi s8, s8, -1
     bnez s8, nop_loop_1
 
     call turn_off_led
-    li s8, 15000000
+    li s8, 6000000
     nop_loop_2:
     addi s8, s8, -1
     bnez s8, nop_loop_2
@@ -51,7 +53,7 @@ _main:
 
   turn_on_led:
     li gp, LED_BASE
-    li s0, 15
+    li s0, 65535
     sd s0, 0(gp)
     ret
   

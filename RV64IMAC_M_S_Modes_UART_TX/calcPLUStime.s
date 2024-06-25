@@ -21,15 +21,357 @@ _main:
     li s10, GPIOU_BASE
     li s11, GPIOL_BASE
 
+    li t0, 'G'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'd'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'A'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'f'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ','
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'G'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'l'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'm'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'W'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'E'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'C'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'E'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'A'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'S'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'U'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'm'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'W'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'A'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'h'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'm'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'd'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ','
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'R'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ','
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'O'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'm'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ','
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
     li t0, 'H'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'b'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ','
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'A'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'b'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'd'
     sb t0, UART_THR_OFFSET(gp)
     li t0, 'e'
     sb t0, UART_THR_OFFSET(gp)
     li t0, 'l'
     sb t0, UART_THR_OFFSET(gp)
-    li t0, 'l'
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'h'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'm'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ','
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'd'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'B'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 's'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'h'
     sb t0, UART_THR_OFFSET(gp)
     li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'y'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'W'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'w'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'd'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'u'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'c'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'y'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'u'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'u'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'R'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'I'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'S'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'C'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'V'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'F'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 's'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'P'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'g'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'm'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 's'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'A'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'h'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'm'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'c'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'O'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'p'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 's'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '\n'
     sb t0, UART_THR_OFFSET(gp)
     li t0, '\n'
     sb t0, UART_THR_OFFSET(gp)
@@ -184,10 +526,10 @@ _main:
     call convert_init
     li t0, '\n'
     sb t0, UART_THR_OFFSET(gp)
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
 
     li t0, BUT1_BASE
-    li t1, BUT2_BASE
-    li t3, BUT3_BASE
     j wait_for_button
 
 convert_init:
@@ -226,11 +568,44 @@ wait_for_button:
     j start_timer_irq
 
 start_timer_irq:
-    li t0, '.'
+    csrw mstatus, t0                # set MIE (Machine Interrupt Enable) in mstatus
+    li t0, 0b100010001000           # 
+    csrw mie, t0                    # set MEIE(Machine External Interrupt Enable),MTIE(Machine Timer Interrupt Enable), and MSIE(Machine Software Interrupt Enable) in mie 
+    lla t0, interrupt_handler               
+    csrw mtvec, t0                # set mtvec (trap_address) to interrupt_handler
+    li t0, 'S'
     sb t0, UART_THR_OFFSET(gp)
-    li t0, '.'
+    li t0, 'e'
     sb t0, UART_THR_OFFSET(gp)
-    li t0, '.'
+    li t0, 'c'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'd'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'P'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'g'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'm'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 's'
     sb t0, UART_THR_OFFSET(gp)
     li t0, ' '
     sb t0, UART_THR_OFFSET(gp)
@@ -244,24 +619,105 @@ start_timer_irq:
     sb t0, UART_THR_OFFSET(gp)
     li t0, 't'
     sb t0, UART_THR_OFFSET(gp)
-    li a7, 3
-    j blinking_led
-
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'D'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'w'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'u'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 's'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'g'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'T'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'i'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'm'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'I'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'u'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'p'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'S'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'r'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'C'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'u'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'd'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'o'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'w'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '!'
+    sb t0, UART_THR_OFFSET(gp)
     li t0, 0b00001000
-    csrw mstatus, t0                # set MIE (Machine Interrupt Enable) in mstatus
-    li t0, 0b100010001000           # 
-    csrw mie, t0                    # set MEIE(Machine External Interrupt Enable),MTIE(Machine Timer Interrupt Enable), and MSIE(Machine Software Interrupt Enable) in mie 
-    lla t0, interrupt_handler               
-    csrw mtvec, t0                # set mtvec (trap_address) to interrupt_handler
     li a0, 9
     li a7, 3
     j wait_one_sec
 
-
 wait_one_sec:
     li ra, MTIME_BASE       
     ld sp, 0(ra)                 
-    li gp,33333333
+    li gp,10000000
     add sp, sp,gp                  
     li gp, MTIMECMP_BASE
     sd sp, 0(gp)
@@ -288,15 +744,15 @@ timer_interrupt_handler:
   
   blinking_led:
     beqz a7, loop
-    j turn_on_led
-    li s8, 15000000
+    call turn_on_led
+    li s8, 6000000
 
     nop_loop_1:
     addi s8, s8, -1
     bnez s8, nop_loop_1
 
-    j turn_off_led
-    li s8, 15000000
+    call turn_off_led
+    li s8, 6000000
     nop_loop_2:
     addi s8, s8, -1
     bnez s8, nop_loop_2
@@ -306,7 +762,7 @@ timer_interrupt_handler:
 
   turn_on_led:
     li gp, LED_BASE
-    li s0, 1
+    li s0, 65535
     sd s0, 0(gp)
     ret
   
