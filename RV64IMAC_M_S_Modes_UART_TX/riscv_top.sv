@@ -32,7 +32,6 @@ module riscv_top (
 
   logic riscv_top_external_interrupt_debounced;
   logic riscv_rst_sync                        ;
-
   logic riscv_clk;
 
   /************************** Datapath to IM **************************/

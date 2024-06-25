@@ -91,6 +91,17 @@
   set_property -dict {PACKAGE_PIN P1 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[14]]
   set_property -dict {PACKAGE_PIN L1 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[15]]
 
+  set_property -dict {PACKAGE_PIN G2 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[15]]
+  set_property -dict {PACKAGE_PIN G3 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[15]]
+  set_property -dict {PACKAGE_PIN N2 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[15]]
+  set_property -dict {PACKAGE_PIN N1 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[15]]
+
+  set_property -dict {PACKAGE_PIN B16 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[15]]
+  set_property -dict {PACKAGE_PIN C16 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[15]]
+  set_property -dict {PACKAGE_PIN P18 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[15]]
+  set_property -dict {PACKAGE_PIN R18 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_leds[15]]
+
+
   set_property -dict {PACKAGE_PIN U7 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_segment[0]]
   set_property -dict {PACKAGE_PIN V5 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_segment[1]]
   set_property -dict {PACKAGE_PIN U5 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_segment[2]]

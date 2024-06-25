@@ -568,11 +568,13 @@ wait_for_button:
     j start_timer_irq
 
 start_timer_irq:
+    li t0, 0b00001000
     csrw mstatus, t0                # set MIE (Machine Interrupt Enable) in mstatus
     li t0, 0b100010001000           # 
     csrw mie, t0                    # set MEIE(Machine External Interrupt Enable),MTIE(Machine Timer Interrupt Enable), and MSIE(Machine Software Interrupt Enable) in mie 
-    lla t0, interrupt_handler               
+    la t0, interrupt_handler               
     csrw mtvec, t0                # set mtvec (trap_address) to interrupt_handler
+    
     li t0, 'S'
     sb t0, UART_THR_OFFSET(gp)
     li t0, 'e'
@@ -709,7 +711,6 @@ start_timer_irq:
     sb t0, UART_THR_OFFSET(gp)
     li t0, '!'
     sb t0, UART_THR_OFFSET(gp)
-    li t0, 0b00001000
     li a0, 9
     li a7, 3
     j wait_one_sec
