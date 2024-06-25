@@ -244,6 +244,8 @@ start_timer_irq:
     sb t0, UART_THR_OFFSET(gp)
     li t0, 't'
     sb t0, UART_THR_OFFSET(gp)
+    li a7, 3
+    j blinking_led
 
     li t0, 0b00001000
     csrw mstatus, t0                # set MIE (Machine Interrupt Enable) in mstatus
@@ -294,7 +296,7 @@ timer_interrupt_handler:
     bnez s8, nop_loop_1
 
     j turn_off_led
-
+    li s8, 15000000
     nop_loop_2:
     addi s8, s8, -1
     bnez s8, nop_loop_2

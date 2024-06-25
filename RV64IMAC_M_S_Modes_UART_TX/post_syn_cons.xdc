@@ -99,7 +99,11 @@
   set_property -dict {PACKAGE_PIN W6 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_segment[5]]
   set_property -dict {PACKAGE_PIN W7 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_segment[6]]
 
-  set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_anode]
+set_property -dict {PACKAGE_PIN W4 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_anode_on]
+set_property -dict {PACKAGE_PIN V4 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_anode_on]
+set_property -dict {PACKAGE_PIN U4 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_anode_on]
+set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_anode_on]
+set_property -dict {PACKAGE_PIN V7 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_anode_on]
 
   set_property CONFIG_VOLTAGE 3.3 [current_design]
   set_property CFGBVS VCCO        [current_design]

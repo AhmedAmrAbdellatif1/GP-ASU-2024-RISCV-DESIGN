@@ -235,6 +235,9 @@ module riscv_datapath #(parameter MXLEN = 64) (
   logic             riscv_datapath_uart_tx_valid           ;
   logic [      2:0] riscv_datapath_mstage_mux_sel          ;
   logic [      2:0] riscv_datapath_em_mstage_mux_sel       ;
+  logic             riscv_datapath_em_seg_en               ;
+  logic             riscv_datapath_em_led_en               ;
+
 
   ////////////////////////////////////////////////////////////////////////////////////
 
@@ -493,8 +496,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_estage_timer_wren           (riscv_em_timer_wren             ),
     .o_riscv_estage_timer_rden           (riscv_em_timer_rden             ),
     .o_riscv_estage_timer_regsel         (riscv_em_timer_regsel           ),
-    .o_riscv_estage_seg_en               (o_riscv_datapath_seg_en         ),
-    .o_riscv_estage_led_en               (o_riscv_datapath_led_en         ),
+    .o_riscv_estage_seg_en               (riscv_datapath_em_seg_en        ),
+    .o_riscv_estage_led_en               (riscv_datapath_em_led_en        ),
     .o_riscv_estage_mstage_mux_sel       (riscv_datapath_mstage_mux_sel   )
   );
 
@@ -538,6 +541,8 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .i_riscv_em_timer_regsel           (riscv_em_timer_regsel           ),
     .i_riscv_em_uart_tx_valid          (riscv_em_uart_tx_valid          ),
     .i_riscv_em_mstage_mux_sel         (riscv_datapath_mstage_mux_sel   ),
+    .i_riscv_em_seg_en                 (riscv_datapath_em_seg_en        ),
+    .i_riscv_em_led_en                 (riscv_datapath_em_led_en        ),
     .o_riscv_em_mstage_mux_sel         (riscv_datapath_em_mstage_mux_sel),
     .o_riscv_em_inst                   (riscv_inst_m                    ),
     .o_riscv_em_cinst                  (riscv_cinst_m                   ),
@@ -571,7 +576,9 @@ module riscv_datapath #(parameter MXLEN = 64) (
     .o_riscv_em_timer_wren             (o_riscv_datapath_timer_wren     ),
     .o_riscv_em_timer_rden             (o_riscv_datapath_timer_rden     ),
     .o_riscv_em_uart_tx_valid          (riscv_datapath_uart_tx_valid    ),
-    .o_riscv_em_timer_regsel           (o_riscv_datapath_timer_regsel   )
+    .o_riscv_em_timer_regsel           (o_riscv_datapath_timer_regsel   ),
+    .o_riscv_em_seg_en                 (o_riscv_datapath_seg_en         ),
+    .o_riscv_em_led_en                 (o_riscv_datapath_led_en         )
   );
 
   riscv_mstage u_riscv_mstage (

@@ -7,7 +7,8 @@ module riscv_top (
   input  logic        i_riscv_top_button1           ,
   input  logic        i_riscv_top_button2           ,
   input  logic        i_riscv_top_button3           ,
-  output logic        o_riscv_top_anode             ,
+  output logic        o_riscv_top_anode_on          ,
+  output logic        o_riscv_top_anode_off         ,
   output logic [ 6:0] o_riscv_top_segment           ,
   output logic [15:0] o_riscv_top_leds              ,
   output logic        o_riscv_top_tx_data
@@ -61,7 +62,7 @@ module riscv_top (
   logic                  core_fsm_mem_rden  ;
   logic [    S_ADDR-1:0] core_mem_addr      ;
   logic [DATA_WIDTH-1:0] core_cache_data_out;
- 
+
   logic                  core_imem_ready     ;
   logic [DATA_WIDTH-1:0] core_imem_data_out  ;
   logic [DATA_WIDTH-1:0] core_icache_data_out;
@@ -88,7 +89,8 @@ module riscv_top (
   logic       riscv_top_segment_en            ;
   logic       riscv_top_leds_en               ;
 
-  assign o_riscv_top_anode = 1'b0;
+  assign o_riscv_top_anode_on  = 1'b0;
+  assign o_riscv_top_anode_off = 1'b1;
 
   clk_wiz_0 clk_wiz_0 (
     // Clock out ports
