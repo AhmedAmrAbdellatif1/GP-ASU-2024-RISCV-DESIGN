@@ -376,9 +376,10 @@ _main:
     li t0, '\n'
     sb t0, UART_THR_OFFSET(gp)
 
+    li t1, BUT1_BASE
+    call wait_for_button_1 
     lb s0, 0(s10)
-    lb s1, 0(s11)
-
+    
     li t0, 'O'
     sb t0, UART_THR_OFFSET(gp)
     li t0, 'p'
@@ -399,6 +400,10 @@ _main:
     call convert_init
     li t0, '\n'
     sb t0, UART_THR_OFFSET(gp)
+
+    li t2, BUT2_BASE
+    call wait_for_button_2
+    lb s1, 0(s11)
     
     li t0, 'O'
     sb t0, UART_THR_OFFSET(gp)
@@ -529,7 +534,7 @@ _main:
     li t0, '\n'
     sb t0, UART_THR_OFFSET(gp)
 
-    li t0, BUT1_BASE
+    li t3, BUT3_BASE
     j wait_for_button
 
 convert_init:
@@ -562,9 +567,19 @@ send_loop:
 end_calcu:
     ret
 
-wait_for_button:
-    lb s0, 0(t0)
-    beqz s0, wait_for_button
+wait_for_button_1:
+    lb s0, 0(t1)
+    beqz s0, wait_for_button_1
+    ret
+
+wait_for_button_2:
+    lb s0, 0(t2)
+    beqz s0, wait_for_button_1
+    ret
+
+wait_for_button_3:
+    lb s0, 0(t3)
+    beqz s0, wait_for_button_3
     j start_timer_irq
 
 start_timer_irq:
