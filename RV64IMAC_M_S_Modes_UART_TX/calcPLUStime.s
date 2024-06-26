@@ -2,7 +2,7 @@
 
 .global _uart_init
 
-    MTIME_BASE = 0x2000BFF8
+    MTIME_BASE = 0x200BFF8
     MTIMECMP_BASE = 0x2004000
     UART_BASE = 0x10000000
     GPIOU_BASE = 0x20000000
@@ -733,21 +733,75 @@ wait_one_sec:
 
 wait_for_interrupt:
   j wait_for_interrupt
-     
-interrupt_handler:
-        # determine cause of interrupt   
-        csrr sp, mcause                 # save mcause to sp
-        li  gp, 0x800000000000000b      # mcause for external interrupt
-        li  t0, 0x8000000000000007      # mcause for timer interrupt
-        beq sp, t0, timer_interrupt_handler    # cause is timer interrupt
 
+ interrupt_handler:
+    # determine cause of interrupt   
+    csrr sp, mcause                 # save mcause to sp
+    li  gp, 0x800000000000000b      # mcause for external interrupt
+    li  t0, 0x8000000000000007      # mcause for timer interrupt
+    beq sp, t0, timer_interrupt_handler    # cause is timer interrupt
+     
 timer_interrupt_handler:
-        li sp, 0                       
-        li gp, MTIME_BASE
-        sd sp, 0(gp)                    # set MTIME_BASE to all 0s
-        addi a0,a0,-1
-        beqz a0, blinking_led
-        j wait_one_sec
+    li sp, 0                       
+    li gp, MTIMECMP_BASE
+    sd sp, 0(gp)                    # set MTIME_BASE to all 0s
+    addi a0,a0,-1
+    beqz a0, blinking_led
+    csrr s7, mepc
+        
+    li t0, 'M'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'p'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'c'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ':'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    sb s7, UART_THR_OFFSET(gp)
+    addi s7,s7,-32              #<---------------------
+    csrw mepc,s7
+        
+    csrr s7, mcause
+    li t0, 'M'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'c'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'a'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'u'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 's'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ':'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    sb s7, UART_THR_OFFSET(gp)
+    
+    csrr s7, mtvec
+    li t0, 'M'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 't'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'v'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'e'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, 'c'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ':'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, ' '
+    sb t0, UART_THR_OFFSET(gp)
+    sb s7, UART_THR_OFFSET(gp)
+    mret
+  
   
   blinking_led:
     beqz a7, loop

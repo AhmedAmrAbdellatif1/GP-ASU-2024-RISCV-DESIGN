@@ -35,7 +35,7 @@ _main:
   blinking_led:
     beqz a7, loop
     call turn_on_led
-    li s8, 8000000
+    li s8, 6000000
 
 
     nop_loop_1:
