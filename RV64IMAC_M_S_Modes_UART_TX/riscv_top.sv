@@ -7,9 +7,10 @@ module riscv_top (
   input  logic        i_riscv_top_button1           ,
   input  logic        i_riscv_top_button2           ,
   input  logic        i_riscv_top_button3           ,
-  output logic        o_riscv_top_anode          ,
+  output logic        o_riscv_top_anode             ,
   output logic [ 6:0] o_riscv_top_segment           ,
   output logic [15:0] o_riscv_top_leds              ,
+  output logic [ 7:0] o_riscv_top_buzzer            ,
   output logic        o_riscv_top_tx_data
 );
 
@@ -32,8 +33,8 @@ module riscv_top (
 
   logic riscv_top_external_interrupt_debounced;
   logic riscv_rst_sync                        ;
-  logic riscv_clk;
-  
+  logic riscv_clk                             ;
+
   /************************** Datapath to IM **************************/
   logic [63:0] riscv_datapath_pc_im;
   /************************** IM to Datapath **************************/
@@ -87,7 +88,8 @@ module riscv_top (
   logic       riscv_top_segment_en            ;
   logic       riscv_top_leds_en               ;
 
-  assign o_riscv_top_anode  = 1'b0;
+  assign o_riscv_top_anode = 1'b0;
+  assign o_riscv_top_buzzer = o_riscv_top_leds[7:0];
 
   clk_wiz_0 clk_wiz_0 (
     // Clock out ports

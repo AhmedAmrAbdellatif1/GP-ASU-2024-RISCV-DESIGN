@@ -45,6 +45,9 @@ set_output_delay -clock [get_clocks UART_CLK] -max -add_delay 7.500 [get_ports o
 set_output_delay -clock [get_clocks UART_CLK] -min -add_delay -1.500 [get_ports o_riscv_top_leds];
 set_output_delay -clock [get_clocks UART_CLK] -max -add_delay 7.500 [get_ports o_riscv_top_leds];
 
+set_output_delay -clock [get_clocks UART_CLK] -min -add_delay -1.500 [get_ports o_riscv_top_buzzer];
+set_output_delay -clock [get_clocks UART_CLK] -max -add_delay 7.500 [get_ports o_riscv_top_buzzer];
+
 
 set_property -dict {PACKAGE_PIN W5  IOSTANDARD LVCMOS33} [get_ports i_riscv_clk]
 set_property -dict {PACKAGE_PIN A18 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_tx_data]
@@ -99,6 +102,16 @@ set_property -dict {PACKAGE_PIN V8 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_s
 set_property -dict {PACKAGE_PIN U8 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_segment[4]]
 set_property -dict {PACKAGE_PIN W6 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_segment[5]]
 set_property -dict {PACKAGE_PIN W7 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_segment[6]]
+
+
+set_property -dict {PACKAGE_PIN G2 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_buzzer[0]]
+set_property -dict {PACKAGE_PIN L2 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_buzzer[1]]
+set_property -dict {PACKAGE_PIN N2 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_buzzer[2]]
+set_property -dict {PACKAGE_PIN L3 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_buzzer[3]]
+set_property -dict {PACKAGE_PIN A17 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_buzzer[4]]
+set_property -dict {PACKAGE_PIN C16 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_buzzer[5]]
+set_property -dict {PACKAGE_PIN M19 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_buzzer[6]]
+set_property -dict {PACKAGE_PIN R18 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_buzzer[7]]
 
 
 set_property -dict {PACKAGE_PIN W4 IOSTANDARD LVCMOS33} [get_ports o_riscv_top_anode]
