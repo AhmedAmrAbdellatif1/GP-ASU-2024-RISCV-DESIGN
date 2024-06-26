@@ -717,19 +717,24 @@ start_timer_irq:
     sb t0, UART_THR_OFFSET(gp)
     li t0, '!'
     sb t0, UART_THR_OFFSET(gp)
-    li a0, 9
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+    li a5, 9
     li a7, 3
     j wait_one_sec
 
 wait_one_sec:
+    li tp, SEG_BASE
+    sd a5, 0(tp)
+    beqz a5, blinking_led
     li ra, MTIME_BASE       
     ld sp, 0(ra)                 
-    li gp,10000000
+    li gp, 33333333
     add sp, sp,gp                  
     li gp, MTIMECMP_BASE
-    sd sp, 0(gp)
-    li tp, SEG_BASE
-    sd a0, 0(tp)
+    sd sp, 0(gp)  
 
 wait_for_interrupt:
   j wait_for_interrupt
@@ -743,13 +748,12 @@ wait_for_interrupt:
      
 timer_interrupt_handler:
     li sp, 0                       
-    li gp, MTIMECMP_BASE
-    sd sp, 0(gp)                    # set MTIME_BASE to all 0s
-    addi a0,a0,-1
-    beqz a0, blinking_led
+    li t4, MTIMECMP_BASE
+    sd sp, 0(t4)                    # set MTIME_BASE to all 0s
+    addi a5,a5,-1
     csrr s7, mepc
-        
-    li t0, 'M'
+    li gp, UART_BASE    
+    li t0, 'm'
     sb t0, UART_THR_OFFSET(gp)
     li t0, 'e'
     sb t0, UART_THR_OFFSET(gp)
@@ -761,12 +765,15 @@ timer_interrupt_handler:
     sb t0, UART_THR_OFFSET(gp)
     li t0, ' '
     sb t0, UART_THR_OFFSET(gp)
-    sb s7, UART_THR_OFFSET(gp)
-    addi s7,s7,-32              #<---------------------
+    addi a0, s7, -4
+    call convert_init
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+    la s7, wait_one_sec
     csrw mepc,s7
         
     csrr s7, mcause
-    li t0, 'M'
+    li t0, 'm'
     sb t0, UART_THR_OFFSET(gp)
     li t0, 'c'
     sb t0, UART_THR_OFFSET(gp)
@@ -782,10 +789,13 @@ timer_interrupt_handler:
     sb t0, UART_THR_OFFSET(gp)
     li t0, ' '
     sb t0, UART_THR_OFFSET(gp)
-    sb s7, UART_THR_OFFSET(gp)
-    
+    andi a0, s7, 0b11111
+    call convert_init
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+
     csrr s7, mtvec
-    li t0, 'M'
+    li t0, 'm'
     sb t0, UART_THR_OFFSET(gp)
     li t0, 't'
     sb t0, UART_THR_OFFSET(gp)
@@ -799,7 +809,12 @@ timer_interrupt_handler:
     sb t0, UART_THR_OFFSET(gp)
     li t0, ' '
     sb t0, UART_THR_OFFSET(gp)
-    sb s7, UART_THR_OFFSET(gp)
+    mv a0, s7
+    call convert_init
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
+    li t0, '\n'
+    sb t0, UART_THR_OFFSET(gp)
     mret
   
   

@@ -1,0 +1,4 @@
+{
+  "EIDE.RISCV.InstallDirectory": "${userRoot}/.eide/tools/gcc_riscv",
+  "EIDE.RISCV.ToolPrefix": "riscv-none-embed-"
+}
