@@ -55,6 +55,8 @@ Verification is done using open-source tools from CHIPS Alliance to ensure the s
 
 FPGA prototyping involves implementing the designed system on an FPGA and generating a bitstream for practical testing and validation. This step allows for real-world testing and performance evaluation, providing insights into the feasibility of running Linux on the designed architecture.
 
+[FPGA Validation](https://drive.google.com/file/d/1KlBG5CQz32hCbSZxNkktZPUzfUT35irm/view?usp=sharing)
+
 ## Documentation
 
 Comprehensive documentation is provided, detailing the design, implementation, verification, and prototyping processes, along with a comparison with existing RISC-V cores and suggestions for future work.
