@@ -14,7 +14,7 @@ Welcome to the repository for the RTL design codes of the RISC-V architecture ca
 
 This project focuses on the design and implementation of a RISC-V architecture to support the Linux operating system. The RISC-V architecture is chosen due to its open-source nature and extensibility, making it suitable for academic and industrial applications.
 
-![5-stages Pipelined RV64IMC-Machine Mode](https://github.com/AhmedAmrAbdellatif1/GP-RV64IMAC/assets/140100601/850d0061-5a62-4c1a-830f-8a1933185309)
+![5-stages Pipelined RV64IMAC-Machine Mode](https://github.com/AhmedAmrAbdellatif1/GP-RV64IMAC/assets/140100601/032aec89-7208-4ead-ac82-6676925b2a0f)
 
 ## Objectives and Scope
 
