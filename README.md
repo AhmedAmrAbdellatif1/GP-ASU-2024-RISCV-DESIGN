@@ -5,7 +5,7 @@ Welcome to the repository for the RTL design codes of the RISC-V architecture ca
 ### Team Members
 - [Ahmed Amr Abdellatif](https://www.linkedin.com/in/ahmed-amr-abdellatif/)
 - [Rana Mohamed Abdullah](mailto:rana.abdalluh.1d@gmail.com)
-- [Abdelrahman Mohamed Abdelhalim](mailto:abdomohamed1961@gmail.com)
+- [Abdelrahman Mohamed Abdelhalim](https://www.linkedin.com/in/abdelrahman%2Dmohamed%2D0111a624b/)
 - [Bishoy Emad William](https://www.linkedin.com/in/bishoy-emad-527812227/)
 - [Hebatallah Hesham Sayed](https://www.linkedin.com/in/hebatallah-hesham-a68818240/)
 - [Omar EzzEldin Mohamed](mailto:omarezzeldin121@gmail.com)
