@@ -2,9 +2,19 @@
 
 Welcome to the repository for the RTL design codes of the RISC-V architecture capable of running the Linux operating system. This project was completed as part of a graduation thesis at the Electronics & Communications Department, Faculty of Engineering, Ain Shams University.
 
+### Team Members
+- [Ahmed Amr Abdellatif](https://www.linkedin.com/in/ahmed-amr-abdellatif/)
+- [Rana Mohamed Abdullah](mailto:rana.abdalluh.1d@gmail.com)
+- [Abdelrahman Mohamed Abdelhalim](mailto:abdomohamed1961@gmail.com)
+- [Bishoy Emad William](https://www.linkedin.com/in/bishoy-emad-527812227/)
+- [Hebatallah Hesham Sayed](https://www.linkedin.com/in/hebatallah-hesham-a68818240/)
+- [Omar EzzEldin Mohamed](mailto:omarezzeldin121@gmail.com)
+
 ## Introduction
 
 This project focuses on the design and implementation of a RISC-V architecture to support the Linux operating system. The RISC-V architecture is chosen due to its open-source nature and extensibility, making it suitable for academic and industrial applications.
+
+![5-stages Pipelined RV64IMC-Machine Mode](https://github.com/AhmedAmrAbdellatif1/GP-RV64IMAC/assets/140100601/850d0061-5a62-4c1a-830f-8a1933185309)
 
 ## Objectives and Scope
 
