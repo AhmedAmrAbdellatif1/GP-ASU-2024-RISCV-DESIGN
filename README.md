@@ -49,4 +49,4 @@ FPGA prototyping involves implementing the designed system on an FPGA and genera
 
 Comprehensive documentation is provided, detailing the design, implementation, verification, and prototyping processes, along with a comparison with existing RISC-V cores and suggestions for future work.
 
-https://drive.google.com/file/d/1HYaxwctf71etvR4QhIf5rDlQkh__jxif/view?usp=drive_link
+[Graduation Project Thesis](https://drive.google.com/file/d/1HYaxwctf71etvR4QhIf5rDlQkh__jxif/view?usp=drive_link)
