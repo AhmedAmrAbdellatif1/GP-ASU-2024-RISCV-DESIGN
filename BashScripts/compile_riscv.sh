@@ -10,7 +10,7 @@ fi
 FILENAME=$(basename "$1" .c)
 
 # Set the target architecture and ABI
-ARCH="rv64imac_zicsr"
+ARCH="rv64imac"
 ABI="lp64"
 
 # Compile the C code to assembly, specifying the architecture and ABI
