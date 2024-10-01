@@ -21,7 +21,7 @@
 │   │   │   │   ├── [riscv_mux4.sv](riscv_mux4.sv)  
 │   │   │   │   ├── [riscv_lsu.sv](riscv_lsu.sv)  
 │   │   │   │   ├── [riscv_misalignment_unit.sv](riscv_misalignment_unit.sv)  
-│   │   │   │   └── [riscv_icu.sv](riscv_icu.sv)  
+│   │   │   │   └── [riscv_icu.sv](riscv_ICU.sv)  
 │   │   │   │   │   ├── [riscv_alu.sv](riscv_alu.sv)  
 │   │   │   │   │   ├── [riscv_branch.sv](riscv_branch.sv)  
 │   │   │   │   │   ├── [riscv_multipliers.sv](riscv_multipliers.sv)  
