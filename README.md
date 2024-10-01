@@ -3,7 +3,7 @@
 Welcome to the repository for the RTL design codes of the RISC-V architecture capable of running the Linux operating system. This project was completed as part of a graduation thesis at the Electronics & Communications Department, Faculty of Engineering, Ain Shams University.
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/bc71d5a3-f1a5-42d0-a8b0-d5baba2d16ee" alt="riscv-asu-logo" width="300"/>
+  <img src="https://github.com/user-attachments/assets/bbf5a24f-e4f8-4b32-a9a4-8c65240a7858" alt="riscv-asu-logo" width="500"/>
 </div>
 
 ### Team Members
