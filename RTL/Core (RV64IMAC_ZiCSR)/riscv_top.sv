@@ -13,7 +13,7 @@ module riscv_top (
   parameter BYTE_OFF    = $clog2(DATAPBLOCK)     ; //     4 bits
   parameter INDEX       = $clog2(CACHE_DEPTH)    ; //    12 bits
   parameter TAG         = ADDR - BYTE_OFF - INDEX; //    11 bits
-  parameter KERNEL_PC   = 'h80000062             ;
+  parameter KERNEL_PC   = 'h0                    ;
   parameter S_ADDR      = ADDR - BYTE_OFF        ;
   parameter FIFO_DEPTH  = 256                    ;
   parameter bit       TESTING     = 1                      ;
@@ -80,17 +80,17 @@ module riscv_top (
   ) u_top_core (
     .i_riscv_core_clk               (riscv_clk),
     .i_riscv_core_rst               (i_riscv_rst),
-    .i_riscv_core_external_interrupt('b0),
+    .i_riscv_core_external_interrupt(1'b0),
     .i_riscv_core_mem_ready         (core_mem_ready),
     .i_riscv_core_mem_data_out      (core_mem_data_out),
     .i_riscv_core_imem_ready        (core_imem_ready),
     .i_riscv_core_imem_data_out     (core_imem_data_out),
-    .i_riscv_core_fifo_full         ('b0),
-    .i_riscv_core_switches_upper    ('b0),
-    .i_riscv_core_switches_lower    ('b0),
-    .i_riscv_core_button1           ('b0),
-    .i_riscv_core_button2           ('b0),
-    .i_riscv_core_button3           ('b0),
+    .i_riscv_core_fifo_full         (1'b0),
+    .i_riscv_core_switches_upper    (8'b0),
+    .i_riscv_core_switches_lower    (8'b0),
+    .i_riscv_core_button1           (1'b0),
+    .i_riscv_core_button2           (1'b0),
+    .i_riscv_core_button3           (1'b0),
     .o_riscv_core_uart_tx_data      (),
     .o_riscv_core_uart_tx_valid     (),
     .o_riscv_core_imem_addr         (core_imem_addr),

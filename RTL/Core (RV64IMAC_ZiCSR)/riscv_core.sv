@@ -9,7 +9,7 @@ module riscv_core #(
   parameter BYTE_OFF    = $clog2(DATAPBLOCK)     , //     4 bits
   parameter INDEX       = $clog2(CACHE_DEPTH)    , //    12 bits
   parameter TAG         = ADDR - BYTE_OFF - INDEX, //    11 bits
-  parameter KERNEL_PC   = 'h80000062             ,
+  parameter KERNEL_PC   = 'h0             ,
   parameter S_ADDR      = ADDR - BYTE_OFF
 ) (
   input  logic                  i_riscv_core_clk               ,
